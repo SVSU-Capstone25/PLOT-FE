@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "C#: Plot [Default Configuration]",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/Plot.csproj"
+        }
+    ]
+}
