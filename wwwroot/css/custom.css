@@ -1,0 +1,71 @@
+/* colors */
+.platos-blue {
+    background-color: #489b97;
+}
+
+.cancel-red {
+    background-color: #EF4444;
+}
+
+.invert {
+    filter: invert(1);
+}
+
+/* buttons */
+.corner-btn {
+    position: fixed;
+    bottom: 1vw;
+    right: 2vw;
+    z-index: 99;
+    background-color: #55B5B1;
+    color: white;
+    cursor: pointer;
+}
+
+.corner-btn-img {
+    height: 1.1vw;
+    padding: 0px 5px 4px 0px;
+}
+
+.corner-btn:hover {
+    background-color: #489b97;
+    color: white;
+}
+
+.corner-btn:focus {
+    background-color: #55B5B1;
+    color: white;
+}
+
+.employee-circle-btn {
+    width: 60px; 
+    height: 60px; 
+    background-color: #A2A6AE;
+    border-radius: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+/* drag and drop input */
+.drag-drop-box {
+    border: 2px dashed #000;
+    background-color: #f2f2f2; 
+    border-radius: 8px; 
+    text-align: center;
+    padding: 40px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    min-height: 200px;
+}
+
+.drag-drop-box:hover {
+    background-color: #e6e6e6;
+}
+
+.drag-drop-icon {
+    font-size: 20px; 
+    vertical-align: middle;
+    margin-left: 8px; 
+}

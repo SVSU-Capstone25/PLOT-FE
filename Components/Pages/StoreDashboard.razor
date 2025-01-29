@@ -4,14 +4,98 @@
 
 <div class="row">
     <div class="col-md-3">
-        <div class="card">
+        <div class="card border-0">
             <img src="/img/placeholder_floorplan.png" class="card-img-top" alt="Flint Store Floorplan">
-            <div class="card-body">
+            <div class="card-body pt-2">
                 <div class="row">
-                    <h5 class="card-title col-auto">Flint, MI</h5>
-                    <img class="col-auto" src="/img/icons/ellipsis_icon.png" style="max-height:3vw">
+                    <h4 class="card-title fw-bolder">
+                        Flint, MI
+                        <img class="float-end h-100 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+                        src="/img/icons/ellipsis_icon.svg" style="max-width:1.9vw">
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item">Store Options</li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item">Layouts</a></li>
+                            <li><a class="dropdown-item">Edit</a></li>
+                            <li><a class="dropdown-item">Delete</a></li>
+                        </ul>
+                    </h4>                    
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Add Store Button -->
+<button class="btn corner-btn" data-bs-toggle="modal" data-bs-target="#addStoreModal">
+    <img src="/img/icons/add-icon.png" class="corner-btn-img">Add Store
+</button>
+
+<!-- Add Store Modal -->
+<ModalDialog Title="Add Store" ModalID="addStoreModal" ModalLabel="addStoreModalLabel" ModalSize="Large">
+    <BodyContent>
+        <h4>Add Store</h4>
+        <p>Add a new store with it's unique blueprint.</p>
+        <div class="row">
+            <div class="col-md-6">
+                <!-- name / location inputs -->
+                <div class="row">
+                    <div class="col-2">
+                        <label for="storeName" class="col-form-label">Name</label>
+                    </div>
+                    <div class="col-10">
+                        <input type="text" id="storeName" class="form-control">
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-2">
+                        <label for="storeLocation" class="col-form-label">Location</label>
+                    </div>
+                    <div class="col-10">
+                        <input type="text" id="storeLocation" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- drag/drop file input -->
+                <div class="container">
+                    <div class="drag-drop-box" id="dragDropArea">
+                        <h4 class="text-decoration-underline my-auto text-center">Store Blueprint Image</h4>
+                        <input type="file" id="storeBlueprint" class="d-none">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <h4 class="my-3">Employees</h4>
+                <div class="row">
+                    <div class="col-2">
+                        <h3 class="employee-circle-btn text-center mx-auto my-0 fw-normal" style="font-size: 32px;">+</h3>
+                        <p class="my-2 text-center">Add Employee</p>
+                    </div>
+
+                    <!-- in the future this can be a foreach loop of employees -->
+                    <div class="col-2">
+                        <h3 class="employee-circle-btn text-center mx-auto my-0 fw-normal">JD</h3>
+                        <p class="my-2 text-center">Jane Doe</p>
+                    </div>
+                    <div class="col-2">
+                        <h3 class="employee-circle-btn text-center mx-auto my-0 fw-normal">MS</h3>
+                        <p class="my-2 text-center">Mary Smith</p>
+                    </div>
+                    <div class="col-2">
+                        <h3 class="employee-circle-btn text-center mx-auto my-0 fw-normal">JS</h3>
+                        <p class="my-2 text-center">James Smith</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </BodyContent>
+
+    <FooterContent>
+        <button type="button" class="btn cancel-red float-start" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn platos-blue">Save changes</button>
+    </FooterContent>
+</ModalDialog>
+
