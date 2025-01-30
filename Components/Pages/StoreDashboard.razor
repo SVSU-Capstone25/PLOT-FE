@@ -15,16 +15,23 @@
                         <ul class="dropdown-menu">
                             <li class="dropdown-item">Store Options</li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item">
-                                <i class="fa-solid fa-cubes"></i> Layouts</a>
+                            <li>
+                                <a class="dropdown-item">
+                                    <i class="fa-solid fa-cubes"></i> Layouts
+                                </a>
                             </li>
-                            <li><a class="dropdown-item">
+                            <li>
+                                <a class="dropdown-item">
                                 <!-- in the future this will just pull up the store modal that
                                 already exists and populate it with the data instead of having 2 modals -->
-                                <i class="fa-solid fa-pen-to-square"></i> Edit</a>
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                                </a>
                             </li>
-                            <li><a class="dropdown-item">
-                                <i class="fa-solid fa-trash"></i> Delete</a>
+                            <li>
+                                <a class="dropdown-item" data-bs-toggle="modal" 
+                                data-bs-target="#confirmDeleteStoreModal">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </a>
                             </li>
                         </ul>
                     </h4>                    
@@ -109,3 +116,17 @@
     </FooterContent>
 </ModalDialog>
 
+<!-- Delete Store Modal -->
+<ModalDialog Title="Confirm Deletion" ModalID="confirmDeleteStoreModal" 
+ModalLabel="confirmDeleteStoreModalLabel" ModalSize="">
+    <BodyContent>
+        <h4>Are you SURE you want to delete this store?</h4>
+        <p>If so, type DELETE below.</p>
+        <input type="text" id="confirmDelete" class="form-control" placeholder="Type DELETE here">
+    </BodyContent>
+
+    <FooterContent>
+        <button type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn platos-blue text-white">Yes, Delete</button>
+    </FooterContent>
+</ModalDialog>
