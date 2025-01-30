@@ -1,11 +1,11 @@
 .page {
     position: relative;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 .sidebar {
-    background-color: #f4f4f4; /* Example background, adjust as needed */
+    background-color: #c94b4b; /* Example background, adjust as needed */
     padding: 10px;
     /* Add more styles to match your design */
 }
