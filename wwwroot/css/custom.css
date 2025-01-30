@@ -48,6 +48,14 @@
     
 }
 
+.btn.platos-blue:hover {
+    background-color: #55B5B1;
+}
+
+.btn.cancel-red:hover {
+    background-color: #d03b3b;
+}
+
 /* drag and drop input */
 .drag-drop-box {
     border: 2px dashed #000;

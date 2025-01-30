@@ -10,14 +10,22 @@
                 <div class="row">
                     <h4 class="card-title fw-bolder">
                         Flint, MI
-                        <img class="float-end h-100 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
-                        src="/img/icons/ellipsis_icon.svg" style="max-width:1.9vw">
+                        <i class="fa-solid fa-ellipsis float-end h-100" data-bs-toggle="dropdown"
+                        aria-expanded="false" style="max-width:1.9vw"></i>
                         <ul class="dropdown-menu">
                             <li class="dropdown-item">Store Options</li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item">Layouts</a></li>
-                            <li><a class="dropdown-item">Edit</a></li>
-                            <li><a class="dropdown-item">Delete</a></li>
+                            <li><a class="dropdown-item">
+                                <i class="fa-solid fa-cubes"></i> Layouts</a>
+                            </li>
+                            <li><a class="dropdown-item">
+                                <!-- in the future this will just pull up the store modal that
+                                already exists and populate it with the data instead of having 2 modals -->
+                                <i class="fa-solid fa-pen-to-square"></i> Edit</a>
+                            </li>
+                            <li><a class="dropdown-item">
+                                <i class="fa-solid fa-trash"></i> Delete</a>
+                            </li>
                         </ul>
                     </h4>                    
                 </div>
@@ -28,7 +36,7 @@
 
 <!-- Add Store Button -->
 <button class="btn corner-btn" data-bs-toggle="modal" data-bs-target="#addStoreModal">
-    <img src="/img/icons/add-icon.png" class="corner-btn-img">Add Store
+    <i class="fa-solid fa-plus"></i> Add Store
 </button>
 
 <!-- Add Store Modal -->
@@ -61,7 +69,9 @@
                 <!-- drag/drop file input -->
                 <div class="container">
                     <div class="drag-drop-box" id="dragDropArea">
-                        <h4 class="text-decoration-underline my-auto text-center">Store Blueprint Image</h4>
+                        <h5 class="text-decoration-underline my-auto text-center">
+                            <i class="fa-solid fa-image"></i> Store Blueprint Image
+                        </h5>
                         <input type="file" id="storeBlueprint" class="d-none">
                     </div>
                 </div>
@@ -94,8 +104,8 @@
     </BodyContent>
 
     <FooterContent>
-        <button type="button" class="btn cancel-red float-start" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn platos-blue">Save changes</button>
+        <button type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn platos-blue text-white">Save changes</button>
     </FooterContent>
 </ModalDialog>
 
