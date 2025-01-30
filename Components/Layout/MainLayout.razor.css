@@ -1,13 +1,13 @@
 .page {
     position: relative;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 .sidebar {
-    background-color: #c94b4b; /* Example background, adjust as needed */
+    background-color: #c94b4b; 
     padding: 10px;
-    /* Add more styles to match your design */
+    
 }
 
 main {
@@ -54,7 +54,7 @@ main {
 
 @media (min-width: 641px) {
     .page {
-        flex-direction: row;
+        flex-direction: column;
     }
 
     .sidebar {
