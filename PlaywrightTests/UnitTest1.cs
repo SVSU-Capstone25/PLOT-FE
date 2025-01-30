@@ -15,6 +15,17 @@ public class UnitTest1: PageTest
         await Expect(Page).ToHaveTitleAsync(new Regex("Playwright"));
     }
 
+    [Theory]
+    [InlineData("http://localhost:8085/weatherforecast")]
+    [InlineData("http://localhost:8080")]
+    public async Task PageExists(string url)
+    {
+        await Page.GotoAsync(url);
+
+        // Expect the page to be visible.
+        await Expect(Page.Locator("body")).ToBeVisibleAsync();
+    }
+
     [Fact]
     public async Task GetStartedLink()
     {
@@ -26,4 +37,5 @@ public class UnitTest1: PageTest
         // Expects page to have a heading with the name of Installation.
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Installation" })).ToBeVisibleAsync();
     } 
+
 }
