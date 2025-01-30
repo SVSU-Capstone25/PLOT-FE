@@ -5,10 +5,10 @@
 }
 
 .sidebar {
-    background-color: #c94b4b; 
+    background-color: #1EA6A1; 
     padding: 10px;
-    width: 100%; /* Ensures the sidebar spans across the full width */
-    /* Remove sticky positioning for top position */
+    width: 100%; 
+    height: 5%;
 }
 
 main {
