@@ -71,6 +71,7 @@
         height: 3rem;
         display: flex;
         flex-direction: row; /*added this*/
+        justify-content: flex-start;
         align-items: center;
         line-height: 3rem;
         width: 100%;
