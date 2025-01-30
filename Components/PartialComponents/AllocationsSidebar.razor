@@ -1,0 +1,44 @@
+
+<div class="allocations-sidebar">
+    <h2><i class="fa-solid fa-boxes-stacked"></i> Category Fullfillment</h2>
+    <hr>
+
+    <div class="categories-list">
+        <search>
+            <form action="./search/">
+                <label for="category">Category Search</label>
+                <input type="search" id="category" name="category-query">
+                <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+        </search>
+        
+        <div class="overflow-y-scroll overflow-x-hidden ">
+            <CategoryListItem />
+            <CategoryListItem />
+            <CategoryListItem />
+            <CategoryListItem />
+            <CategoryListItem />
+        </div>
+    </div>       
+
+    <div class="tools btn-group">
+        <!-- Edit Fixture Button -->
+        <button><i class="fa-solid fa-pen-to-square"></i></button>
+
+        <!-- Paint Category Button -->
+        <button><i class="fa-solid fa-brush"></i></button>
+
+        <!-- Erase Category Button -->
+        <button><i class="fa-solid fa-eraser"></i></button>
+
+        <!-- View Fullfillment Button -->
+        <button><i class="fa-solid fa-eye"></i></button>
+
+        <!-- Edit Layout Button -->
+        <button><i class="fa-solid fa-wrench"></i></button>
+    </div>
+</div>
+
+@code {
+    
+}
