@@ -53,6 +53,10 @@
 .nav-item {
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
+    display: flex;
+    flex-direction: row; /*added this*/
+    justify-content: flex-start;
+    align-items: center;
 }
 
     /* .nav-item:first-of-type {
@@ -89,6 +93,10 @@
 
 .nav-scrollable {
     display: none;
+    display: flex;
+    flex-direction: row; /*added this*/
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .navbar-toggler:checked ~ .nav-scrollable {
@@ -105,8 +113,10 @@
         display: block;
         height: 2rem;
         align-items: center;
+        display: flex;
         flex-direction: row; /*added this*/
         justify-content: flex-start;
+        align-items: center;
         /* Allow sidebar to scroll for tall menus */
         /* height: calc(100vh - 3.5rem);
         overflow-y: auto; */
