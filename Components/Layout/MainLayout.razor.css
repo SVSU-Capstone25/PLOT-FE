@@ -8,10 +8,7 @@
     background-color: #1EA6A1; 
     padding: 10px;
     width: 100%;
-    display: flex;
-    flex-direction: row; /*added this*/
-    justify-content: flex-start;
-    align-items: center;
+    height: 2rem;
 }
 
 main {
