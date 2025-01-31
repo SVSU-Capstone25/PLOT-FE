@@ -1,0 +1,42 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Create a container to center the table */
+.table-container {
+    display: flex;
+    justify-content: center;  /* Centers the content horizontally */
+    padding: 0 5%;  /* Adds padding on the left and right sides */
+    width: 100%;
+}
+
+/* Style the table itself */
+table {
+    width: 90%;  /* Table will span 90% of the container width */
+    border-collapse: collapse;  /* Ensures the borders are merged */
+    background-color: #f9f9f9;
+}
+
+/* Table header and cell styles */
+th, td {
+    padding: 15px;  /* Adds space inside the cells */
+    text-align: left;  /* Aligns text to the left */
+    border: 1px solid #ddd;  /* Adds a light border to the cells */
+}
+
+/* Table header style */
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* Alternating row colors */
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;  /* Adds hover effect to rows */
+}
