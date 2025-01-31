@@ -1,16 +1,15 @@
-﻿@inject IJSRuntime JS
+﻿@inject IJSRuntime JS;
 
 <div class="draggable">@Title</div>
 
 @code {
+
     [Parameter] public string Title { get; set; } = "Fixture";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            Console.WriteLine($"Initializing draggable for {Title}");
-            await JS.InvokeVoidAsync("dragDrop", ".draggable");
-        }
+        
+        await JS.InvokeVoidAsync("dragDrop", ".draggable", ".sidebar");
+         
     }
 }
