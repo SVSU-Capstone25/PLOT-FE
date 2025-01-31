@@ -7,15 +7,6 @@ assignees: ''
 
 ---
 
-## 📝 Requirements
-
-> [!NOTE]
-> The following are requirements that documentation expects at the end of the ticket lifetime.
-
-- The system shall allow managers to delete accounts permanently.
-  - Test: Delete an account and check if the data is removed.
-- ... (DELETE THIS PLACEHOLDER CONTENT)
-
 ## 🎯 Acceptance Criteria
 
 > [!NOTE]
@@ -40,13 +31,18 @@ After the user is deleted, the table should refresh showing that the user was de
 > [!NOTE]
 > The following are what the E2E tests expect once development is done.
 
-When a user hovers over the "..." on a user I **EXPECT**:
-- A hover menu to pop up and show "Edit" and "Delete" buttons.
+**Given** the ellipses 
+
+**When** a user clicks on it 
+
+**Then** a menu pops up with "Edit" and "Delete" buttons.
 
 ---
 
+(IF THE ABOVE FORMAT DOESN'T WORK YOU CAN DEFAULT TO SOMETHING LIKE THIS)
+
 When a user clicks the "Delete" button I **EXPECT**:
-- A modal to pop up that says "Are you sure you want to delete this user?" with a "Confirm" and "Cancel" button. 
+- A modal to pop up that says "Are you sure you want to delete this user?" with a "Confirm" and "Cancel" button.
 
 ---
 
