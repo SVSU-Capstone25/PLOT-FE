@@ -105,6 +105,8 @@
         display: block;
         height: 2rem;
         align-items: center;
+        flex-direction: row; /*added this*/
+        justify-content: flex-start;
         /* Allow sidebar to scroll for tall menus */
         /* height: calc(100vh - 3.5rem);
         overflow-y: auto; */
