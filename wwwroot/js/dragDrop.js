@@ -1,6 +1,4 @@
-window.dragDrop = function(className, sidebarSelector) {
-    const position = { x: 0, y: 0 }
-
+window.dragDrop = function(className, sidebarSelector, gridSelector, gridSize = 50) {
     let selectedElement = null;
 
     interact(className).draggable({
@@ -8,123 +6,119 @@ window.dragDrop = function(className, sidebarSelector) {
         listeners: {
             start(event) {
                 const target = event.target;
-                
-                // Check if the element is from the sidebar or the grid
                 const isFromSidebar = target.closest(sidebarSelector) !== null;
 
                 if (isFromSidebar) {
-                    // Clone the element if it's from the sidebar
+                    // Clone the element from the sidebar
                     const clonedElement = target.cloneNode(true);
-                    clonedElement.id = "dragged-" + Date.now(); // Ensure it has a unique ID
+                    clonedElement.id = "dragged-" + Date.now();
 
-                    // Apply initial styles to the cloned element
+                    // Apply styles for positioning
                     clonedElement.style.position = "absolute";
                     clonedElement.style.zIndex = "1000";
-                    clonedElement.style.opacity = "1"; // Full opacity for the clone
-                    
-                    // Add the clone to the body, so it floats above other elements
+                    clonedElement.style.opacity = "1";
+
+                    // Append the clone to the body
                     document.body.appendChild(clonedElement);
 
-                    // Store the initial position of the clone (centered on the original element)
+                    // Get bounding box of original element
                     const rect = target.getBoundingClientRect();
-                    const offsetX = event.clientX - rect.left;
-                    const offsetY = event.clientY - rect.top;
+                    const offsetX = event.pageX - (rect.left + window.scrollX);
+                    const offsetY = event.pageY - (rect.top + window.scrollY);
 
-                    clonedElement.dataset.x = 0;
-                    clonedElement.dataset.y = 0;
+                    // Set absolute position for clone
+                    clonedElement.style.left = `${event.pageX - offsetX}px`;
+                    clonedElement.style.top = `${event.pageY - offsetY}px`;
 
-                    // Set the clone to appear at the center of the original element
-                    clonedElement.style.left = event.clientX - offsetX + 'px';
-                    clonedElement.style.top = event.clientY - offsetY + 'px';
+                    clonedElement.dataset.x = clonedElement.offsetLeft;
+                    clonedElement.dataset.y = clonedElement.offsetTop;
 
-                    // Store the clone's unique ID in the event target's dataset
                     event.target.dataset.clonedId = clonedElement.id;
-
-                    // Ensure the original remains semi-transparent
-                    target.style.opacity = "0.8";
+                    selectedElement = clonedElement;
                 } else {
-                    // When dragging from the grid, no cloning, just move the original element
-                    target.style.zIndex = "1000"; // Bring it to the front
-                    target.style.opacity = "1"; // Full opacity for the original element
+                    selectedElement = target;
                 }
-                selectedElement = target;
             },
             move(event) {
-                const target = event.target;
-
-                // Check if the element was cloned
+                let target = event.target;
                 const clonedElement = document.getElementById(target.dataset.clonedId);
-
                 if (clonedElement) {
-                    let x = (parseFloat(clonedElement.dataset.x) || 0) + event.dx;
-                    let y = (parseFloat(clonedElement.dataset.y) || 0) + event.dy;
-
-                    // Apply the new position to the clone
-                    clonedElement.style.transform = `translate(${x}px, ${y}px)`;
-
-                    // Store the new position in the cloned element
-                    clonedElement.dataset.x = x;
-                    clonedElement.dataset.y = y;
-                } else {
-                    // Otherwise, move the original element (if not cloned)
-                    let x = (parseFloat(target.dataset.x) || 0) + event.dx;
-                    let y = (parseFloat(target.dataset.y) || 0) + event.dy;
-
-                    // Apply the new position to the original element
-                    target.style.transform = `translate(${x}px, ${y}px)`;
-
-                    // Store the new position in the original element
-                    target.dataset.x = x;
-                    target.dataset.y = y;
+                    target = clonedElement;
                 }
+
+                let x = (parseFloat(target.dataset.x) || 0) + event.dx;
+                let y = (parseFloat(target.dataset.y) || 0) + event.dy;
+
+                target.style.left = `${x}px`;
+                target.style.top = `${y}px`;
+
+                target.dataset.x = x;
+                target.dataset.y = y;
+
+                selectedElement = target;
             },
             end(event) {
-                const target = event.target;
-                const clonedElement = document.getElementById(target.dataset.clonedId);
-
-                // Get the sidebar element
+                let target = event.target;
+                let clonedElement = document.getElementById(target.dataset.clonedId);
                 const sidebar = document.querySelector(sidebarSelector);
+                const grid = document.querySelector(gridSelector);
 
-                // Check if the cloned element is over the sidebar
                 if (clonedElement) {
                     const clonedRect = clonedElement.getBoundingClientRect();
                     const sidebarRect = sidebar.getBoundingClientRect();
 
-                    // If the cloned element is still over the sidebar, cancel the operation
-                    if (
-                        clonedRect.top < sidebarRect.bottom &&
-                        clonedRect.bottom > sidebarRect.top &&
-                        clonedRect.left < sidebarRect.right &&
-                        clonedRect.right > sidebarRect.left
-                    ) {
-                        // Cancel the drag-drop operation by removing the clone
+                    if (isOverElement(clonedRect, sidebarRect)) {
                         clonedElement.remove();
-
-                        // Optionally, reset the opacity of the original element
-                        target.style.opacity = "0.8";
+                        return;
                     } else {
-                        // Otherwise, reset z-index and opacity of the clone
-                        clonedElement.style.zIndex = "10"; // Reset z-index to default
-                        clonedElement.style.opacity = "0.8"; // Make the clone semi-transparent after drop
+                        clonedElement.style.zIndex = "10";
+                        clonedElement.dataset.clonedId = "";
+                        selectedElement = clonedElement;
                     }
                 }
 
-                // If the element is from the grid (not cloned), reset opacity and z-index
-                if (!clonedElement) {
-                    target.style.zIndex = "10"; // Reset z-index
-                    target.style.opacity = "1"; // Full opacity
-                }
+                // **🟢 Get Grid Position for Snapping**
+                const gridRect = grid.getBoundingClientRect();
+
+                // Convert absolute position to grid-relative position
+                let relativeX = parseFloat(target.style.left) - gridRect.left;
+                let relativeY = parseFloat(target.style.top) - gridRect.top;
+
+                // **Snap to the nearest grid square**
+                let snappedX = Math.round(relativeX / gridSize) * gridSize;
+                let snappedY = Math.round(relativeY / gridSize) * gridSize;
+
+                // Convert back to absolute position
+                let finalX = snappedX + gridRect.left;
+                let finalY = snappedY + gridRect.top;
+
+                // Apply the snapped position
+                target.style.left = `${finalX}px`;
+                target.style.top = `${finalY}px`;
+
+                target.dataset.x = finalX;
+                target.dataset.y = finalY;
+
+                target.style.zIndex = "10";
+                selectedElement = target;
             }
         }
     });
 
-    // Add a listener for the Delete key
-    document.addEventListener('keydown', function(event) {
-        // Check if the Delete key is pressed (key code for Delete is 46)
+    document.addEventListener("keydown", function(event) {
         if (event.key === "Delete" && selectedElement) {
-            // Remove the selected element from the grid
             selectedElement.remove();
-            selectedElement = null; // Reset the selected element
+            selectedElement = null;
         }
     });
 };
+
+// Function to check if one element is over another
+function isOverElement(draggableRect, staticRect) {
+    return (
+        draggableRect.top < staticRect.bottom &&
+        draggableRect.bottom > staticRect.top &&
+        draggableRect.left < staticRect.right &&
+        draggableRect.right > staticRect.left
+    );
+}
