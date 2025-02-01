@@ -92,10 +92,10 @@
     width: 100%;
 }
 
-.nav-item ::deep a.active {
+/* .nav-item ::deep a.active {
     background-color: rgba(80, 80, 80, 0.37);
     color: rgb(255, 255, 255);
-}
+} */
 
 .nav-item ::deep .nav-link:hover {
     background-color: rgba(80,80,80,0.37);
