@@ -2,6 +2,26 @@
 
 <PageTitle>Login</PageTitle>
 
-<h1>Login</h1>
 
-Welcome to your new app.
+
+
+<div class="LoginSquare">
+    <img src="photos/PlatoLogo.png" alt="Plato's Store Logo">
+    <p>Welcome to PLOT,<br/> Plato's Store Layout Optimisation Tool</p>
+    <p>Please log in to your account to continue</p>
+    <br/>
+<form action="/authentication" method="post">
+        <label for="username">Email: </label><br/>
+        <input type="text" name="username"/><br/>        
+        <label for="password">Password: </label><br/>
+        <input type="text" name="password"/><br/>
+        <a href="">Forgot Password?</a><br/>
+        <button type="button"> Log In</button>
+</form>
+</div>
+
+@code
+{
+
+
+}

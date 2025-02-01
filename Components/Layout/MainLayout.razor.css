@@ -6,6 +6,16 @@
 
 main {
     flex: 1;
+    background-image: linear-gradient(180deg, #55B5B1 80%,#CAEAE9 20%);
+}
+
+.LoginSquare{
+    border: black;
+    border-style: solid;
+}
+
+body{
+    background-image: linear-gradient(180deg, #CAEAE9 20%, #55B5B1 80%);
 }
 
 .sidebar {
