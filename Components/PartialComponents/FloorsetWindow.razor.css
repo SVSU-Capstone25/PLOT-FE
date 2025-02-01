@@ -1,0 +1,5 @@
+.layout-grid{
+    display: grid;
+    grid-auto-rows: 30px;
+    gap: 1px;
+}

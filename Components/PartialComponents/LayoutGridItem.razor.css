@@ -1,0 +1,7 @@
+.layout-grid-item{
+    border: 2px solid lightblue;
+    background: lightslategrey;
+    color: red;
+    padding: 1px;
+    border-radius: 8px;
+}

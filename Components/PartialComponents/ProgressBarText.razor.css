@@ -3,6 +3,10 @@
     background-color: rgb(161, 161, 161);;
     height: 30px;
     position: relative;
+    border: 2pt;
+    border-color: antiquewhite;
+    border-radius: 1pt;
+    border-style: groove;
   }
   
   #progress-container-text {
@@ -18,7 +22,7 @@
     justify-content: center;
     align-items: center;
   }
-  
+
   #progress-bar {
     height: 100%;
   }

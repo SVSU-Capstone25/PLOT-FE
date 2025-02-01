@@ -1,2 +1,22 @@
 <h2>TODO Layout GUI</h2>
 Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum iste reprehenderit atque in odit inventore adipisci nam aliquam debitis eos, aliquid corrupti modi sint dignissimos! Harum dolore voluptates asperiores deleniti!
+
+<div class="layout-grid" style="grid-template-columns: repeat(@gridWidth, 30px);">
+    <!-- Generate new items and append to grid. -->
+    @for (int x = 0; x < gridWidth; x++)
+    {
+        for (int y = 0; y < gridHeight; y++)
+        {
+            <LayoutGridItem />
+        }
+    }
+</div>
+
+
+
+@code
+{
+    //Width and Height of the layout grid. This should be set based the dimensions of the store layout.
+    public int gridWidth = 30;
+    public int gridHeight = 30;
+}
