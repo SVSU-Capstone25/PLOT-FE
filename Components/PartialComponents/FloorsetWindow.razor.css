@@ -1,5 +1,7 @@
-.layout-grid{
+.layout-grid
+{
     display: grid;
     grid-auto-rows: 30px;
+    background-color: lightslategray;
     gap: 1px;
 }

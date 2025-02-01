@@ -1,5 +1,11 @@
-<div class='layout-grid-item'>@content</div>
+<div class='layout-grid-item' style=@style>
+    @content
+</div>
 
 @code {
-    public String content = "item";
+    [Parameter]
+    public String content {get; set;} = "";
+
+    [Parameter]
+    public String style {get; set;} = "";
 }

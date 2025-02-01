@@ -5,10 +5,17 @@
 
 <div class="row">
     <div class="col-sm-7">
-        <FloorsetWindow />
+        <FloorsetWindow gridWidth=@_storeGridWidth gridHeight=@_storeGridHeight/>
     </div>
     <div class="col-sm-3">
         <AllocationsSidebar />
     </div>
 </div>
+
+@code
+{
+    //These integers should be populated by the store layout loaded into the allocations page.
+    private int _storeGridWidth = 15;
+    private int _storeGridHeight = 25;
+}
 

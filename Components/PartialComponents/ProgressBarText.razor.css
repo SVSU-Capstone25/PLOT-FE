@@ -1,28 +1,31 @@
-#progress-container {
-    width: 100px;
-    background-color: rgb(161, 161, 161);;
-    height: 30px;
+#progress-container 
+{
+    background-color: lightgrey;
+    height: 20px;
     position: relative;
-    border: 2pt;
-    border-color: antiquewhite;
-    border-radius: 1pt;
-    border-style: groove;
+    border: 2px inset white;
+    border-radius: 20px;
   }
   
-  #progress-container-text {
+  #progress-container-text 
+  {
     position: absolute;
     left: 0;
     right: 0;
     height: 100%;
   }
   
-  #progress-container-text-align-center {
+  #progress-container-text-align-center 
+  {
     display: flex;
     height: 100%;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
+    padding: 8px 5px 5px 5px;
   }
 
-  #progress-bar {
+  #progress-bar 
+  {
     height: 100%;
+    border-radius: inherit;
   }

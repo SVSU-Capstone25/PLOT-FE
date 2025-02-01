@@ -1,7 +1,8 @@
-.layout-grid-item{
-    border: 2px solid lightblue;
-    background: lightslategrey;
-    color: red;
+.layout-grid-item
+{
+    border: 2px solid black;
+    background: lightgrey;
+    color: black;
     padding: 1px;
-    border-radius: 8px;
+    border-radius: 3px;
 }

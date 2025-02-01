@@ -1,25 +1,20 @@
 <div id="progress-container">
     <div id="progress-container-text">
-        <div id="progress-container-text-align-center">@_text</div>
+        <div id="progress-container-text-align-center">@barText</div>
     </div>
-    <div id="progress-bar" style="width: @_progress%; background-color: rgb(@get_color());"></div>
+    <div id="progress-bar" style="width: @barProgress%; background-color: @barColor;"></div>
 </div>
 
 @code {
     //Text to display inside the progress bar.
-    private String _text = "default";
+    [Parameter]
+    public String barText {get; set;} = "50/100";
 
-    //Amount of progress in the progress bar, from 0 to 100.
-    private int _progress = 50; 
+    //Amount of progress in the progress bar. 0 <= barProgress <= 100.
+    [Parameter]
+    public int barProgress {get; set;} = 50; 
 
-    //PROGRESS BAR COLORS
-    //Integers, from 0-255, defining the red, green, and blue partial colors.
-    private int _colorRed = 58;
-    private int _colorGreen = 166;
-    private int _colorBlue = 255;
-
-    //Returns the color of the progress bar
-    public String get_color(){
-        return String.Format("{0},{1},{2}",_colorRed,_colorGreen,_colorBlue);
-    }
+    //PROGRESS BAR COLOR
+    [Parameter]
+    public String barColor {get; set;} = "aliceblue";
 }

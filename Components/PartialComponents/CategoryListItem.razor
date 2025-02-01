@@ -1,8 +1,17 @@
 <div class="category-list-item row"> 
     <div class="col-sm-4">
-        <label>Category</label>
+        @category
     </div>
     <div class="col-md-8">
-        <ProgressBarText />
+        <ProgressBarText barColor=@categoryColor/>
     </div>
 </div>
+
+@code
+{
+    [Parameter]
+    public String category {get; set;} = "A Category";
+
+    [Parameter]
+    public String categoryColor {get; set;} = "aqua";
+}
