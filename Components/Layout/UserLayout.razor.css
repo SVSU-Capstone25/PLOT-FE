@@ -106,3 +106,7 @@ tr:hover {
     outline: none; /* Remove focus outline for cleaner look */
 }
 
+.bi-plus-nav-menu {
+    background-image: url("../Images/plus.png");
+}
+
