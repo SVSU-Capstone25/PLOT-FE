@@ -55,8 +55,8 @@ tr:hover {
 }
 
 .dot {
-    width: 8px;
-    height: 8px;
+    width: 3px;
+    height: 3%;
     background-color: black;
     border-radius: 50%;
     margin: 2px 0;
