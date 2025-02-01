@@ -88,10 +88,10 @@ tr:hover {
     bottom: 20px; /* Adjust distance from bottom */
     right: 20px;  /* Adjust distance from right */
     padding: 10px 20px;
-    background-color: #007BFF;
+    background-color: #1EA6A1;;
     color: white;
     border: none;
-    border-radius: 50px;
+    border-radius: 0px;
     font-size: 16px;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -99,7 +99,7 @@ tr:hover {
 }
 
 .floating-button:hover {
-    background-color: #0056b3; /* Change color on hover */
+    background-color:rgba(80,80,80,0.37); /* Change color on hover */
 }
 
 .floating-button:focus {
