@@ -29,7 +29,7 @@
         </table>
     </div>
 
-    <div class="floating-button" data-bs-toggle="modal" data-bs-target="#addUserModal">
+    <div class="floating-button" @onclick="openModal">
         <span class="bi bi-plus-nav-menu" aria-hidden="true"></span>Add User
     </div>
 
@@ -102,3 +102,15 @@
         <button type="button" class="btn platos-blue text-white">Save changes</button>
     </FooterContent>
 </ModalDialog>
+
+@code {
+    // Inject IJSRuntime for calling JavaScript functions
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+
+    // Method to open the modal using JavaScript
+    private async Task OpenModal()
+    {
+        // Call JavaScript to open the modal using Bootstrap's modal API
+        await JSRuntime.InvokeVoidAsync("openModal");
+    }
+}
