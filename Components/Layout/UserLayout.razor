@@ -29,7 +29,7 @@
         </table>
     </div>
 
-    <div class="floating-button" @onclick="openModal">
+    <div class="floating-button" @onclick="OpenModal">
         <span class="bi bi-plus-nav-menu" aria-hidden="true"></span>Add User
     </div>
 
@@ -111,6 +111,6 @@
     private async Task OpenModal()
     {
         // Call JavaScript to open the modal using Bootstrap's modal API
-        await JSRuntime.InvokeVoidAsync("openModal");
+        await JSRuntime.InvokeVoidAsync("OpenModal");
     }
 }
