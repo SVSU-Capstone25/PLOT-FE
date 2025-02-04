@@ -3,76 +3,19 @@
 <PageTitle>Index</PageTitle>
 
 <!-- Add Store Button -->
-<button class="btn platos-blue text-white" data-bs-toggle="modal" data-bs-target="#addStoreModal">
+<button class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#addStoreModal">
     <i class="fa-solid fa-plus"></i> Add Store
 </button>
 
 <!-- Add Store Modal -->
 <ExampleComponent Title="Add Store" ModalID="addStoreModal" ModalLabel="addStoreModalLabel" ModalSize="Large">
     <BodyContent>
-        <h4>Add Store</h4>
-        <p>Add a new store with it's unique blueprint.</p>
-        <div class="row">
-            <div class="col-md-6">
-                <!-- name / location inputs -->
-                <div class="row">
-                    <div class="col-2">
-                        <label for="storeName" class="col-form-label">Name</label>
-                    </div>
-                    <div class="col-10">
-                        <input type="text" id="storeName" class="form-control">
-                    </div>
-                </div>
-
-                <div class="row mt-3">
-                    <div class="col-2">
-                        <label for="storeLocation" class="col-form-label">Location</label>
-                    </div>
-                    <div class="col-10">
-                        <input type="text" id="storeLocation" class="form-control">
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <!-- drag/drop file input -->
-                <div class="container">
-                    <div class="drag-drop-box" id="dragDropArea">
-                        <h5 class="text-decoration-underline my-auto text-center">
-                            <i class="fa-solid fa-image"></i> Store Blueprint Image
-                        </h5>
-                        <input type="file" id="storeBlueprint" class="d-none">
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-12">
-                <h4 class="my-3">Employees</h4>
-                <div class="row">
-                    <div class="col-2">
-                        <h3 class="employee-circle-btn text-center mx-auto my-0 fw-normal" style="font-size: 32px;">+</h3>
-                        <p class="my-2 text-center">Add Employee</p>
-                    </div>
-
-                    <!-- in the future this can be a foreach loop of employees -->
-                    <div class="col-2">
-                        <h3 class="employee-circle-btn text-center mx-auto my-0 fw-normal">JD</h3>
-                        <p class="my-2 text-center">Jane Doe</p>
-                    </div>
-                    <div class="col-2">
-                        <h3 class="employee-circle-btn text-center mx-auto my-0 fw-normal">MS</h3>
-                        <p class="my-2 text-center">Mary Smith</p>
-                    </div>
-                    <div class="col-2">
-                        <h3 class="employee-circle-btn text-center mx-auto my-0 fw-normal">JS</h3>
-                        <p class="my-2 text-center">James Smith</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h4>Modal content</h4>
+        <p>Yippee</p>
     </BodyContent>
 
     <FooterContent>
-        <button type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn platos-blue text-white">Save changes</button>
+        <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success text-white">Save changes</button>
     </FooterContent>
 </ExampleComponent>

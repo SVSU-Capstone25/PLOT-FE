@@ -1,0 +1,11 @@
+.modal-header {
+    background-color: var(--platos-blue);
+}
+
+.modal-title {
+    color: white;
+}
+
+.btn-close {
+    filter: invert(1);
+}
