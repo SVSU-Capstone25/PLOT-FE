@@ -1,0 +1,16 @@
+.toolbar-button
+{
+    color: white; 
+    background-color: lightseagreen;
+    border-radius: 5px;
+    border-color: transparent;
+    width: 100%;
+}
+
+.toolbar-group
+{
+    justify-content: space-between;
+    display: flex;
+    width: 70%;
+    gap: 5%;
+}
