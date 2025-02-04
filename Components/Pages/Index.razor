@@ -1,16 +1,14 @@
-@page "/"
+@page "/index"
 
 <PageTitle>Index</PageTitle>
 
-<!-- lookie at your components here! -->
-
 <!-- Add Store Button -->
-<button class="btn corner-btn" data-bs-toggle="modal" data-bs-target="#addStoreModal">
+<button class="btn platos-blue text-white" data-bs-toggle="modal" data-bs-target="#addStoreModal">
     <i class="fa-solid fa-plus"></i> Add Store
 </button>
 
 <!-- Add Store Modal -->
-<ModalDialog Title="Add Store" ModalID="addStoreModal" ModalLabel="addStoreModalLabel" ModalSize="Large">
+<ExampleComponent Title="Add Store" ModalID="addStoreModal" ModalLabel="addStoreModalLabel" ModalSize="Large">
     <BodyContent>
         <h4>Add Store</h4>
         <p>Add a new store with it's unique blueprint.</p>
@@ -77,4 +75,4 @@
         <button type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn platos-blue text-white">Save changes</button>
     </FooterContent>
-</ModalDialog>
+</ExampleComponent>
