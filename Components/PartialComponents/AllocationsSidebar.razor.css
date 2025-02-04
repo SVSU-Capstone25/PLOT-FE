@@ -13,4 +13,25 @@
     display: flex;
     width: 70%;
     gap: 5%;
+    height: 10%;
+}
+
+.categories-list
+{
+    background-color: white;
+    padding: 5px;
+    height: 100%;
+}
+
+.categories-div
+{
+    width: 95%;
+    height: 85%;
+    margin: auto;
+}
+
+.allocations-sidebar
+{
+    height: 100%;
+    display: grid;
 }

@@ -1,24 +1,39 @@
 <div class="allocations-sidebar">
-    <h2><i class="fa-solid fa-boxes-stacked"></i> Category Fullfillment</h2>
-    <hr>
+    <div style="background-color: lightgrey;">
+        <h3><i class="fa-solid fa-boxes-stacked"></i> Category Fullfillment</h3>
+        <hr>
 
-    <div class="categories-list">
-        <search>
-            <form action="./search/">
-                <label for="category">Search</label>
-                <input type="search" id="category" name="category-query">
-                <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
-            </form>
-        </search>
-        
-        <div class="overflow-y-scroll overflow-x-visible">
-            <CategoryListItem category="Pants" categoryColor="aqua"/>
-            <CategoryListItem category="Shirts" categoryColor="aqua"/>
-            <CategoryListItem category="Shoes" categoryColor="khaki"/>
-            <CategoryListItem category="Socks" categoryColor="lightcoral"/>
-            <CategoryListItem category="Jackets" categoryColor="lightcoral"/>
+        <div class="categories-div">
+            <div class="categories-list">
+                <div style="display: flex;">
+                    <search>
+                        <form action="./search/">
+                            <input type="search" id="category" name="category-query" placeholder="Search...">
+                        </form>
+                    </search>
+
+                    <button>
+                        <i class="fa-solid fa-sort"></i>
+                    </button>
+
+                    <button>
+                        <i class="fa-solid fa-filter"></i>
+                    </button>
+                </div>
+                
+                
+                <div class="overflow-y-scroll overflow-x-visible">
+                    <CategoryListItem category="Pants" categoryColor="aqua"/>
+                    <CategoryListItem category="Shirts" categoryColor="aqua"/>
+                    <CategoryListItem category="Shoes" categoryColor="khaki"/>
+                    <CategoryListItem category="Socks" categoryColor="lightcoral"/>
+                    <CategoryListItem category="Jackets" categoryColor="lightcoral"/>
+                </div>
+            </div> 
         </div>
-    </div>       
+              
+    </div>
+    
 
     <div style="justify-content: center; display: flex;">
         <div class="toolbar-group btn-group">
