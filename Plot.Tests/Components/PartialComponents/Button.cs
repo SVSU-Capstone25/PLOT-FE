@@ -8,8 +8,10 @@ public class ButtonTest : PageTest
     [Fact]
     public async Task HasButtonAndContent()
     {
+        // Go to test page.
         await Page.GotoAsync("http://localhost:8080/test/button");
 
+        // Expect the page to have a body visibile.
         await Expect(Page.Locator("body")).ToBeVisibleAsync();
 
         var button = Page.Locator("button");
