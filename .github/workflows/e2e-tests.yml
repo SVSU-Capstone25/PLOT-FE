@@ -48,6 +48,9 @@ jobs:
         with:
           path: frontend
 
+      - name: Dotnet Build FE
+        run: dotnet build ./frontend
+
       - name: Install Playwright Browsers and Dependencies
         run: |
           pwsh ./frontend/Plot.Tests/bin/Debug/net9.0/playwright.ps1 install --with-deps
