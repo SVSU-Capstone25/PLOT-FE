@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-using Microsoft.Playwright;
 using Microsoft.Playwright.Xunit;
 using Xunit;
 
@@ -11,6 +9,8 @@ public class ButtonTest : PageTest
     public async Task HasButtonAndContent()
     {
         await Page.GotoAsync("http://localhost:8080/test/button");
+
+        await Expect(Page.Locator("body")).ToBeVisibleAsync();
 
         var button = Page.Locator("button");
 

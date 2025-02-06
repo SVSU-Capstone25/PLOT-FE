@@ -1,16 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- Define the ExcludeTests property with a default of false -->
-    <AspNetCoreEnvironment Condition="'$(ASPNETCORE_ENVIRONMENT)' == ''">Production</AspNetCoreEnvironment>
   </PropertyGroup>
-
-  <ItemGroup Condition="'$(AspNetCoreEnvironment)' == 'Production'">
-    <!-- Remove test files from compilation and content -->
-    <Content Remove="**/*.test.razor" />
-    <RazorComponent Remove="**/*.test.razor" />
-  </ItemGroup>
 </Project>
