@@ -48,6 +48,10 @@ jobs:
         with:
           path: frontend
 
+      - name: Install Playwright Browsers and Dependencies
+        run: |
+          pwsh ./frontend/Plot.Tests/bin/Debug/net9.0/playwright.ps1 install --with-deps
+
       - name: Wait for Services to be Ready
         run: |
           until curl -s http://localhost:8085/health; do
