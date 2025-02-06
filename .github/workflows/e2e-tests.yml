@@ -56,4 +56,4 @@ jobs:
           done
 
       - name: Test FE
-        run: dotnet test ./frontent
+        run: dotnet test ./frontend
