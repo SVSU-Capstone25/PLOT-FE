@@ -1,0 +1,105 @@
+﻿@page "/FloorsetCreator"
+
+
+<!-- Grid Area -->
+<div class="wrapper" width="500px" height="500px" >   
+    <div class="main-content">
+        <div class="grid">
+            @for (int i = 0; i < 50; i++)
+            {
+                @for (int j = 0; j < 50; j++)
+                {
+                    <div class="grid-cell" id="cell-@i-@j"></div>
+                }
+            }
+        </div>
+    </div>       
+
+    <!-- Toggle Button -->
+<button class="btn btn-light toggle-btn shadow-sm" onclick="toggleSidebar()">
+    <i class="fa-solid fa-bars"></i>
+</button>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+
+    <!-- Header -->
+    <div class="sidebar-header p-3">
+        <div class="d-flex align-items-center justify-content-between">
+            <h5 class="mb-0"> Add Fixture </h5>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-light">
+                    <i class="bi bi-gear"></i>
+                </button>
+                <button class="btn btn-sm btn-light">
+                    <i class="bi bi-bell"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="p-3 mb-2 border-bottom">
+        <div class="d-flex align-items-center mb-2">
+            
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
+                    <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                </svg>
+                </button>            
+            
+        </div>
+        <div class="align-items-center mt-3 d-flex">
+            <button type="button" class="btn btn-primary btn-lg w-100">Add Fixture</button>
+        </div>
+            
+    </div>
+
+
+    <!-- Fixture Area -->
+    <div class="p-3 mt-3">
+        
+        
+            @for (int i = 0; i < 1; i++) 
+            {
+                
+                <div class="m-9">
+                    <DraggableTile></DraggableTile>
+                </div>
+                
+                
+            }
+            
+            
+       
+    </div>
+
+    <div class="d-flex bottom-div align-items-end m-3">
+        <div class="d-flex flex-column w-100">
+            <button type="button" class="btn btn-primary btn-lg mb-3 w-100 p-2">Edit Building Walls</button>
+            <button type="button" class="btn btn-primary btn-lg mb-3 w-100 p-2">View Allocations</button>
+            <button type="button" class="btn btn-primary btn-lg mb-3 w-100 p-2">Print Layout</button>
+            <button type="button" class="btn btn-primary btn-lg mb-3 w-100 p-2">Import Excel File</button>
+            <button type="button" class="btn btn-success btn-lg mb-3 w-100 p-2">Save</button>
+        </div>
+        
+    </div>
+    
+</div>
+
+</div>
+
+
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.querySelector('.toggle-btn');
+        sidebar.classList.toggle('collapsed');
+        toggleBtn.classList.toggle('collapsed');
+    }
+</script>
+
+
+
