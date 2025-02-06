@@ -48,6 +48,12 @@ jobs:
         with:
           path: frontend
 
+      - name: Docker Build FE
+        run: docker build -t plot-fe:latest ./frontend
+
+      - name: Docker Run FE
+        run: docker run -d -p 8080:8080 plot-fe:latest
+
       - name: Dotnet Build FE
         run: dotnet build ./frontend
 
