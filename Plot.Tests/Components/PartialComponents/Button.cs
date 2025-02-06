@@ -21,7 +21,7 @@ public class ButtonTest : PageTest
         await Expect(button).ToHaveTextAsync("Hello World");
 
         // Expect the button to have a data-id attribute with the value "hello".
-        await Expect(button).ToHaveAttributeAsync("data-text", "hello");
+        await Expect(button).ToHaveAttributeAsync("data-test", "hello");
     }
 
 }
