@@ -24,7 +24,7 @@ jobs:
         run: docker build -t plot-db:latest ./database
 
       - name: Docker Run DB
-        run: docker run -d -e DB_NAME='sqlpreview' -e ACCEPT_EULA='Y' -e MSSQL_SA_PASSWORD='yourStrong(!)Password' plot-db:latest
+        run: docker run -d -e DB_NAME='sqlpreview' -e ACCEPT_EULA='Y' -e MSSQL_SA_PASSWORD='yourStrong(!)Password' -p 1433:1433 plot-db:latest
 
       - name: Checkout BE Repository
         uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
         run: docker build -t plot-be:latest ./backend
 
       - name: Docker Run BE
-        run: docker run -d plot-be:latest
+        run: docker run -d -p 8085:8085 plot-be:latest
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
