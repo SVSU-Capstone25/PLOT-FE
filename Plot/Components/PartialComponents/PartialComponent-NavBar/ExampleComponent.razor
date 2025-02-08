@@ -1,0 +1,60 @@
+<!-- Filename: ExampleComponent.razor
+Part of Project: PLOT
+
+File Purpose:
+The purpose of this file is to showcase a blazor component template that 
+takes in both primitive data type parameters and parameters for HTML (RenderFragment)
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Danielle Smith (2/4/2025) -->
+
+<div class="modal fade" id="@ModalID" tabindex="-1" aria-labelledby="@ModalLabel" aria-hidden="true">
+    @{
+        // switch statement to set the modal size dynamically
+        string modalClass = ModalSize switch
+        {
+            "Small" => "modal-dialog modal-sm",
+            "Large" => "modal-dialog modal-lg",
+            "X-Large" => "modal-dialog modal-xl",
+            _ => "modal-dialog" // else
+        };
+    }
+    <div class="@modalClass">
+        <div class="modal-content border-0">
+            <div class="modal-header">
+                <h5 class="modal-title" id="@ModalLabel">@Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @BodyContent
+            </div>
+            <div class="modal-footer">
+                @FooterContent
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // all of these are parameters to set up the modal dynamically
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string ModalID { get; set; }
+
+    [Parameter]
+    public string ModalLabel { get; set; }
+
+    [Parameter]
+    public string ModalSize { get; set; }
+
+    [Parameter]
+    public RenderFragment BodyContent { get; set; }
+
+    [Parameter]
+    public RenderFragment FooterContent { get; set; }
+}
