@@ -1,0 +1,92 @@
+.collapse-sidebar {
+  width: 500px;
+  background: #ffffff;
+  border-left: 1px solid #e5e7eb;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transition: transform 0.3s;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+  z-index: 11;
+}
+
+.sidebar.collapsed {
+  transform: translateX(100%);
+}
+
+.toggle-btn {
+  position: fixed;
+  right: 30vw;
+  top: 20px;
+  z-index: 1000;
+  transition: right 0.3s;
+}
+
+.toggle-btn.collapsed {
+  right: 31vw;
+}
+
+
+/* body {
+  font-family: "Lato", sans-serif;
+}
+
+.sidebar {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.sidebar a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+
+.sidebar .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #111;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+}
+
+.openbtn:hover {
+  background-color: #444;
+}
+
+#main {
+  transition: margin-left .5s;
+  padding: 16px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+/* @media screen and (max-height: 450px) {
+  .sidebar {padding-top: 15px;}
+  .sidebar a {font-size: 18px;}
+} */
+

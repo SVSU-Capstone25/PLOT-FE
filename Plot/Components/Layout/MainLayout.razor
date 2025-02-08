@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using Plot.Components.PartialComponents.SlideOut
+@inherits LayoutComponentBase
+
 
 <div class="page">
     <div class="sidebar">
@@ -12,6 +14,7 @@
 
         <article class="content px-4">
             @Body
+            <SlideOut Class="test" Id="test"></SlideOut>
         </article>
     </main>
 </div>

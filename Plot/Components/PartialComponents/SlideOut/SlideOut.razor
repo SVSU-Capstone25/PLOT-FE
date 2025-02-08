@@ -1,0 +1,43 @@
+@inherits LayoutComponentBase
+
+<!-- Toggle Button -->
+<button class="btn btn-light toggle-btn shadow-sm" onclick="toggleSidebar()">
+    <i class="fa-solid fa-bars"></i>
+</button>
+
+<!-- Sidebar -->
+<aside class="collapse-sidebar @Class" id="@Id">
+    @Body
+</aside>
+
+<script>
+
+    function adjustSidebarHeight() {
+        const navbar = document.querySelector('.top-row'); // Adjust selector based on your navbar
+        const sidebar = document.getElementById('@Id');
+
+        if (navbar && sidebar) {
+            const navbarHeight = navbar.offsetHeight;
+            sidebar.style.top = navbarHeight + "px";
+            sidebar.style.height = `calc(100vh - ${navbarHeight}px)`;
+        }
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('collapse-sidebar');
+        const toggleBtn = document.querySelector('.toggle-btn');
+        sidebar.classList.toggle('collapsed');
+        toggleBtn.classList.toggle('collapsed');
+    }
+</script>
+
+@code {
+    [Parameter]
+    public string? Id {get; set;}
+
+    [Parameter]
+    public string? Class {get; set;}
+    
+
+    
+}
