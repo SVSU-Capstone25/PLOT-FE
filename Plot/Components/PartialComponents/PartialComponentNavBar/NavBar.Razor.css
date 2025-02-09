@@ -8,26 +8,20 @@
     display: flex;
     transform: translateY(-50%); /* Adjust to perfectly center */
     border: 1px solid rgba(255, 255, 255, 0.1);
+    background: none; /* Ensure no background */
 }
 
 .nav {
     display: flex;
     flex-direction: row;
     align-items: center;
+    height: 100%; /* Ensure the nav fills the container vertically */
 }
-
-/* .nav-item {
-    display: flex;
-    align-items: center; 
-    font-size: 0.9rem;
-    padding-bottom: 0.5rem;
-} */
 
 .nav-item.ml-auto {
     margin-left: auto; /* Push this item to the far right */
 }
 
-/* Updated nav-link to display inline with icon after text */
 .nav-link {
     display: flex;
     align-items: center; /* Align text and icon vertically */
@@ -35,6 +29,11 @@
     position: relative; /* Ensure relative positioning for the nav link */
     font-size: 1rem; /* Adjust font size for readability */
     padding-right: 1rem; /* Space to the right for the icon */
+    color: #ffffff; /* Ensure text is white */
+    background: none; /* Remove background */
+    border: none; /* Remove border */
+    height: 100%; /* Ensure the link takes full height of the navbar */
+    line-height: 1rem; /* Adjust line-height to fit inside top bar */
 }
 
 /* Align icon immediately after text and add space */
@@ -46,8 +45,17 @@
 .nav-item {
     display: flex;
     align-items: center;
-    padding: 0.5rem 1rem;
+    padding: 0 1rem; /* Adjust padding to fit inside the top bar */
     font-size: 0.9rem;
+    height: 100%; /* Ensure the nav item takes up the full height */
+}
+
+/* Remove borders, backgrounds from the nav-item buttons */
+.nav-item button {
+    background: none; /* No background */
+    border: none; /* Remove border */
+    padding: 0; /* Remove padding */
+    color: inherit; /* Ensure color inherits from parent */
 }
 
 .nav-item i {
@@ -59,6 +67,7 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    height: 100%; /* Ensure the scrollable nav items fit in the top bar */
 }
 
 .navbar-toggler:checked ~ .nav-scrollable {
@@ -69,56 +78,9 @@
     background-color: rgba(255, 255, 255, 0.5);
 }
 
-/* .top-row {
-    min-height: 3.5rem;
-    background-color: rgba(0,0,0,0.4);
-    display: flex; 
-    align-items: center; 
-} */
-
-.navbar-brand {
-    font-size: 1.1rem;
-}
-
-.bi {
-    display: inline-block;
-    position: relative;
-    width: 1.25rem;
-    height: 1.25rem;
-    /* margin-right: 0.75rem; */
-    top: -1px;
-    background-size: cover;
-}
-
-.bi-store-nav-menu {
-    background-image: url("../Images/store.png");
-}
-
-.bi-user-nav-menu {
-    background-image: url("../Images/user.png");
-}
-
-.nav-item ::deep .nav-link {
-    color: #ffffff;
-    background: none;
-    border: none;
-    border-radius: 4px;
-    height: 2rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    line-height: 2rem;
-    width: 100%;
-}
-
-/* .nav-item ::deep a.active {
-    background-color: rgba(80, 80, 80, 0.37);
-    color: rgb(255, 255, 255);
-} */
-
+/* Ensure no background or outline on hover */
 .nav-item ::deep .nav-link:hover {
-    background-color: rgba(80,80,80,0.37);
+    background-color: rgba(80, 80, 80, 0.37);
     color: white;
 }
 
@@ -133,7 +95,7 @@
 
     .nav-scrollable {
         display: block;
-        height: 2rem;
+        height: 100%; /* Ensure the nav items take up the full height */
         align-items: center;
         flex-direction: row;
         justify-content: flex-start;
