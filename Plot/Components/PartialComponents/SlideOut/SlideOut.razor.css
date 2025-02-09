@@ -1,111 +1,60 @@
+/* 
+    Filename: SlideOut.css
+    Part of Project: PLOT
+
+    File Purpose: 
+    This is CSS that works specifically with the SlideOut partial component.
+
+    Program Purpose:
+    The purpose of PLOT is to allow users to easily create, manage,
+    and allocate floorsets for Plato's Closet.
+
+    Author: Andrew Kennedy (2/7/2025)
+
+*/
+
 
 .collapse-sidebar {
-  width: 500px;
-  background: #ffffff;
-  border-left: 1px solid #e5e7eb;
-  height: 100vh;
-  position: fixed;
-  right: 0;
-  top: 0;
-  transition: transform 0.3s;
-  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
-  overflow-y: auto;
-  z-index: 11;
+    width: 500px;
+    background: #ffffff;
+    border-left: 1px solid #e5e7eb;
+    height: 100vh;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transition: transform 0.3s;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
+    z-index: 11;
 }
 
 .collapse-sidebar.collapsed {
-  transform: translateX(100%);
+    transform: translateX(100%);
 }
 
 .toggle-btn {
-  position: fixed;
-  right: 499px;
-  padding: 2% 1%;
-  top: 20px;
-  z-index: 1000;
-  transition: right 0.3s;
-  background: #ffffff;
-  border-radius: 20px 0 0 20px;
-  box-shadow: -10px 0 10px 1px rgba(0,0,0,0.05);
-  border-right: none;
+    position: fixed;
+    right: 499px;
+    padding: 2% 1%;
+    top: 45%;
+    z-index: 1000;
+    transition: right 0.3s;
+    background: #ffffff;
+    border-radius: 20px 0 0 20px;
+    box-shadow: -10px 0 10px 1px rgba(0, 0, 0, 0.05);
+    border-right: none;
 }
 
 .toggle-btn:hover {
-  background: #ffffff;
-  border-right: none;
+    background: #ffffff;
+    border-right: none;
 }
 
 .toggle-btn.collapsed {
-  right: 0px;
+    right: 0px;
 
 }
 
 .toggle-btn.collapsed i {
-  rotate: 180deg;
+    rotate: 180deg;
 }
-
-
-
-
-/* body {
-  font-family: "Lato", sans-serif;
-}
-
-.sidebar {
-  height: 100%;
-  width: 0;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  background-color: #111;
-  overflow-x: hidden;
-  transition: 0.5s;
-  padding-top: 60px;
-}
-
-.sidebar a {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
-  display: block;
-  transition: 0.3s;
-}
-
-.sidebar a:hover {
-  color: #f1f1f1;
-}
-
-.sidebar .closebtn {
-  position: absolute;
-  top: 0;
-  right: 25px;
-  font-size: 36px;
-  margin-left: 50px;
-}
-
-.openbtn {
-  font-size: 20px;
-  cursor: pointer;
-  background-color: #111;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-}
-
-.openbtn:hover {
-  background-color: #444;
-}
-
-#main {
-  transition: margin-left .5s;
-  padding: 16px;
-}
-
-/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
-/* @media screen and (max-height: 450px) {
-  .sidebar {padding-top: 15px;}
-  .sidebar a {font-size: 18px;}
-} */
-
