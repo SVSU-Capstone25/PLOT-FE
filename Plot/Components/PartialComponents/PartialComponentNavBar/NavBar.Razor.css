@@ -25,7 +25,6 @@
 
 .nav-item.ml-auto {
     margin-left: auto; /* Push this item to the far right */
-    width: 100%; /* Ensures the item takes up the full width */
 }
 
 .nav-link {
