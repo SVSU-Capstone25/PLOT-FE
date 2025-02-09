@@ -11,7 +11,7 @@
     background: none; /* Ensure no background */
 }
 
-.nav-item button {
+.button {
     background: none;      /* Remove any background color */
     border: none;          /* Remove any borders */
     padding: 0;            /* Remove default padding */
