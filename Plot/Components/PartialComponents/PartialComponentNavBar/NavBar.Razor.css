@@ -4,9 +4,7 @@
     width: 3.5rem;
     height: 2.5rem;
     color: #1EA6A1;
-    /* position: absolute; */
     top: 50%; /* Position it vertically in the center */
-    /* right: 1rem; */
     display: flex;
     transform: translateY(-50%); /* Adjust to perfectly center */
     border: 1px solid rgba(255, 255, 255, 0.1);
