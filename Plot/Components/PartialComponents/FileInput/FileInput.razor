@@ -1,0 +1,68 @@
+
+<div class="dropArea @Class" id="@Id">
+    <div class="dropAreaText">
+        <i class="fa-solid fa-upload"></i>
+        <p>Drag and Drop</p>
+        <p>or</p>
+        <p>Select File</p> 
+        
+    </div>
+
+    <InputFile OnChange="FileUploaded"
+                @ondragenter="HandleDragEnter"
+                @ondragleave="HandleDragLeave"
+                 />
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string? Id {get; set; }
+
+    [Parameter]
+    public string? Class {get; set; }
+    
+
+    const int MAX_FILESIZE = 1000 * 1024; // 1 MB
+
+    private string FileName {get;set;}
+    private long FileSize {get;set;}
+    private string FileType {get;set;}
+
+    // support for drag/drop
+    string dropClass = string.Empty;
+    void HandleDragEnter()
+    {
+        dropClass = "dropAreaDrug";
+    }
+    void HandleDragLeave()
+    {
+        dropClass = string.Empty;
+    }
+
+    private async Task FileUploaded(InputFileChangeEventArgs e) {
+        IBrowserFile browserFile = e.File;
+
+        if (browserFile != null) 
+        {
+            
+            try 
+            {
+                Stream fileStream = browserFile.OpenReadStream(MAX_FILESIZE);
+                
+
+                
+            }
+            catch (Exception exception)
+            {
+
+            }
+
+        }
+    }
+}    using System.Reflection.Metadata;
+
+#line default
+#line hidden
+#nullable disable
