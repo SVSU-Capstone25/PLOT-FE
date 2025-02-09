@@ -17,7 +17,7 @@
     background: none;      /* Remove any background color */
     border: none;          /* Remove any borders */
     padding: 0;            /* Remove default padding */
-    color: inherit;        /* Inherit the text color from the parent */
+    color: white;        /* Inherit the text color from the parent */
     font: inherit;         /* Ensure the font is inherited */
     outline: none;         /* Remove any outline (may be appearing on focus) */
     cursor: pointer;      /* Make the cursor pointer when hovering */
@@ -51,6 +51,7 @@
 .nav-item {
     background: none;
     border: none;
+    color: white;
     display: flex;
     align-items: center;
     padding: 0 1rem;
@@ -98,6 +99,7 @@
 .nav-item {
     background: none;
     border: none;
+    color: white;
     display: flex;
     align-items: center;
     padding: 0 1rem; /* Adjust padding to fit inside the top bar */
@@ -110,12 +112,13 @@
     background: none; /* No background */
     border: none; /* Remove border */
     padding: 0; /* Remove padding */
-    color: inherit; /* Ensure color inherits from parent */
+    color: white; /* Ensure color inherits from parent */
 }
 
 .nav-item i {
     background: none;
     border: none;
+    color: white;
     margin-right: 0.5rem; /* Space between icon and text */
 }
 
