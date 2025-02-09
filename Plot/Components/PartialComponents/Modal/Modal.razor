@@ -1,0 +1,58 @@
+<!-- Filename: Modal.razor
+Part of Project: PLOT
+
+File Purpose:
+The purpose of this file is be a resubable modal component throughout
+the PLOT application. The title, ID, icon, color, body content,
+and footer buttons can be set dynamically through parameters.
+All modals will have a cancel button to close the modal.
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Danielle Smith (2/9/2025) -->
+
+<div class="modal fade" id="@Id" tabindex="-1" aria-labelledby="@Id + 'Label'" aria-hidden="true">
+    <div class="Modal @Class">
+        <div class="modal-content border-0">
+            <div class="modal-header @Variant">
+                <h5 class="modal-title" id="@Id + 'Label'"><i class="@Icon"></i> @Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @BodyContent
+            </div>
+            <div class="modal-footer">
+                <!-- cancel buttons for all modals -->
+                <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cancel</button>
+                @FooterContent
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } // modal title
+
+    [Parameter]
+    public string? Id { get; set; } // modal ID (nullable)
+
+    [Parameter]
+    // modal icon (font awesome icon - nullable)
+    public string? Icon { get; set; } 
+
+    [Parameter]
+    // modal color - defaults to "standard" if none is passed
+    public string? Variant { get; set; } = "standard"; 
+
+    [Parameter]
+    public string? Class { get; set; } // classes for the modal (nullable)
+
+    [Parameter]
+    public RenderFragment BodyContent { get; set; } // body content of the modal
+
+    [Parameter]
+    public RenderFragment FooterContent { get; set; } // footer buttons for the modal
+}

@@ -1,0 +1,34 @@
+/* Filename: Modal.razor
+Part of Project: PLOT
+
+File Purpose:
+This is CSS that works specifically with the modal component. 
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Danielle Smith (2/9/2025) */
+.standard {
+    background-color: var(--platos-blue);
+}
+
+.danger {
+    background-color: var(--cancel);
+}
+
+.success {
+    background-color: var(--success);
+}
+
+.warning {
+    background-color: var(--warning);
+}
+
+.modal-title {
+    color: white;
+}
+
+.btn-close {
+    filter: invert(1);
+}

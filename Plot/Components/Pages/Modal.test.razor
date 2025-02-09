@@ -1,0 +1,67 @@
+@page "/test/modal"
+
+<PageTitle>Modal</PageTitle>
+
+<!-- buttons just to open the modals - these are just normal bootstrap buttons for testing,
+any buttons in the final application will be using the button component made by us -->
+<button class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#standardModal">
+    Standard Modal
+</button>
+
+<button class="btn btn-danger text-white" data-bs-toggle="modal" data-bs-target="#dangerModal">
+    Danger Modal
+</button>
+
+<button class="btn btn-warning text-white" data-bs-toggle="modal" data-bs-target="#warningModal">
+    Warning Modal
+</button>
+
+<button class="btn btn-success text-white" data-bs-toggle="modal" data-bs-target="#successModal">
+    Success Modal
+</button>
+
+
+<!-- Stanard Modal -->
+<Modal Title="Test Modal" Id="standardModal" Class="modal-dialog">
+    <BodyContent>
+        <h4>Modal content</h4>
+        <img src="/img/platos_closet_logo.png">
+    </BodyContent>
+
+    <FooterContent>
+        <button type="button" class="btn btn-success text-white">Save changes</button>
+    </FooterContent>
+</Modal>
+
+<!-- Danger Modal -->
+<Modal Title="Test Danger Modal" Id="dangerModal" Variant="danger" Icon="fa-solid fa-x" Class="modal-dialog">
+    <BodyContent>
+        <h4>Modal content</h4>
+        <img src="/img/platos_closet_logo.png">
+    </BodyContent>
+
+    <FooterContent>
+    </FooterContent>
+</Modal>
+
+<!-- Warning Modal -->
+<Modal Title="Test Warning Modal" Id="warningModal" Variant="warning" Icon="fa-solid fa-triangle-exclamation" Class="modal-dialog">
+    <BodyContent>
+        <h4>Modal content</h4>
+        <img src="/img/platos_closet_logo.png">
+    </BodyContent>
+
+    <FooterContent>
+    </FooterContent>
+</Modal>
+
+<!-- Success Modal -->
+<Modal Title="Test Success Modal" Id="successModal" Variant="success" Icon="fa-solid fa-check" Class="modal-dialog">
+    <BodyContent>
+        <h4>Modal content</h4>
+        <img src="/img/platos_closet_logo.png">
+    </BodyContent>
+
+    <FooterContent>
+    </FooterContent>
+</Modal>
