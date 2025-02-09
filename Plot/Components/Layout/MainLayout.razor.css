@@ -17,13 +17,13 @@ main {
     border-bottom: 1px solid #d6d5d5;
     height: 3.5rem;
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     align-items: center;
 }
 
     .top-row ::deep a, .top-row ::deep .btn-link {
         white-space: nowrap;
-        margin-left: .5rem;
+        /* margin-left: .5rem; */
         text-decoration: none;
     }
 
