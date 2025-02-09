@@ -24,6 +24,7 @@ main {
 
     .top-row ::deep a, .top-row ::deep .btn-link {
         white-space: nowrap;
+        display: flex;
         /* margin-left: .5rem; */
         text-decoration: none;
     }
