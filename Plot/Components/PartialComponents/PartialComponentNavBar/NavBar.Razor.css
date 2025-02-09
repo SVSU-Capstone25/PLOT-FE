@@ -11,7 +11,7 @@
     background: none; /* Ensure no background */
 }
 
-.button {
+.nav-item button {
     background: none;      /* Remove any background color */
     border: none;          /* Remove any borders */
     padding: 0;            /* Remove default padding */
@@ -19,6 +19,37 @@
     font: inherit;         /* Ensure the font is inherited */
     outline: none;         /* Remove any outline (may be appearing on focus) */
     cursor: pointer;      /* Make the cursor pointer when hovering */
+}
+
+.nav-item button:focus {
+    outline: none;         /* Remove the focus outline */
+}
+
+.nav-item button:hover {
+    background-color: rgba(80, 80, 80, 0.37); /* Optional hover effect */
+}
+
+/* Additional button styling for alignment and appearance */
+.nav-link {
+    display: flex;
+    align-items: center; /* Align text and icon vertically */
+    justify-content: flex-start;
+    position: relative;
+    font-size: 1rem;
+    padding-right: 1rem;
+    color: #ffffff;
+    background: none;
+    border: none;
+    height: 100%;
+    line-height: 1rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    font-size: 0.9rem;
+    height: 100%;
 }
 
 .nav {
