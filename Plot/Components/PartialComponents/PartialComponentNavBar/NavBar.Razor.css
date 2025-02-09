@@ -1,4 +1,4 @@
-.navbar-toggler {
+.navbar-toggler { 
     appearance: none;
     cursor: pointer;
     width: 3.5rem;
@@ -27,37 +27,27 @@
     margin-left: auto; /* Push this item to the far right */
 }
 
-/* .nav-link {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    line-height: 2rem;
-    width: 100%;
-} */
-
+/* Updated nav-link to display inline with icon after text */
 .nav-link {
     display: flex;
+    align-items: center; /* Align text and icon vertically */
     justify-content: flex-start;
     position: relative; /* Ensure relative positioning for the nav link */
-    display: flex;
-    line-height: 2rem;
-    width: 100%;
-    align-items: center; /*Align text and icon vertically*/
-    padding-left: 2rem; /* Space to the left for the icon */
+    font-size: 1rem; /* Adjust font size for readability */
+    padding-right: 1rem; /* Space to the right for the icon */
 }
 
+/* Align icon immediately after text and add space */
 .nav-link i {
-    position: absolute; /* Position the icon behind the text */
-    left: 0; /* Align icon to the left of the link */
+    margin-left: 0.5rem; /* Space between text and icon */
     font-size: 1.2rem; /* Adjust size of the icon */
-    z-index: -1; /* Ensure icon is behind the text */
 }
 
 .nav-item {
     display: flex;
     align-items: center;
     padding: 0.5rem 1rem;
-
+    font-size: 0.9rem;
 }
 
 .nav-item i {

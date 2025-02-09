@@ -1,33 +1,30 @@
 <div class="nav-scrollable" id="@NavBarID" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="nav flex-row">
-        <div class="nav-item px-3">
+        <button class="nav-item px-3">
             <NavLink class="nav-link" href="stores">
-                <i class="fa-solid fa-bag-shopping"></i> Stores
+                Stores <i class="fa-solid fa-bag-shopping"></i>
             </NavLink>
-        </div>
+        </button>
 
-        <div class="nav-item px-3">
+        <button class="nav-item px-3">
             <NavLink class="nav-link" href="users">
-                <i class="fa-solid fa-shirt"></i> Users
+                Users <i class="fa-solid fa-shirt"></i>
             </NavLink>
-        </div>
-        <div class="nav-item px-3">
+        </button>
+        <button class="nav-item px-3">
             <NavLink class="nav-link" href="help">
-                <i class="fa-solid fa-question"></i> Help
+                Help <i class="fa-solid fa-question"></i>
             </NavLink>
-        </div>
-        <div class="nav-item px-3 ml-auto">
+        </button>
+        <button class="nav-item px-3 ml-auto">
             <NavLink class="nav-link" href="logout">
-                <span aria-hidden="true"></span> Logout
+                Logout <span aria-hidden="true"></span>
             </NavLink>
-        </div>
+        </button>
     </nav>
 </div>
 
 @code {
-    // all of these are parameters to set up the modal dynamically
     [Parameter]
     public string NavBarID { get; set; }
-
 }
-
