@@ -1,4 +1,4 @@
-<div class="nav-scrollable" id="@NavBarID" onclick="document.querySelector('.navbar-toggler').click()">
+@* <div class="nav-scrollable" id="@NavBarID" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="nav flex-row">
         <button class="nav-item px-3">
             <NavLink class="nav-link" href="stores">
@@ -21,6 +21,37 @@
                 Logout <span aria-hidden="true"></span>
             </NavLink>
         </button>
+    </nav>
+</div>
+
+@code {
+    [Parameter]
+    public string NavBarID { get; set; }
+} *@
+
+<div class="nav-scrollable" id="@NavBarID" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="nav flex-row">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="stores">
+                Stores <i class="fa-solid fa-bag-shopping"></i>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="users">
+                Users <i class="fa-solid fa-shirt"></i>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="help">
+                Help <i class="fa-solid fa-question"></i>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3 ml-auto">
+            <NavLink class="nav-link" href="logout">
+                Logout <span aria-hidden="true"></span>
+            </NavLink>
+        </div>
     </nav>
 </div>
 

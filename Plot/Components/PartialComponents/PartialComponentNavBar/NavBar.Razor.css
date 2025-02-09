@@ -1,57 +1,8 @@
-.navbar-toggler { 
-    background: none;
-    border: none;
-    appearance: none;
-    cursor: pointer;
-    width: 3.5rem;
-    height: 2.5rem;
-    color: #1EA6A1;
-    top: 50%; /* Position it vertically in the center */
-    display: flex;
-    transform: translateY(-50%); /* Adjust to perfectly center */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: none; /* Ensure no background */
-}
-
-.nav-item button {
-    background: none;      /* Remove any background color */
-    border: none;          /* Remove any borders */
-    padding: 0;            /* Remove default padding */
-    color: white;        /* Inherit the text color from the parent */
-    font: inherit;         /* Ensure the font is inherited */
-    outline: none;         /* Remove any outline (may be appearing on focus) */
-    cursor: pointer;      /* Make the cursor pointer when hovering */
-}
-
-.nav-item button:focus {
-    outline: none;         /* Remove the focus outline */
-}
-
-.nav-item button:hover {
-    background-color: rgba(80, 80, 80, 0.37); /* Optional hover effect */
-}
-
-/* Additional button styling for alignment and appearance */
-.nav-link {
-    background: none;
-    border: none;
-    display: flex;
-    align-items: center; /* Align text and icon vertically */
-    justify-content: flex-start;
-    position: relative;
-    font-size: 1rem;
-    padding-right: 1rem;
-    color: #ffffff;
-    background: none;
-    border: none;
-    height: 100%;
-    line-height: 1rem;
-}
-
+/* Ensure no background or borders for nav items */
 .nav-item {
     background: none;
     border: none;
-    color: white;
+    color: white; /* Set text color */
     display: flex;
     align-items: center;
     padding: 0 1rem;
@@ -59,104 +10,63 @@
     height: 100%;
 }
 
-.nav {
-    background: none;
-    border: none;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 100%; /* Ensure the nav fills the container vertically */
-}
-
-.nav-item.ml-auto {
-    margin-left: auto; /* Push this item to the far right */
-}
-
+/* Style for NavLink */
 .nav-link {
     background: none;
     border: none;
     display: flex;
-    align-items: center; /* Align text and icon vertically */
-    justify-content: flex-start;
-    position: relative; /* Ensure relative positioning for the nav link */
-    font-size: 1rem; /* Adjust font size for readability */
-    padding-right: 1rem; /* Space to the right for the icon */
-    color: #ffffff; /* Ensure text is white */
-    background: none; /* Remove background */
-    border: none; /* Remove border */
-    height: 100%; /* Ensure the link takes full height of the navbar */
-    line-height: 1rem; /* Adjust line-height to fit inside top bar */
-}
-
-/* Align icon immediately after text and add space */
-.nav-link i {
-    background: none;
-    border: none;
-    color: white;
-    margin-left: 0.5rem; /* Space between text and icon */
-    font-size: 1.2rem; /* Adjust size of the icon */
-}
-
-.nav-item {
-    background: none;
-    border: none;
-    color: white;
-    display: flex;
     align-items: center;
-    padding: 0 1rem; /* Adjust padding to fit inside the top bar */
-    font-size: 0.9rem;
-    height: 100%; /* Ensure the nav item takes up the full height */
+    justify-content: flex-start;
+    color: white;  /* Text color */
+    padding-right: 1rem;
+    text-decoration: none; /* Remove default underline from links */
 }
 
-/* Remove borders, backgrounds from the nav-item buttons */
-.nav-item button {
-    background: none; /* No background */
-    border: none; /* Remove border */
-    padding: 0; /* Remove padding */
-    color: white; /* Ensure color inherits from parent */
+/* Style for icons inside NavLink */
+.nav-link i {
+    margin-left: 0.5rem; /* Space between text and icon */
+    font-size: 1.2rem;
 }
 
-.nav-item i {
-    background: none;
-    border: none;
-    color: white;
-    margin-right: 0.5rem; /* Space between icon and text */
+/* Remove focus outline from button or link when clicked or focused */
+.nav-item button:focus, .nav-link:focus {
+    outline: none; /* Remove blue outline */
 }
 
+/* Hover state for nav links and buttons */
+.nav-item button:hover, .nav-link:hover {
+    background-color: rgba(80, 80, 80, 0.37); /* Optional hover effect */
+    color: white; /* Ensure text stays white on hover */
+}
+
+/* Specific focus on navbar-toggler */
+.navbar-toggler:focus {
+    outline: none; /* Remove any blue outline on focus */
+}
+
+/* Reset styles for nav-scrollable to ensure no background or border */
 .nav-scrollable {
-    background: none;
-    border: none;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    height: 100%; /* Ensure the scrollable nav items fit in the top bar */
+    height: 100%;
+    background: none;
+    border: none;
 }
 
-.navbar-toggler:checked ~ .nav-scrollable {
-    display: block;
+/* Ensure navbar-toggler is properly styled */
+.navbar-toggler {
+    background: none;
+    border: none;
+    appearance: none;
+    cursor: pointer;
+    width: 3.5rem;
+    height: 2.5rem;
+    color: #1EA6A1;
+    top: 50%;
+    display: flex;
+    transform: translateY(-50%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.navbar-toggler:checked {
-    background-color: rgba(255, 255, 255, 0.5);
-}
-
-/* Ensure no background or outline on hover */
-.nav-item ::deep .nav-link:hover {
-    background-color: rgba(80, 80, 80, 0.37);
-    color: white;
-}
-
-@media (min-width: 641px) {
-    .navbar-toggler {
-        display: none;
-    }
-
-    .nav-scrollable {
-        display: block;
-        height: 100%; /* Ensure the nav items take up the full height */
-        align-items: center;
-        flex-direction: row;
-        justify-content: flex-start;
-    }
-}
