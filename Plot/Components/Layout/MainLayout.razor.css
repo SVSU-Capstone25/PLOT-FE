@@ -17,7 +17,8 @@ main {
     border-bottom: 1px solid #d6d5d5;
     height: 3.5rem;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
+    /* justify-content: space-between; */
     align-items: center;
 }
 
