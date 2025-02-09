@@ -15,16 +15,15 @@ main {
 .top-row {
     background-color: #1EA6A1;
     border-bottom: 1px solid #d6d5d5;
-    /* justify-content: flex-end; */
     height: 3.5rem;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
 }
 
     .top-row ::deep a, .top-row ::deep .btn-link {
         white-space: nowrap;
-        margin-left: 1.5rem;
+        margin-left: .5rem;
         text-decoration: none;
     }
 
