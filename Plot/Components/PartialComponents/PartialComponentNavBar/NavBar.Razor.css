@@ -11,6 +11,16 @@
     background: none; /* Ensure no background */
 }
 
+.nav-item button {
+    background: none;      /* Remove any background color */
+    border: none;          /* Remove any borders */
+    padding: 0;            /* Remove default padding */
+    color: inherit;        /* Inherit the text color from the parent */
+    font: inherit;         /* Ensure the font is inherited */
+    outline: none;         /* Remove any outline (may be appearing on focus) */
+    cursor: pointer;      /* Make the cursor pointer when hovering */
+}
+
 .nav {
     display: flex;
     flex-direction: row;
