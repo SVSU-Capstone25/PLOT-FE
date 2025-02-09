@@ -18,6 +18,7 @@ main {
     /* justify-content: flex-end; */
     height: 3.5rem;
     display: flex;
+    justify-content: flex-start;
     align-items: center;
 }
 
