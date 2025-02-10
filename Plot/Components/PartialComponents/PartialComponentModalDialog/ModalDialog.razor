@@ -28,16 +28,16 @@
 @code {
     // all of these are parameters to set up the modal dynamically
     [Parameter]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     [Parameter]
-    public string ModalID { get; set; }
+    public string? ModalID { get; set; }
 
     [Parameter]
-    public string ModalLabel { get; set; }
+    public string? ModalLabel { get; set; }
 
     [Parameter]
-    public string ModalSize { get; set; }
+    public string? ModalSize { get; set; }
 
     [Parameter]
     public RenderFragment BodyContent { get; set; }
