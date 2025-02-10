@@ -1,0 +1,50 @@
+<div id="@Id" class="@Class">
+    @Label
+    <input 
+        type="text" 
+        class="form-control @ErrorClass"
+        @bind="@Value" 
+        @onblur="ValidateInput"
+    />
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="error-message">@ErrorMessage</div>
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string>? ValueChanged { get; set; }
+
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    private string? ErrorClass => string.IsNullOrEmpty(ErrorMessage) ? "" : "error";
+
+    private async Task ValidateInput()
+    {
+        if (string.IsNullOrEmpty(Value))
+        {
+            ErrorMessage = "This field is required.";
+        }
+        else
+        {
+            ErrorMessage = string.Empty;
+        }
+
+        await ValueChanged.InvokeAsync(Value);
+    }
+}
