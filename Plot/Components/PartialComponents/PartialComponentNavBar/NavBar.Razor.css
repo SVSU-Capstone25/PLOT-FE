@@ -27,6 +27,7 @@
 .nav-link i {
     margin-left: 0.5rem; /* Space between text and icon */
     font-size: 1.2rem;
+    color: white;
 }
 
 /* Remove focus outline from button or link when clicked or focused */
