@@ -18,8 +18,8 @@
     height: 100%;
 }
 
-.navbar-right {
-    margin-left: auto;
+.nav-item.ml-auto {
+    margin-left: auto; /* Push this item to the far right */
 }
 
 .platos-blue {
