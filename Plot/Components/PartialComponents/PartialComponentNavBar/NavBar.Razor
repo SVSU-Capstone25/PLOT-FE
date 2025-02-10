@@ -1,31 +1,44 @@
 <div class="@Class" id="@Id">
     <nav class="nav flex-row">
-        <div class="nav-item px-3">
-            <a class="nav-link" href="stores">
-                Stores <i class="fa-solid fa-bag-shopping"></i>
-            </a>
-        </div>
+        @if (ShowStores)
+        {
+            <div class="nav-item px-3">
+                <a class="nav-link" href="stores">
+                    Stores <i class="fa-solid fa-bag-shopping"></i>
+                </a>
+            </div>
+        }
 
-        <div class="nav-item px-3">
-            <a class="nav-link" href="users" >
-                Users <i class="fa-solid fa-shirt"></i>
-            </a>
-        </div>
-        <div class="nav-item px-3">
-            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#helpModal">
-                Help <i class="fa-solid fa-question"></i>
-            </a>
-        </div>
-        <div class="nav-item px-3 ml-auto">
-            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                Logout
-            </a>
-        </div>
+        @if (ShowUsers)
+        {
+            <div class="nav-item px-3">
+                <a class="nav-link" href="users" >
+                    Users <i class="fa-solid fa-shirt"></i>
+                </a>
+            </div>
+        }
+
+        @if (ShowHelp)
+        {
+            <div class="nav-item px-3">
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#helpModal">
+                    Help <i class="fa-solid fa-question"></i>
+                </a>
+            </div>
+        }
+
+        @if (ShowLogout)
+        {
+            <div class="nav-item px-3 ml-auto">
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                    Logout
+                </a>
+            </div>
+        }
     </nav>
 </div>
 
-<ModalDialog Title="Help Page" ModalID="helpModal" 
-ModalLabel="helpModalLabel" ModalSize="">
+<ModalDialog Title="Help Page" ModalID="helpModal" ModalLabel="helpModalLabel" ModalSize="">
     <BodyContent>
         <h4>HELP</h4>
         <p>Take a break and grab a beer</p>
@@ -36,8 +49,7 @@ ModalLabel="helpModalLabel" ModalSize="">
     </FooterContent>
 </ModalDialog>
 
-<ModalDialog Title="Confirm Logout" ModalID="logoutModal" 
-ModalLabel="logoutModalLabel" ModalSize="">
+<ModalDialog Title="Confirm Logout" ModalID="logoutModal" ModalLabel="logoutModalLabel" ModalSize="">
     <BodyContent>
         <h4>Are you SURE you want to logout</h4>
         <p>If so, type LOGOUT below.</p>
@@ -56,4 +68,17 @@ ModalLabel="logoutModalLabel" ModalSize="">
 
     [Parameter]
     public string? Class { get; set; }
+
+    // Control visibility of the navigation items
+    [Parameter]
+    public bool ShowStores { get; set; } = true;
+
+    [Parameter]
+    public bool ShowUsers { get; set; } = true;
+
+    [Parameter]
+    public bool ShowHelp { get; set; } = true;
+
+    [Parameter]
+    public bool ShowLogout { get; set; } = true;
 }
