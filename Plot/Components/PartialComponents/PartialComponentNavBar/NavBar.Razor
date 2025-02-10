@@ -12,19 +12,40 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="help">
+            <NavLink class="nav-link" data-bs-toggle="modal" data-bs-target="#helpModal">
                 Help <i class="fa-solid fa-question"></i>
             </NavLink>
         </div>
         <div class="nav-item px-3 ml-auto">
-            <NavLink class="nav-link" href="logout">
+            <NavLink class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal">
                 Logout <span aria-hidden="true"></span>
             </NavLink>
         </div>
     </nav>
 </div>
 
-@code {
-    [Parameter]
-    public string NavBarID { get; set; }
-}
+<ModalDialog Title="Help Page" ModalID="helpModal" 
+ModalLabel="helpModalLabel" ModalSize="">
+    <BodyContent>
+        <h4>HELP</h4>
+        <p>Take a break and grab a beer</p>
+    </BodyContent>
+
+    <FooterContent>
+        <button type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
+    </FooterContent>
+</ModalDialog>
+
+<ModalDialog Title="Confirm Logout" ModalID="logoutModal" 
+ModalLabel="logoutModalLabel" ModalSize="">
+    <BodyContent>
+        <h4>Are you SURE you want to logout</h4>
+        <p>If so, type LOGOUT below.</p>
+        <input type="text" id="confirmDelete" class="form-control" placeholder="Type LOGOUT here">
+    </BodyContent>
+
+    <FooterContent>
+        <button type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn platos-blue text-white">Yes, Logout</button>
+    </FooterContent>
+</ModalDialog>
