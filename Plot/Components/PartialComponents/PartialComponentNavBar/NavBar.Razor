@@ -1,4 +1,4 @@
-<div class="nav-scrollable">
+<div class="nav-scrollable" id="@ID" class="@Class">
     <nav class="nav flex-row">
         <div class="nav-item px-3">
             <a class="nav-link" href="stores">
@@ -49,3 +49,13 @@ ModalLabel="logoutModalLabel" ModalSize="">
         <button type="button" class="btn platos-blue text-white" href="/logout">Yes, Logout</button>
     </FooterContent>
 </ModalDialog>
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    ...
+}
