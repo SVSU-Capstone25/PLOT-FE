@@ -41,6 +41,9 @@
     padding-right: 1rem;
     text-decoration: none; /* Remove default underline from links */
 }
+.nav {
+    display: flex;
+}
 
 /* Style for icons inside NavLink */
 .nav-link i {
