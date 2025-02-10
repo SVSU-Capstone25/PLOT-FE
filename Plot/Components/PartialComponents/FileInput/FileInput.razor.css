@@ -17,9 +17,12 @@
     align-self: center;
 }
 
+.has-file {
+    width: 100%;
+}
+
 .has-file i {
     align-self: center;
-    width: 100%;
 }
 
 .file-input-zone {

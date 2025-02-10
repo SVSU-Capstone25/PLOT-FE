@@ -1,0 +1,23 @@
+@page "/test-fileinput"
+@rendermode InteractiveServer
+@using Plot.Components.PartialComponents.FileInput
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<FileInput OnFileSelected="HandleFileSelected"></FileInput>
+
+@if (selectedFile != null) {
+    <p>@selectedFile.Name</p>
+}
+
+@code {
+    private IBrowserFile selectedFile;
+    private void HandleFileSelected(IBrowserFile file) 
+    {
+        selectedFile = file;
+    }
+}
