@@ -1,3 +1,10 @@
+.modal-backdrop {
+    z-index: 1040; /* Default z-index for backdrop */
+}
+
+.modal {
+    z-index: 1050; /* Ensure the modal has a higher z-index than the backdrop */
+}
 
 /* Ensure no background or borders for nav items */
 .nav-item {
