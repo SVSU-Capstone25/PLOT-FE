@@ -20,3 +20,10 @@ Author: Danielle Smith (2/4/2025) */
 .btn-close {
     filter: invert(1);
 }
+.modal-backdrop {
+    z-index: 1040 !important; /* Make sure the backdrop is below the modal */
+}
+
+.modal-content {
+    z-index: 1050; /* Ensure the modal content has a higher z-index */
+}
