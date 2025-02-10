@@ -19,7 +19,8 @@
 }
 
 .nav-item.ml-auto {
-    margin-left: auto; /* Push this item to the far right */
+    margin-left: auto;
+    justify-content: flex-end; /* Push this item to the far right */
 }
 
 .platos-blue {
@@ -45,6 +46,11 @@
     display: flex;
     justify-content: flex-end;
 }
+
+.fa {
+    position: relative;
+    z-index: 1000;  /* Ensure icons are always on top */
+  }
 
 /* Style for icons inside NavLink */
 .nav-link i {
