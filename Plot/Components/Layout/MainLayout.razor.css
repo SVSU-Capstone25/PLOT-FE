@@ -22,18 +22,18 @@ main {
     align-items: center;
 }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
+    .top-row a, .top-row .btn-link {
         white-space: nowrap;
         display: flex;
         /* margin-left: .5rem; */
         text-decoration: none;
     }
 
-    .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
+    .top-row a:hover, .top-row .btn-link:hover {
         text-decoration: underline;
     }
 
-    .top-row ::deep a:first-child {
+    .top-row a:first-child {
         overflow: hidden;
         text-overflow: ellipsis;
     }

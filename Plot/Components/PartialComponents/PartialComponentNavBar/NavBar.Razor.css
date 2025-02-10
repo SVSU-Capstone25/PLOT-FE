@@ -43,6 +43,7 @@
 }
 .nav {
     display: flex;
+    justify-content: flex-end;
 }
 
 /* Style for icons inside NavLink */
