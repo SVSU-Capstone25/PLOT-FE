@@ -48,6 +48,9 @@
     background-color: rgba(80, 80, 80, 0.37); /* Optional hover effect */
     color: white; /* Ensure text stays white on hover */
 }
+a {
+    cursor: pointer;
+}
 
 /* Specific focus on navbar-toggler */
 .navbar-toggler:focus {
