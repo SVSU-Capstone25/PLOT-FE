@@ -1,0 +1,53 @@
+<div id="progress-container @ID" class="row @Class">
+    <div class="col-sm-4">
+        @mainLabel
+    </div>
+
+    <div id="progress-container-text">
+        <div id="progress-container-text-align-center">@barLabel</div>
+    </div>
+    <div id="progress-bar" style="width: @barProgress%; background-color: @barColor;"></div>
+</div>
+
+@code {
+    //ID assigned to this component.
+    [Parameter]
+    public String? ID {get; set;} = "";
+
+    [Parameter]
+    public String? Class {get; set;} = "";
+
+    //Text to display to the left of the progress bar
+    [Parameter]
+    public String mainLabel {get; set;} = "Main Label";
+
+    //Path to the icon to display next to the progress bar.
+    [Parameter]
+    public String iconPath {get; set;} = "";
+
+    //Text to display inside the progress bar.
+    [Parameter]
+    public String barLabel {get; set;} = "Bar Label";
+
+    //Amount of progress in the progress bar. 
+    //0 <= barProgress <= 100.
+    [Parameter]
+    public int barProgress {get; set;} = 50; 
+
+    //PROGRESS BAR COLOR
+    [Parameter]
+    public String barColor {get; set;} = "aliceblue";
+
+    //Progress Bar MapProgress function.
+    //Takes two inputs, max value, and current value
+    //Interpolates 0 -> currentValue -> maxValue into the range 0 -> 100
+    //Updates the progress bar value to the range 0 -> 100.
+    //Returns the new progress bar value.
+    public int mapProgress(int maxValue, int currentValue)
+    {
+        int newProgress = (int) Single.Lerp(0f, 100f, currentValue / maxValue);
+        newProgress = Math.Clamp(newProgress,0,100);
+        barProgress = newProgress;
+        return barProgress;
+    }
+}
