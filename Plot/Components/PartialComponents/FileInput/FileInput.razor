@@ -1,121 +1,164 @@
 
+@inject IJSRuntime JS
 @using Toolbelt.Blazor.FileDropZone
+@inject ILogger<FileInput> Logger
 
-<div class="drop-zone-area">
-    <FileDropZone class="drop-zone">
-        <p><i class="fa-solid fa-upload"></i></p>
-        <p>Drag and Drop</p>
-        <p>or</p>
-        <label for="file-upload" class="load-files-label">Select File</label>
-        <div class="test">
-            <InputFile OnChange="FilesDropped" id="file-upload" />
+@rendermode InteractiveServer
+
+<div class="file-input-zone d-flex @Class" id="@Id">
+    @if (string.IsNullOrEmpty(Text))
+    {
+        <div class="no-file d-flex">
+            <p><i class="fa-solid fa-upload"></i></p>
+            <p>Drag and Drop</p>
+            <p>or</p>
+            <label for="file-upload" class="load-files-label">Select File</label>
+            <div class="file-select">
+                <InputFile id="file-upload" OnChange="LoadFile"/>
+            </div>
         </div>
+    }
+    else 
+    {
+        <div class="has-file d-flex flex">         
+            <i class="fa-regular fa-file"></i>
+            <p class="file-name">@Text</p>
+            <button class="remove-file-btn ms-auto" @onclick="RemoveFile" >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    }
+    
+    
+    
+</div>
+            
+@* <script>
+    var form = document.querySelector('.file-input-zone');
+    var dropZone = document.querySelector('.no-file');
+    var fileBlockZone = document.querySelector('.has-file')
+    var fileBlockText = document.querySelector('.file-name');
+    var file;
+
+    function showDropZone() {
+        dropZone.style.visibility = "visible";
+    }
+    function hideDropZone() {
+        dropZone.style.visibility = "hidden";
+    }
+
+    function showFileBlock() {
+        fileBlockZone.style.visibility = "visible";
+    }
+
+    function hideFileBlock() {
+        fileBlockZone.style.visibility = "hidden";
+    }
+
+    function allowDrag(e) {
+        if (true) {  // Test that the item being dragged is a valid one
+            e.dataTransfer.dropEffect = 'copy';
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        hideDropZone();
+        showFileBlock();
+
+        if (e.dataTransfer.files[0]) {
+            file = e.dataTransfer.files[0];
+            fileBlockText.textContent = file;
+
+            var event = document.createEvent('HTMLEvents');
+            event.initEvent('submit',true,false);
+            form.dispatchEvent(event);
+        }
+
+    }
+
+    // 1
+    window.addEventListener('dragenter', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        showDropZone();
+        
+    });
+
+    form.addEventListener('submit', function(e) {
+        if (file) {
+            var data = new FormData(form);
+            data.append()
+        }
+    });
+
+    // 2
+    dropZone.addEventListener('dragenter', allowDrag);
+    dropZone.addEventListener('dragover', allowDrag);
+
+    // 3
+    dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        hideDropZone();
+        
+    });
+
+    // 4
+    dropZone.addEventListener('drop', handleDrop); 
+</script>*@
+@code {
+
+    [Parameter]
+    public string? Class {get;set;}
+
+    [Parameter]
+    public string? Id {get;set;}
+
+    [Parameter]
+    public EventCallback<IBrowserFile> OnFileSelected {get;set;}
+
+    private IBrowserFile? LoadedFile;
+    private string? Text;
+    
+    private bool isLoading;
+
+    const int MAX_ALLOWED_SIZE = 1000 * 1024;
+    private async Task LoadFile(InputFileChangeEventArgs e)    
+    {
+       isLoading = true;
+
+        try
+        {
+            LoadedFile = e.File;
+
+            Text = LoadedFile.Name;
+
+            await OnFileSelected.InvokeAsync(LoadedFile);
+
+            await InvokeAsync(StateHasChanged);
             
 
-    </FileDropZone>
-</div>
-
-
-@code {
-    void FilesDropped(InputFileChangeEventArgs e)
-    {
-        foreach(var file in e.GetMultipleFiles())
-        {
-            Stream stream = file.OpenReadStream(maxAllowedSize: 10000000);
-            // TO DO: do whatever you need with the file
-            stream.Close();
         }
+        catch (Exception ex)
+        {
+            Logger.LogError("File: {FileName} Error: {Error}", 
+                e.File.Name, ex.Message);
+        }
+    
+
+        isLoading = false;
     }
+    
+
+
+    private async Task RemoveFile() {
+        Text = "";
+        LoadedFile = null;
+        await InvokeAsync(StateHasChanged);
+    }
+    
 }
-
-@* @inject IJSRuntime JSRuntime
-
-<div id="dropZone" class="drop-zone">
-    <p>Drag and drop Excel files here, or click to upload</p>
-    <input type="file" @ref="fileInput" @onchange="FileSelected" accept=".xlsx,.xls" hidden />
-</div>
-
-@if (uploadedFile != null)
-{
-    <p>Uploaded File: @uploadedFile.Name (@uploadedFile.Size bytes)</p>
-}
-
-<script>
-    window.initializeDragDrop = (dotnetHelper) => {
-        const dropZone = document.getElementById("dropZone");
-        console.log("hi");
-
-        if (!dropZone) return;
-
-        document.addEventListener("dragover", (event) => {
-            event.preventDefault();
-        });
-
-        document.addEventListener("drop", (event) => {
-            event.preventDefault();
-        });
-
-        dropZone.addEventListener("dragover", (event) => {
-            event.preventDefault();
-            dropZone.classList.add("drag-over");
-        });
-
-        dropZone.addEventListener("dragleave", () => {
-            dropZone.classList.remove("drag-over");
-        });
-
-        dropZone.addEventListener("drop", async (event) => {
-            event.preventDefault();
-            dropZone.classList.remove("drag-over");
-
-            let files = event.dataTransfer.files;
-            if (files.length > 0) {
-                await dotnetHelper.invokeMethodAsync("DropFile");
-            }
-        });
-    };
-
-    console.log("hi")
-</script>
-
-@code {
-    private ElementReference fileInput;
-    private IBrowserFile uploadedFile;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            wait6
-            await JSRuntime.InvokeVoidAsync("initializeDragDrop", DotNetObjectReference.Create(this));
-        }
-    }
-
-    [JSInvokable]
-    public async Task DropFile()
-    {
-        var files = await JSRuntime.InvokeAsync<IReadOnlyList<IBrowserFile>>("getDroppedFiles");
-        if (files?.Count > 0)
-        {
-            uploadedFile = files[0]; // Only take the first file
-            await ProcessFile(uploadedFile);
-        }
-        StateHasChanged();
-    }
-
-    private async Task FileSelected(ChangeEventArgs e)
-    {
-        var file = ((IBrowserFile[])e.Value)[0];
-        uploadedFile = file;
-        await ProcessFile(uploadedFile);
-    }
-
-    private async Task ProcessFile(IBrowserFile file)
-    {
-        if (file != null)
-        {
-            using var stream = file.OpenReadStream();
-            Console.WriteLine($"Processing {file.Name}");
-        }
-    }
-} *@

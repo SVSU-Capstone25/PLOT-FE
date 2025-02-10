@@ -1,40 +1,4 @@
-::deep .drop-zone {
-    border: 2px dashed gray;
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: lightgray;
-    font-size: 1.5rem;
-    cursor: pointer;
-    position: relative;
-    min-height: 150px;
-    flex-direction: column;
-}
-::deep .drop-zone.hover {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-
-}
-
-.drop-zone {
-    border: 2px dashed gray;
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: lightgray;
-    font-size: 1.5rem;
-    cursor: pointer;
-    position: relative;
-    min-height: 150px;
-}
-
-.test {
-    position: absolute;
+.file-select {
     width: 100%;
     height: 100%;
     opacity: 0;
@@ -42,65 +6,49 @@
     display: none;
 }
 
-.drop-zone label {
-    border: 1px solid #ccc;
-    display: inline-block;
-    padding: 6px 12px;
-    cursor: pointer;
+.no-file {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.drop-zone p, .drop-zone label {
-    text-align: center;
+.file-name {
+    margin: 0 2rem;
+    align-self: center;
+}
+
+.has-file i {
+    align-self: center;
+    width: 100%;
 }
 
 .file-input-zone {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: blue;
-    color: white;
-    cursor: pointer;
-    position: relative;
-    width: 120px;
-    height: 30px;
-}
-
-    .file-input-zone:hover {
-        background-color: lightblue;
-    }
-
-    
-
-/* .dropArea {
     border: 2px dashed gray;
     padding: 10px;
-    display: flex;
     align-items: center;
     justify-content: center;
     background-color: lightgray;
     font-size: 1.5rem;
-    cursor: pointer;
     position: relative;
     min-height: 150px;
+    flex-direction: column;
 }
 
-    .dropArea:hover {
-        background-color: antiquewhite;
-        color: #333;
-    }
-
-    .dropArea input[type=file] {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        cursor: pointer;
-    }
-
-.dropAreaDrug {
-    background-color: darkgray;
+label.load-files-label {
+    color: dodgerblue;
+    cursor: pointer;
 }
 
-.dropArea p {
-    text-align: center;
-} */
+    
+.remove-file-btn {
+    padding: 5px 5px;
+    background: none;
+    border: none;
+    border-radius: 5px;
+
+}
+
+    .remove-file-btn:hover {
+        background-color:lightcoral;
+        -webkit-transition: background-color 100ms linear;
+    }
