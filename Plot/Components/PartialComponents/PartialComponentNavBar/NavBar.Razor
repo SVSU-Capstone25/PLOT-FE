@@ -46,9 +46,16 @@ ModalLabel="logoutModalLabel" ModalSize="">
 
     <FooterContent>
         <button type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn platos-blue text-white" href="/logout">Yes, Logout</button>
+        <button type="button" class="btn platos-blue text-white" @onclick="Logout">Yes, Logout</button>
     </FooterContent>
 </ModalDialog>
+
+@code {
+    private void Logout()
+    {
+        Navigation.NavigateTo("/logout");
+    }
+}
 
 @code {
     [Parameter]
