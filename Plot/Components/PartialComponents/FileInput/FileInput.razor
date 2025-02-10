@@ -1,68 +1,121 @@
 
-<div class="dropArea @Class" id="@Id">
-    <div class="dropAreaText">
-        <i class="fa-solid fa-upload"></i>
+@using Toolbelt.Blazor.FileDropZone
+
+<div class="drop-zone-area">
+    <FileDropZone class="drop-zone">
+        <p><i class="fa-solid fa-upload"></i></p>
         <p>Drag and Drop</p>
         <p>or</p>
-        <p>Select File</p> 
-        
-    </div>
+        <label for="file-upload" class="load-files-label">Select File</label>
+        <div class="test">
+            <InputFile OnChange="FilesDropped" id="file-upload" />
+        </div>
+            
 
-    <InputFile OnChange="FileUploaded"
-                @ondragenter="HandleDragEnter"
-                @ondragleave="HandleDragLeave"
-                 />
+    </FileDropZone>
 </div>
 
 
 @code {
-
-    [Parameter]
-    public string? Id {get; set; }
-
-    [Parameter]
-    public string? Class {get; set; }
-    
-
-    const int MAX_FILESIZE = 1000 * 1024; // 1 MB
-
-    private string FileName {get;set;}
-    private long FileSize {get;set;}
-    private string FileType {get;set;}
-
-    // support for drag/drop
-    string dropClass = string.Empty;
-    void HandleDragEnter()
+    void FilesDropped(InputFileChangeEventArgs e)
     {
-        dropClass = "dropAreaDrug";
-    }
-    void HandleDragLeave()
-    {
-        dropClass = string.Empty;
-    }
-
-    private async Task FileUploaded(InputFileChangeEventArgs e) {
-        IBrowserFile browserFile = e.File;
-
-        if (browserFile != null) 
+        foreach(var file in e.GetMultipleFiles())
         {
-            
-            try 
-            {
-                Stream fileStream = browserFile.OpenReadStream(MAX_FILESIZE);
-                
-
-                
-            }
-            catch (Exception exception)
-            {
-
-            }
-
+            Stream stream = file.OpenReadStream(maxAllowedSize: 10000000);
+            // TO DO: do whatever you need with the file
+            stream.Close();
         }
     }
-}    using System.Reflection.Metadata;
+}
 
-#line default
-#line hidden
-#nullable disable
+@* @inject IJSRuntime JSRuntime
+
+<div id="dropZone" class="drop-zone">
+    <p>Drag and drop Excel files here, or click to upload</p>
+    <input type="file" @ref="fileInput" @onchange="FileSelected" accept=".xlsx,.xls" hidden />
+</div>
+
+@if (uploadedFile != null)
+{
+    <p>Uploaded File: @uploadedFile.Name (@uploadedFile.Size bytes)</p>
+}
+
+<script>
+    window.initializeDragDrop = (dotnetHelper) => {
+        const dropZone = document.getElementById("dropZone");
+        console.log("hi");
+
+        if (!dropZone) return;
+
+        document.addEventListener("dragover", (event) => {
+            event.preventDefault();
+        });
+
+        document.addEventListener("drop", (event) => {
+            event.preventDefault();
+        });
+
+        dropZone.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            dropZone.classList.add("drag-over");
+        });
+
+        dropZone.addEventListener("dragleave", () => {
+            dropZone.classList.remove("drag-over");
+        });
+
+        dropZone.addEventListener("drop", async (event) => {
+            event.preventDefault();
+            dropZone.classList.remove("drag-over");
+
+            let files = event.dataTransfer.files;
+            if (files.length > 0) {
+                await dotnetHelper.invokeMethodAsync("DropFile");
+            }
+        });
+    };
+
+    console.log("hi")
+</script>
+
+@code {
+    private ElementReference fileInput;
+    private IBrowserFile uploadedFile;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            wait6
+            await JSRuntime.InvokeVoidAsync("initializeDragDrop", DotNetObjectReference.Create(this));
+        }
+    }
+
+    [JSInvokable]
+    public async Task DropFile()
+    {
+        var files = await JSRuntime.InvokeAsync<IReadOnlyList<IBrowserFile>>("getDroppedFiles");
+        if (files?.Count > 0)
+        {
+            uploadedFile = files[0]; // Only take the first file
+            await ProcessFile(uploadedFile);
+        }
+        StateHasChanged();
+    }
+
+    private async Task FileSelected(ChangeEventArgs e)
+    {
+        var file = ((IBrowserFile[])e.Value)[0];
+        uploadedFile = file;
+        await ProcessFile(uploadedFile);
+    }
+
+    private async Task ProcessFile(IBrowserFile file)
+    {
+        if (file != null)
+        {
+            using var stream = file.OpenReadStream();
+            Console.WriteLine($"Processing {file.Name}");
+        }
+    }
+} *@

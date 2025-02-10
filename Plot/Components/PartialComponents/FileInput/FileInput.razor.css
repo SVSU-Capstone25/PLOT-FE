@@ -1,4 +1,77 @@
-.dropArea {
+::deep .drop-zone {
+    border: 2px dashed gray;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: lightgray;
+    font-size: 1.5rem;
+    cursor: pointer;
+    position: relative;
+    min-height: 150px;
+    flex-direction: column;
+}
+::deep .drop-zone.hover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+
+}
+
+.drop-zone {
+    border: 2px dashed gray;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: lightgray;
+    font-size: 1.5rem;
+    cursor: pointer;
+    position: relative;
+    min-height: 150px;
+}
+
+.test {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    display: none;
+}
+
+.drop-zone label {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.drop-zone p, .drop-zone label {
+    text-align: center;
+}
+
+.file-input-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+    position: relative;
+    width: 120px;
+    height: 30px;
+}
+
+    .file-input-zone:hover {
+        background-color: lightblue;
+    }
+
+    
+
+/* .dropArea {
     border: 2px dashed gray;
     padding: 10px;
     display: flex;
@@ -30,4 +103,4 @@
 
 .dropArea p {
     text-align: center;
-}
+} */
