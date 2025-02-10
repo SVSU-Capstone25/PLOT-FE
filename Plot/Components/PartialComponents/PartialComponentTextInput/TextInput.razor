@@ -1,5 +1,5 @@
-<div id="@Id" class="@Class">
-    @Label
+<div id="@Id" class="@Class input-container">
+    <label>@Label</label>  <!-- Label appears next to input -->
     <input 
         type="text" 
         class="form-control @ErrorClass"
@@ -13,7 +13,6 @@
 </div>
 
 @code {
-
     [Parameter]
     public string? Id { get; set; }
 
