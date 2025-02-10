@@ -18,6 +18,10 @@
     height: 100%;
 }
 
+.navbar-right {
+    margin-left: auto;
+}
+
 .platos-blue {
     background-color: #489b97;
 }
