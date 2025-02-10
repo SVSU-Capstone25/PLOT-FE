@@ -65,7 +65,7 @@ a {
 }
 
 /* Reset styles for nav-scrollable to ensure no background or border */
-.nav-scrollable {
+.Class {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
