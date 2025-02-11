@@ -17,8 +17,6 @@ main {
     border-bottom: 1px solid #d6d5d5;
     height: 3.5rem;
     display: flex;
-    /* justify-content: flex-start; */
-    /* justify-content: space-between; */
     align-items: center;
 }
 
@@ -31,11 +29,11 @@ main {
     .top-row a:hover, .top-row .btn-link:hover {
         text-decoration: underline;
     }
-
-    .top-row a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    } */
+*/
+.top-row a:last-child {
+    margin-left: auto;
+    justify-content: flex-end; /* Push this item to the far right */
+}
 
 @media (max-width: 640.98px) {
     .top-row {
