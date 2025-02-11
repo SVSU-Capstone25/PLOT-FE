@@ -1,3 +1,17 @@
+@*
+    Filename:- DateInput.razor
+    Part of Project: Plot
+
+    File Purpose:
+    The purpose of this file is to create a date input element.
+
+    Program Purpose:
+    The purpose of PLOT is to allow users to easily create, manage,
+    and allocate floorsets for Plato's Closet.
+
+    Author: Andrew Kennedy (2/10/2025)
+*@
+
 @rendermode InteractiveServer
 @inherits LayoutComponentBase
 @inject IJSRuntime JS
@@ -6,11 +20,13 @@
     <div class="form-floating mt-3">
         <input type="date"  class="date-input form-control @invalidClass" id="date-input" @onchange="HandleDateChange" />
         <label for="date-input" class="inner-date-label">
+            @* If the date is valid, keep the label text the same *@
             @{string text = "";}
             @if (isValid) 
             {
                 text = Label;
             }
+            @* Otherwise, inform the user of the invalid date *@
             else 
             {
                 text = "Invalid Date!";
@@ -33,7 +49,7 @@
     public string Label { get; set; }
 
     [Parameter]
-    public EventCallback<DateOnly> ValueChanged { get; set; }
+    public EventCallback<DateOnly> ValueChanged { get; set; }   // Used to send the date to the parent
 
     public DateOnly Value;
 
@@ -42,28 +58,36 @@
     private string invalidClass;
 
     private bool isValid = true;
+
+    /* After the component receives its parameters, initialize the selectedDateTime */
     protected override void OnParametersSet()
     {
         selectedDateTime = Value.ToDateTime(TimeOnly.MinValue); // Convert DateOnly to DateTime
     }
 
+    /*
+        The HandleDateChange function sends the date to the parent whenever the
+        user changes the input text.
+    */
     private async Task HandleDateChange(ChangeEventArgs e)
     {
+        // If the value successfully parses, initialize a new DateTime object
         if (DateTime.TryParse(e.Value?.ToString(), out DateTime newDateTime))
         {
-
+            // If the date is later than the current date, it is considered invalid
             if (newDateTime.CompareTo(DateTime.Today) > 0) 
             {
                 invalidClass = "error";
                 isValid = false;
             }
+            // Otherwise, send the date to the parent
             else 
             {
                 invalidClass = "";
                 isValid = true;
-                selectedDateTime = newDateTime; // Update local state            
+                selectedDateTime = newDateTime; 
 
-                await ValueChanged.InvokeAsync(DateOnly.FromDateTime(newDateTime)); // Convert back to DateOnly for the parent
+                await ValueChanged.InvokeAsync(DateOnly.FromDateTime(newDateTime)); 
             }
             
         }

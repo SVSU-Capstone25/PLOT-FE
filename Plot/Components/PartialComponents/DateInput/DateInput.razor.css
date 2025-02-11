@@ -1,3 +1,17 @@
+/*
+    Filename:- DateInput.razor.css
+    Part of Project: Plot
+
+    File Purpose:
+    This file styles the elements of the DateInput.razor file.
+
+    Program Purpose:
+    The purpose of PLOT is to allow users to easily create, manage,
+    and allocate floorsets for Plato's Closet.
+
+    Author: Andrew Kennedy (2/10/2025)
+*/
+
 .date-input {
     padding: 1rem;
     border: 2px solid var(--platos-blue);
