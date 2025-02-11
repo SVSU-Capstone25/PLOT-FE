@@ -16,16 +16,15 @@ main {
     background-color: #1EA6A1;
     border-bottom: 1px solid #d6d5d5;
     height: 3.5rem;
-    display: flex;
+    /* display: flex; */
     /* justify-content: flex-start; */
     /* justify-content: space-between; */
-    align-items: center;
+    /* align-items: center; */
 }
 
-    .top-row a, .top-row .btn-link {
+    /* .top-row a, .top-row .btn-link {
         white-space: nowrap;
         display: flex;
-        /* margin-left: .5rem; */
         text-decoration: none;
     }
 
@@ -36,7 +35,7 @@ main {
     .top-row a:first-child {
         overflow: hidden;
         text-overflow: ellipsis;
-    }
+    } */
 
 @media (max-width: 640.98px) {
     .top-row {
