@@ -1,0 +1,92 @@
+<div class="row progress-bar @Class" id = "@ID">
+    @if (iconString != null)
+    {
+        <div class="col-md-1">
+            <i class="@iconString"></i>
+        </div>
+        <div class="col-md-5">
+            @mainLabel
+        </div>
+    }
+    else
+    {
+        <div class="col-md-6">
+            @mainLabel
+        </div>
+    }
+   
+
+    <div class="col-md-6">
+        <div class="progress-container @_barClass">
+            <div class="progress-container-text">
+                <div class="progress-container-text-align-center">@barLabel</div>
+            </div>
+            <div class="progress-bar-fill" style="width: @MapProgress()%; background-color: @barColor;"></div>
+        </div>
+    </div>
+</div>
+
+@code {
+    //ID assigned to this component.
+    [Parameter]
+    public String? ID {get; set;}
+
+    [Parameter]
+    public String? Class {get; set;}
+
+    //FontAwesome icon to display before the text.
+    [Parameter]
+    public String? iconString {get; set;}
+
+    //Text to display to the left of the progress bar
+    [Parameter]
+    public String? mainLabel {get; set;}
+
+    //Text to display inside the progress bar.
+    [Parameter]
+    public String? barLabel {get; set;}
+
+    //Max number in the progress bar.
+    //Must be greater than 0.
+    [Parameter]
+    public int barMax {get; set;} = 100;
+
+    //Amount of current progress in the progress bar. 
+    //0 <= barValue <= barMax.
+    [Parameter]
+    public int barValue {get; set;} = 50;
+
+
+    //PROGRESS BAR COLOR
+    [Parameter]
+    public String barColor {get; set;} = "aliceblue";
+
+    //Preset styling for the bar - If the barProgress is < 100%, barClass is updated to mark the bar unfulfilled.
+    private String _unFilledClass = "progress-unfulfilled";
+
+    //The current styling class of the bar. Can be empty or set to the contents of _unFilledClass
+    private String _barClass = "";
+
+    //Progress Bar MapProgress function.
+    //Takes two inputs, max value, and current value
+    //Interpolates 0 -> currentValue -> maxValue into the range 0 -> 100
+    //Returns the new progress bar value.
+    private int MapProgress()
+    {
+        return Math.Clamp(
+            (int) Single.Lerp(0f, 100f, ((float)barValue / (float)barMax)),
+            0,
+            100
+        );
+    }
+
+    //Code to run when component initializes.
+    //If the bar progress is not filled, add the "unfulfilled" class to the progress div.
+    protected override void OnInitialized()
+    {
+        if (barValue < barMax)
+        {
+            _barClass = _unFilledClass;
+        } 
+    }
+}
