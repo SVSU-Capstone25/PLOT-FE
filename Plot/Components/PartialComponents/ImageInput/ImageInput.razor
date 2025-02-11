@@ -1,30 +1,58 @@
+
 @using Microsoft.AspNetCore.Components.Web
+@inject IJSRuntime JS
 
-<!-- Filename: ImageInput.razor
-Part of Project: PLOT
 
-File Purpose:
-The purpose of this file is be a resubable ImageInput component throughout
-the PLOT application. The ID and text can be set dynamically through parameters.
-You can also pass a parameters for if the ImageInput is initially checked
-
-Program Purpose:
-The purpose of PLOT is to allow users to easily create, manage, 
-and allocate floorsets for Platos Closet. 
-
-Author: Danielle Smith (2/10/2025) -->
-
-<div class="ImageInput drag-drop-box">
+<div class="ImageInput drag-drop-box" id="dropArea">
     <h5 class="text-decoration-underline my-auto text-center">
-        <i class="fa-solid fa-image"></i> @Label
+        <i class="fa-solid fa-image"></i> Drag & Drop or Click to Upload
     </h5>
-    <input type="file" id="@Id" class="d-none" @onchange="OnFileSelected">
+    <input type="file" id="fileInput" class="d-none" onchange="onFileSelected(event)">
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("DOMContentLoaded loaded!")
+        const dropArea = document.getElementById("dropArea");
+        const fileInput = document.getElementById("fileInput");
+
+        dropArea.addEventListener("click", () => fileInput.click());
+
+        dropArea.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            dropArea.classList.add("drag-over");
+            event.dataTransfer.dropEffect = "copy";
+        });
+
+        dropArea.addEventListener("dragleave", () => {
+            dropArea.classList.remove("drag-over");
+        });
+
+        dropArea.addEventListener("drop", (event) => {
+            event.preventDefault();
+            dropArea.classList.remove("drag-over");
+            
+            if (event.dataTransfer.files.length > 0) {
+                fileInput.files = event.dataTransfer.files;
+                fileInput.dispatchEvent(new Event("change"));
+            }
+        });
+    });
+
+    function onFileSelected(event) {
+        const file = event.target.files[0];
+        if (file) {
+            alert("Selected file: " + file.name);
+        }
+    }
+</script>
+
 @code {
-    [Parameter] public string Label { get; set; } = "Upload Image";  // text on the image input
-    [Parameter] public string Id { get; set; }; // id
-    [Parameter] public string? Class { get; set; } // string of classes (nullable)
-    [Parameter] public string? Width { get; set; } // width of drag/drop box example: 100px, 40%
-    [Parameter] public string? Length { get; set; } // width of drag/drop box example: 100px, 40%
+    private ElementReference fileInput;
+    
+    [Parameter] public string Label { get; set; } = "Upload Image";  
+    [Parameter, EditorRequired] public string Id { get; set; }
+    [Parameter] public string? Class { get; set; } 
+    [Parameter] public string? Width { get; set; } 
+    [Parameter] public string? Length { get; set; } 
 }
