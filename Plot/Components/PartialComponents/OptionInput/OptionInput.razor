@@ -7,22 +7,22 @@
     </h5>
     <div class="row">
         <p class="col-sm-1"></p>
-        <select class="col-sm-11">
-            @if (optionsText.Count != optionsValues.Count)
+        @if (optionsText.Count != optionsValues.Count)
+        {
+            <p>Error - Option and Value counts mismatched.</p>
+        }
+        else if (optionsText.Count < 1)
+        {
+            <p>Error - No options passed to this OptionInput component.</p>
+        }
+        else{
+            <select class="col-sm-11">
+            @for (var i = 0; i < optionsValues.Count; i++)
             {
-                <p>Error - Option and Value counts mismatched.</p>
-            }
-            else if (optionsText.Count < 1)
-            {
-                <p>Error - No options passed to this OptionInput component.</p>
-            }
-            else{
-                for (var i = 0; i < optionsValues.Count; i++)
-                {
                     <option value=@optionsValues[i]>@optionsText[i]</option>
-                }
             }
-        </select>
+            </select>
+        }
     </div>
 </div>
 
