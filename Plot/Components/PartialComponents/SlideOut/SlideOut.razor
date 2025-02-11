@@ -14,7 +14,7 @@
 
 @inherits LayoutComponentBase
 
-<div class="@Class" id="@Id">
+<div class="SlideOut @Class" id="@Id">
     <!-- Toggle Button -->
     <button class="btn btn-light toggle-btn shadow-sm" 
                         id='toggle-btn' onclick="toggleSidebar()">
@@ -23,7 +23,7 @@
 
     <!-- Sidebar -->
     <aside class="collapse-sidebar">
-        @Body
+        @ChildContent
     </aside>
 </div>
 
@@ -78,5 +78,7 @@
 
     [Parameter]
     public string? Class {get; set;}    
-    
+    [Parameter]
+    public RenderFragment? ChildContent {get; set;}
+
 }
