@@ -1,0 +1,71 @@
+@rendermode InteractiveServer
+@inherits LayoutComponentBase
+@inject IJSRuntime JS
+
+<div class="@Class" id="@Id">
+    <div class="form-floating mt-3">
+        <input type="date"  class="date-input form-control @invalidClass" id="date-input" @onchange="HandleDateChange" />
+        <label for="date-input" class="inner-date-label">
+            @{string text = "";}
+            @if (isValid) 
+            {
+                text = Label;
+            }
+            else 
+            {
+                text = "Invalid Date!";
+            }
+            @text
+        </label>
+    </div> 
+    
+    <label for="date-input" class="date-label">MM/DD/YYYY</label>
+</div>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public EventCallback<DateOnly> ValueChanged { get; set; }
+
+    public DateOnly Value;
+
+    private DateTime selectedDateTime;
+
+    private string invalidClass;
+
+    private bool isValid = true;
+    protected override void OnParametersSet()
+    {
+        selectedDateTime = Value.ToDateTime(TimeOnly.MinValue); // Convert DateOnly to DateTime
+    }
+
+    private async Task HandleDateChange(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out DateTime newDateTime))
+        {
+
+            if (newDateTime.CompareTo(DateTime.Today) > 0) 
+            {
+                invalidClass = "error";
+                isValid = false;
+            }
+            else 
+            {
+                invalidClass = "";
+                isValid = true;
+                selectedDateTime = newDateTime; // Update local state            
+
+                await ValueChanged.InvokeAsync(DateOnly.FromDateTime(newDateTime)); // Convert back to DateOnly for the parent
+            }
+            
+        }
+    }
+}
