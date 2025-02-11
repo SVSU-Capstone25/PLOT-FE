@@ -16,6 +16,11 @@ Welcome to your new app.
 
 @code {
     private IBrowserFile selectedFile;
+
+    /* 
+        Set the OnFileSelected parameter to this function handle,
+        and you will be able to use the file.
+    */
     private void HandleFileSelected(IBrowserFile file) 
     {
         selectedFile = file;

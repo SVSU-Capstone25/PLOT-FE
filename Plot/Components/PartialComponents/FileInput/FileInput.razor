@@ -1,11 +1,23 @@
+@* 
+    Filename:- FileInput.razor
+    Part of Project: Plot
+
+    File Purpose:
+    The purpose of this file is to create a file input element.
+
+    Program Purpose:
+    The purpose of PLOT is to allow users to easily create, manage,
+    and allocate floorsets for Plato's Closet.
+
+    Author: Andrew Kennedy (2/8/2025)
+*@
 
 @inject IJSRuntime JS
-@using Toolbelt.Blazor.FileDropZone
+@rendermode InteractiveServer
 @inject ILogger<FileInput> Logger
 
-@rendermode InteractiveServer
-
 <div class="file-input-zone d-flex @Class" id="@Id">
+    @* If the user has not entered a file, or has cleared it, show the initial div *@
     @if (string.IsNullOrEmpty(Text))
     {
         <div class="no-file d-flex">
@@ -18,6 +30,7 @@
             </div>
         </div>
     }
+    @* Otherwise, show a block with the filename, and a remove file button *@
     else 
     {
         <div class="has-file d-flex flex">         
@@ -27,89 +40,9 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
-    }
-    
-    
-    
-</div>
-            
-@* <script>
-    var form = document.querySelector('.file-input-zone');
-    var dropZone = document.querySelector('.no-file');
-    var fileBlockZone = document.querySelector('.has-file')
-    var fileBlockText = document.querySelector('.file-name');
-    var file;
+    }   
+</div>            
 
-    function showDropZone() {
-        dropZone.style.visibility = "visible";
-    }
-    function hideDropZone() {
-        dropZone.style.visibility = "hidden";
-    }
-
-    function showFileBlock() {
-        fileBlockZone.style.visibility = "visible";
-    }
-
-    function hideFileBlock() {
-        fileBlockZone.style.visibility = "hidden";
-    }
-
-    function allowDrag(e) {
-        if (true) {  // Test that the item being dragged is a valid one
-            e.dataTransfer.dropEffect = 'copy';
-            e.preventDefault();
-            e.stopPropagation();
-        }
-    }
-
-    function handleDrop(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        hideDropZone();
-        showFileBlock();
-
-        if (e.dataTransfer.files[0]) {
-            file = e.dataTransfer.files[0];
-            fileBlockText.textContent = file;
-
-            var event = document.createEvent('HTMLEvents');
-            event.initEvent('submit',true,false);
-            form.dispatchEvent(event);
-        }
-
-    }
-
-    // 1
-    window.addEventListener('dragenter', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        showDropZone();
-        
-    });
-
-    form.addEventListener('submit', function(e) {
-        if (file) {
-            var data = new FormData(form);
-            data.append()
-        }
-    });
-
-    // 2
-    dropZone.addEventListener('dragenter', allowDrag);
-    dropZone.addEventListener('dragover', allowDrag);
-
-    // 3
-    dropZone.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        hideDropZone();
-        
-    });
-
-    // 4
-    dropZone.addEventListener('drop', handleDrop); 
-</script>*@
 @code {
 
     [Parameter]
@@ -119,46 +52,52 @@
     public string? Id {get;set;}
 
     [Parameter]
-    public EventCallback<IBrowserFile> OnFileSelected {get;set;}
+    public EventCallback<IBrowserFile> OnFileSelected {get;set;} // How the parent will get the file
 
     private IBrowserFile? LoadedFile;
     private string? Text;
     
-    private bool isLoading;
 
     const int MAX_ALLOWED_SIZE = 1000 * 1024;
-    private async Task LoadFile(InputFileChangeEventArgs e)    
-    {
-       isLoading = true;
 
+    /*
+        The LoadFile function sends the file loaded by the user
+        to the parent.
+    */
+    private async Task LoadFile(InputFileChangeEventArgs e)    
+    {      
         try
         {
+            // Get the file, then get the filename for the element text
             LoadedFile = e.File;
-
             Text = LoadedFile.Name;
-
+            
+            // Send the file to the parent
             await OnFileSelected.InvokeAsync(LoadedFile);
 
+            // Update the DOM to refresh the filename on the element
             await InvokeAsync(StateHasChanged);
-            
-
         }
         catch (Exception ex)
         {
+            // Log the error if an exception occurs
             Logger.LogError("File: {FileName} Error: {Error}", 
                 e.File.Name, ex.Message);
         }
-    
-
-        isLoading = false;
     }
     
 
-
-    private async Task RemoveFile() {
+    /*
+        The RemoveFile function clears the Text property,
+        which removes the file and puts the form in its 
+        original state. 
+    */
+    private async Task RemoveFile() 
+    {
         Text = "";
         LoadedFile = null;
         await InvokeAsync(StateHasChanged);
     }
     
 }
+

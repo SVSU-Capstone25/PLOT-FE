@@ -1,3 +1,17 @@
+/* 
+    Filename:- FileInput.razor.css
+    Part of Project: Plot
+
+    File Purpose:
+    This file styles the elements in the FileInput.razor file.
+
+    Program Purpose:
+    The purpose of PLOT is to allow users to easily create, manage,
+    and allocate floorsets for Plato's Closet.
+
+    Author: Andrew Kennedy (2/8/2025)
+*/
+
 .file-select {
     width: 100%;
     height: 100%;
@@ -50,7 +64,6 @@ label.load-files-label {
     border-radius: 5px;
 
 }
-
     .remove-file-btn:hover {
         background-color:lightcoral;
         -webkit-transition: background-color 100ms linear;
