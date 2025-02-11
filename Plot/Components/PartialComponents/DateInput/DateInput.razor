@@ -18,7 +18,8 @@
 
 <div class="@Class" id="@Id">
     <div class="form-floating mt-3">
-        <input type="date"  class="date-input form-control @invalidClass" id="date-input" @onchange="HandleDateChange" />
+        <input type="date" class="date-input form-control @invalidClass" 
+                                id="date-input" @onchange="HandleDateChange" />
         <label for="date-input" class="inner-date-label">
             @* If the date is valid, keep the label text the same *@
             @{string text = "";}
@@ -38,7 +39,8 @@
     <label for="date-input" class="date-label">MM/DD/YYYY</label>
 </div>
 
-@code {
+@code 
+{
     [Parameter]
     public string? Class { get; set; }
 
@@ -48,8 +50,9 @@
     [Parameter]
     public string Label { get; set; }
 
+    // Used to send the date to the parent
     [Parameter]
-    public EventCallback<DateOnly> ValueChanged { get; set; }   // Used to send the date to the parent
+    public EventCallback<DateOnly> ValueChanged { get; set; }   
 
     public DateOnly Value;
 
