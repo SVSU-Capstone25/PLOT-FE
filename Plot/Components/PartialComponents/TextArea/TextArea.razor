@@ -1,0 +1,35 @@
+<div class="text-area @Class" id="@ID">
+    <h5 class="row">
+        <i class="col-sm-1 @iconString"></i>
+        <p class="col-sm-11">
+            @label
+        </p>
+    </h5>
+    <div class="row">
+        <p class="col-sm-1"></p>
+        <textarea class="col-sm-11" placeholder=@placeholder></textarea>
+    </div>
+</div>
+
+@code
+{
+    //Custom string to add to this item's HTML class
+    [Parameter]
+    public String? Class {get; set;}
+
+    //Custom string to add to this item's HTML id tag
+    [Parameter]
+    public String? ID {get; set;}
+
+    //String reference to a FontAwesome icon to display next to the label.
+    [Parameter]
+    public String? iconString {get; set;}
+
+    //Text to display above the text box area
+    [Parameter, EditorRequired]
+    public required String label {get; set;}
+
+    //Placeholder text to display in the text area.
+    [Parameter]
+    public String? placeholder {get; set;} = "Enter Text Here...";
+}
