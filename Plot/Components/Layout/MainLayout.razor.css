@@ -19,7 +19,7 @@ main {
     height: 3.5rem;
     /* display: flex; 
     align-items: center; */
-    padding: 0 1rem;  /* Adds spacing to prevent content touching edges */
+    padding: 1rem 0rem;  /* Adds spacing to prevent content touching edges */
 }
 
     /* .top-row a, .top-row .btn-link {
