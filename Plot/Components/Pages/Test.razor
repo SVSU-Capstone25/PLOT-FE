@@ -1,0 +1,25 @@
+@page "/testing"
+@using Plot.Components.PartialComponents.NumericInput
+@rendermode InteractiveServer
+
+
+<NumericInput Label="Dimensions" Placeholder="2ft" Description="Enter the Dimensions in feet" ValueChanged="NumberChanged" />
+
+<p>Number is: @currentNumber</p>
+@code {
+
+    private double currentNumber;
+
+    private async Task NumberChanged(string strNumber) {
+        if (Double.TryParse(strNumber, out double newNumber)) {
+            currentNumber = newNumber;          
+        }
+        else
+        {
+            currentNumber = 0;
+        }
+        await InvokeAsync(StateHasChanged);
+        
+    }   
+
+}
