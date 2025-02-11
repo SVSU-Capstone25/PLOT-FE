@@ -16,7 +16,22 @@
 @rendermode InteractiveServer
 @inject ILogger<FileInput> Logger
 
-<div class="file-input-zone d-flex @Class" id="@Id">
+<div class="file-input-zone d-flex @Class" id="@Id" @ondragover:preventDefault="true" 
+                                                    @ondragover="OnOver"
+                                                    @ondrop:preventDefault="true" 
+                                                    @ondrop="OnDrop"
+                                                    @ondrag:preventDefault="true"
+                                                    @ondrag="OnDrag"
+                                                    @ondragenter:preventDefault="true"
+                                                    @ondragenter="OnEnter"
+                                                    @ondragstart:preventDefault="true"
+                                                    @ondragstart="OnStart"
+                                                    @ondragend:preventDefault="true"
+                                                    @ondragend="OnEnd"
+                                                    @ondragleave:preventDefault="true"
+                                                    @ondragleave="OnLeave"
+                                                    >
+                                                    
     @* If the user has not entered a file, or has cleared it, show the initial div *@
     @if (string.IsNullOrEmpty(Text))
     {
@@ -43,6 +58,25 @@
     }   
 </div>            
 
+<script>
+    window.readDroppedFile = function (dotNetHelper) {
+        document.addEventListener("drop", function (event) {
+            event.preventDefault();
+            console.log("est")
+
+            if (event.dataTransfer.files.length > 0) {
+                let file = event.dataTransfer.files[0];
+
+                console.log("Dropped File:", file.name);
+                
+                // Send file name to Blazor
+                dotNetHelper.invokeMethodAsync("SetFilename", file.name)
+                .catch(err => console.error("Blazor call failed", err));
+            }
+        });
+    };
+</script>
+
 @code {
 
     [Parameter]
@@ -54,11 +88,19 @@
     [Parameter]
     public EventCallback<IBrowserFile> OnFileSelected {get;set;} // How the parent will get the file
 
-    private IBrowserFile? LoadedFile;
+    private IBrowserFile? loadedFile;
+    private string? selectedFilename;
     private string? Text;
-    
+    private DotNetObjectReference<FileInput> objectReference;
 
     const int MAX_ALLOWED_SIZE = 1000 * 1024;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) {
+            objectReference = DotNetObjectReference.Create(this);
+        }
+    }
 
     /*
         The LoadFile function sends the file loaded by the user
@@ -69,11 +111,11 @@
         try
         {
             // Get the file, then get the filename for the element text
-            LoadedFile = e.File;
-            Text = LoadedFile.Name;
+            loadedFile = e.File;
+            Text = loadedFile.Name;
             
             // Send the file to the parent
-            await OnFileSelected.InvokeAsync(LoadedFile);
+            await OnFileSelected.InvokeAsync(loadedFile);
 
             // Update the DOM to refresh the filename on the element
             await InvokeAsync(StateHasChanged);
@@ -95,9 +137,51 @@
     private async Task RemoveFile() 
     {
         Text = "";
-        LoadedFile = null;
+        loadedFile = null;
         await InvokeAsync(StateHasChanged);
     }
+
+    private async Task OnDrop(DragEventArgs e)
+    {        
+        
+        await JS.InvokeVoidAsync("readDroppedFile", objectReference);
+    }
+
+    [JSInvokable]
+    public async Task SetFilename(string fileName)
+    {
+        Text = fileName;
+        await InvokeAsync(StateHasChanged); // Re-render component
+    }
     
+
+    private void OnOver(DragEventArgs e)
+    {
+    }
+
+    private void OnEnter(DragEventArgs e)
+    {
+    }
+
+    private void OnEnd(DragEventArgs e)
+    {
+    }
+
+    private void OnDrag(DragEventArgs e)
+    {
+    }
+
+    private void OnLeave(DragEventArgs e)
+    {
+    }
+
+    private void OnStart(DragEventArgs e)
+    {
+    }
+
+    public void Dispose()
+    {
+        objectReference?.Dispose();
+    }
 }
 
