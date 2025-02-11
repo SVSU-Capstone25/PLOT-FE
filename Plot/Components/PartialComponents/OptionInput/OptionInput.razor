@@ -1,0 +1,55 @@
+<div class="option-input @Class" id="@ID">
+    <h5 class="row">
+        <i class="col-sm-1 @iconString"></i>
+        <p class="col-sm-11">
+            @label
+        </p>
+    </h5>
+    <div class="row">
+        <p class="col-sm-1"></p>
+        <select>
+            @if (optionsText.Count != optionsValues.Count)
+            {
+                <p>Error - Option and Value counts mismatched.</p>
+            }
+            else if (optionsText.Count < 1)
+            {
+                <p>Error - No options passed to this OptionInput component.</p>
+            }
+            else{
+                for (var i = 0; i < optionsValues.Count; i++)
+                {
+                    <option value=@optionsValues[i]>@optionsText[i]</option>
+                }
+            }
+            <option></option>
+        </select>
+    </div>
+</div>
+
+@code
+{
+    //Custom string to add to this item's HTML class
+    [Parameter]
+    public String? Class {get; set;}
+
+    //Custom string to add to this item's HTML id tag
+    [Parameter]
+    public String? ID {get; set;}
+
+    //String reference to a FontAwesome icon to display next to the label.
+    [Parameter]
+    public String? iconString {get; set;}
+
+    //Text to display above the text box area
+    [Parameter, EditorRequired]
+    public required String label {get; set;}
+
+    //Array of option values in the selector.
+    [Parameter, EditorRequired]
+    public required List<String> optionsValues {get; set;}
+
+    //Array of options to display as text in the selector.
+    [Parameter, EditorRequired]
+    public required List<String> optionsText {get; set;}
+}
