@@ -2,3 +2,10 @@ p
 {
     margin-bottom: 0;
 }
+
+select
+{
+    background: none;
+    border: none;
+    opacity: 50%;
+}
