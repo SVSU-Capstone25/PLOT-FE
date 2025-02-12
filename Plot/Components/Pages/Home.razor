@@ -4,9 +4,9 @@
 
 <h1>Hello, world!</h1>
 
-<TextInput @ref="input1" Id="textinput1" Label="This is a test input with label to the side" Value="@name1" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError1" />
-<TextInput @ref="input2" Id="textinput2" Label="This is a test input with label on the top" LabelOnTop="true" Value="@name2" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError2" />
-<TextInput @ref="input3" Id="textinput3" Label="" Value="@name3" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError3" />
+<TextInput @ref="input1" Id="textinput1" Label="This is a test input with label to the side" Value="@name1" ValueChanged="@((value) => name1 = value)" ErrorMessage="@nameError1" />
+<TextInput @ref="input2" Id="textinput2" Label="This is a test input with label on the top" LabelOnTop="true" Value="@name2" ValueChanged="@((value) => name2 = value)" ErrorMessage="@nameError2" />
+<TextInput @ref="input3" Id="textinput3" Label="" Value="@name3" ValueChanged="@((value) => name3 = value)" ErrorMessage="@nameError3" />
 
 <button @onclick="TriggerValidationForAllInputs">Click to test input for all text boxes</button>
 
