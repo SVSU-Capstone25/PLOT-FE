@@ -17,7 +17,7 @@
     }
 }
 
-<input id="@ID" class="@GetInputClass()" placeholder="@GetPlaceholder()" @oninput="OnInput" value="@inputText" />
+<input id="@ID" class="TextInput @GetInputClass()" placeholder="@GetPlaceholder()" @oninput="OnInput" value="@inputText" />
 @if (IsError)
 {
     <p class="text-red-500 text-sm">Please enter data</p>
