@@ -12,55 +12,31 @@ Author: Josh Rodack (2/10/2025)-->
 
 
 
-<div class="modal fade" id="@ModalID" tabindex="-1" aria-labelledby="@ModalLabel" aria-hidden="true">
-    @{
-        // switch statement to set the modal size dynamically
-        string modalClass = ModalSize switch
-        {
-            "Small" => "modal-dialog modal-sm",
-            "Large" => "modal-dialog modal-lg",
-            "X-Large" => "modal-dialog modal-xl",
-            _ => "modal-dialog" // else
-        };
-    }
-    <div class="@modalClass">
-        <div class="modal-content border-0">
-            <div class="modal-header">
-                <h5 class="modal-title" id="@ModalLabel">@Title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <a class="Card @Class" id="@Id">
+
+                <div class="Card @Class" id="@Id">
                 <script src="https://kit.fontawesome.com/b9b256c8f6.js" crossorigin="anonymous"></script>
-                <div class = "Card">
+                <div class = "container">
+                <div class="row">
                 <img src=@SrcImage/>
+                <div class="container">
+                <div class="col-sm">
                 <p>@LabelText</p>
+                </div>
+                <div class="col-sm">
+                <i class="@icon"></i>
+                </div>
                 <!--I'm not certain how to insert another component into a specific spot
                 so this is where the dropdown should go-->
                 </div>
+                </div>
+                </div>
                 
-                </a>
-            </div>
-            <div class="modal-footer">
-                
-            </div>
-        </div>
-    </div>
-</div>
+                </div>
+            
 
 @code {
     // all of these are parameters to set up the modal dynamically
-    [Parameter]
-    public string Title { get; set; }
-
-    [Parameter]
-    public string ModalID { get; set; }
-
-    [Parameter]
-    public string ModalLabel { get; set; }
-
-    [Parameter]
-    public string ModalSize { get; set; }
+   
 
    [Parameter]
     public string? Id { get; set; }
