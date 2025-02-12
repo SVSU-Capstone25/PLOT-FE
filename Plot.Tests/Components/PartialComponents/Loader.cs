@@ -18,9 +18,17 @@ public class LoaderTest : PageTest
         var loader1 = Page.Locator("#LoaderTest1");
         var loader2 = Page.Locator("#LoaderTest2");
 
+        //locate the 2 spinners from the page
+        var spinner1 = Page.Locator("#LoaderTest1 i");
+        var spinner2 = Page.Locator("#LoaderTest2 i");
+
         // Expect a loader to be on the page
         await Expect(loader1).ToBeVisibleAsync();
         await Expect(loader2).ToBeVisibleAsync();
+
+        //Expect the spinner to be on the page 
+        await Expect(spinner1).ToBeVisibleAsync();
+        await Expect(spinner2).ToBeVisibleAsync();
 
         //expect the loader to have the test text
         await Expect(loader1).ToContainTextAsync("Loading a component");
