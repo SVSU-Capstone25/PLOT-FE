@@ -1,4 +1,4 @@
-<div id="@Id" class="TextInput @Class input-container">
+<div id="@Id" class="TextInput @Class input-container @(LabelOnTop ? "label-on-top" : "")">
     @if (!string.IsNullOrEmpty(Label))
     {
         <label class="label @(LabelOnTop ? "label-top" : "")">@Label</label>
@@ -14,6 +14,7 @@
         <div class="error-message">@ErrorMessage</div>
     }
 </div>
+
 
 @code {
     [Parameter]
