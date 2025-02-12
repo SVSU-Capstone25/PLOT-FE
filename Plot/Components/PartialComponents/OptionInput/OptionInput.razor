@@ -23,10 +23,10 @@
             <p>Error - No options passed to this OptionInput component.</p>
         }
         else{
-            <select class="col-md-11">
+            <select class="col-md-11 px-0">
             @for (var i = 0; i < optionsValues.Count; i++)
             {
-                    <option value=@optionsValues[i]>@optionsText[i]</option>
+                <option value=@optionsValues[i]>@optionsText[i]</option>
             }
             </select>
         }
