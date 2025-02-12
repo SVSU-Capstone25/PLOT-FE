@@ -13,11 +13,19 @@
     border: 2px solid red; /* Red border for error state */
 }
 
-.error-message {
+/* .error-message {
     color: red;
     font-size: 12px;
     margin-top: 5px;
+} */
+
+.error {
+    border-color: red; /* Highlight the input in red */
 }
+.error-message {
+    color: red; /* Show the error message in red */
+}
+
 
 .input-container.label-on-top {
     flex-direction: column; /* Stacks label and input vertically */

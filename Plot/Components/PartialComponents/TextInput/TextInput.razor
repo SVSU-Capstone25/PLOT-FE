@@ -26,7 +26,7 @@
     public string? Label { get; set; }
 
     [Parameter]
-    public bool LabelOnTop { get; set; } = false; // New parameter to control label position
+    public bool LabelOnTop { get; set; } = false;
 
     [Parameter]
     public string Value { get; set; }
@@ -51,5 +51,11 @@
         }
 
         await ValueChanged.InvokeAsync(Value);
+    }
+
+    // Exposed method to be called from the parent to trigger validation
+    public async Task TriggerValidation()
+    {
+        await ValidateInput();
     }
 }

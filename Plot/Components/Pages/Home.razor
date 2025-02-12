@@ -6,13 +6,26 @@
 
 Welcome to your new app.
 
-<TextInput Id="textinput" Class="test" Label="This is a test input with label to the side" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
+<TextInput @ref="input1" Id="textinput1" Class="test" Label="This is a test input with label to the side" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
+<TextInput @ref="input2" Id="textinput2" Class="test" Label="This is a test input with label on the top" LabelOnTop="true" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
+<TextInput @ref="input3" Id="textinput3" Class="test" Label="" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
 
-<TextInput Id="textinput" Class="test" Label="This is a test input with label on the top" LabelOnTop="true" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
-
-<TextInput Id="textinput" Class="test" Label="" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
+<button @onclick="TriggerValidationForAllInputs">Click to test input for all text boxes</button>
 
 @code {
     private string name;
     private string nameError;
+
+    // References to the TextInput components
+    private TextInput input1;
+    private TextInput input2;
+    private TextInput input3;
+
+    private async Task TriggerValidationForAllInputs()
+    {
+        // Trigger validation for each input
+        await input1.TriggerValidation();
+        await input2.TriggerValidation();
+        await input3.TriggerValidation();
+    }
 }
