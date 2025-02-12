@@ -14,20 +14,23 @@ Author: Josh Rodack (2/10/2025)-->
                 <script src="https://kit.fontawesome.com/b9b256c8f6.js" crossorigin="anonymous"></script>
                 
                 <div class="dropdown" id="toggle">
-                    <button @onclick="Switch"  class="button-md" type="button">
+                    <button @onclick="() => Switch()">
                     <i class="fa-solid fa-ellipsis"></i>
                     </button>
-                    @if(isActive==true){
+                    @if(isActive==true)
+                    {
                         <p>Work</p>
                     <ul class="dropdown-list ">
 
-                        @foreach (string option in @Options.Split(',')){
+                        @foreach (string option in @Options.Split(','))
+                        {
                         <li>
-                            <p>@option</p>
+                            @option
                         </li>
                         }
                     </ul>   
                     }
+                    <p>@x</p>
 
                 </div>
                 
@@ -47,10 +50,11 @@ Author: Josh Rodack (2/10/2025)-->
     public string Options {get; set;}
 
     public bool isActive = false;
-
+    public string x;
     private async Task Switch()
     { 
         isActive = !isActive;
+        x = "Hi";
     }
         
 
