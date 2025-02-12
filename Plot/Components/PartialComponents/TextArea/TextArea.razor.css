@@ -1,0 +1,11 @@
+textarea
+{
+    resize: none;
+    border: none;
+    outline: none;
+}
+
+p 
+{
+    margin-bottom: 0;
+}
