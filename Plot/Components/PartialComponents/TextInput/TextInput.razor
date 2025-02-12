@@ -1,52 +1,32 @@
-@* TextInput.razor *@
-<div id="@Id" class="input-container @Class">
-    @if (!string.IsNullOrEmpty(Label))
+@code {
+    [Parameter] public string Id { get; set; }
+    [Parameter] public string Class { get; set; }
+    [Parameter] public string Value { get; set; }
+    [Parameter] public string Label { get; set; }
+    [Parameter] public string LabelPosition { get; set; }
+    [Parameter] public string Placeholder { get; set; }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public bool IsValid { get; set; } = true;
+
+    private string InputClass => IsValid ? Class : $"{Class} is-invalid";
+}
+<div class="form-group">
+    @if (LabelPosition?.ToLower() == "top")
     {
-        <label class="label @(LabelOnTop ? "label-top" : "")">@Label</label>
+        <label for="@Id">@Label</label>
     }
 
-    <input 
-        type="text" 
-        class="form-control @ErrorClass"
-        @bind="@Value"
-        @placeholder="@Placeholder"
-        @onblur="ValidateInput"
-    />
+    <input type="text" id="@Id" class="TextInput @InputClass" placeholder="@Placeholder" value="@Value" @bind="Value" />
 
-    @if (!string.IsNullOrEmpty(ErrorMessage))
+    @if (LabelPosition?.ToLower() == "left")
     {
-        <div class="error-message">@ErrorMessage</div>
+        <label for="@Id" class="input-label-left">@Label</label>
+    }
+
+    @if (!IsValid)
+    {
+        <div class="invalid-feedback">
+            This is a required field.
+        </div>
     }
 </div>
-
-@code {
-    [Parameter] public string? Id { get; set; }
-    [Parameter] public string? Class { get; set; }
-    [Parameter] public string? Label { get; set; }
-    [Parameter] public bool LabelOnTop { get; set; }
-    [Parameter] public string Value { get; set; }
-    [Parameter] public EventCallback<string> ValueChanged { get; set; }
-    [Parameter] public string? Placeholder { get; set; }
-    [Parameter] public string? ErrorMessage { get; set; }
-
-    private string ErrorClass => string.IsNullOrEmpty(ErrorMessage) ? "" : "error";
-
-    private async Task ValidateInput()
-    {
-        if (string.IsNullOrEmpty(Value))
-        {
-            ErrorMessage = "This is a required field";
-        }
-        else
-        {
-            ErrorMessage = string.Empty;
-        }
-        await ValueChanged.InvokeAsync(Value); // Update parent component
-    }
-
-    // Exposed method to be called from the parent to trigger validation
-    public async Task TriggerValidation()
-    {
-        await ValidateInput();
-    }
-}

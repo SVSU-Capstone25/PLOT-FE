@@ -1,40 +1,30 @@
-/* General Styling for the TextInput */
-.input-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 10px;
+.form-group {
+    margin-bottom: 1rem;
 }
 
-.form-control {
-    padding: 10px;
-    font-size: 14px;
-    width: 100%;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.input-label-left {
+    margin-right: 10px;
 }
 
-.form-control.error {
-    border-color: red; /* Red border on error */
+input.is-invalid {
+    border-color: red;
 }
 
-.error-message {
+.invalid-feedback {
     color: red;
-    font-size: 12px;
-    margin-top: 5px;
-}
-
-/* Label Styling */
-.label {
-    margin-right: 10px; /* space between label and input */
-}
-
-.label-top {
+    font-size: 0.875em;
     display: block;
-    margin-bottom: 5px;
 }
 
-.input-container.label-on-top {
-    flex-direction: column;  /* Stack label on top of input */
-    align-items: flex-start;
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
 }

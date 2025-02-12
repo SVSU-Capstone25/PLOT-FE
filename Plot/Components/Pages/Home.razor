@@ -1,34 +1,65 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<h3>Home</h3>
 
-<h1>TextInput Validation Demo</h1>
+<EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-<TextInput @ref="input1" Id="textinput1" Label="Label to the side" Value="@name1" ValueChanged="@((value) => name1 = value)" Placeholder="Enter text here" ErrorMessage="@nameError1" />
-<TextInput @ref="input2" Id="textinput2" Label="Label on top" LabelOnTop="true" Value="@name2" ValueChanged="@((value) => name2 = value)" Placeholder="Enter text here" ErrorMessage="@nameError2" />
-<TextInput @ref="input3" Id="textinput3" Label="" Value="@name3" ValueChanged="@((value) => name3 = value)" Placeholder="Enter text here" ErrorMessage="@nameError3" />
-
-<button @onclick="TriggerValidationForAllInputs">Click to test validation for all text boxes</button>
+    <TextInput Id="input1" Label="First Name" LabelPosition="top" Placeholder="Enter your first name" 
+               Value="@formModel.FirstName" ValueChanged="@(val => formModel.FirstName = val)" IsValid="@firstNameValid" />
+    
+    <TextInput Id="input2" Label="Last Name" LabelPosition="left" Placeholder="Enter your last name" 
+               Value="@formModel.LastName" ValueChanged="@(val => formModel.LastName = val)" IsValid="@lastNameValid" />
+    
+    <TextInput Id="input3" Label="" LabelPosition="none" Placeholder="Enter your email" 
+               Value="@formModel.Email" ValueChanged="@(val => formModel.Email = val)" IsValid="@emailValid" />
+    
+    <button type="submit">Submit</button>
+</EditForm>
 
 @code {
-    private string name1;
-    private string name2;
-    private string name3;
-    
-    private string nameError1;
-    private string nameError2;
-    private string nameError3;
+    private FormModel formModel = new FormModel();
+    private bool firstNameValid = true;
+    private bool lastNameValid = true;
+    private bool emailValid = true;
 
-    // References to the TextInput components
-    private TextInput input1;
-    private TextInput input2;
-    private TextInput input3;
-
-    private async Task TriggerValidationForAllInputs()
+    public class FormModel
     {
-        // Trigger validation for each input component
-        if (input1 != null) await input1.TriggerValidation();
-        if (input2 != null) await input2.TriggerValidation();
-        if (input3 != null) await input3.TriggerValidation();
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+    }
+
+    private void HandleValidSubmit()
+    {
+        // Handle form submission
+        Console.WriteLine("Form Submitted");
+    }
+
+    private void ValidateForm()
+    {
+        firstNameValid = !string.IsNullOrWhiteSpace(formModel.FirstName);
+        lastNameValid = !string.IsNullOrWhiteSpace(formModel.LastName);
+        emailValid = !string.IsNullOrWhiteSpace(formModel.Email);
+
+        // Trigger re-rendering
+        StateHasChanged();
+    }
+
+    private void HandleSubmit()
+    {
+        ValidateForm();
+
+        if (firstNameValid && lastNameValid && emailValid)
+        {
+            // Do something on valid submission
+            Console.WriteLine("Form is valid");
+        }
+        else
+        {
+            // Handle invalid form
+            Console.WriteLine("Please fill out all required fields.");
+        }
     }
 }
