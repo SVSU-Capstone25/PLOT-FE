@@ -1,7 +1,6 @@
 ﻿@page "/"
-
 <div class="container">
-    <EditForm Model="@formData">
+    <div Model="@formData">
         <div class="form-group">
             <!-- First TextInput with Label on Top -->
             <TextInput Id="first-name" Label="First Name" LabelPosition="top" 
@@ -20,7 +19,7 @@
         </div>
 
         <button type="button" class="btn btn-primary" @onclick="ValidateForm">Submit</button>
-    </EditForm>
+    </div>
 
     <!-- Success message -->
     @if (isSuccess)
