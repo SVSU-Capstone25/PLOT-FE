@@ -1,42 +1,39 @@
 ﻿@page "/"
 
-<h3>TextInput Demo</h3>
+<EditForm Model="@formData" OnValidSubmit="HandleValidSubmit">
+    <div class="form-group">
+        <!-- First TextInput with Label on Top -->
+        <TextInput Id="first-name" Label="First Name" LabelPosition="top" 
+                   Placeholder="Enter your first name" Value="@formData.FirstName" 
+                   ValueChanged="@(v => formData.FirstName = v)" IsValid="!string.IsNullOrEmpty(formData.FirstName)" />
 
-<!-- Button to trigger validation -->
-<button @onclick="HandleSubmit">Submit</button>
+        <!-- Second TextInput with Label on Left -->
+        <TextInput Id="last-name" Label="Last Name" LabelPosition="left" 
+                   Placeholder="Enter your last name" Value="@formData.LastName" 
+                   ValueChanged="@(v => formData.LastName = v)" IsValid="!string.IsNullOrEmpty(formData.LastName)" />
 
-<div>
-    <!-- First TextInput with Label On Top -->
-    <TextInput Id="input1" Label="First Name" LabelPosition="top" Placeholder="Enter your first name" 
-               Value="@firstName" ValueChanged="@(val => firstName = val)" IsValid="@firstNameValid" />
+        <!-- Third TextInput with No Label -->
+        <TextInput Id="email" LabelPosition="none" 
+                   Placeholder="Enter your email" Value="@formData.Email" 
+                   ValueChanged="@(v => formData.Email = v)" IsValid="!string.IsNullOrEmpty(formData.Email)" />
+    </div>
 
-    <!-- Second TextInput with Label on Left -->
-    <TextInput Id="input2" Label="Last Name" LabelPosition="left" Placeholder="Enter your last name" 
-               Value="@lastName" ValueChanged="@(val => lastName = val)" IsValid="@lastNameValid" />
-
-    <!-- Third TextInput with No Label -->
-    <TextInput Id="input3" Label="" LabelPosition="none" Placeholder="Enter your email" 
-               Value="@email" ValueChanged="@(val => email = val)" IsValid="@emailValid" />
-</div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
 
 @code {
-    private string? firstName;
-    private string? lastName;
-    private string? email;
+    private FormData formData = new FormData();
 
-    private bool firstNameValid = true;
-    private bool lastNameValid = true;
-    private bool emailValid = true;
-
-    // Method to validate fields and trigger UI changes
-    private void HandleSubmit()
+    private void HandleValidSubmit()
     {
-        // Validate fields and update the validity
-        firstNameValid = !string.IsNullOrWhiteSpace(firstName);
-        lastNameValid = !string.IsNullOrWhiteSpace(lastName);
-        emailValid = !string.IsNullOrWhiteSpace(email);
+        // Handle form submission here (e.g., send data to the backend)
+        Console.WriteLine("Form submitted!");
+    }
 
-        // Trigger a re-render so that styles get updated
-        StateHasChanged();
+    public class FormData
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
     }
 }

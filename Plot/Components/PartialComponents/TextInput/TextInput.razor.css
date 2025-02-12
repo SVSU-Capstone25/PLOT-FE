@@ -1,35 +1,23 @@
-.form-group {
-    margin-bottom: 1rem;
+/* Label positioning for Top, Left, and None */
+label.top {
+    display: block;
+    margin-bottom: 5px;
 }
 
-.input-label-left {
+label.left {
+    display: inline-block;
     margin-right: 10px;
 }
 
-input.is-invalid {
-    border-color: red;
+label.none {
+    display: none;
 }
 
-.invalid-feedback {
-    color: red;
-    font-size: 0.875em;
-    display: block;
+/* Red border and error message styling */
+.is-invalid {
+    border-color: red !important;
 }
 
-button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-/* Red color for placeholder when invalid */
-input.is-invalid::placeholder {
-    color: red;
+.is-invalid::placeholder {
+    color: red !important;
 }
