@@ -6,7 +6,11 @@
 
 Welcome to your new app.
 
-<TextInput Id="textinput" Class="test" Label="This is a test input label" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
+<TextInput Id="textinput" Class="test" Label="This is a test input with label to the side" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
+
+<TextInput Id="textinput" Class="test" Label="This is a test input with label on the top" LabelOnTop="true" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
+
+<TextInput Id="textinput" Class="test" Label="" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
 
 @code {
     private string name;

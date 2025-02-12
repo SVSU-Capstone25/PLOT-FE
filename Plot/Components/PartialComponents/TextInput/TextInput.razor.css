@@ -20,5 +20,10 @@
 }
 
 .label {
-    padding: 5 px;
+    padding-left: 10 px;
+}
+
+.label-top {
+    display: block;
+    margin-bottom: 5px;
 }

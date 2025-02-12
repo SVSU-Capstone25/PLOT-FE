@@ -1,5 +1,8 @@
 <div id="@Id" class="@Class input-container">
-    <label class="label">@Label</label>  <!-- Label appears next to input -->
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label class="label @(LabelOnTop ? "label-top" : "")">@Label</label>
+    }
     <input 
         type="text" 
         class="form-control @ErrorClass"
@@ -21,6 +24,9 @@
 
     [Parameter]
     public string? Label { get; set; }
+
+    [Parameter]
+    public bool LabelOnTop { get; set; } = false; // New parameter to control label position
 
     [Parameter]
     public string Value { get; set; }
