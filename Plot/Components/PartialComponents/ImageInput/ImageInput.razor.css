@@ -21,7 +21,7 @@ Author: Danielle Smith (2/10/2025) */
     min-height: 200px;
 }
 
-.drag-drop-box:hover {
+.drag-drop-box:hover, .drag-over {
     background-color: #e6e6e6;
 }
 
@@ -29,4 +29,8 @@ Author: Danielle Smith (2/10/2025) */
     font-size: 20px; 
     vertical-align: middle;
     margin-left: 8px; 
+}
+
+h5 {
+    text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
 }

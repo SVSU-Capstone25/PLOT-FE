@@ -2,32 +2,51 @@
 @using Microsoft.AspNetCore.Components.Web
 @inject IJSRuntime JS
 
+@* Filename: ImageInput.razor
+Part of Project: PLOT
 
-<div class="ImageInput drag-drop-box" id="dropArea">
+File Purpose:
+The purpose of this file is be a resubable ImageInput component throughout
+the PLOT application. The ID and text can be set dynamically through parameters.
+You can drag and drop an image or you can click on the box to upload an image.
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Danielle Smith (2/10/2025)  *@
+
+<div class="ImageInput drag-drop-box" id="@Id" style="width: @Width; height: @Height">
     <h5 class="text-decoration-underline my-auto text-center">
-        <i class="fa-solid fa-image"></i> Drag & Drop or Click to Upload
+        <i class="fa-solid fa-image"></i> @Label
     </h5>
-    <input type="file" id="fileInput" class="d-none" onchange="onFileSelected(event)">
+    <input type="file" id="@($"{Id}-fileInput")" class="d-none" onchange="onFileSelected(event)">
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        console.log("DOMContentLoaded loaded!")
-        const dropArea = document.getElementById("dropArea");
-        const fileInput = document.getElementById("fileInput");
+        // get the drag/drop area as well as the file input
+        const dropArea = document.getElementById("@Id");
+        const fileInput = document.getElementById("@Id-fileInput");
 
+        // add the event listener for when you click on the 
+        // drag/drop area that opens the file input
         dropArea.addEventListener("click", () => fileInput.click());
 
+        // add effect when something is dragged over the drag/drop area
         dropArea.addEventListener("dragover", (event) => {
             event.preventDefault();
             dropArea.classList.add("drag-over");
             event.dataTransfer.dropEffect = "copy";
         });
 
+        // remove effect when something is dragged away from the drag/drop area
         dropArea.addEventListener("dragleave", () => {
             dropArea.classList.remove("drag-over");
         });
 
+        // when a file is dropped in the drag/drop area, remove effect
+        // put the file in the file input
         dropArea.addEventListener("drop", (event) => {
             event.preventDefault();
             dropArea.classList.remove("drag-over");
@@ -39,20 +58,34 @@
         });
     });
 
+    // if a valid image file was selected, change the background 
+    // of the drag/drop area to serve as a preview
     function onFileSelected(event) {
+        console.log("@Id");
+        
         const file = event.target.files[0];
-        if (file) {
-            alert("Selected file: " + file.name);
+
+        if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                let dropArea = document.getElementById("@Id");
+
+                dropArea.style.backgroundImage = `url(${e.target.result})`;
+                dropArea.style.backgroundSize = "cover";
+                dropArea.style.backgroundPosition = "center";
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert("Please upload a valid image file.");
         }
     }
 </script>
 
-@code {
-    private ElementReference fileInput;
-    
-    [Parameter] public string Label { get; set; } = "Upload Image";  
-    [Parameter, EditorRequired] public string Id { get; set; }
-    [Parameter] public string? Class { get; set; } 
-    [Parameter] public string? Width { get; set; } 
-    [Parameter] public string? Length { get; set; } 
+@code {    
+    // text for the label - defaults to 'Upload Image'
+    [Parameter] public string Label { get; set; } = "Upload Image"; 
+    [Parameter] public string Id { get; set; } // element ID
+    [Parameter] public string? Class { get; set; } // string of classes (nullable)
+    [Parameter] public string? Width { get; set; } // width of the drag/drop area (nullable)
+    [Parameter] public string? Height { get; set; } // height of the drag/drop area (nullable)
 }
