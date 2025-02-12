@@ -1,12 +1,19 @@
-<div class="text-area @Class" id="@ID">
+<div class="TextArea @Class" id="@ID">
     <h5 class="row">
-        <i class="col-sm-1 @iconString"></i>
+        @if(iconString == null)
+        {
+            @((MarkupString)@_blankIcon)
+        }
+        else
+        {
+            <i class="col-auto @iconString"></i>
+        }
         <p class="col-sm-11">
             @label
         </p>
     </h5>
     <div class="row">
-        <p class="col-sm-1"></p>
+        @((MarkupString)@_blankIcon)
         <textarea class="col-sm-11" placeholder=@placeholder></textarea>
     </div>
 </div>
@@ -24,6 +31,9 @@
     //String reference to a FontAwesome icon to display next to the label.
     [Parameter]
     public String? iconString {get; set;}
+
+    //Insert this string as markup to space elements correctly, when no icon is specified.
+    private String _blankIcon = """<i class="col-auto fa-solid fa-square" style="opacity: 0%;"></i>""";
 
     //Text to display above the text box area
     [Parameter, EditorRequired]
