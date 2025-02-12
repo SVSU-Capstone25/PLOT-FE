@@ -1,42 +1,40 @@
+/* General Styling for the TextInput */
 .input-container {
-    display: flex; /* Flexbox layout */
-    align-items: center; /* Vertically center the input with the label */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 .form-control {
     padding: 10px;
-    font-size: 11px;
-    width: auto; /* Adjust width so that it doesn't stretch across the container */
+    font-size: 14px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 .form-control.error {
-    border: 2px solid red; /* Red border for error state */
+    border-color: red; /* Red border on error */
 }
 
-/* .error-message {
+.error-message {
     color: red;
     font-size: 12px;
     margin-top: 5px;
-} */
-
-.error {
-    border-color: red; /* Highlight the input in red */
-}
-.error-message {
-    color: red; /* Show the error message in red */
 }
 
-
-.input-container.label-on-top {
-    flex-direction: column; /* Stacks label and input vertically */
-    align-items: flex-start; /* Aligns items to the left */
-}
-
+/* Label Styling */
 .label {
-    padding-right: 10px;
+    margin-right: 10px; /* space between label and input */
 }
 
 .label-top {
     display: block;
     margin-bottom: 5px;
+}
+
+.input-container.label-on-top {
+    flex-direction: column;  /* Stack label on top of input */
+    align-items: flex-start;
 }

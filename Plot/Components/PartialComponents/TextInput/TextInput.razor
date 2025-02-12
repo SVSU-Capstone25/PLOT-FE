@@ -1,14 +1,18 @@
-<div id="@Id" class="TextInput @Class input-container@(LabelOnTop ? "label-on-top" : "")">
+@* TextInput.razor *@
+<div id="@Id" class="input-container @Class">
     @if (!string.IsNullOrEmpty(Label))
     {
         <label class="label @(LabelOnTop ? "label-top" : "")">@Label</label>
     }
+
     <input 
         type="text" 
         class="form-control @ErrorClass"
-        @bind="@Value" 
+        @bind="@Value"
+        @placeholder="@Placeholder"
         @onblur="ValidateInput"
     />
+
     @if (!string.IsNullOrEmpty(ErrorMessage))
     {
         <div class="error-message">@ErrorMessage</div>
@@ -22,7 +26,8 @@
     [Parameter] public bool LabelOnTop { get; set; }
     [Parameter] public string Value { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
-    [Parameter] public string ErrorMessage { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? ErrorMessage { get; set; }
 
     private string ErrorClass => string.IsNullOrEmpty(ErrorMessage) ? "" : "error";
 
@@ -30,19 +35,18 @@
     {
         if (string.IsNullOrEmpty(Value))
         {
-            ErrorMessage = "This field is required.";
+            ErrorMessage = "This is a required field";
         }
         else
         {
             ErrorMessage = string.Empty;
         }
-
-        await ValueChanged.InvokeAsync(Value);
+        await ValueChanged.InvokeAsync(Value); // Update parent component
     }
 
+    // Exposed method to be called from the parent to trigger validation
     public async Task TriggerValidation()
     {
-        Console.WriteLine("TriggerValidation called");
         await ValidateInput();
     }
 }
