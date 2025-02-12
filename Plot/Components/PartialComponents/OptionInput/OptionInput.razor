@@ -1,12 +1,19 @@
 <div class="option-input @Class" id="@ID">
     <h5 class="row">
-        <i class="col-sm-1 @iconString"></i>
-        <p class="col-sm-11">
+        @if(iconString == null)
+        {
+            @((MarkupString)_blankIcon)
+        }
+        else
+        {
+            <i class="col-auto @iconString"></i>
+        }
+        <p class="col-md-11">
             @label
         </p>
     </h5>
     <div class="row">
-        <p class="col-sm-1"></p>
+        @((MarkupString)_blankIcon)
         @if (optionsText.Count != optionsValues.Count)
         {
             <p>Error - Option and Value counts mismatched.</p>
@@ -16,7 +23,7 @@
             <p>Error - No options passed to this OptionInput component.</p>
         }
         else{
-            <select class="col-sm-11">
+            <select class="col-md-11">
             @for (var i = 0; i < optionsValues.Count; i++)
             {
                     <option value=@optionsValues[i]>@optionsText[i]</option>
@@ -39,6 +46,8 @@
     //String reference to a FontAwesome icon to display next to the label.
     [Parameter]
     public String? iconString {get; set;}
+
+    private String _blankIcon = """<i class="col-auto fa-solid fa-square" style="opacity: 0%;"></i>""";
 
     //Text to display above the text box area
     [Parameter, EditorRequired]

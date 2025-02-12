@@ -5,7 +5,7 @@ p
 
 select
 {
-    background: none;
+    background: transparent;
     border: none;
     opacity: 50%;
 }
