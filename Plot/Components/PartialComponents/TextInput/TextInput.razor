@@ -2,19 +2,25 @@
 
 <div class="form-group">
     <!-- Label based on LabelPosition -->
-    @if (!string.IsNullOrEmpty(Label))
+    @if (!string.IsNullOrEmpty(Label) && LabelPosition == "top")
     {
-        <label class="@LabelPosition">@Label</label>
+        <label>@Label</label>
     }
 
     <!-- Input Field -->
-    <input type="text" id="@Id" class="form-control @GetCssClass()" placeholder="@GetPlaceholderText()" 
+    <input type="text" id="@Id" class="form-control @GetCssClass()" placeholder="@Placeholder" 
            @bind="@Value" @bind:event="oninput" />
 
     <!-- Display validation error message -->
     @if (!IsValid && IsSubmitted)
     {
         <div class="invalid-feedback">This is a required field</div>
+    }
+
+    <!-- Label on the side if specified -->
+    @if (!string.IsNullOrEmpty(Label) && LabelPosition == "left")
+    {
+        <label>@Label</label>
     }
 </div>
 
@@ -33,11 +39,5 @@
     private string GetCssClass()
     {
         return IsValid ? "" : "is-invalid";
-    }
-
-    // Placeholder text to indicate validation message
-    private string GetPlaceholderText()
-    {
-        return IsValid ? Placeholder ?? "" : "This is a required field";
     }
 }
