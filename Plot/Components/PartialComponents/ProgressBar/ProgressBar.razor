@@ -1,22 +1,13 @@
-<div class="row progress-bar @Class" id = "@ID">
-    @if (iconString != null)
-    {
-        <div class="col-md-1">
-            <i class="@iconString"></i>
-        </div>
-        <div class="col-md-5">
-            @mainLabel
-        </div>
-    }
-    else
-    {
-        <div class="col-md-6">
-            @mainLabel
-        </div>
-    }
-   
+<div class="ProgressBar row @Class" id = "@ID">
+    <div class="col-6">
+        @if(iconString != null)
+        {
+            <i class="@iconString me-2"></i>
+        }
+        @mainLabel
+    </div>
 
-    <div class="col-md-6">
+    <div class="col-6">
         <div class="progress-container @_barClass">
             <div class="progress-container-text">
                 <div class="progress-container-text-align-center">@barLabel</div>
@@ -27,10 +18,11 @@
 </div>
 
 @code {
-    //ID assigned to this component.
+    //ID string to pass into the main HTML ID
     [Parameter]
     public String? ID {get; set;}
 
+    //Class string to pass into the main component HTML Class
     [Parameter]
     public String? Class {get; set;}
 
