@@ -19,8 +19,13 @@
     margin-top: 5px;
 }
 
+.input-container.label-on-top {
+    flex-direction: column; /* Stacks label and input vertically */
+    align-items: flex-start; /* Aligns items to the left */
+}
+
 .label {
-    padding-left: 10 px;
+    padding-right: 10 px;
 }
 
 .label-top {
