@@ -4,15 +4,19 @@
 
 <h1>Hello, world!</h1>
 
-<TextInput @ref="input1" Id="textinput1" Label="This is a test input with label to the side" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
-<TextInput @ref="input2" Id="textinput2" Label="This is a test input with label on the top" LabelOnTop="true" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
-<TextInput @ref="input3" Id="textinput3" Label="" Value="@name" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError" />
+<TextInput @ref="input1" Id="textinput1" Label="This is a test input with label to the side" Value="@name1" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError1" />
+<TextInput @ref="input2" Id="textinput2" Label="This is a test input with label on the top" LabelOnTop="true" Value="@name2" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError2" />
+<TextInput @ref="input3" Id="textinput3" Label="" Value="@name3" ValueChanged="@((value) => name = value)" ErrorMessage="@nameError3" />
 
 <button @onclick="TriggerValidationForAllInputs">Click to test input for all text boxes</button>
 
 @code {
-    private string name;
-    private string nameError;
+    private string name1;
+    private string nameError1;
+    private string name2;
+    private string nameError2;
+    private string name3;
+    private string nameError3;
 
     // References to the TextInput components
     private TextInput input1;
