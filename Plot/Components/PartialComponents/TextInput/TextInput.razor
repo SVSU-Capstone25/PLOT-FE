@@ -10,6 +10,12 @@
     <!-- Input Field -->
     <input type="text" id="@Id" class="form-control @GetCssClass()" placeholder="@GetPlaceholderText()" 
            @bind="@Value" @bind:event="oninput" />
+
+    <!-- Display validation error message -->
+    @if (!IsValid && IsSubmitted)
+    {
+        <div class="invalid-feedback">This is a required field</div>
+    }
 </div>
 
 @code {
@@ -20,7 +26,8 @@
     [Parameter] public string? Placeholder { get; set; }
     [Parameter] public string? Value { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
-    [Parameter] public bool IsValid { get; set; }
+    [Parameter] public bool IsValid { get; set; } = true; // Start as valid by default
+    [Parameter] public bool IsSubmitted { get; set; } = false; // Tracks if the submit button has been clicked
 
     // Get the CSS class based on validity
     private string GetCssClass()

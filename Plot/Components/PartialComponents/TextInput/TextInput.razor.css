@@ -7,6 +7,7 @@ label.top {
 label.left {
     display: inline-block;
     margin-right: 10px;
+    vertical-align: middle; /* Ensures it's aligned vertically to the middle of the input */
 }
 
 label.none {
@@ -20,4 +21,34 @@ label.none {
 
 .is-invalid::placeholder {
     color: red !important;
+}
+/* Label positioning for Top, Left, and None */
+label.top {
+    display: block;
+    margin-bottom: 5px;
+}
+
+label.left {
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+label.none {
+    display: none;
+}
+
+/* Red border and error message styling */
+.is-invalid {
+    border-color: red !important;
+}
+
+.is-invalid::placeholder {
+    color: red !important;
+}
+
+.invalid-feedback {
+    color: red;
+    font-size: 0.875rem;
+    display: block;
 }

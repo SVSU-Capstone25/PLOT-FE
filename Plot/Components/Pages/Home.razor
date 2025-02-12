@@ -1,33 +1,65 @@
 ﻿@page "/"
 
-<EditForm Model="@formData" OnValidSubmit="HandleValidSubmit">
-    <div class="form-group">
-        <!-- First TextInput with Label on Top -->
-        <TextInput Id="first-name" Label="First Name" LabelPosition="top" 
-                   Placeholder="Enter your first name" Value="@formData.FirstName" 
-                   ValueChanged="@(v => formData.FirstName = v)" IsValid="!string.IsNullOrEmpty(formData.FirstName)" />
+<div class="container">
+    <EditForm Model="@formData">
+        <div class="form-group">
+            <!-- First TextInput with Label on Top -->
+            <TextInput Id="first-name" Label="First Name" LabelPosition="top" 
+                    Placeholder="Enter your first name" Value="@formData.FirstName" 
+                    ValueChanged="@(v => formData.FirstName = v)" IsValid="@firstNameValid" IsSubmitted="@isSubmitted" />
 
-        <!-- Second TextInput with Label on Left -->
-        <TextInput Id="last-name" Label="Last Name" LabelPosition="left" 
-                   Placeholder="Enter your last name" Value="@formData.LastName" 
-                   ValueChanged="@(v => formData.LastName = v)" IsValid="!string.IsNullOrEmpty(formData.LastName)" />
+            <!-- Second TextInput with Label on Left -->
+            <TextInput Id="last-name" Label="Last Name" LabelPosition="left" 
+                    Placeholder="Enter your last name" Value="@formData.LastName" 
+                    ValueChanged="@(v => formData.LastName = v)" IsValid="@lastNameValid" IsSubmitted="@isSubmitted" />
 
-        <!-- Third TextInput with No Label -->
-        <TextInput Id="email" LabelPosition="none" 
-                   Placeholder="Enter your email" Value="@formData.Email" 
-                   ValueChanged="@(v => formData.Email = v)" IsValid="!string.IsNullOrEmpty(formData.Email)" />
-    </div>
+            <!-- Third TextInput with No Label -->
+            <TextInput Id="email" LabelPosition="none" 
+                    Placeholder="Enter your email" Value="@formData.Email" 
+                    ValueChanged="@(v => formData.Email = v)" IsValid="@emailValid" IsSubmitted="@isSubmitted" />
+        </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
-</EditForm>
+        <button type="button" class="btn btn-primary" @onclick="ValidateForm">Submit</button>
+    </EditForm>
+
+    <!-- Success message -->
+    @if (isSuccess)
+    {
+        <div class="alert alert-success mt-3">Success</div>
+    }
+</div>
 
 @code {
     private FormData formData = new FormData();
 
-    private void HandleValidSubmit()
+    // Validation flags
+    private bool firstNameValid = true;
+    private bool lastNameValid = true;
+    private bool emailValid = true;
+
+    // Track submission and success
+    private bool isSubmitted = false;
+    private bool isSuccess = false;
+
+    private void ValidateForm()
     {
-        // Handle form submission here (e.g., send data to the backend)
-        Console.WriteLine("Form submitted!");
+        // Mark the form as submitted
+        isSubmitted = true;
+
+        // Validate all fields and update the validity flags
+        firstNameValid = !string.IsNullOrEmpty(formData.FirstName);
+        lastNameValid = !string.IsNullOrEmpty(formData.LastName);
+        emailValid = !string.IsNullOrEmpty(formData.Email);
+
+        // If all fields are valid, show success message
+        if (firstNameValid && lastNameValid && emailValid)
+        {
+            isSuccess = true;
+        }
+        else
+        {
+            isSuccess = false;
+        }
     }
 
     public class FormData
