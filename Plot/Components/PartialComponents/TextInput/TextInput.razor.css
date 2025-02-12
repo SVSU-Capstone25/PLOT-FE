@@ -28,3 +28,8 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+/* Red color for placeholder when invalid */
+input.is-invalid::placeholder {
+    color: red;
+}

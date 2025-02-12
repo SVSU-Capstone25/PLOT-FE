@@ -1,32 +1,36 @@
-@code {
-    [Parameter] public string Id { get; set; }
-    [Parameter] public string Class { get; set; }
-    [Parameter] public string Value { get; set; }
-    [Parameter] public string Label { get; set; }
-    [Parameter] public string LabelPosition { get; set; }
-    [Parameter] public string Placeholder { get; set; }
-    [Parameter] public EventCallback<string> ValueChanged { get; set; }
-    [Parameter] public bool IsValid { get; set; } = true;
+@using System
 
-    private string InputClass => IsValid ? Class : $"{Class} is-invalid";
-}
 <div class="form-group">
-    @if (LabelPosition?.ToLower() == "top")
+    <!-- Label with conditional placement -->
+    @if (!string.IsNullOrEmpty(Label))
     {
-        <label for="@Id">@Label</label>
+        <label for="@Id" class="@LabelPosition">@Label</label>
     }
 
-    <input type="text" id="@Id" class="TextInput @InputClass" placeholder="@Placeholder" @bind="Value" />
+    <input type="text" id="@Id" class="form-control @GetCssClass()" placeholder="@GetPlaceholderText()" 
+           @bind="@Value" @bind:event="oninput" />
 
-    @if (LabelPosition?.ToLower() == "left")
-    {
-        <label for="@Id" class="input-label-left">@Label</label>
-    }
-
-    @if (!IsValid)
-    {
-        <div class="invalid-feedback">
-            This is a required field.
-        </div>
-    }
 </div>
+
+@code {
+    [Parameter] public string Id { get; set; } = string.Empty;
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string LabelPosition { get; set; } = "top"; // Can be 'top', 'left', or 'none'
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public bool IsValid { get; set; }
+
+    // Get the CSS class depending on validity
+    private string GetCssClass()
+    {
+        return IsValid ? "" : "is-invalid";
+    }
+
+    // Get the updated placeholder text depending on validation status
+    private string GetPlaceholderText()
+    {
+        return IsValid ? Placeholder ?? "" : "This is a required field";
+    }
+}

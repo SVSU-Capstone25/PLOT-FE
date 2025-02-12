@@ -1,65 +1,42 @@
 ﻿@page "/"
 
-<h3>Home</h3>
+<h3>TextInput Demo</h3>
 
-<EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<!-- Button to trigger validation -->
+<button @onclick="HandleSubmit">Submit</button>
 
+<div>
+    <!-- First TextInput with Label On Top -->
     <TextInput Id="input1" Label="First Name" LabelPosition="top" Placeholder="Enter your first name" 
-               Value="@formModel.FirstName" ValueChanged="@(val => formModel.FirstName = val)" IsValid="@firstNameValid" />
-    
+               Value="@firstName" ValueChanged="@(val => firstName = val)" IsValid="@firstNameValid" />
+
+    <!-- Second TextInput with Label on Left -->
     <TextInput Id="input2" Label="Last Name" LabelPosition="left" Placeholder="Enter your last name" 
-               Value="@formModel.LastName" ValueChanged="@(val => formModel.LastName = val)" IsValid="@lastNameValid" />
-    
+               Value="@lastName" ValueChanged="@(val => lastName = val)" IsValid="@lastNameValid" />
+
+    <!-- Third TextInput with No Label -->
     <TextInput Id="input3" Label="" LabelPosition="none" Placeholder="Enter your email" 
-               Value="@formModel.Email" ValueChanged="@(val => formModel.Email = val)" IsValid="@emailValid" />
-    
-    <button type="submit">Submit</button>
-</EditForm>
+               Value="@email" ValueChanged="@(val => email = val)" IsValid="@emailValid" />
+</div>
 
 @code {
-    private FormModel formModel = new FormModel();
+    private string? firstName;
+    private string? lastName;
+    private string? email;
+
     private bool firstNameValid = true;
     private bool lastNameValid = true;
     private bool emailValid = true;
 
-    public class FormModel
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-    }
-
-    private void HandleValidSubmit()
-    {
-        // Handle form submission
-        Console.WriteLine("Form Submitted");
-    }
-
-    private void ValidateForm()
-    {
-        firstNameValid = !string.IsNullOrWhiteSpace(formModel.FirstName);
-        lastNameValid = !string.IsNullOrWhiteSpace(formModel.LastName);
-        emailValid = !string.IsNullOrWhiteSpace(formModel.Email);
-
-        // Trigger re-rendering
-        StateHasChanged();
-    }
-
+    // Method to validate fields and trigger UI changes
     private void HandleSubmit()
     {
-        ValidateForm();
+        // Validate fields and update the validity
+        firstNameValid = !string.IsNullOrWhiteSpace(firstName);
+        lastNameValid = !string.IsNullOrWhiteSpace(lastName);
+        emailValid = !string.IsNullOrWhiteSpace(email);
 
-        if (firstNameValid && lastNameValid && emailValid)
-        {
-            // Do something on valid submission
-            Console.WriteLine("Form is valid");
-        }
-        else
-        {
-            // Handle invalid form
-            Console.WriteLine("Please fill out all required fields.");
-        }
+        // Trigger a re-render so that styles get updated
+        StateHasChanged();
     }
 }
