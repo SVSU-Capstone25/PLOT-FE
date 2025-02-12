@@ -1,43 +1,24 @@
-@using System
-
-<div class="form-group">
-    <!-- Label based on LabelPosition -->
-    @if (!string.IsNullOrEmpty(Label) && LabelPosition == "top")
-    {
-        <label>@Label</label>
-    }
-
-    <!-- Input Field -->
-    <input type="text" id="@Id" class="form-control @GetCssClass()" placeholder="@Placeholder" 
-           @bind="@Value" @bind:event="oninput" />
-
-    <!-- Display validation error message -->
-    @if (!IsValid && IsSubmitted)
-    {
-        <div class="invalid-feedback">This is a required field</div>
-    }
-
-    <!-- Label on the side if specified -->
-    @if (!string.IsNullOrEmpty(Label) && LabelPosition == "left")
-    {
-        <label>@Label</label>
-    }
-</div>
-
 @code {
-    [Parameter] public string Id { get; set; } = string.Empty;
-    [Parameter] public string Class { get; set; } = string.Empty;
-    [Parameter] public string? Label { get; set; }
-    [Parameter] public string LabelPosition { get; set; } = "top"; // 'top', 'left', or 'none'
-    [Parameter] public string? Placeholder { get; set; }
-    [Parameter] public string? Value { get; set; }
-    [Parameter] public EventCallback<string> ValueChanged { get; set; }
-    [Parameter] public bool IsValid { get; set; } = true; // Start as valid by default
-    [Parameter] public bool IsSubmitted { get; set; } = false; // Tracks if the submit button has been clicked
+    [Parameter] public string ID { get; set; } = "";
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Placeholder { get; set; } = "";
+    [Parameter] public bool IsError { get; set; } = false;
+    private string inputText = "";
 
-    // Get the CSS class based on validity
-    private string GetCssClass()
+    private string GetInputClass() => IsError ? $"{Class} border-red-500 text-red-500" : Class;
+
+    private void OnInput(ChangeEventArgs e)
     {
-        return IsValid ? "" : "is-invalid";
+        inputText = e.Value?.ToString() ?? "";
+        if (IsError && !string.IsNullOrWhiteSpace(inputText))
+        {
+            IsError = false;
+        }
     }
+}
+
+<input id="@ID" class="@GetInputClass()" placeholder="@GetPlaceholder()" @oninput="OnInput" value="@inputText" />
+@if (IsError)
+{
+    <p class="text-red-500 text-sm">Please enter data</p>
 }

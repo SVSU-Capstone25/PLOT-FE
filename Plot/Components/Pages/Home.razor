@@ -1,73 +1,36 @@
-﻿@page "/"
-<PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-<div class="container">
-    <div Model="@formData">
-        <div class="form-group">
-            <!-- First TextInput with Label on Top -->
-            <TextInput Id="first-name" Label="First Name" LabelPosition="top" 
-                    Placeholder="Enter your first name" Value="@formData.FirstName" 
-                    ValueChanged="@(v => formData.FirstName = v)" IsValid="@firstNameValid" IsSubmitted="@isSubmitted" />
-
-            <!-- Second TextInput with Label on Left -->
-            <TextInput Id="last-name" Label="Last Name" LabelPosition="left" 
-                    Placeholder="Enter your last name" Value="@formData.LastName" 
-                    ValueChanged="@(v => formData.LastName = v)" IsValid="@lastNameValid" IsSubmitted="@isSubmitted" />
-
-            <!-- Third TextInput with No Label -->
-            <TextInput Id="email" LabelPosition="none" 
-                    Placeholder="Enter your email" Value="@formData.Email" 
-                    ValueChanged="@(v => formData.Email = v)" IsValid="@emailValid" IsSubmitted="@isSubmitted" />
-        </div>
-
-        <button type="button" class="btn btn-primary" @onclick="ValidateForm">Submit</button>
-    </div>
-
-    <!-- Success message -->
-    @if (isSuccess)
-    {
-        <div class="alert alert-success mt-3">Success</div>
-    }
-</div>
+﻿@page "/test-"
 
 @code {
-    private FormData formData = new FormData();
+    private bool input1Error = false;
+    private bool input2Error = false;
+    private bool input3Error = false;
+    private string input3Value = "";
 
-    // Validation flags
-    private bool firstNameValid = true;
-    private bool lastNameValid = true;
-    private bool emailValid = true;
-
-    // Track submission and success
-    private bool isSubmitted = false;
-    private bool isSuccess = false;
-
-    private void ValidateForm()
+    private void ValidateInput()
     {
-        // Mark the form as submitted
-        isSubmitted = true;
-
-        // Validate all fields and update the validity flags
-        firstNameValid = !string.IsNullOrEmpty(formData.FirstName);
-        lastNameValid = !string.IsNullOrEmpty(formData.LastName);
-        emailValid = !string.IsNullOrEmpty(formData.Email);
-
-        // If all fields are valid, show success message
-        if (firstNameValid && lastNameValid && emailValid)
+        if (string.IsNullOrWhiteSpace(input3Value))
         {
-            isSuccess = true;
+            input3Error = true;
         }
-        else
-        {
-            isSuccess = false;
-        }
-    }
-
-    public class FormData
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
     }
 }
+
+<h3>Text Input Examples</h3>
+
+<!-- Example 1: Label on top -->
+<div>
+    <label for="input1">Label on Top</label>
+    <TextInput ID="input1" Class="border p-2" Placeholder="Enter text..." IsError="@input1Error" />
+</div>
+
+<!-- Example 2: Label on side -->
+<div class="flex items-center">
+    <label for="input2" class="mr-2">Label on Side</label>
+    <TextInput ID="input2" Class="border p-2" Placeholder="Enter text..." IsError="@input2Error" />
+</div>
+
+<!-- Example 3: No Label, with Validation -->
+<div>
+    <TextInput ID="input3" Class="border p-2" Placeholder="Enter text..." IsError="@input3Error" @bind-value="input3Value" />
+    <button class="ml-2 p-2 bg-blue-500 text-white" @onclick="ValidateInput">Validate</button>
+</div>
