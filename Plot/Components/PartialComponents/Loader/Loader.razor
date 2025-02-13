@@ -16,7 +16,7 @@ Author: Josh Rodack (2/10/2025)-->
         <i class="fa-solid fa-spinner fa-spin-pulse"></i>
     </div>
 
-    @LabelText
+    @ChildContent
 
 </div>
 
@@ -24,7 +24,7 @@ Author: Josh Rodack (2/10/2025)-->
 @code {
 
     [Parameter]
-    public required RenderFragment LabelText { get; set; }
+    public RenderFragment ChildContent { get; set; }
 
     [Parameter]
     public string? Id { get; set; }
