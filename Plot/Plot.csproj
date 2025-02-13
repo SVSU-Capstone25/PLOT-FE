@@ -4,4 +4,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Toolbelt.Blazor.FileDropZone" Version="3.0.1" />
+  </ItemGroup>
 </Project>
