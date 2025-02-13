@@ -30,8 +30,8 @@ public class ImageInputTest : PageTest
         await fileInput.SetInputFilesAsync(new[] { "../../../Components/PartialComponents/TestImages/myman.jpg" });
 
         // Verify that the background image is set correctly.
-        //var backgroundImage = await imageInput.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage");
-        //Assert.Contains("data:image/jpeg;base64,", backgroundImage);
+        var backgroundImage = await imageInput.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage");
+        Assert.Contains("data:image/jpeg;base64,", backgroundImage);
     }
 
 }
