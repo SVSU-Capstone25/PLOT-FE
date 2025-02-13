@@ -19,6 +19,10 @@ public class ImageInputTest : PageTest
         // Expect the image input to be on the page.
         await Expect(imageInput).ToBeVisibleAsync();
 
+        // Verify that the label exists.
+        var label = imageInput.Locator("h5.text-decoration-underline.my-auto.text-center");
+        await Expect(label).ToBeVisibleAsync();
+
         var fileInput = Page.Locator("#ExampleImageInput-fileInput");
 
         // Simulate image file upload based on an image file on local machine.
