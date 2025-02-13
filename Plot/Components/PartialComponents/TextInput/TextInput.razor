@@ -14,12 +14,11 @@
         {
             IsError = false;
         }
+        else
+        {
+            <p class="text-red-500 text-sm">Please enter data</p>
+        }
     }
-    @if (IsError)
-{
-    <p class="text-red-500 text-sm">Please enter data</p>
-}
 }
 
 <input id="@ID" class="TextInput @GetInputClass()" placeholder="@GetPlaceholder()" @oninput="OnInput" value="@inputText" />
-
