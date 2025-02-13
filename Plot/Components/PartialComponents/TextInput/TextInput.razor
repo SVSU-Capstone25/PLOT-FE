@@ -10,17 +10,12 @@
 
     private async Task OnInput(ChangeEventArgs e)
     {
-        Value = e.Value?.ToString() ?? "";
-        await ValueChanged.InvokeAsync(Value);
-
-        if (IsError && !string.IsNullOrWhiteSpace(Value))
-        {
-            IsError = false;
-        }
+        // Do not modify Value directly, instead notify the parent
+        await ValueChanged.InvokeAsync(e.Value?.ToString() ?? "");
     }
 }
 
-<input id="@ID" class="@GetInputClass()" placeholder="@Placeholder" @oninput="OnInput" value="@Value" />
+<input id="@ID" class="TextInput @GetInputClass()" placeholder="@Placeholder" @oninput="OnInput" value="@Value" />
 
 @if (IsError)
 {
