@@ -8,4 +8,5 @@ select
     background: transparent;
     border: none;
     opacity: 50%;
+    margin-left: 0.1rem;
 }
