@@ -53,8 +53,15 @@
     [Parameter]
     public String barColor {get; set;} = "aliceblue";
 
+    //Toggle for using over/underfill styling presets. Defaults to true, since this is most likely used primarily in allocations page.
+    [Parameter]
+    public Boolean usePresetFillWarnings {get; set;} = true;
+
     //Preset styling for the bar - If the barProgress is < 100%, barClass is updated to mark the bar unfulfilled.
     private String _unFilledClass = "progress-unfulfilled";
+
+    //Preset styling for the bar - If barProgress is > 100%, barClass is updated to mark the bar overfilled
+    private String _overFilledClass = "progress-overfilled";
 
     //The current styling class of the bar. Can be empty or set to the contents of _unFilledClass
     private String _barClass = "";
@@ -76,9 +83,16 @@
     //If the bar progress is not filled, add the "unfulfilled" class to the progress div.
     protected override void OnInitialized()
     {
-        if (barValue < barMax)
+        if (usePresetFillWarnings)
         {
-            _barClass = _unFilledClass;
-        } 
+            if (barValue < barMax)
+            {
+                _barClass = _unFilledClass;
+            }
+            else if (barValue > barMax)
+            {
+                _barClass = _overFilledClass;
+            }
+        }
     }
 }

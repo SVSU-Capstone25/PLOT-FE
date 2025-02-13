@@ -18,6 +18,11 @@
   border: 2px solid #EF4444;
 }
 
+.progress-overfilled
+{
+  border: 2px dashed gold;
+  background-color: black;
+}
 .progress-container-text 
 {
   position: absolute;
