@@ -16,11 +16,13 @@
 @inherits LayoutComponentBase
 @inject IJSRuntime JS
 
-<div class="@Class" id="@Id">
-    <div class="form-floating mt-3">
-        <input type="date" class="date-input form-control @invalidClass" 
-                                id="date-input" @onchange="HandleDateChange" />
-        <label for="date-input" class="inner-date-label">
+<div class="DateInput @Class " id="@Id">
+    <div class="form-floating mt-3 custom-date-wrapper">
+        <input type="date" class="date-input form-control custom-date-input @invalidClass" 
+                                                id="date-input" @onchange="HandleDateChange" />
+        <i class="fa-regular fa-calendar custom-calendar-icon" @onclick="OpenDatePicker"></i>
+
+        <label for="date-input" class="inner-date-label @invalidClass">
             @* If the date is valid, keep the label text the same *@
             @{string text = "";}
             @if (isValid) 
@@ -36,8 +38,14 @@
         </label>
     </div> 
     
-    <label for="date-input" class="date-label">MM/DD/YYYY</label>
+    <label for="date-input" class="date-format-label">MM/DD/YYYY</label>
 </div>
+
+<script>
+    window.openDatePicker = function () {
+        document.querySelector("#date-input").showPicker();
+    };
+</script>
 
 @code 
 {
@@ -54,7 +62,7 @@
     [Parameter]
     public EventCallback<DateOnly> ValueChanged { get; set; }   
 
-    public DateOnly Value;
+    public DateOnly Value = DateOnly.FromDateTime(DateTime.Now);
 
     private DateTime selectedDateTime;
 
@@ -66,6 +74,11 @@
     protected override void OnParametersSet()
     {
         selectedDateTime = Value.ToDateTime(TimeOnly.MinValue); // Convert DateOnly to DateTime
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) 
+    {
+        await ValueChanged.InvokeAsync(Value);
     }
 
     /*
@@ -94,5 +107,13 @@
             }
             
         }
+
     }
+
+    private void OpenDatePicker()
+    {
+        JS.InvokeVoidAsync("openDatePicker");
+    }
+
+
 }

@@ -17,11 +17,10 @@ Welcome to your new app.
 
     private async Task OnDateChanged(DateOnly newDate)
     {
-        if (SelectedDate != newDate) 
-        {            
-            SelectedDate = newDate; // Update the parent state
-            await InvokeAsync(StateHasChanged); // Ensure UI updates
-        }
+       
+        SelectedDate = newDate; // Update the parent state
+        await InvokeAsync(StateHasChanged); // Ensure UI updates
+    
         
     }
 }
