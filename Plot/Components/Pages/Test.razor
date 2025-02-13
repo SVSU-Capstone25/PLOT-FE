@@ -10,12 +10,14 @@ Welcome to your new app.
 
 <FileInput OnFileSelected="HandleFileSelected"></FileInput>
 
+
+
 @if (selectedFile != null) {
     <p>@selectedFile.Name</p>
 }
 
 @code {
-    private IBrowserFile selectedFile;
+    private IBrowserFile? selectedFile;
 
     /* 
         Set the OnFileSelected parameter to this function handle,

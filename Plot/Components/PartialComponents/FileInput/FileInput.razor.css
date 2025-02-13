@@ -24,6 +24,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    border-radius: 10px;
+    padding: 2rem;
 }
 
 .file-name {
@@ -33,6 +36,11 @@
 
 .has-file {
     width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #d5d5d5;
+    align-self: flex-start;
+    margin-top: .5rem;
 }
 
 .has-file i {
@@ -41,14 +49,19 @@
 
 .file-input-zone {
     border: 2px dashed gray;
-    padding: 10px;
     align-items: center;
     justify-content: center;
-    background-color: lightgray;
+    background-color: #ebebeb;
     font-size: 1.5rem;
     position: relative;
     min-height: 150px;
-    flex-direction: column;
+    border-radius: 10px;
+    height: 16rem;
+    padding: 0 .5rem;
+}
+
+.dragging:has(div.no-file) {
+    background-color: linen;
 }
 
 label.load-files-label {
@@ -68,3 +81,4 @@ label.load-files-label {
         background-color:lightcoral;
         -webkit-transition: background-color 100ms linear;
     }
+

@@ -16,7 +16,8 @@
 @rendermode InteractiveServer
 @inject ILogger<FileInput> Logger
 
-<div class="file-input-zone d-flex @Class" id="@Id" @ondragover:preventDefault="true" 
+@* Set the div to prevent default action of all drop events *@
+<div class="FileInput file-input-zone d-flex @Class @Dragging" id="@Id" @ondragover:preventDefault="true" 
                                                     @ondragover="OnOver"
                                                     @ondrop:preventDefault="true" 
                                                     @ondrop="OnDrop"
@@ -29,19 +30,19 @@
                                                     @ondragend:preventDefault="true"
                                                     @ondragend="OnEnd"
                                                     @ondragleave:preventDefault="true"
-                                                    @ondragleave="OnLeave"
+                                                    @ondragleave="OnLeave"                                                    
                                                     >
                                                     
     @* If the user has not entered a file, or has cleared it, show the initial div *@
     @if (string.IsNullOrEmpty(Text))
     {
-        <div class="no-file d-flex">
-            <p><i class="fa-solid fa-upload"></i></p>
+        <div class="no-file d-flex ">
+            <p><i class="fa-solid fa-arrow-up-from-bracket fa-lg"></i></p>
             <p>Drag and Drop</p>
             <p>or</p>
             <label for="file-upload" class="load-files-label">Select File</label>
             <div class="file-select">
-                <InputFile id="file-upload" OnChange="LoadFile"/>
+                <InputFile id="file-upload" OnChange="LoadFile" /> 
             </div>
         </div>
     }
@@ -49,32 +50,36 @@
     else 
     {
         <div class="has-file d-flex flex">         
-            <i class="fa-regular fa-file"></i>
+            <i class="fa-regular fa-file-lines fa-lg"></i>
             <p class="file-name">@Text</p>
-            <button class="remove-file-btn ms-auto" @onclick="RemoveFile" >
+            <button class="remove-file-btn ms-auto" @onclick="RemoveFile" > 
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
     }   
 </div>            
 
+@* This script block handles the drag & drop functionality of the element. *@
 <script>
-    window.readDroppedFile = function (dotNetHelper) {
+    window.setDropEvent = function (dotNetHelper) {
         document.addEventListener("drop", function (event) {
-            event.preventDefault();
-            console.log("est")
+            event.preventDefault(); // Prevents the window from downloading the file
 
+            // if there is a file being dragged
             if (event.dataTransfer.files.length > 0) {
-                let file = event.dataTransfer.files[0];
+                let fileInput = document.querySelector('#file-upload');
 
-                console.log("Dropped File:", file.name);
-                
-                // Send file name to Blazor
-                dotNetHelper.invokeMethodAsync("SetFilename", file.name)
-                .catch(err => console.error("Blazor call failed", err));
+                // Add the file to the FileList property of a DataTransfer object
+                let dataTransfer = new DataTransfer(); 
+                dataTransfer.items.add(event.dataTransfer.files[0]); 
+
+                // add the FileList to the InputFile element, then call the OnChange event
+                fileInput.files = dataTransfer.files;
+                fileInput.dispatchEvent(new Event('change'))
             }
         });
     };
+
 </script>
 
 @code {
@@ -84,21 +89,22 @@
 
     [Parameter]
     public string? Id {get;set;}
-
+    
     [Parameter]
     public EventCallback<IBrowserFile> OnFileSelected {get;set;} // How the parent will get the file
 
     private IBrowserFile? loadedFile;
     private string? selectedFilename;
-    private string? Text;
-    private DotNetObjectReference<FileInput> objectReference;
+    private string? Text = "";
+    private string? Dragging;
 
     const int MAX_ALLOWED_SIZE = 1000 * 1024;
 
-
+    /* This method is called after the page renders. */
     protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (firstRender) {
-            objectReference = DotNetObjectReference.Create(this);
+            // Initialize the file drop zone's 'drop' event
+            await JS.InvokeVoidAsync("setDropEvent");
         }
     }
 
@@ -138,50 +144,53 @@
     {
         Text = "";
         loadedFile = null;
+
+        await OnFileSelected.InvokeAsync(loadedFile);
         await InvokeAsync(StateHasChanged);
     }
 
+    /*  
+        Drag & Drop methods.  If the user is dragging a file over the drop zone,
+        set the '.dragging' class.  If drag-leaving, drag-ending, or drag-dropping, revoke the 
+        '.dragging' class.
+    */
+
     private async Task OnDrop(DragEventArgs e)
     {        
-        
-        await JS.InvokeVoidAsync("readDroppedFile", objectReference);
+        Dragging = "";
+        await InvokeAsync(StateHasChanged);
+    }   
+
+    private async Task OnOver(DragEventArgs e)
+    {
+        Dragging = "dragging";
+        await InvokeAsync(StateHasChanged);
     }
 
-    [JSInvokable]
-    public async Task SetFilename(string fileName)
+    private async Task OnEnter(DragEventArgs e)
     {
-        Text = fileName;
-        await InvokeAsync(StateHasChanged); // Re-render component
-    }
-    
-
-    private void OnOver(DragEventArgs e)
-    {
+        Dragging = "dragging";
+        await InvokeAsync(StateHasChanged);
     }
 
-    private void OnEnter(DragEventArgs e)
+    private async Task OnEnd(DragEventArgs e)
     {
-    }
-
-    private void OnEnd(DragEventArgs e)
-    {
+        Dragging = "";
+        await InvokeAsync(StateHasChanged);
     }
 
     private void OnDrag(DragEventArgs e)
     {
     }
 
-    private void OnLeave(DragEventArgs e)
+    private async Task OnLeave(DragEventArgs e)
     {
+        Dragging = "";
+        await InvokeAsync(StateHasChanged);
     }
 
     private void OnStart(DragEventArgs e)
     {
-    }
-
-    public void Dispose()
-    {
-        objectReference?.Dispose();
     }
 }
 
