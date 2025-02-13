@@ -1,15 +1,18 @@
 @code {
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public string ID { get; set; } = "";
     [Parameter] public string Class { get; set; } = "";
     [Parameter] public string Placeholder { get; set; } = "";
     [Parameter] public bool IsError { get; set; } = false;
-    private string Value = "";
 
     private string GetInputClass() => IsError ? $"{Class} border-red-500 text-red-500" : Class;
 
-    private void OnInput(ChangeEventArgs e)
+    private async Task OnInput(ChangeEventArgs e)
     {
         Value = e.Value?.ToString() ?? "";
+        await ValueChanged.InvokeAsync(Value);
+
         if (IsError && !string.IsNullOrWhiteSpace(Value))
         {
             IsError = false;
