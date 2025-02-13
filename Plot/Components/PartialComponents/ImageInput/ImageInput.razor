@@ -16,7 +16,7 @@ and allocate floorsets for Platos Closet.
 
 Author: Danielle Smith (2/10/2025)  *@
 
-<div class="ImageInput drag-drop-box" id="@Id" style="width: @Width; height: @Height">
+<div class="ImageInput drag-drop-box dashed-border" id="@Id" style="width: @Width; height: @Height">
     <h5 class="text-decoration-underline my-auto text-center">
         <i class="fa-solid fa-image"></i> @Label
     </h5>
@@ -73,6 +73,7 @@ Author: Danielle Smith (2/10/2025)  *@
                 dropArea.style.backgroundImage = `url(${e.target.result})`;
                 dropArea.style.backgroundSize = "cover";
                 dropArea.style.backgroundPosition = "center";
+                dropArea.classList.remove("dashed-border");
             };
             reader.readAsDataURL(file);
         } else {
