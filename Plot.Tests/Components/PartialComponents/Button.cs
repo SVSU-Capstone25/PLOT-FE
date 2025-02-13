@@ -8,7 +8,7 @@ public class ButtonTest : PageTest
     [Fact]
     public async Task HasButtonAndContent()
     {
-        /*// Go to test page.
+        // Go to test page.
         await Page.GotoAsync("http://localhost:8080/test/button");
 
         // Expect the page to have a body visibile.
@@ -23,7 +23,7 @@ public class ButtonTest : PageTest
         await Expect(button).ToHaveTextAsync("Hello World");
 
         // Expect the button to have a data-id attribute with the value "hello".
-        await Expect(button).ToHaveAttributeAsync("data-test", "hello");*/
+        await Expect(button).ToHaveAttributeAsync("data-test", "hello");
     }
 
 }

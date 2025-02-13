@@ -19,12 +19,14 @@ public class ImageInputTest : PageTest
         // Expect the image input to be on the page.
         await Expect(imageInput).ToBeVisibleAsync();
 
-        // Simulate image file upload.
-        await imageInput.SetInputFilesAsync(new[] { @"D:/SVSU/Capstone/Test Images/myman.jpg" });
+        var fileInput = Page.Locator("#ExampleImageInput-fileInput");
 
-        // Verify that the image is set correctly.
-        //var backgroundImage = await imageInput.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage");
-        //Assert.Contains("myman.jpg", backgroundImage);
+        // Simulate image file upload based on an image file on local machine.
+        await fileInput.SetInputFilesAsync(new[] { @"D:/SVSU/Capstone/Test Images/myman.jpg" });
+
+        // Verify that the background image is set correctly.
+        var backgroundImage = await imageInput.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage");
+        Assert.Contains("data:image/jpeg;base64,", backgroundImage);
     }
 
 }
