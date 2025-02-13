@@ -1,36 +1,5 @@
 ﻿@page "/"
 
-@code {
-    private bool input1Error = false;
-    private bool input2Error = false;
-    private bool input3Error = false;
-    private string input3Value = "";
+<PageTitle>Test</PageTitle>
 
-    private void ValidateInput()
-    {
-        if (string.IsNullOrWhiteSpace(input3Value))
-        {
-            input3Error = true;
-        }
-    }
-}
-
-<h3>Text Input Examples</h3>
-
-<!-- Example 1: Label on top -->
-<div>
-    <label for="input1">Label on Top</label>
-    <TextInput ID="input1" Class="border p-2" Placeholder="Enter text..." IsError="@input1Error" />
-</div>
-
-<!-- Example 2: Label on side -->
-<div class="flex items-center">
-    <label for="input2" class="mr-2">Label on Side</label>
-    <TextInput ID="input2" Class="border p-2" Placeholder="Enter text..." IsError="@input2Error" />
-</div>
-
-<!-- Example 3: No Label, with Validation -->
-<div>
-    <TextInput ID="input3" Class="border p-2" Placeholder="Enter text..." IsError="@input3Error" @bind-Value="input3Value" />
-    <button class="ml-2 p-2 bg-blue-500 text-white" @onclick="ValidateInput">Validate</button>
-</div>
+<TextInput id="input" class="class" aria-placeholder="placeholder"/>
