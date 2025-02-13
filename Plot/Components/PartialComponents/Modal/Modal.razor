@@ -33,7 +33,7 @@ Author: Danielle Smith (2/9/2025) -->
 </div>
 
 @code {
-    [Parameter]
+    [Parameter, EditorRequired] 
     public string Title { get; set; } // modal title
 
     [Parameter]
@@ -50,9 +50,9 @@ Author: Danielle Smith (2/9/2025) -->
     [Parameter]
     public string? Class { get; set; } // classes for the modal (nullable)
 
-    [Parameter]
+    [Parameter, EditorRequired] 
     public RenderFragment BodyContent { get; set; } // body content of the modal
 
-    [Parameter]
+    [Parameter, EditorRequired] 
     public RenderFragment FooterContent { get; set; } // footer buttons for the modal
 }
