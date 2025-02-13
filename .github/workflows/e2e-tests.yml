@@ -69,4 +69,4 @@ jobs:
           done
 
       - name: Test FE
-        run: dotnet test ./frontend/Plot.Tests/
+        run: dotnet test ./frontend
