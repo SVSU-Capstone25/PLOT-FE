@@ -26,7 +26,8 @@ public class ImageInputTest : PageTest
         var fileInput = Page.Locator("#ExampleImageInput-fileInput");
 
         // Simulate image file upload based.
-        //await fileInput.SetInputFilesAsync(new[] { @"TestImages/myman.jpg" });
+        // await fileInput.SetInputFilesAsync(new[] { @"TestImages/myman.jpg" });
+        await fileInput.SetInputFilesAsync(new[] { "../../../Components/PartialComponents/TestImages/myman.jpg" });
 
         // Verify that the background image is set correctly.
         //var backgroundImage = await imageInput.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage");
