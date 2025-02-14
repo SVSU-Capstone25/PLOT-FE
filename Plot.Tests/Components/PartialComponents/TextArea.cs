@@ -32,7 +32,8 @@ namespace PlaywrightTests
             await Page.GotoAsync("http://localhost:8080/test/text-area");
 
             // Locate the text area based on its label
-            var textArea = Page.Locator("label:has-text('Icon Header') + textarea");
+            var textArea = Page.Locator("#textBoxWithIcon");
+
 
             // Wait for the text area to be visible
             await textArea.WaitForAsync();
