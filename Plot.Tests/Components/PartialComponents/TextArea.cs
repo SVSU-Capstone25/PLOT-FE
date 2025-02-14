@@ -35,8 +35,15 @@ public class TextAreaTest : PageTest
 
         var textArea = Page.Locator("label:has-text('Icon Header') + textarea");
 
+        // Debugging: Print the count of text areas found
+        var textAreaCount = await Page.Locator("label:has-text('Icon Header') + textarea").CountAsync();
+        Console.WriteLine($"Text areas found: {textAreaCount}");
+
+        // Wait for the text area to be attached to the DOM
+        await Page.WaitForSelectorAsync("label:has-text('Icon Header') + textarea");
+
         // Wait for the text area to be visible
-        // await Expect(textArea).ToBeVisibleAsync();
+        await Expect(textArea).ToBeVisibleAsync();
 
         // Fill the text area
         await textArea.FillAsync("Updated text");
@@ -47,5 +54,6 @@ public class TextAreaTest : PageTest
         // Expect the text area to retain its value after closing
         await Expect(textArea).ToHaveValueAsync("Updated text");
     }
+
 
 }
