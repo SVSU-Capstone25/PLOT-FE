@@ -1,48 +1,77 @@
 using Microsoft.Playwright.Xunit;
 using Xunit;
 
-namespace PlaywrightTests;
-
-public class TextAreaTest : PageTest
+namespace PlaywrightTests
 {
-    [Fact]
-    public async Task TextAreaComponentBehavesCorrectly()
+    public class TextAreaTest : PageTest
     {
-        // Go to test page.
-        await Page.GotoAsync("http://localhost:8080/test/text-area");
+        // Test if the text area component is displayed and has the expected label and icon
+        [Fact]
+        public async Task TextAreaComponentBehavesCorrectly()
+        {
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-        // Expect the page to have a body visible.
-        await Expect(Page.Locator("body")).ToBeVisibleAsync();
+            // Locate the text areas by ID
+            var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
+            var textAreaWithoutIcon = Page.Locator("#textBoxWithoutIcon");
 
-        // Locate text areas based on their labels
-        var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
-        var textAreaWithoutIcon = Page.Locator("#textBoxWithoutIcon");
+            // Wait for them to be visible and ensure both are displayed
+            await Expect(textAreaWithIcon).ToBeVisibleAsync();
+            await Expect(textAreaWithoutIcon).ToBeVisibleAsync();
 
-        await Page.WaitForTimeoutAsync(1000);
-        // Expect the text areas to be visible
-        await Expect(textAreaWithIcon).ToBeVisibleAsync();
-        await Expect(textAreaWithoutIcon).ToBeVisibleAsync();
+            // Ensure the icon is present for the first text area (with icon)
+            await Expect(Page.Locator(".fa-pen")).ToBeVisibleAsync();
+        }
 
-        // Expect the icon to be present for the first text area
-        await Expect(Page.Locator(".fa-pen")).ToBeVisibleAsync();
+        // Test if the text area saves input after closing (clicking outside)
+        [Fact]
+        public async Task TextAreaSavesOnClose()
+        {
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
+
+            // Locate the text area based on its label
+            var textArea = Page.Locator("label:has-text('Icon Header') + textarea");
+
+            // Fill the text area with text
+            await textArea.FillAsync("Updated text");
+
+            // Simulate closing by clicking outside (click anywhere on the body)
+            await Page.ClickAsync("body");
+
+            // Verify that the text is retained in the text area (saved)
+            await Expect(textArea).ToHaveValueAsync("Updated text");
+        }
+
+        // Test if the placeholder appears correctly in the text area
+        [Fact]
+        public async Task TextAreaHasCorrectPlaceholder()
+        {
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
+
+            // Locate the text area with the placeholder text
+            var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
+
+            // Check if the placeholder is correct
+            await Expect(textAreaWithIcon).ToHaveAttributeAsync("placeholder", "Text box with an icon here...");
+        }
+
+        // Test if the label is displayed correctly
+        [Fact]
+        public async Task TextAreaDisplaysCorrectLabel()
+        {
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
+
+            // Check for the label of the first text area
+            var label = Page.Locator("label[for='textBoxWithIcon']");
+            await Expect(label).ToHaveTextAsync("Icon Header");
+
+            // Check for the label of the second text area
+            var labelWithoutIcon = Page.Locator("label[for='textBoxWithoutIcon']");
+            await Expect(labelWithoutIcon).ToHaveTextAsync("No Icon Header");
+        }
     }
-
-    [Fact]
-    public async Task TextAreaSavesOnClose()
-    {
-        await Page.GotoAsync("http://localhost:8080/test/text-area");
-
-        var textArea = Page.Locator("label:has-text('Icon Header') + textarea");
-
-        // Fill the text area
-        await textArea.FillAsync("Updated text");
-
-        // Simulate closing action (e.g., clicking outside)
-        await Page.ClickAsync("body");
-
-        // Expect the text area to retain its value after closing
-        await Expect(textArea).ToHaveValueAsync("Updated text");
-    }
-
-
 }
