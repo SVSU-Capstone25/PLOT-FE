@@ -19,22 +19,13 @@
 <div class="DateInput @Class " id="@Id">
     <div class="form-floating mt-3 custom-date-wrapper">
         <input type="date" class="date-input form-control custom-date-input @invalidClass" 
-                                                id="date-input" @onchange="HandleDateChange" />
+                                                id="date-input" @onchange="HandleDateChange"  />
         <i class="fa-regular fa-calendar custom-calendar-icon" @onclick="OpenDatePicker"></i>
 
         <label for="date-input" class="inner-date-label @invalidClass">
-            @* If the date is valid, keep the label text the same *@
-            @{string text = "";}
-            @if (isValid) 
-            {
-                text = Label;
-            }
+            @* If the date is valid, keep the label text the same *@            
             @* Otherwise, inform the user of the invalid date *@
-            else 
-            {
-                text = "Invalid Date!";
-            }
-            @text
+            @(isValid ? Label : "Invalid Date!")
         </label>
     </div> 
     
@@ -43,8 +34,10 @@
 
 <script>
     window.openDatePicker = function () {
+        // Show the date picker when the date input label is clicked
         document.querySelector("#date-input").showPicker();
     };
+
 </script>
 
 @code 
@@ -56,15 +49,14 @@
     public string? Id { get; set; }
 
     [Parameter]
-    public string Label { get; set; }
+    public string? Label { get; set; }
 
     // Used to send the date to the parent
     [Parameter]
-    public EventCallback<DateOnly> ValueChanged { get; set; }   
+    public EventCallback<DateTime> ValueChanged { get; set; }   
 
-    public DateOnly Value = DateOnly.FromDateTime(DateTime.Now);
-
-    private DateTime selectedDateTime;
+    [Parameter]
+    public DateTime Value { get; set; }
 
     private string invalidClass;
 
@@ -73,12 +65,10 @@
     /* After the component receives its parameters, initialize the selectedDateTime */
     protected override void OnParametersSet()
     {
-        selectedDateTime = Value.ToDateTime(TimeOnly.MinValue); // Convert DateOnly to DateTime
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender) 
-    {
-        await ValueChanged.InvokeAsync(Value);
+        // If value has not been set, default to the current date
+        if (Value == default) {
+            Value = DateTime.Today; // Convert DateOnly to DateTime
+        }
     }
 
     /*
@@ -100,16 +90,28 @@
             else 
             {
                 invalidClass = "";
-                isValid = true;
-                selectedDateTime = newDateTime; 
-
-                await ValueChanged.InvokeAsync(DateOnly.FromDateTime(newDateTime)); 
+                isValid = true;                
             }
+            Value = newDateTime; 
             
+            await ValueChanged.InvokeAsync(newDateTime); 
         }
+        else
+        {            
+            isValid = false;
+            invalidClass = "error";            
+        }
+
+        // Send the value to the parent
+        await ValueChanged.InvokeAsync(Value);
+        
 
     }
 
+    /* 
+        The OpenDatePicker method invokes a JS script to open 
+        the date input's DatePicker.
+    */
     private void OpenDatePicker()
     {
         JS.InvokeVoidAsync("openDatePicker");

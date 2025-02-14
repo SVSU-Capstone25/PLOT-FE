@@ -13,11 +13,11 @@ Welcome to your new app.
 <p>Selected Date: @SelectedDate.ToShortDateString()</p>
 
 @code {
-    private DateOnly SelectedDate = DateOnly.MaxValue;
+    private DateTime SelectedDate;
 
-    private async Task OnDateChanged(DateOnly newDate)
+    private async Task OnDateChanged(DateTime newDate)
     {
-       
+        
         SelectedDate = newDate; // Update the parent state
         await InvokeAsync(StateHasChanged); // Ensure UI updates
     
