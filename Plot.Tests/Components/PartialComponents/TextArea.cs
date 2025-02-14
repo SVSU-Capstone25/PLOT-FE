@@ -34,16 +34,6 @@ public class TextAreaTest : PageTest
 
         var textArea = Page.Locator("label:has-text('Icon Header') + textarea");
 
-        // Debugging: Print the count of text areas found
-        var textAreaCount = await Page.Locator("label:has-text('Icon Header') + textarea").CountAsync();
-        Console.WriteLine($"Text areas found: {textAreaCount}");
-
-        // Wait for the text area to be attached to the DOM
-        await Expect(textArea).ToBeVisibleAsync();
-
-        // Wait for the text area to be visible
-        await Expect(textArea).ToBeVisibleAsync();
-
         // Fill the text area
         await textArea.FillAsync("Updated text");
 
