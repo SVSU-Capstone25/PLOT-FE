@@ -55,12 +55,13 @@ namespace PlaywrightTests
             // Navigate to the test page
             await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-            // Locate the text area with the placeholder text
-            var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
+            // Locate the actual textarea element inside the #textBoxWithIcon div
+            var textArea = Page.Locator("#textBoxWithIcon textarea");
 
             // Check if the placeholder is correct
-            await Expect(textAreaWithIcon).ToHaveAttributeAsync("placeholder", "Text box with an icon here...");
+            await Expect(textArea).ToHaveAttributeAsync("placeholder", "Text box with an icon here...");
         }
+
 
         // Test if the label is displayed correctly
         [Fact]
