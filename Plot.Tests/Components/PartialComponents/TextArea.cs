@@ -67,7 +67,7 @@ namespace PlaywrightTests
         public async Task TextAreaDisplaysCorrectLabel()
         {
             // Navigate to the test page
-            await Page.GotoAsync("/test/text-area");
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
 
             // Check for the header text (Icon Header) for the first text area
             var headerWithIcon = Page.Locator("#textBoxWithIcon h5 p");
