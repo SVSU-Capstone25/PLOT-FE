@@ -14,19 +14,20 @@ public class TextAreaTest : PageTest
         // Expect the page to have a body visible.
         await Expect(Page.Locator("body")).ToBeVisibleAsync();
 
-        var textAreaWithIcon = Page.Locator("textarea#textBoxWithIcon");
-        var textAreaWithoutIcon = Page.Locator("textarea#textBoxWithoutIcon");
+        // Locate text areas based on their labels
+        var textAreaWithIcon = Page.Locator("label:has-text('Icon Header') + textarea");
+        var textAreaWithoutIcon = Page.Locator("label:has-text('No Icon Header') + textarea");
 
-        // Expect the text areas to be visible on the page.
+        // Expect the text areas to be visible
         await Expect(textAreaWithIcon).ToBeVisibleAsync();
         await Expect(textAreaWithoutIcon).ToBeVisibleAsync();
 
-        // Expect the first text area to have an icon and the correct attributes.
+        // Expect correct placeholders
         await Expect(textAreaWithIcon).ToHaveAttributeAsync("placeholder", "Text box with an icon here...");
-        await Expect(Page.Locator(".fa-pen")).ToBeVisibleAsync();
+        await Expect(textAreaWithoutIcon).ToHaveAttributeAsync("placeholder", "Text box with no icon here...");
 
-        // Expect the second text area to have the correct attributes and no icon.
-        await Expect(textAreaWithoutIcon).ToHaveAttributeAsync("placeholder", "Text box with no icon here....");
+        // Expect the icon to be present for the first text area
+        await Expect(Page.Locator(".fa-pen")).ToBeVisibleAsync();
     }
 
     [Fact]
@@ -34,13 +35,15 @@ public class TextAreaTest : PageTest
     {
         await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-        var textArea = Page.Locator("textarea#textBoxWithIcon");
+        var textArea = Page.Locator("label:has-text('Icon Header') + textarea");
+
+        // Fill the text area
         await textArea.FillAsync("Updated text");
 
-        // Simulate closing action (e.g., clicking outside or a save button)
+        // Simulate closing action (e.g., clicking outside)
         await Page.ClickAsync("body");
 
-        // Expect the text area to retain its value after closing.
+        // Expect the text area to retain its value after closing
         await Expect(textArea).ToHaveValueAsync("Updated text");
     }
 }
