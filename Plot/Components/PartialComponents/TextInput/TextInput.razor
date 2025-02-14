@@ -1,9 +1,10 @@
+<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" @bind-value="Value" @bind-value:event="oninput" />
+
 @code {
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public string? Placeholder { get; set; }
-    [Parameter] public string Value { get; set; } = ""; // Stores input value
-    [Parameter] public EventCallback<string> ValueChanged { get; set; } // Notifies parent
-}
 
-<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" @bind-value="Value" @bind:event="oninput" />
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; } 
+}
