@@ -18,7 +18,6 @@ public class TextAreaTest : PageTest
         var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
         var textAreaWithoutIcon = Page.Locator("#textBoxWithoutIcon");
 
-
         await Page.WaitForTimeoutAsync(1000);
         // Expect the text areas to be visible
         await Expect(textAreaWithIcon).ToBeVisibleAsync();
@@ -40,7 +39,7 @@ public class TextAreaTest : PageTest
         Console.WriteLine($"Text areas found: {textAreaCount}");
 
         // Wait for the text area to be attached to the DOM
-        await Page.WaitForSelectorAsync("label:has-text('Icon Header') + textarea");
+        await Expect(textArea).ToBeVisibleAsync();
 
         // Wait for the text area to be visible
         await Expect(textArea).ToBeVisibleAsync();
