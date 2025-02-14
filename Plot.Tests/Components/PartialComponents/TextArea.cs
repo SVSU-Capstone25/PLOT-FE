@@ -10,7 +10,7 @@ namespace PlaywrightTests
         public async Task TextAreaComponentBehavesCorrectly()
         {
             // Navigate to the test page
-            await Page.GotoAsync("/test/text-area");
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
 
             // Locate the text areas by ID
             var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
@@ -29,7 +29,7 @@ namespace PlaywrightTests
         public async Task TextAreaSavesOnClose()
         {
             // Navigate to the test page
-            await Page.GotoAsync("/test/text-area");
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
 
             // Locate the textarea inside the #textBoxWithIcon div
             var textArea = Page.Locator("#textBoxWithIcon textarea");
@@ -53,7 +53,7 @@ namespace PlaywrightTests
         public async Task TextAreaHasCorrectPlaceholder()
         {
             // Navigate to the test page
-            await Page.GotoAsync("/test/text-area");
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
 
             // Locate the text area with the placeholder text
             var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
