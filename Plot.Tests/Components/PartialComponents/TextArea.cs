@@ -35,7 +35,7 @@ namespace PlaywrightTests
             var textArea = Page.Locator("label:has-text('Icon Header') + textarea");
 
             // Fill the text area with text
-            await textArea.FillAsync("Updated text");
+            await textArea.fill("Updated text");
 
             // Simulate closing by clicking outside (click anywhere on the body)
             await Page.ClickAsync("body");
