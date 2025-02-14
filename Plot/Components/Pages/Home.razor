@@ -2,26 +2,5 @@
 
 <PageTitle>Test</PageTitle>
 
-<TextInput Id="myInput" Class="custom-class" Placeholder="@PValue" 
-           @bind-Value="InputText" />
+<TextInput Id="myInput" Class="InputTest" Placeholder="Enter TextInput Here" />
 
-<button @onclick="VerifyInput">Submit</button>
-
-<p>Current Input: @InputText</p>
-
-@code {
-    public string InputText { get; set; } = ""; // Stores input text
-    public string PValue { get; set; } = "Enter text..."; // Placeholder text
-
-    private void VerifyInput()
-    {
-        if (string.IsNullOrWhiteSpace(InputText))
-        {
-            PValue = "This field is required!"; // Change placeholder to "required" message
-        }
-        else
-        {
-            PValue = "Enter text..."; // Reset placeholder text
-        }
-    }
-}

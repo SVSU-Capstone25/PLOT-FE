@@ -1,22 +1,7 @@
-<input id="@Id" class="TextInput @Class @(IsValid ? "" : "invalid-input")" 
-       placeholder="@Placeholder" 
-       @bind-value="Value" @bind-value:event="oninput" />
+<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" />
 
 @code {
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public string? Placeholder { get; set; }
-
-    [Parameter] public string Value { get; set; } = ""; // Input value
-    [Parameter] public EventCallback<string> ValueChanged { get; set; }
-
-    // Property to check if the input is valid
-    private bool IsValid => !string.IsNullOrWhiteSpace(Value);
-
-    // Method to handle input changes
-    private async Task HandleInput(ChangeEventArgs e)
-    {
-        Value = e.Value?.ToString() ?? "";
-        await ValueChanged.InvokeAsync(Value); // Notify parent component of the change
-    }
 }
