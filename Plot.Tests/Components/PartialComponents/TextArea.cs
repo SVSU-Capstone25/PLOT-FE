@@ -31,23 +31,22 @@ namespace PlaywrightTests
             // Navigate to the test page
             await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-            // Locate the editable div inside the custom text area
-            var editableDiv = Page.Locator("#textBoxWithIcon div[contenteditable='true']");
+            // Locate the textarea inside the #textBoxWithIcon div
+            var textArea = Page.Locator("#textBoxWithIcon textarea");
 
-            // Wait for the editable div to be visible and attached
-            await Expect(editableDiv).ToBeVisibleAsync();
-            await Expect(editableDiv).ToBeAttachedAsync();
+            // Wait for the textarea to be visible and attached
+            await Expect(textArea).ToBeVisibleAsync();
+            await Expect(textArea).ToBeAttachedAsync();
 
-            // Fill the div with text (or type, depending on implementation)
-            await editableDiv.FillAsync("Updated text");
+            // Fill the textarea with text
+            await textArea.FillAsync("Updated text");
 
             // Simulate closing by clicking outside (click anywhere on the body)
             await Page.ClickAsync("body");
 
-            // Verify that the text is retained in the editable div (saved)
-            await Expect(editableDiv).ToHaveTextAsync("Updated text");
+            // Verify that the text is retained in the textarea (saved)
+            await Expect(textArea).ToHaveValueAsync("Updated text");
         }
-
 
         // Test if the placeholder appears correctly in the text area
         [Fact]
