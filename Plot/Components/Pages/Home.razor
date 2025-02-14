@@ -2,23 +2,26 @@
 
 <PageTitle>Test</PageTitle>
 
-<TextInput @ref="testInput" Id="myInput" Class="InputTest" Placeholder="Enter Input Here" />
+<TextInput @ref="testInput" Id="myInput" Class="InputTest" Placeholder="Enter Input Here" Value="@InputText" />
 
 <button @onclick="ValidateInput">Test</button>
 <p>@Data</p>
 
-
 @code {
     public TextInput testInput;
     public string Data = "";
-    public void ValidateInput() {
+    public string InputText = ""; // The text value to bind with
+
+    public void ValidateInput()
+    {
         if (string.IsNullOrWhiteSpace(testInput.Value))
         {
             testInput.Placeholder = "This is a required field";
+            Data = "Input is empty!";
         }
-        else 
+        else
         {
-            Data = testInput.Value;
+            Data = "Input is valid.";
         }
     }
 }

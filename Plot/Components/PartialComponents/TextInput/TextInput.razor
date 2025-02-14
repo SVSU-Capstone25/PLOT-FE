@@ -1,9 +1,8 @@
-<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" value="@Value"/>
-
 @code {
-    [Parameter] public string? Id { get; set; }
-    [Parameter] public string? Class { get; set; }
-    [Parameter] public string? Placeholder { get; set; }
-    [Parameter] public string Value { get; set; } = "";
-
+    [Parameter] public string Value { get; set; }
+    [Parameter] public string Placeholder { get; set; }
+    [Parameter] public string Id { get; set; }
+    [Parameter] public string Class { get; set; }
 }
+
+<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" value="@Value" @bind="Value" />
