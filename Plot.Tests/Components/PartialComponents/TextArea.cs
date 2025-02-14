@@ -24,10 +24,6 @@ public class TextAreaTest : PageTest
         await Expect(textAreaWithIcon).ToBeVisibleAsync();
         await Expect(textAreaWithoutIcon).ToBeVisibleAsync();
 
-        // Expect correct placeholders
-        // await Expect(textAreaWithIcon).ToHaveAttributeAsync("placeholder", "Text box with an icon here...");
-        // await Expect(textAreaWithoutIcon).ToHaveAttributeAsync("placeholder", "Text box with no icon here....");
-
         // Expect the icon to be present for the first text area
         await Expect(Page.Locator(".fa-pen")).ToBeVisibleAsync();
     }
@@ -39,6 +35,9 @@ public class TextAreaTest : PageTest
 
         var textArea = Page.Locator("label:has-text('Icon Header') + textarea");
 
+        // Wait for the text area to be visible
+        await Expect(textArea).ToBeVisibleAsync();
+
         // Fill the text area
         await textArea.FillAsync("Updated text");
 
@@ -48,4 +47,5 @@ public class TextAreaTest : PageTest
         // Expect the text area to retain its value after closing
         await Expect(textArea).ToHaveValueAsync("Updated text");
     }
+
 }
