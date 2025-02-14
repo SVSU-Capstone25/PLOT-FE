@@ -2,5 +2,22 @@
 
 <PageTitle>Test</PageTitle>
 
-<TextInput Id="myInput" Class="InputTest" Placeholder="Enter TextInput Here" />
+<TextInput @ref="testInput" Id="myInput" Class="InputTest" Placeholder="Enter Input Here" />
 
+<button @onclick="ValidateInput">Test</button>
+<p>@Data</p>
+
+
+@code {
+    public string Data = "";
+    public void ValidateInput() {
+        if (string.IsNullOrWhiteSpace(testInput.Value))
+        {
+            testInput.Placeholder = "This is a required field";
+        }
+        else 
+        {
+            Data = testInput.Value;
+        }
+    }
+}
