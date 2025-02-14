@@ -18,8 +18,8 @@ public class TextAreaTest : PageTest
         var textAreaWithoutIcon = Page.Locator("textarea#textBoxWithoutIcon");
 
         // Expect the text areas to be visible on the page.
-        await Expect(textAreaWithIcon).ToBeVisibleAsync();
-        await Expect(textAreaWithoutIcon).ToBeVisibleAsync();
+        await Expect(textAreaWithIcon).ToBeVisibleAsync(new() { Timeout = 5000 });
+        await Expect(textAreaWithoutIcon).ToBeVisibleAsync(new() { Timeout = 5000 });
 
         // Expect the first text area to have an icon and the correct attributes.
         await Expect(textAreaWithIcon).ToHaveAttributeAsync("placeholder", "Text box with an icon here...");
