@@ -7,10 +7,10 @@
 <button @onclick="ValidateInput">Test</button>
 
 @code {
-    private TextInput testInput = new TextInput();
-    private string? Select = "InputTest";
-    private string? InputText { get; set; } = "";
-    private void ValidateInput() {
+    public TextInput testInput = new TextInput();
+    public string? Select = "InputTest";
+    public string? InputText { get; set; } = "";
+    public void ValidateInput() {
         if (InputText == "")
         {
             testInput.displayError();
