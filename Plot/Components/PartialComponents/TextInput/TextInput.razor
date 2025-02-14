@@ -1,6 +1,5 @@
 <input id="@Id" class="TextInput @Class @(IsValid ? "" : "invalid-input")" placeholder="@Placeholder" 
-       @bind-value="Value" @bind-value:event="oninput" 
-       @oninput="HandleInput" />
+       @bind-value="Value" @oninput="HandleInput" />
 
 @code {
     [Parameter] public string? Id { get; set; }
