@@ -1,8 +1,15 @@
 @code {
-    [Parameter] public string Value { get; set; }
-    [Parameter] public string Placeholder { get; set; }
-    [Parameter] public string Id { get; set; }
-    [Parameter] public string Class { get; set; }
+    [Parameter] private string Value { get; set; }
+    [Parameter] private string Placeholder { get; set; }
+    [Parameter] private string Id { get; set; }
+    [Parameter] private string Class { get; set; }
+    private string InputStyle = "";
+
+
+    public void displayError () {
+        InputStyle = "border: 2px solid red;";
+        StateHasChanged(); // Force UI refresh
+    }
 }
 
-<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" value="@Value" />
+<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" @bind="Value" style="@InputStyle" />

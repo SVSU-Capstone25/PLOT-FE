@@ -2,7 +2,20 @@
 
 <PageTitle>Test</PageTitle>
 
-<TextInput @ref="testInput" Id="myInput" Class="InputTest" Placeholder="Enter Input Here" Value="@InputText" />
+<TextInput @ref="testInput" Id="myInput" Class="@Select" Placeholder="Enter Input Here" @bind-Value="InputText" />
 
 <button @onclick="ValidateInput">Test</button>
+
+@code {
+    private TextInput testInput;
+    private string Select = "InputTest";
+    private string InputText = { get; set; }
+    private void ValidateInput() {
+        if (InputText == "")
+        {
+            testInput.displayError();
+        }
+    }
+
+}
 
