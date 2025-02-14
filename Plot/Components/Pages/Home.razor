@@ -2,26 +2,27 @@
 
 <PageTitle>Test</PageTitle>
 
-<TextInput Id="myInput" Class="custom-class" Placeholder="Enter text..." @bind-Value="@InputText" />
+<TextInput Id="myInput" Class="custom-class" Placeholder="@PValue" 
+           @bind-Value="InputText" />
 
 <button @onclick="VerifyInput">Submit</button>
 
 <p>Current Input: @InputText</p>
-<p>@ValidationMessage</p>
 
 @code {
-    private string InputText { get; set; } = "";
-    private string ValidationMessage { get; set; } = "";
+    public string InputText { get; set; } = "";
+    public string PValue { get; set; } = "Enter text...";
 
     private void VerifyInput()
     {
         if (string.IsNullOrWhiteSpace(InputText))
         {
-            ValidationMessage = "This field is required!";
+            PValue = "This field is required!";
+            StateHasChanged(); // Forces UI update
         }
         else
         {
-            ValidationMessage = "Valid input!";
+            PValue = "Enter text...";
         }
     }
 }

@@ -1,0 +1,4 @@
+/* Red border for invalid input */
+.invalid-input {
+    border: 2px solid red;
+}

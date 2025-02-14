@@ -1,10 +1,20 @@
-<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" @bind-value="@Value" @bind-value:event="oninput" />
+<input id="@Id" class="TextInput @Class @(IsValid ? "" : "invalid-input")" placeholder="@Placeholder" 
+       @bind-value="Value" @bind-value:event="oninput" 
+       @oninput="HandleInput" />
 
 @code {
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public string? Placeholder { get; set; }
 
-    [Parameter] public string Value { get; set; } 
-    [Parameter] public EventCallback<string> ValueChanged { get; set; } 
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    private bool IsValid => !string.IsNullOrWhiteSpace(Value); // Validates if the value is not empty
+
+    private async Task HandleInput(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? "";
+        await ValueChanged.InvokeAsync(Value); // Notify parent of change
+    }
 }
