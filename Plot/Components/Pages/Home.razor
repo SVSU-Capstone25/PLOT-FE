@@ -2,4 +2,10 @@
 
 <PageTitle>Test</PageTitle>
 
-<TextInput Id="testInput" Class="first" Placeholder="ThisIsTest"/>
+<TextInput Id="myInput" Class="custom-class" Placeholder="Enter text..." @bind-Value="InputText"/>
+
+<p>Current Input: @InputText</p>
+
+@code {
+    private string InputText { get; set; } = "";
+}
