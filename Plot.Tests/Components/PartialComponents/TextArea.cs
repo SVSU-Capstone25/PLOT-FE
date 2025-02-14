@@ -15,8 +15,9 @@ public class TextAreaTest : PageTest
         await Expect(Page.Locator("body")).ToBeVisibleAsync();
 
         // Locate text areas based on their labels
-        var textAreaWithIcon = Page.Locator("label:has-text('Icon Header') + textarea");
-        var textAreaWithoutIcon = Page.Locator("label:has-text('No Icon Header') + textarea");
+        var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
+        var textAreaWithoutIcon = Page.Locator("#textBoxWithoutIcon");
+
 
         await Page.WaitForTimeoutAsync(1000);
         // Expect the text areas to be visible
