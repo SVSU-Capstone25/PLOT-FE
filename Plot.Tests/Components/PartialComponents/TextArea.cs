@@ -10,7 +10,7 @@ namespace PlaywrightTests
         public async Task TextAreaComponentBehavesCorrectly()
         {
             // Navigate to the test page
-            await Page.GotoAsync("http://localhost:8080/test/text-area");
+            await Page.GotoAsync("/test/text-area");
 
             // Locate the text areas by ID
             var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
@@ -29,7 +29,7 @@ namespace PlaywrightTests
         public async Task TextAreaSavesOnClose()
         {
             // Navigate to the test page
-            await Page.GotoAsync("http://localhost:8080/test/text-area");
+            await Page.GotoAsync("/test/text-area");
 
             // Locate the textarea inside the #textBoxWithIcon div
             var textArea = Page.Locator("#textBoxWithIcon textarea");
@@ -53,7 +53,7 @@ namespace PlaywrightTests
         public async Task TextAreaHasCorrectPlaceholder()
         {
             // Navigate to the test page
-            await Page.GotoAsync("http://localhost:8080/test/text-area");
+            await Page.GotoAsync("/test/text-area");
 
             // Locate the text area with the placeholder text
             var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
@@ -67,15 +67,16 @@ namespace PlaywrightTests
         public async Task TextAreaDisplaysCorrectLabel()
         {
             // Navigate to the test page
-            await Page.GotoAsync("http://localhost:8080/test/text-area");
+            await Page.GotoAsync("/test/text-area");
 
-            // Check for the label of the first text area
-            var label = Page.Locator("label[for='textBoxWithIcon']");
-            await Expect(label).ToHaveTextAsync("Icon Header");
+            // Check for the header text (Icon Header) for the first text area
+            var headerWithIcon = Page.Locator("#textBoxWithIcon h5 p");
+            await Expect(headerWithIcon).ToHaveTextAsync("Icon Header");
 
-            // Check for the label of the second text area
-            var labelWithoutIcon = Page.Locator("label[for='textBoxWithoutIcon']");
-            await Expect(labelWithoutIcon).ToHaveTextAsync("No Icon Header");
+            // Check for the header text (No Icon Header) for the second text area
+            var headerWithoutIcon = Page.Locator("#textBoxWithoutIcon h5 p");
+            await Expect(headerWithoutIcon).ToHaveTextAsync("No Icon Header");
         }
+
     }
 }
