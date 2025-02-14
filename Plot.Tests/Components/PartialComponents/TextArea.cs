@@ -26,7 +26,7 @@ public class TextAreaTest : PageTest
 
         // Expect correct placeholders
         await Expect(textAreaWithIcon).ToHaveAttributeAsync("placeholder", "Text box with an icon here...");
-        await Expect(textAreaWithoutIcon).ToHaveAttributeAsync("placeholder", "Text box with no icon here...");
+        await Expect(textAreaWithoutIcon).ToHaveAttributeAsync("placeholder", "Text box with no icon here....");
 
         // Expect the icon to be present for the first text area
         await Expect(Page.Locator(".fa-pen")).ToBeVisibleAsync();
