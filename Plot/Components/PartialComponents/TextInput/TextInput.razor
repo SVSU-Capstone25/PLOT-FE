@@ -1,7 +1,63 @@
-<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" />
+@* <input id="@Id" class="TextInput @Class" placeholder="@Placeholder" />
 
 @code {
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public string? Placeholder { get; set; }
+} *@
+
+<div class="form-group">
+    <label for="@Id">@Label</label>
+    <input type="@Type"
+           class="form-control @CssClass"
+           id="@Id"
+           placeholder="@_placeholderText"
+           value="@Value"
+           @oninput="HandleInput"
+           style="border: 1px solid @_borderColor;" />
+</div>
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+
+    [Parameter]
+    public string Label { get; set; } = "";
+
+    [Parameter]
+    public string Type { get; set; } = "text";
+
+    [Parameter]
+    public string Value { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; } = "";
+
+    [Parameter]
+    public string CssClass { get; set; } = "";
+
+    private string _placeholderText = "";
+    private string _borderColor = "lightgray";
+
+    protected override void OnInitialized()
+    {
+        _placeholderText = Placeholder;
+    }
+
+    private async Task HandleInput(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? "";
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    public void MarkAsRequired()
+    {
+        _borderColor = "red";
+        _placeholderText = "This is a required field";
+        StateHasChanged(); // Important:  Force the component to re-render
+    }
 }

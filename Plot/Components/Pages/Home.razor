@@ -1,6 +1,33 @@
-﻿@page "/"
+﻿@* @page "/"
 
 <PageTitle>Test</PageTitle>
 
 <TextInput Id="myInput" Class="InputTest" Placeholder="Enter TextInput Here" />
+ *@
+@page "/"
 
+<h1>TextInput Example</h1>
+
+<TextInput @ref="MyTextInput" Id="myInput" Label="Name" Placeholder="Enter your name" Value="@Name" ValueChanged="OnNameChanged" />
+
+<button class="btn btn-danger" @onclick="SetRequired">Mark as Required</button>
+
+<p>Value: @Name</p>
+
+@code {
+    private string Name { get; set; } = "";
+
+    private TextInput MyTextInput { get; set; }
+
+    private void OnNameChanged(string value)
+    {
+        Name = value;
+        StateHasChanged();
+    }
+
+
+    private void SetRequired()
+    {
+        MyTextInput.MarkAsRequired();
+    }
+}
