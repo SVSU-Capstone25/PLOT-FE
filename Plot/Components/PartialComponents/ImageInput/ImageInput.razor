@@ -84,8 +84,8 @@ Author: Danielle Smith (2/10/2025)  *@
 
 @code {    
     // text for the label - defaults to 'Upload Image'
-    [Parameter] public string Label { get; set; } = "Upload Image"; 
-    [Parameter] public string Id { get; set; } // element ID
+    [Parameter, EditorRequired] public required string Label { get; set; } = "Upload Image"; 
+    [Parameter, EditorRequired] public required string Id { get; set; } // element ID
     [Parameter] public string? Class { get; set; } // string of classes (nullable)
     [Parameter] public string? Width { get; set; } // width of the drag/drop area (nullable)
     [Parameter] public string? Height { get; set; } // height of the drag/drop area (nullable)
