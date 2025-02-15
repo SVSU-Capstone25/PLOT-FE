@@ -1,15 +1,21 @@
 @code {
     [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public string? Placeholder { get; set; }
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     public string? InputStyle = "";
 
+    public async Task UpdateValue(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString();
+        await ValueChanged.InvokeAsync(Value);
+    }
 
-    public void displayError () {
+    public void displayError()
+    {
         InputStyle = "border: 2px solid red;";
-        @* StateHasChanged(); // Force UI refresh *@
     }
 }
 
-<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" @bind="Value" style="@InputStyle" />
+<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" value="@Value" @oninput="UpdateValue" style="@InputStyle" />
