@@ -1,3 +1,5 @@
+@inject IJSRuntime JSRuntime
+
 @code {
     [Parameter] public string Label { get; set; } = "Enter text";
     [Parameter] public string Placeholder { get; set; } = "Type here...";
@@ -10,16 +12,16 @@
     private bool IsValid => !string.IsNullOrWhiteSpace(Value);
 
     private async Task HandleInput(ChangeEventArgs e)
-{
-    Value = e.Value?.ToString() ?? "";
-    await ValueChanged.InvokeAsync(Value);
+    {
+        Value = e.Value?.ToString() ?? "";
+        await ValueChanged.InvokeAsync(Value);
 
-    // Update the input field's CSS class based on validity
-    Class = string.IsNullOrWhiteSpace(Value) ? "invalid" : "valid";
+        // Use JavaScript to update CSS directly
+        var borderColor = string.IsNullOrWhiteSpace(Value) ? "red" : "#ccc";
+        var textColor = string.IsNullOrWhiteSpace(Value) ? "red" : "black";
 
-    StateHasChanged(); // Force UI update
-}
-
+        await JSRuntime.InvokeVoidAsync("updateInputStyle", Id, borderColor, textColor);
+    }
 }
 
 <div class="text-input-container @(LabelOnTop ? "label-top" : "label-left")">
