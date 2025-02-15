@@ -4,28 +4,36 @@
     [Parameter] public string Label { get; set; } = "Enter text";
     [Parameter] public string Placeholder { get; set; } = "Type here...";
     [Parameter] public string Value { get; set; } = "";
-    [Parameter] public string Id {get; set; }
-    [Parameter] public string Class {get; set; }
+    [Parameter] public string Id { get; set; }
+    [Parameter] public string Class { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public bool LabelOnTop { get; set; } = true;
-
-    private bool IsValid => !string.IsNullOrWhiteSpace(Value);
 
     private async Task HandleInput(ChangeEventArgs e)
     {
         Value = e.Value?.ToString() ?? "";
         await ValueChanged.InvokeAsync(Value);
 
-        // Use JavaScript to update CSS directly
+        // Determine border & text color
         var borderColor = string.IsNullOrWhiteSpace(Value) ? "red" : "#ccc";
         var textColor = string.IsNullOrWhiteSpace(Value) ? "red" : "black";
 
+        // Call JavaScript function to update the style dynamically
         await JSRuntime.InvokeVoidAsync("updateInputStyle", Id, borderColor, textColor);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Ensure the default state is red when first rendered
+            await JSRuntime.InvokeVoidAsync("updateInputStyle", Id, "red", "red");
+        }
     }
 }
 
 <div class="text-input-container @(LabelOnTop ? "label-top" : "label-left")">
-    <label>@Label</label>
+    <label for="@Id">@Label</label>
     <input id="@Id" type="text" value="@Value" @oninput="HandleInput" placeholder="@Placeholder" class="TextInput @Class" />
 </div>
 
@@ -56,19 +64,10 @@
 
     input {
         padding: 5px;
-        border: 1px solid #ccc;
+        border: 1px solid red; /* Default border is red */
+        color: red; /* Default text is red */
         border-radius: 4px;
         outline: none;
-    }
-
-    input.invalid {
-        border: 1px solid red;
-        color: red;
-    }
-
-    input.valid {
-        border: 1px solid #ccc;
-        color: black;
     }
 </style>
 
