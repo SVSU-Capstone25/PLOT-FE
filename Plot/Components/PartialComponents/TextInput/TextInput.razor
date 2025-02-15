@@ -1,4 +1,13 @@
 @inject IJSRuntime JSRuntime
+<script>
+    function updateInputStyle(elementId, borderColor, textColor) {
+        var input = document.getElementById(elementId);
+        if (input) {
+            input.style.borderColor = borderColor;
+            input.style.color = textColor;
+        }
+    }
+</script>
 
 @code {
     [Parameter] public string Label { get; set; } = "Enter text";
@@ -26,7 +35,7 @@
     {
         if (firstRender)
         {
-            // Ensure the default state is red when first rendered
+            await Task.Delay(100); // Ensure the element is ready before JS call
             await JSRuntime.InvokeVoidAsync("updateInputStyle", Id, "red", "red");
         }
     }
@@ -70,13 +79,3 @@
         outline: none;
     }
 </style>
-
-<script>
-    function updateInputStyle(elementId, borderColor, textColor) {
-        var input = document.getElementById(elementId);
-        if (input) {
-            input.style.borderColor = borderColor;
-            input.style.color = textColor;
-        }
-    }
-</script>
