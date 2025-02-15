@@ -13,44 +13,44 @@ Author: Josh Rodack (2/10/2025)-->
 
 
 
-                <div class="Card @Class" id="@Id">
-                
-                <div class = "container">
-                <div class="row">
-                <img src="@SrcImage"/>
-                <div class="container">
+<div class="Card @Class" id="@Id">
+
+    <div class="container">
+        <div class="row">
+            <img src="@SrcImage" class="w-50" />
+            <div class="container">
                 <div class="col-sm">
-                <p>@LabelText</p>
+                    <p>@LabelText</p>
                 </div>
                 <div class="col-sm">
-                <i class="@icon"></i>
+                    <i class="@icon"></i>
                 </div>
                 <!--I'm not certain how to insert another component into a specific spot
                 so this is where the dropdown should go-->
-                </div>
-                </div>
-                </div>
-                
-                </div>
-            
+            </div>
+        </div>
+    </div>
+
+</div>
+
 
 @code {
     // all of these are parameters to set up the modal dynamically
-   
 
-   [Parameter]
+
+    [Parameter]
     public string? Id { get; set; }
 
     [Parameter]
     public string? Class { get; set; }
 
     [Parameter]
-    public string? icon {get; set;}
+    public string? icon { get; set; }
 
     [Parameter]
-    public string LabelText {get; set;}
+    public string LabelText { get; set; }
 
     [Parameter]
-    public string SrcImage {get; set;}
+    public string SrcImage { get; set; }
 
 }
