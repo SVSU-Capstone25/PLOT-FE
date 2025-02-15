@@ -2,7 +2,7 @@
     [Parameter] public string Label { get; set; } = "Enter text";
     [Parameter] public string Placeholder { get; set; } = "Type here...";
     [Parameter] public string Value { get; set; } = "";
-    [Parameter] public string Id { get; set; }
+    [Parameter] public string Id {get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public bool LabelOnTop { get; set; } = true;
 
@@ -12,13 +12,14 @@
     {
         Value = e.Value?.ToString() ?? "";
         await ValueChanged.InvokeAsync(Value);
+        StateHasChanged(); // Force UI update
     }
 }
 
 <div class="text-input-container @(LabelOnTop ? "label-top" : "label-left")">
     <label>@Label</label>
-    <input id="@Id" type="text" @bind="Value" @bind:event="oninput" placeholder="@Placeholder"
-           class="TextInput @(IsValid ? "valid" : "invalid")" />
+    <input id="@Id" type="text" value="@Value" @oninput="HandleInput" placeholder="@Placeholder"
+           class="@(IsValid ? "valid" : "invalid")" />
 </div>
 
 <style>
