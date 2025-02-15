@@ -8,57 +8,77 @@ The purpose of PLOT is to allow users to easily create, manage,
 and allocate floorsets for Platos Closet. 
 
 Author: Josh Rodack (2/10/2025)-->
+@rendermode InteractiveServer
 
+<div class="Dropdown @Class" id="@Id">
+    
 
-                <div class="Dropdown @Class" id="@Id">
-                <script src="https://kit.fontawesome.com/b9b256c8f6.js" crossorigin="anonymous"></script>
-                
-                <div class="dropdown" id="toggle">
-                    <button @onclick="() => Switch()">
-                    <i class="fa-solid fa-ellipsis"></i>
-                    </button>
-                    @if(isActive==true)
-                    {
-                        <p>Work</p>
-                    <ul class="dropdown-list ">
+    <div class="dropdown" id="toggle">
+        <button @onclick="() => Switch()" type="button" class="btn btn-light">
+            <i class="fa-solid fa-ellipsis"></i>
+        </button>
+        @if (isActive == true)
+        {
+            <ul class="dropdown-list ">
+  
+                @for(int i = 0; i < @optionList.Length; i++)
+                {
+                    <li id="@idList[i]">
+                        <i class="@iconList[i]"></i> @optionList[i]
+                    </li>
+                }
+            </ul>
+        }
+        
 
-                        @foreach (string option in @Options.Split(','))
-                        {
-                        <li>
-                            @option
-                        </li>
-                        }
-                    </ul>   
-                    }
-                    <p>@x</p>
+    </div>
 
-                </div>
-                
-                </div>
-          
+</div>
+
 
 @code {
-
-
-   [Parameter]
+    [Parameter]
     public string? Id { get; set; }
 
     [Parameter]
     public string? Class { get; set; }
 
     [Parameter]
-    public string Options {get; set;}
+    public string DropdownLabel {get; set;}
+
+    [Parameter]
+    public string Options { get; set; }
+    
+    [Parameter]
+    public string Icons {get; set;}
+
+    [Parameter]
+    public string Ids {get; set;}
+
+
+    public string[] optionList = Array.Empty<string>();
+    public string[] iconList = Array.Empty<string>();
+    public string[] idList = Array.Empty<string>();
+
 
     public bool isActive = false;
-    public string x;
+    protected override void OnParamaterSet()
+    {
+        if(!string.IsNullOrEmpty(Options))
+        {
+            optionList = Options.Split(',');
+        }
+        if(!string.IsNullOrEmpty(Icons))
+        {
+            iconList = Icons.Split(',');
+        }
+        if(!string.IsNullOrEmpty(Ids))
+        {
+            idList = Ids.Split(',');
+        }
+    } 
     private async Task Switch()
-    { 
+    {
         isActive = !isActive;
-        x = "Hi";
     }
-        
-
-   
-    
-
 }
