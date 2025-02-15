@@ -19,7 +19,7 @@
 <div class="DateInput @Class " id="@Id">
     <div class="form-floating mt-3 custom-date-wrapper">
         <input type="date" class="date-input form-control custom-date-input @invalidClass" 
-                                                id="date-input" value="@(DateTime.Today.ToString("yyyy-MM-dd"))" @onchange="HandleDateChange"  />
+                                                id="date-input" @onchange="HandleDateChange" @onfocusout="HandleFocusOut"/>
         <i class="fa-regular fa-calendar custom-calendar-icon" @onclick="OpenDatePicker"></i>
 
         <label for="date-input" class="inner-date-label @invalidClass">
@@ -33,13 +33,18 @@
 </div>
 
 <script>
+    var dateInput = document.getElementById("date-input");
     window.openDatePicker = function () {
         // Show the date picker when the date input label is clicked
-        document.querySelector("#date-input").showPicker();
+        dateInput.showPicker();
     };
 
 
-
+    window.checkValidDate = function (dotNetHelper) {
+        // Invoke the CheckDateValid method 
+        dotNetHelper.invokeMethodAsync("CheckDateValid",dateInput.value);
+        
+    };
 </script>
 
 @code 
@@ -60,20 +65,24 @@
     [Parameter]
     public DateTime? Value { get; set; }
 
+    private DotNetObjectReference<DateInput> dotNet;
+
     private string invalidClass;
-
-
     private bool isValid = true;
-
-    /* After the component receives its parameters, initialize the selectedDateTime */
-    protected override void OnParametersSet()
-    {
-        // If value has not been set, default to the current date
-        if (Value == default) {
-            Value = DateTime.Today; // Convert DateOnly to DateTime
-        }
-    }
     
+       
+
+    /*
+        The OnAfterRenderAsync function is used to get an initial reference to the 
+
+    */
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+
+        if (firstRender) {
+            dotNet = DotNetObjectReference.Create(this);
+        }        
+        
+    }
 
     /*
         The HandleDateChange function sends the date to the parent whenever the
@@ -82,7 +91,38 @@
     private async Task HandleDateChange(ChangeEventArgs e)
     {
         // If the value successfully parses, initialize a new DateTime object
-        if (DateTime.TryParse(e.Value?.ToString(), out DateTime newDateTime))
+        await CheckDateValid(e.Value?.ToString());
+        await JS.InvokeVoidAsync("checkValidDate", dotNet);
+               
+
+    }
+
+    /*
+        The HandleFocusOut function invokes the "CheckValidDate" function 
+        when the date input area loses focus.
+    */
+    private async Task HandleFocusOut(FocusEventArgs e) 
+    {        
+        await JS.InvokeVoidAsync("checkValidDate", dotNet);               
+    }
+
+    /* 
+        The OpenDatePicker function invokes a JS script to open 
+        the date input's DatePicker.
+    */
+    private void OpenDatePicker()
+    {
+        JS.InvokeVoidAsync("openDatePicker");
+    }
+
+    /*
+        The CheckDateValid function checks the given string to ensure
+        it is a date.  If not, it changes the 
+    */
+    [JSInvokable]
+    public async Task CheckDateValid(string? input) {
+        // If the value successfully parses, initialize a new DateTime object
+        if (DateTime.TryParse(input, out DateTime newDateTime))
         {            
             isValid = true;
             invalidClass = "";
@@ -97,20 +137,9 @@
 
         // Send the value to the parent
         await ValueChanged.InvokeAsync(Value);
-        
-
     }
 
-
-    /* 
-        The OpenDatePicker function invokes a JS script to open 
-        the date input's DatePicker.
-    */
-    private void OpenDatePicker()
-    {
-        JS.InvokeVoidAsync("openDatePicker");
-    }
-
-  
+    
+    
 
 }
