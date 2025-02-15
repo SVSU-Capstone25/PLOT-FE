@@ -1,22 +1,65 @@
 @code {
-    [Parameter] public string? Value { get; set; }
+    [Parameter] public string Label { get; set; } = "Enter text";
+    [Parameter] public string Placeholder { get; set; } = "Type here...";
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public string Id { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
-    [Parameter] public string? Placeholder { get; set; }
-    [Parameter] public string? Id { get; set; }
-    [Parameter] public string? Class { get; set; }
-    public string? InputStyle = "";
+    [Parameter] public bool LabelOnTop { get; set; } = true;
 
-    public async Task UpdateValue(ChangeEventArgs e)
+    private bool IsValid => !string.IsNullOrWhiteSpace(Value);
+
+    private async Task HandleInput(ChangeEventArgs e)
     {
-        Value = e.Value?.ToString();
+        Value = e.Value?.ToString() ?? "";
         await ValueChanged.InvokeAsync(Value);
-    }
-
-    public void displayError()
-    {
-        InputStyle = "border: 2px solid red;";
-        StateHasChanged(); // Force UI refresh
     }
 }
 
-<input id="@Id" class="TextInput @Class" placeholder="@Placeholder" value="@Value" @oninput="UpdateValue" style="@InputStyle" />
+<div class="text-input-container @(LabelOnTop ? "label-top" : "label-left")">
+    <label>@Label</label>
+    <input id="@Id" type="text" @bind="Value" @bind:event="oninput" placeholder="@Placeholder"
+           class="TextInput @(IsValid ? "valid" : "invalid")" />
+</div>
+
+<style>
+    .text-input-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .label-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .label-left {
+        flex-direction: row;
+    }
+
+    label {
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+
+    .label-left label {
+        margin-right: 10px;
+    }
+
+    input {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        outline: none;
+    }
+
+    input.invalid {
+        border: 1px solid red;
+        color: red;
+    }
+
+    input.valid {
+        border: 1px solid #ccc;
+        color: black;
+    }
+</style>

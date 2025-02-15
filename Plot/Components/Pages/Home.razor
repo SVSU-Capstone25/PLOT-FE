@@ -2,19 +2,8 @@
 
 <PageTitle>Test</PageTitle>
 
-<TextInput @ref="testInput" Id="myInput" Class="@Select" Placeholder="Enter Input Here" @bind-Value="InputText" />
+<TextInput Id="Top" Label="Username" Placeholder="Enter your username" Value="@username" ValueChanged="@(val => username = val)" />
 
-<button @onclick="ValidateInput">Test</button>
+<TextInput Id="Side" Label="Username" Placeholder="Enter your username" Value="@username" ValueChanged="@(val => username = val)" LabelOnTop="false" />
 
-@code {
-    public TextInput testInput = new TextInput();
-    public string? Select = "InputTest";
-    public string? InputText { get; set; } = "";
-    public void ValidateInput() {
-        if (InputText == "")
-        {
-            testInput.displayError();
-        }
-    }
-}
 
