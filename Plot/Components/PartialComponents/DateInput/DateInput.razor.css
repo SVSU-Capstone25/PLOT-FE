@@ -45,7 +45,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .form-control:hover, .form-control:focus {
     border-color: var(--platos-blue);
-    box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+    box-shadow: 0 0 0 .15rem var(--platos-blue);
 }
 
 .date-format-label {

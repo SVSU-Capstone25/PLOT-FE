@@ -10,12 +10,13 @@
 Welcome to your new app.
 <DateInput ValueChanged="OnDateChanged" Label="Select the date for the file"/>
 
-<p>Selected Date: @SelectedDate.ToShortDateString()</p>
+<p>Selected Date: @SelectedDate?.ToShortDateString()</p>
 
 @code {
-    private DateTime SelectedDate;
+    @* The DateTime? accounts for a null/invalid value *@
+    private DateTime? SelectedDate;
 
-    private async Task OnDateChanged(DateTime newDate)
+    private async Task OnDateChanged(DateTime? newDate)
     {
         
         SelectedDate = newDate; // Update the parent state

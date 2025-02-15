@@ -19,7 +19,7 @@
 <div class="DateInput @Class " id="@Id">
     <div class="form-floating mt-3 custom-date-wrapper">
         <input type="date" class="date-input form-control custom-date-input @invalidClass" 
-                                                id="date-input" @onchange="HandleDateChange"  />
+                                                id="date-input" value="@(DateTime.Today.ToString("yyyy-MM-dd"))" @onchange="HandleDateChange"  />
         <i class="fa-regular fa-calendar custom-calendar-icon" @onclick="OpenDatePicker"></i>
 
         <label for="date-input" class="inner-date-label @invalidClass">
@@ -38,6 +38,8 @@
         document.querySelector("#date-input").showPicker();
     };
 
+
+
 </script>
 
 @code 
@@ -53,12 +55,13 @@
 
     // Used to send the date to the parent
     [Parameter]
-    public EventCallback<DateTime> ValueChanged { get; set; }   
+    public EventCallback<DateTime?> ValueChanged { get; set; }   
 
     [Parameter]
-    public DateTime Value { get; set; }
+    public DateTime? Value { get; set; }
 
     private string invalidClass;
+
 
     private bool isValid = true;
 
@@ -70,6 +73,7 @@
             Value = DateTime.Today; // Convert DateOnly to DateTime
         }
     }
+    
 
     /*
         The HandleDateChange function sends the date to the parent whenever the
@@ -79,27 +83,16 @@
     {
         // If the value successfully parses, initialize a new DateTime object
         if (DateTime.TryParse(e.Value?.ToString(), out DateTime newDateTime))
-        {
-            // If the date is later than the current date, it is considered invalid
-            if (newDateTime.CompareTo(DateTime.Today) > 0) 
-            {
-                invalidClass = "error";
-                isValid = false;
-            }
-            // Otherwise, send the date to the parent
-            else 
-            {
-                invalidClass = "";
-                isValid = true;                
-            }
-            Value = newDateTime; 
-            
-            await ValueChanged.InvokeAsync(newDateTime); 
+        {            
+            isValid = true;
+            invalidClass = "";
+            Value = newDateTime;             
         }
         else
         {            
             isValid = false;
-            invalidClass = "error";            
+            invalidClass = "error";         
+            Value = null;   
         }
 
         // Send the value to the parent
@@ -108,8 +101,9 @@
 
     }
 
+
     /* 
-        The OpenDatePicker method invokes a JS script to open 
+        The OpenDatePicker function invokes a JS script to open 
         the date input's DatePicker.
     */
     private void OpenDatePicker()
@@ -117,5 +111,6 @@
         JS.InvokeVoidAsync("openDatePicker");
     }
 
+  
 
 }
