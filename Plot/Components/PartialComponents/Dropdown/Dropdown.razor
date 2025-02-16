@@ -8,7 +8,7 @@ The purpose of PLOT is to allow users to easily create, manage,
 and allocate floorsets for Platos Closet. 
 
 Author: Josh Rodack (2/10/2025)-->
-
+@rendermode InteractiveServer
 
 <div class="Dropdown @Class" id="@Id">
     
@@ -20,13 +20,17 @@ Author: Josh Rodack (2/10/2025)-->
         @if (isActive == true)
         {
             <ul class="dropdown-list ">
-  
-                @for(int i = 0; i < @OptionList.Length; i++)
+                
+                @for(int i = 0; i < @OptionList.Count; i++)
+                {
+                    @if(OptionList[i] != null and IdList[i] != null and IconList[i] != null)
                 {
                     <li id="@IdList[i]">
                         <i class="@IconList[i]"></i> @OptionList[i]
                     </li>
+                    }
                 }
+                
             </ul>
         }
         
@@ -58,26 +62,26 @@ Author: Josh Rodack (2/10/2025)-->
     public string Ids {get; set;} 
 */
     [Parameter]
-    public List<string> optionList? {get; set;}
+    public List<string>? OptionList {get; set;}
 
     [Parameter]
-    public List<string> iconList? {get; set;}
+    public List<string>? IconList {get; set;}
 
     [Parameter]
-    public List<string> idList? {get; set;}
+    public List<string>? IdList {get; set;}
 
 
     public bool isActive = false;
 
-  
+  /*
             optionList = Options.Split(',');
       
             iconList = Icons.Split(',');
        
             idList = Ids.Split(',');
-       
+    */   
    
-    private async Task Switch()
+    public async Task Switch()
     {
         isActive = !isActive;
     }
