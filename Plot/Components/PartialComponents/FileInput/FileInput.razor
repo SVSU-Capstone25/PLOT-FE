@@ -14,6 +14,7 @@
 
 @inject IJSRuntime JS
 @rendermode InteractiveServer
+@inherits LayoutComponentBase
 @inject ILogger<FileInput> Logger
 
 @* Set the div to prevent default action of all drop events *@
@@ -83,11 +84,8 @@
     public EventCallback<IBrowserFile> OnFileSelected {get;set;} // How the parent will get the file
 
     private IBrowserFile? loadedFile;
-    private string? selectedFilename;
     private string? Text = "";
     private string? Dragging;
-
-    const int MAX_ALLOWED_SIZE = 1000 * 1024;
 
     /* This method is called after the page renders. */
     protected override async Task OnAfterRenderAsync(bool firstRender) {
