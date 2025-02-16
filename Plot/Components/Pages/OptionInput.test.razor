@@ -1,5 +1,8 @@
 @page "/test/option-input"
 <PageTitle>Option Input Test</PageTitle>
 
-<OptionInput label="Test Input" optionsText="@(new List<String>{"Hello","World"})" optionsValues="@(new List<String>{"hello","world"})"/>
-<OptionInput iconString="fa-solid fa-sign-hanging" label="Select Hanging" optionsText="@(new List<String>{"Single Hung","Double Hung","Triple Hung","Quadruple Hung"})" optionsValues="@(new List<String>{"single","double","triple","quad"})"/>
+<OptionInput ID="optionInput1" Class="optionInput" label="Test Input"
+    optionsText="@(new List<String> { "Hello", "World" })" optionsValues="@(new List<String> { "hello", "world" })" />
+<OptionInput ID="optionInput2" Class="optionInput" iconString="fa-solid fa-sign-hanging" label="Select Hanging"
+    optionsText="@(new List<String> { "Single Hung", "Double Hung", "Triple Hung", "Quadruple Hung" })"
+    optionsValues="@(new List<String> { "single", "double", "triple", "quad" })" />
