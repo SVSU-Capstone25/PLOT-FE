@@ -1,5 +1,5 @@
 @* 
-    Filename:- FileInput.razor
+    Filename: FileInput.razor
     Part of Project: Plot
 
     File Purpose:
@@ -17,22 +17,11 @@
 @inject ILogger<FileInput> Logger
 
 @* Set the div to prevent default action of all drop events *@
-<div class="FileInput file-input-zone d-flex @Class @Dragging" id="@Id" @ondragover:preventDefault="true" 
-                                                    @ondragover="OnOver"
-                                                    @ondrop:preventDefault="true" 
-                                                    @ondrop="OnDrop"
-                                                    @ondrag:preventDefault="true"
-                                                    @ondrag="OnDrag"
-                                                    @ondragenter:preventDefault="true"
-                                                    @ondragenter="OnEnter"
-                                                    @ondragstart:preventDefault="true"
-                                                    @ondragstart="OnStart"
-                                                    @ondragend:preventDefault="true"
-                                                    @ondragend="OnEnd"
-                                                    @ondragleave:preventDefault="true"
-                                                    @ondragleave="OnLeave"                                                    
-                                                    >
-                                                    
+<div class="FileInput file-input-zone d-flex @Class @Dragging" id="@Id" 
+                @ondragover="OnOver"    @ondragover:preventDefault="true" 
+                @ondrop="OnDrop"        @ondrop:preventDefault="true" 
+                @ondragleave="OnLeave"  @ondragleave:preventDefault="true">
+
     @* If the user has not entered a file, or has cleared it, show the initial div *@
     @if (string.IsNullOrEmpty(Text))
     {
@@ -151,7 +140,7 @@
 
     /*  
         Drag & Drop methods.  If the user is dragging a file over the drop zone,
-        set the '.dragging' class.  If drag-leaving, drag-ending, or drag-dropping, revoke the 
+        set the '.dragging' class.  If drag-leaving or drag-dropping, revoke the 
         '.dragging' class.
     */
 
@@ -166,31 +155,10 @@
         Dragging = "dragging";
         await InvokeAsync(StateHasChanged);
     }
-
-    private async Task OnEnter(DragEventArgs e)
-    {
-        Dragging = "dragging";
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task OnEnd(DragEventArgs e)
-    {
-        Dragging = "";
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private void OnDrag(DragEventArgs e)
-    {
-    }
-
     private async Task OnLeave(DragEventArgs e)
     {
         Dragging = "";
         await InvokeAsync(StateHasChanged);
-    }
-
-    private void OnStart(DragEventArgs e)
-    {
     }
 }
 

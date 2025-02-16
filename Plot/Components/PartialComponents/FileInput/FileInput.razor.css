@@ -60,6 +60,10 @@
     padding: 0 .5rem;
 }
 
+.file-input-zone:has(div.has-file) {
+    border: 2px solid gray;
+}
+
 .dragging:has(div.no-file) {
     background-color: linen;
 }
@@ -75,10 +79,10 @@ label.load-files-label {
     background: none;
     border: none;
     border-radius: 5px;
-
+    display: flex;
 }
     .remove-file-btn:hover {
         background-color:lightcoral;
-        -webkit-transition: background-color 100ms linear;
+        transition: background-color 100ms linear;
     }
 
