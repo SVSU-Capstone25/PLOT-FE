@@ -65,9 +65,9 @@
     [Parameter]
     public DateTime? Value { get; set; }
 
-    private DotNetObjectReference<DateInput> dotNet;
+    private DotNetObjectReference<DateInput>? dotNet;
 
-    private string invalidClass;
+    private string? invalidClass;
     private bool isValid = true;
     
        
@@ -76,7 +76,7 @@
         The OnAfterRenderAsync function is used to get an initial reference to the 
 
     */
-    protected override async Task OnAfterRenderAsync(bool firstRender) {
+    protected override void OnAfterRender(bool firstRender) {
 
         if (firstRender) {
             dotNet = DotNetObjectReference.Create(this);
