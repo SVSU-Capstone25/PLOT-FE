@@ -12,3 +12,11 @@ Author: Josh Rodack (2/10/2025) */
 .container{
     display:flex;
 }
+
+.img-card{
+    height:235px;
+    width:300px;
+}
+.col-sm{
+    font-size:30px;
+}
