@@ -8,7 +8,7 @@ The purpose of PLOT is to allow users to easily create, manage,
 and allocate floorsets for Platos Closet. 
 
 Author: Josh Rodack (2/10/2025)-->
-@rendermode InteractiveServer
+
 
 <div class="Dropdown @Class" id="@Id">
     
@@ -21,10 +21,10 @@ Author: Josh Rodack (2/10/2025)-->
         {
             <ul class="dropdown-list ">
   
-                @for(int i = 0; i < @optionList.Length; i++)
+                @for(int i = 0; i < @OptionList.Length; i++)
                 {
-                    <li id="@idList[i]">
-                        <i class="@iconList[i]"></i> @optionList[i]
+                    <li id="@IdList[i]">
+                        <i class="@IconList[i]"></i> @OptionList[i]
                     </li>
                 }
             </ul>
@@ -37,6 +37,7 @@ Author: Josh Rodack (2/10/2025)-->
 
 
 @code {
+    //@rendermode InteractiveServer
     [Parameter]
     public string? Id { get; set; }
 
@@ -46,6 +47,7 @@ Author: Josh Rodack (2/10/2025)-->
     [Parameter]
     public string DropdownLabel {get; set;}
 
+    /*
     [Parameter]
     public string Options { get; set; }
     
@@ -53,30 +55,28 @@ Author: Josh Rodack (2/10/2025)-->
     public string Icons {get; set;}
 
     [Parameter]
-    public string Ids {get; set;}
+    public string Ids {get; set;} 
+*/
+    [Parameter]
+    public List<string> optionList? {get; set;}
 
+    [Parameter]
+    public List<string> iconList? {get; set;}
 
-    public string[] optionList = Array.Empty<string>();
-    public string[] iconList = Array.Empty<string>();
-    public string[] idList = Array.Empty<string>();
+    [Parameter]
+    public List<string> idList? {get; set;}
 
 
     public bool isActive = false;
-    protected override void OnParamaterSet()
-    {
-        if(!string.IsNullOrEmpty(Options))
-        {
+
+  
             optionList = Options.Split(',');
-        }
-        if(!string.IsNullOrEmpty(Icons))
-        {
+      
             iconList = Icons.Split(',');
-        }
-        if(!string.IsNullOrEmpty(Ids))
-        {
+       
             idList = Ids.Split(',');
-        }
-    } 
+       
+   
     private async Task Switch()
     {
         isActive = !isActive;

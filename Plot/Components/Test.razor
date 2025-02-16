@@ -2,12 +2,32 @@
 
 <h1>Test Page</h1>
 
-<Dropdown Class="Test" id="123" Options=@optionlist Icons=@iconList Ids=@idList></Dropdown>
+<Dropdown Class="Test" id="123" 
+OptionList=@optionList 
+IconList=@iconList 
+IdList=@idList>
+</Dropdown>
 
 
 
 @code{
-    string optionlist = "option 1,option 2,option 3";
-    string iconList = "fa-regular fa-pen-to-square,fa-regular fa-copy,fa-solid fa-trash-can";
-    string idList = "123,456,789";
+    List<string> optionList = new List<string>()
+        {
+            "option 1",
+            "option 2",
+            "option 3"
+        };
+    List<string> iconList = new List<string>()
+        {
+            "fa-regular fa-pen-to-square",
+            "fa-regular fa-copy",
+            "fa-solid fa-trash-can"
+        };
+    List<string> idList = new List<string>()
+        {
+            "123",
+            "456",
+            "789"
+        };
+
 }
