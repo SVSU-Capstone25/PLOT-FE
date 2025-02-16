@@ -1,5 +1,5 @@
 @*
-    Filename:- NumericInput.razor
+    Filename: NumericInput.razor
     Part of Project: Plot
 
     File Purpose:
@@ -14,12 +14,27 @@
 
 @rendermode InteractiveServer
 @inherits LayoutComponentBase
+@inject IJSRuntime JS
 
-<div class="@Class form-group d-flex flex-column" id="@Id">
+<div class="NumericInput @Class form-group d-flex flex-column" id="@Id">
     <label for="number-input">@Label</label>
-    <input type="number" class="p-2 mt-1" id="number-input" @onchange='HandleNumberChange' placeholder="@Placeholder" />
-    <small class="form-text text-muted">@Description</small>
+    <input type="number" class="p-2 mt-1 @invalidClass" id="number-input" min="@minValue" 
+        @oninput='HandleNumberChange' @onfocusout='HandleFocusOut' placeholder="@Placeholder" />
+    <small class="form-text text-muted @invalidClass">
+
+        @* If the text is valid, show the normal description, otherwise *@
+        @* tell the user their input is invalid. *@
+        @(invalidClass is not null && invalidClass.Equals("") ? Description : "Invalid Number!")
+    </small>
 </div>
+
+<script>
+    window.checkValidNumber = function (dotNetHelper) {
+        // Invoke the CheckNumberValid method 
+        dotNetHelper.invokeMethodAsync("CheckNumberValid",
+                document.getElementById("number-input").value);        
+    };
+</script>
 
 @code {
     [Parameter]
@@ -39,26 +54,62 @@
 
     [Parameter]
     public EventCallback<String> ValueChanged { get; set; }
+
+    private DotNetObjectReference<NumericInput>? dotNet;
+
+    private string? invalidClass = "";
+    private double minValue = 0;
+
+    /*
+        The OnAfterRender function runs after the page is rendered.
+        This will make a new instance of the DotNetObjectReference
+        for JS calls.
+    */
+    protected override void OnAfterRender(bool firstRender) {
+        if (firstRender) {
+            dotNet = DotNetObjectReference.Create(this);
+        }
+    }
     
     /*
-        This function runs whenever the input text is changed, 
+        The HandleNumberChange function runs whenever the input text is changed, 
         and it will return the contents of the textbox.
     */
-    private async Task HandleNumberChange(ChangeEventArgs e) {
-        // If the textbox is not empty
-        if (e.Value != null)
+    private async Task HandleNumberChange(ChangeEventArgs e) {        
+        await CheckNumberValid(e.Value?.ToString());
+    }
+
+    /*
+        The HandleFocusOut function invokes the "CheckNumberValid" function
+        when the input area loses focus.
+    */
+    private async Task HandleFocusOut(FocusEventArgs e) {
+        await JS.InvokeVoidAsync("checkValidNumber", dotNet);
+    }
+
+
+    /*
+        The CheckNumberValid function validates the given string.
+        If the string is numeric and is >= 0, it is valid.
+    */
+    [JSInvokable]
+    public async Task CheckNumberValid(string? input) {
+        // If the textbox has valid input >= 0
+        if (double.TryParse(input, out double newValue) && newValue >= minValue)
         {            
+            // Reset invalidClass value
+            invalidClass = "";
+
             // Send the value to the parent
-            await ValueChanged.InvokeAsync(e.Value.ToString());
+            await ValueChanged.InvokeAsync(newValue.ToString());
         }
         else
         {
+            // Set elements to "invalid" state
+            invalidClass = "error";
+
             // Send the empty string if null
             await ValueChanged.InvokeAsync("");
         }
-    }
-
-    
-
-    
+    }    
 }

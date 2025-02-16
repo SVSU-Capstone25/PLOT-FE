@@ -1,4 +1,4 @@
-@page "/testing"
+@page "/test/numeric-input"
 @using Plot.Components.PartialComponents.NumericInput
 @rendermode InteractiveServer
 
@@ -10,14 +10,13 @@
 
     private double currentNumber;
 
+    /* This function is called when the number is changed */
     private async Task NumberChanged(string strNumber) {
-        if (Double.TryParse(strNumber, out double newNumber)) {
-            currentNumber = newNumber;          
-        }
-        else
-        {
-            currentNumber = 0;
-        }
+        // String will be either a positive number or ""
+        Double.TryParse(strNumber, out double newNumber);
+        
+        currentNumber = newNumber; // Number will be 0 if string is ""
+       
         await InvokeAsync(StateHasChanged);
         
     }   
