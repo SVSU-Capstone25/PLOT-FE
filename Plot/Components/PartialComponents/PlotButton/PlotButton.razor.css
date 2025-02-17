@@ -9,21 +9,17 @@ The purpose of PLOT is to allow users to easily create, manage,
 and allocate floorsets for Platos Closet. 
 
 Author: Josh Rodack (2/10/2025) */
-.modal-header {
-    background-color: var(--platos-blue);
-}
 
-.modal-title {
-    color: white;
-}
-
-.btn-primary {
-    color: #55B5B1
-    
+.btn-primary{
+    background-color: #55B5B1;
+    display: flex;
 }
 .btn-success{
-    color: #3D9747
+    background-color: #3D9747;
+    display: flex;
 }
 .btn-danger{
-    color: #EF4444
+    background-color: #EF4444;
+    display: flex;
 }
+

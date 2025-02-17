@@ -12,16 +12,51 @@ Author: Josh Rodack (2/10/2025)-->
 
 
 
-                <div class="PlotButton @Class" id="@Id">
-                <button>x</button>
-                </div>
-          
+<div class="PlotButton @Class" id="@Id">
+    <div class="x">
+    <button type="button" class="btn btn-@Variant" disabled=@IsDisabled>
+        <div class="text-@allignment">
+        <i class="@Icon"></i>
+        </div>
+    </button>
+    </div>
+</div>
+
 
 @code {
     // all of these are parameters to set up the modal dynamically
     [Parameter]
-    public string? Class {get; set;}
+    public string? Class { get; set; }
 
     [Parameter]
-    public string? Id {get; set;}
+    public string? Id { get; set; }
+
+    [Parameter]
+    public string Variant {get; set;}
+
+    [Parameter]
+    public string Icon {get; set;}
+
+    [Parameter]
+    public bool IsDisabled {get; set;}
+
+    [Parameter]
+    public string? TextAllignment {get;set;}
+
+    public string allignment;
+
+    if(TextAllignment.equals("right"))
+    {
+        allignment = "start";
+    }
+    else if(TextAllignment.equals("center"))
+    {
+        allignment = "center";
+    }   
+    else
+    {
+        allignment = "end";
+    }
+    
+
 }
