@@ -1,0 +1,27 @@
+<!-- Filename: Button.razor
+Part of Project:-- PLOT
+File Purpose:
+Create a component to display a button and its various 
+variants
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Josh Rodack (2/10/2025)-->
+
+
+
+                <div class="PlotButton @Class" id="@Id">
+                <button>x</button>
+                </div>
+          
+
+@code {
+    // all of these are parameters to set up the modal dynamically
+    [Parameter]
+    public string? Class {get; set;}
+
+    [Parameter]
+    public string? Id {get; set;}
+}
