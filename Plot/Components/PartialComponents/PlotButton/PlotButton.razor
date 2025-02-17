@@ -1,4 +1,4 @@
-<!-- Filename: Button.razor
+<!-- Filename: PlotButton.razor
 Part of Project:-- PLOT
 File Purpose:
 Create a component to display a button and its various 
@@ -13,13 +13,24 @@ Author: Josh Rodack (2/10/2025)-->
 
 
 <div class="PlotButton @Class" id="@Id">
-    <div class="x">
-    <button type="button" class="btn btn-@Variant" disabled=@IsDisabled>
-        <div class="text-@allignment">
-        <i class="@Icon"></i>
-        </div>
+    @if(TextAlignment.Equals("right"))
+    {
+        alignment = "text-start";
+    }
+    else if(TextAlignment.Equals("center"))
+    {
+        alignment = "text-center";
+    }   
+    else
+    {
+        alignment = "text-end";
+    }
+    <button type="button" class="btn btn-@Variant @alignment w-100" disabled=@IsDisabled>
+        
+        <i class="@Icon"></i> @ChildContent
+        
     </button>
-    </div>
+    
 </div>
 
 
@@ -32,31 +43,24 @@ Author: Josh Rodack (2/10/2025)-->
     public string? Id { get; set; }
 
     [Parameter]
-    public string Variant {get; set;}
+    public required string Variant {get; set;}
 
     [Parameter]
-    public string Icon {get; set;}
+    public string? Icon {get; set;}
 
     [Parameter]
     public bool IsDisabled {get; set;}
 
     [Parameter]
-    public string? TextAllignment {get;set;}
+    public string? TextAlignment {get;set;}
 
-    public string allignment;
+    [Parameter]
+    public required RenderFragment ChildContent{get;set;}
 
-    if(TextAllignment.equals("right"))
-    {
-        allignment = "start";
-    }
-    else if(TextAllignment.equals("center"))
-    {
-        allignment = "center";
-    }   
-    else
-    {
-        allignment = "end";
-    }
+
+    public string alignment;
+
     
+
 
 }

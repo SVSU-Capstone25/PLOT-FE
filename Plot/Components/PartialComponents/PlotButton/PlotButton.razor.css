@@ -1,4 +1,4 @@
-/* Filename: Button.razor.css
+/* Filename: PlotButton.razor.css
 Part of Project: PLOT
 
 File Purpose:
@@ -12,14 +12,25 @@ Author: Josh Rodack (2/10/2025) */
 
 .btn-primary{
     background-color: #55B5B1;
-    display: flex;
 }
 .btn-success{
     background-color: #3D9747;
-    display: flex;
 }
 .btn-danger{
     background-color: #EF4444;
-    display: flex;
+    
+   
 }
 
+.text-start{
+    color: black;
+    text-align: start;
+}
+.text-center{
+    color: black;
+    text-align: center;
+}
+.text-end{
+    color: black;
+    text-align: end;
+}
