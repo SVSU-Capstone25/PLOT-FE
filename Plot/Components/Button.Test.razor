@@ -1,0 +1,23 @@
+@page "/test/button"
+
+<h1>Test Button</h1>
+
+
+<Button Class="Test Button" Id="123" Variant="btn-primary" IsDisabled=true
+Icon="fa-solid fa-ellipsis" TextAllignment="left"></Button>
+
+<Button Class="Test Button2" Id="123" Variant="btn-success"  IsDisabled=false
+Icon="fa-solid fa-ellipsis" TextAllignment="left"></Button>
+
+<Button Class="Test Button3" Id="123" Variant="btn-danger"  IsDisabled=true
+Icon="fa-solid fa-ellipsis" TextAllignment="left"></Button>
+
+
+@code
+{
+    //OnClickParam="@SayHello"
+    private void SayHello()
+    {
+        Console.WriteLine("No");
+    }
+}
