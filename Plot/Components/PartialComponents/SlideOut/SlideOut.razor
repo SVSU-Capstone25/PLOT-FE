@@ -1,3 +1,4 @@
+.
 @*
     Filename:- SlideOut.razor
     Part of Project: Plot
@@ -14,18 +15,17 @@
 
 @inherits LayoutComponentBase
 
-<div class="SlideOut @Class">
-    <!-- Toggle Button -->
-    <button class="btn btn-light toggle-btn shadow-sm collapsed" 
-                        id='toggle-btn' onclick="toggleSidebar()">
-        <i class="fa-solid fa-chevron-right"></i>
-    </button>
 
-    <!-- Sidebar -->
-    <aside class="collapse-sidebar collapsed" id="@Id">
-        @ChildContent
-    </aside>
-</div>
+<!-- Toggle Button -->
+<button class="btn btn-light toggle-btn shadow-sm collapsed" 
+                    id='toggle-btn' onclick="toggleSidebar()">
+    <i class="fa-solid fa-chevron-right"></i>
+</button>
+
+<!-- Sidebar -->
+<aside class="SlideOut collapse-sidebar collapsed @Class" id="@Id">
+    @ChildContent
+</aside>
 
 <script>
     /*
