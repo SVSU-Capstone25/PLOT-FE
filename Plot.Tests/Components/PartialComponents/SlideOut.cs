@@ -17,13 +17,16 @@ using Xunit;
 
 namespace PlaywrightTests;
 
+/// <summary>
+/// Tests to verify that the slide out componenet exists.
+/// </summary>
 public class SlideOutTest : PageTest
 {
     [Fact]
     public async Task HasSlideOut()
     {
         // Go to test page.
-        await Page.GotoAsync("http://localhost:8080/");
+        await Page.GotoAsync("http://localhost:8080/test/slide-out");
 
         // Expect the page to have a body visibile.
         await Expect(Page.Locator("body")).ToBeVisibleAsync();
@@ -34,11 +37,15 @@ public class SlideOutTest : PageTest
         await Expect(slideOut).ToBeVisibleAsync();
     }
 
+    /// <summary>
+    /// Tests to verify that the slide out component slides when the toggle button is clicked.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task ToggleSlideOut()
     {
         // Go to test page.
-        await Page.GotoAsync("http://localhost:8080/");
+        await Page.GotoAsync("http://localhost:8080/test/slide-out");
 
         // Locate the toggle button.
         var toggleButton = Page.Locator("#toggle-btn");
@@ -48,13 +55,38 @@ public class SlideOutTest : PageTest
 
         // Verify that the SlideOut is not collapsed.
         var slideOut = Page.Locator(".collapse-sidebar");
-        await Expect(slideOut).Not.ToHaveClassAsync("collapse-sidebar collapsed");
+        await Expect(slideOut).Not.ToHaveClassAsync("SlideOut collapse-sidebar collapsed");
 
         // Click the toggle button to close the SlideOut.
         await toggleButton.ClickAsync();
 
         // Verify that the SlideOut is collapsed.
-        await Expect(slideOut).ToHaveClassAsync("collapse-sidebar collapsed");
+        await Expect(slideOut).ToHaveClassAsync("SlideOut collapse-sidebar collapsed");
+    }
+
+    /// <summary>
+    /// Tests to verify that the slide out component has content when it is open.
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task SlideOutHasContent()
+    {
+        // Go to test page.
+        await Page.GotoAsync("http://localhost:8080/test/slide-out");
+
+        // Locate the toggle button.
+        var toggleButton = Page.Locator("#toggle-btn");
+
+        // Click the toggle button to open the SlideOut.
+        await toggleButton.ClickAsync();
+
+        // Verify that the SlideOut is not collapsed.
+        var slideOut = Page.Locator(".collapse-sidebar");
+        await Expect(slideOut).Not.ToHaveClassAsync("SlideOut collapse-sidebar collapsed");
+
+        // Verify that the SlideOut has content.
+        var slideOutContent = Page.Locator("p");
+        await Expect(slideOutContent).ToBeVisibleAsync();
     }
 
 }
