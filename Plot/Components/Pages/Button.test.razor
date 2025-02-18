@@ -14,7 +14,7 @@ Test Text 2
 </Button>
 
 <Button Class="Test Button" Id="123" Variant="danger" OnClickFunction="TestFunction"
-Icon="fa-solid fa-copy" IsDisabled=true TextAlignment="left">
+Icon="fa-solid fa-copy" IsDisabled=false TextAlignment="left">
 Test Text 3
 </Button>
 
@@ -25,7 +25,7 @@ Test Text 3
 </script>
 @code
 {
-    private async Task TestFunction()
+    private void TestFunction()
     {
         Console.WriteLine("Function is Working");
     }
