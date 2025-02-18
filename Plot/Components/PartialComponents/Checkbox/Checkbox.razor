@@ -19,10 +19,10 @@ Author: Danielle Smith (2/9/2025) -->
 </div>
 
 @code {
-    [Parameter] public string Text { get; set; } = "";  // text next to the checkbox
-    [Parameter] public string? Id { get; set; } // id (nullable)
+    [Parameter, EditorRequired] public required string Text { get; set; } = "";  // text next to the checkbox
+    [Parameter, EditorRequired] public required string? Id { get; set; } // id (nullable)
     [Parameter] public string? Class { get; set; } // string of classes (nullable)
-    [Parameter] public bool Checked { get; set; } // if it is checked initially
+    [Parameter, EditorRequired] public required bool Checked { get; set; } // if it is checked initially
     [Parameter] public EventCallback<bool> CheckedChanged { get; set; } // event callback
 
     // run the CheckedChanged event on load for if we are initializing with data
