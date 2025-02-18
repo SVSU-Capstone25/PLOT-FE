@@ -3,27 +3,29 @@
 <h1>Test Button</h1>
 
 
-<Button Class="Test Button" Id="123" Variant="primary"
-Icon="fa-solid fa-ellipsis" IsDisabled=false TextAlignment="center"
-OnClickFunction="@TestFunction">
+<Button Class="Test Button" Id="123" Variant="primary" OnClickFunction="TestFunction"
+Icon="fa-solid fa-ellipsis" IsDisabled=false TextAlignment="center">
 Test Text 1
 </Button>
 
-<Button Class="Test Button" Id="123" Variant="success"
-Icon="fa-solid fa-download" IsDisabled=false TextAlignment="right"
-OnClickFunction="@TestFunction">
+<Button Class="Test Button" Id="123" Variant="success" OnClickFunction="TestFunction"
+Icon="fa-solid fa-download" IsDisabled=false TextAlignment="right">
 Test Text 2
 </Button>
 
-<Button Class="Test Button" Id="123" Variant="danger"
-Icon="fa-solid fa-copy" IsDisabled=true TextAlignment="left"
-OnClickFunction="@TestFunction">
+<Button Class="Test Button" Id="123" Variant="danger" OnClickFunction="TestFunction"
+Icon="fa-solid fa-copy" IsDisabled=true TextAlignment="left">
 Test Text 3
 </Button>
 
+<script>
+    function testFuncOne() {
+        alert("yippee");
+    }
+</script>
 @code
 {
-    private void TestFunction()
+    private async Task TestFunction()
     {
         Console.WriteLine("Function is Working");
     }

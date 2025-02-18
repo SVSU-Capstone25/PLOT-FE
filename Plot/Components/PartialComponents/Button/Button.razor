@@ -9,6 +9,8 @@ The purpose of PLOT is to allow users to easily create, manage,
 and allocate floorsets for Platos Closet. 
 
 Author: Josh Rodack (2/10/2025)-->
+@* @typeparam T *@
+
 
 
 <div class="Button @Class" id="@Id">
@@ -30,15 +32,20 @@ Author: Josh Rodack (2/10/2025)-->
         Console.WriteLine("Hello");
     }
     
-    <button @onclick="OnClickMethod" type="button" class="btn btn-@Variant @alignment @disabledClass w-100" disabled=@IsDisabled>
+    <button onclick="testme()" type="button" class="btn btn-@Variant @alignment @disabledClass w-100" disabled=@IsDisabled>
         
         <span class="icon"><i class="@Icon"></i></span><span class="btn-element">@ChildContent</span>
         
     </button>
-    <p>@message</p>
+    <p id="messageTag">@message</p>
 </div>
+ <script>
+    function testme(){
+        document.getElementById("messageTag").innerHTML="now working";
 
+    }
 
+</script> 
 @code {
     // all of these are parameters to set up the modal dynamically
     [Parameter]
@@ -63,20 +70,28 @@ Author: Josh Rodack (2/10/2025)-->
     public required RenderFragment ChildContent{get;set;}
 
     [Parameter]
-    public Action OnClickFunction {get; set;}
+    public EventCallback OnClickFunction {get; set;}
+
+
     public string alignment;
     public string disabledClass = "";
     public string message = "Button not working";
     
-
-    private void OnClickMethod() => message = "button working";
-    /*
+    public void basefunc()
     {
-        message = "button working";
-        //OnClickFunction?.Invoke();
-        
+        message = "suffer";
     }
-    */
+    private async Task OnClickFunc()
+    {
+        message = " i hate";
+        if (OnClickFunction.HasDelegate)
+        {
+            await OnClickFunction.InvokeAsync(); 
+
+        }
+    }
+    
+    
     
 
 
