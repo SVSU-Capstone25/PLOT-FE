@@ -20,32 +20,32 @@
 
         @if (ShowHelp)
         {
-            <div class="nav-item px-3">
+            @* <div class="nav-item px-3">
                 <a class="nav-link" data-bs-toggle="modal" data-bs-target="#helpModal">
                     Help <i class="fa-solid fa-question"></i>
                 </a>
-            </div>
+            </div> *@
         }
 
         @if (ShowLogout)
         {
-            <div class="nav-item px-3 ml-auto">
+            @* <div class="nav-item px-3 ml-auto">
                 <a class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal">
                     Logout
                 </a>
-            </div>
+            </div> *@
         }
     </nav>
 </div>
 
-<ModalDialog Title="Help Page" ModalID="helpModal" ModalLabel="helpModalLabel" ModalSize="">
+@* <ModalDialog Title="Help Page" ModalID="helpModal" ModalLabel="helpModalLabel" ModalSize="">
     <BodyContent>
         <h4>HELP</h4>
         <p>loreum ipsum</p>
     </BodyContent>
 
     <FooterContent>
-        @* <button id="help" type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button> *@
+        <button id="help" type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
     </FooterContent>
 </ModalDialog>
 
@@ -55,10 +55,10 @@
     </BodyContent>
 
     <FooterContent>
-        @* <button id="close" type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
-        <button id="logout" type="button" class="btn platos-blue text-white" onclick="window.location.href='/'">Yes, Logout</button> *@
+        <button id="close" type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
+        <button id="logout" type="button" class="btn platos-blue text-white" onclick="window.location.href='/'">Yes, Logout</button>
     </FooterContent>
-</ModalDialog>
+</ModalDialog> *@
 
 @code {
     [Parameter]
