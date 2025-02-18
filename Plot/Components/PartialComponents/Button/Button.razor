@@ -11,7 +11,6 @@ and allocate floorsets for Platos Closet.
 Author: Josh Rodack (2/10/2025)-->
 
 
-
 <div class="Button @Class" id="@Id">
     @if(TextAlignment.Equals("right"))
     {
@@ -25,21 +24,18 @@ Author: Josh Rodack (2/10/2025)-->
     {
         alignment = "text-end";
     }
-    @if(@IsDisabled)
+    @if(IsDisabled)
     {
         disabledClass = "disabled-btn";
         Console.WriteLine("Hello");
     }
-    @if(visibleThing)
-    {
-        <p> i hate this</p>
-    }
-    <button @onclick="@OnClickMethod" type="button" class="btn btn-@Variant @alignment @disabledClass w-100" disabled=@IsDisabled>
+    
+    <button @onclick="OnClickMethod" type="button" class="btn btn-@Variant @alignment @disabledClass w-100" disabled=@IsDisabled>
         
         <span class="icon"><i class="@Icon"></i></span><span class="btn-element">@ChildContent</span>
         
     </button>
-    
+    <p>@message</p>
 </div>
 
 
@@ -70,13 +66,17 @@ Author: Josh Rodack (2/10/2025)-->
     public Action OnClickFunction {get; set;}
     public string alignment;
     public string disabledClass = "";
+    public string message = "Button not working";
+    
 
-    public bool visibleThing = false;
-    private void OnClickMethod()
+    private void OnClickMethod() => message = "button working";
+    /*
     {
-        OnClickFunction?.Invoke();
-        visibleThing = !visibleThing;
+        message = "button working";
+        //OnClickFunction?.Invoke();
+        
     }
+    */
     
 
 
