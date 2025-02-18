@@ -12,7 +12,7 @@ Author: Josh Rodack (2/10/2025)-->
 
 
 
-<div class="PlotButton @Class" id="@Id">
+<div class="Button @Class" id="@Id">
     @if(TextAlignment.Equals("right"))
     {
         alignment = "text-start";
@@ -25,9 +25,18 @@ Author: Josh Rodack (2/10/2025)-->
     {
         alignment = "text-end";
     }
-    <button type="button" class="btn btn-@Variant @alignment w-100" disabled=@IsDisabled>
+    @if(@IsDisabled)
+    {
+        disabledClass = "disabled-btn";
+        Console.WriteLine("Hello");
+    }
+    @if(visibleThing)
+    {
+        <p> i hate this</p>
+    }
+    <button @onclick="@OnClickMethod" type="button" class="btn btn-@Variant @alignment @disabledClass w-100" disabled=@IsDisabled>
         
-        <i class="@Icon"></i> @ChildContent
+        <span class="icon"><i class="@Icon"></i></span><span class="btn-element">@ChildContent</span>
         
     </button>
     
@@ -57,9 +66,17 @@ Author: Josh Rodack (2/10/2025)-->
     [Parameter]
     public required RenderFragment ChildContent{get;set;}
 
-
+    [Parameter]
+    public Action OnClickFunction {get; set;}
     public string alignment;
+    public string disabledClass = "";
 
+    public bool visibleThing = false;
+    private void OnClickMethod()
+    {
+        OnClickFunction?.Invoke();
+        visibleThing = !visibleThing;
+    }
     
 
 
