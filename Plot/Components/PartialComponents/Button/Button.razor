@@ -9,11 +9,16 @@ The purpose of PLOT is to allow users to easily create, manage,
 and allocate floorsets for Platos Closet. 
 
 Author: Josh Rodack (2/10/2025)-->
-@* @typeparam T *@
 
+<!--Setting to allow dynamic elements-->
+@rendermode InteractiveServer
 
-
+<!--Button Component-->
 <div class="Button @Class" id="@Id">
+    <!--
+    If Statement to set alignment for
+    icons and text for The button
+    -->
     @if(TextAlignment.Equals("right"))
     {
         alignment = "text-start";
@@ -26,28 +31,27 @@ Author: Josh Rodack (2/10/2025)-->
     {
         alignment = "text-end";
     }
+    <!--Add additional class If The button is disabled-->
     @if(IsDisabled)
     {
         disabledClass = "disabled-btn";
-        Console.WriteLine("Hello");
-    }
-    
-    <button onclick="testme()" type="button" class="btn btn-@Variant @alignment @disabledClass w-100" disabled=@IsDisabled>
         
+    }
+    <!--Button class, adds classes based on data passed icon
+    via parameters
+    -->
+    <button @onclick="OnClickFunc" type="button" 
+    class="btn btn-@Variant @alignment @disabledClass w-100" 
+    disabled=@IsDisabled>
+        <!--Button content-->
         <span class="icon"><i class="@Icon"></i></span><span class="btn-element">@ChildContent</span>
         
     </button>
-    <p id="messageTag">@message</p>
+   
 </div>
- <script>
-    function testme(){
-        document.getElementById("messageTag").innerHTML="now working";
 
-    }
-
-</script> 
 @code {
-    // all of these are parameters to set up the modal dynamically
+    // all of these are parameters to set up the button dynamically
     [Parameter]
     public string? Class { get; set; }
 
@@ -68,26 +72,29 @@ Author: Josh Rodack (2/10/2025)-->
 
     [Parameter]
     public required RenderFragment ChildContent{get;set;}
-
+    //Parameter to pass in the method from the parent component dynamically
     [Parameter]
     public EventCallback OnClickFunction {get; set;}
-
-
-    public string alignment;
-    public string disabledClass = "";
-    public string message = "Button not working";
     
-    public void basefunc()
-    {
-        message = "suffer";
-    }
+    //string to hold alignment class
+    public string alignment;
+    //string to hold the disabled class, if
+    //not disabled, it adds no text to the class of the button
+    public string disabledClass = "";
+    
+    //When button is clicked this
+    //task is called which then calls
+    //the method invoked in the parent component
     private async Task OnClickFunc()
     {
-        message = " i hate";
+        
         if (OnClickFunction.HasDelegate)
         {
-            await OnClickFunction.InvokeAsync(); 
-
+           
+                await OnClickFunction.InvokeAsync(); 
+      
+           
+            
         }
     }
     
