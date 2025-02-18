@@ -20,7 +20,7 @@ public class LinkTest : PageTest
         await Expect(link).ToBeVisibleAsync();
 
         // Expect the link to have some text
-        await Expect(link).NotToBeEmptyAsync();
+        await Expect(link).ToHaveTextAsync("This is a test link");
 
         // Expect the link to have a specific href attribute
         await Expect(link).ToHaveAttributeAsync("href", "https://www.svsu.edu/");
