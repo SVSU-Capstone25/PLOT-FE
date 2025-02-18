@@ -1,5 +1,30 @@
 @page "/test/button"
 
-<PageTitle>Button</PageTitle>
+<h1>Test Button</h1>
 
-<Button></Button>
+
+<Button Class="Test Button" Id="123" Variant="primary"
+Icon="fa-solid fa-ellipsis" IsDisabled=false TextAlignment="center"
+OnClickFunction="@TestFunction">
+Test Text 1
+</Button>
+
+<Button Class="Test Button" Id="123" Variant="success"
+Icon="fa-solid fa-download" IsDisabled=false TextAlignment="right"
+OnClickFunction="@TestFunction">
+Test Text 2
+</Button>
+
+<Button Class="Test Button" Id="123" Variant="danger"
+Icon="fa-solid fa-copy" IsDisabled=true TextAlignment="left"
+OnClickFunction="@TestFunction">
+Test Text 3
+</Button>
+
+@code
+{
+    private void TestFunction()
+    {
+        Console.WriteLine("Function is Working");
+    }
+}
