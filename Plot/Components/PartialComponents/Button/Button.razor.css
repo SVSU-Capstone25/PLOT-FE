@@ -11,9 +11,9 @@ and allocate floorsets for Platos Closet.
 Author: Josh Rodack (2/10/2025) */
 .disabled-btn{
     cursor:not-allowed !important;
-    /*pointer-events: hover !important;*/
-    background-color: #00D900;
+    pointer-events: auto !important;
 }
+
 .btn-primary{
     background-color: #55B5B1 !important;
     border: none;
@@ -34,7 +34,7 @@ Author: Josh Rodack (2/10/2025) */
 
 }
 .btn-danger{
-    background-color: #EF4444 !important;
+    background-color: #EF4444 ;
     border: none;
 
 }
