@@ -6,15 +6,15 @@
         }
         else
         {
-            <i class="col-auto @iconString"></i>
+            <i class="col-auto fa-fw @iconString"></i>
         }
-        <p class="col-sm-11">
+        <p class="col-auto">
             @label
         </p>
     </h5>
     <div class="row">
         @((MarkupString)@_blankIcon)
-        <textarea class="col-sm-11" placeholder=@placeholder></textarea>
+        <textarea class="col-auto" placeholder=@placeholder></textarea>
     </div>
 </div>
 
@@ -33,7 +33,7 @@
     public String? iconString {get; set;}
 
     //Insert this string as markup to space elements correctly, when no icon is specified.
-    private String _blankIcon = """<i class="col-auto fa-solid fa-square" style="opacity: 0%;"></i>""";
+    private String _blankIcon = """<i class="col-auto fa-fw fa-solid fa-square" style="opacity: 0%;"></i>""";
 
     //Text to display above the text box area
     [Parameter, EditorRequired]
