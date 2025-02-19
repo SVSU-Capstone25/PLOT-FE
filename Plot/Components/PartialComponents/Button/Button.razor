@@ -19,35 +19,34 @@ Author: Josh Rodack (2/10/2025)-->
     If Statement to set alignment for
     icons and text for The button
     -->
-    @if(TextAlignment.Equals("right"))
+    @if (TextAlignment.Equals("right") & TextAlignment is not null)
     {
         alignment = "text-start";
     }
-    else if(TextAlignment.Equals("center"))
+    else if (TextAlignment.Equals("center") & TextAlignment is not null)
     {
         alignment = "text-center";
-    }   
+    }
     else
     {
         alignment = "text-end";
     }
     <!--Add additional class If The button is disabled-->
-    @if(IsDisabled)
+    @if (IsDisabled)
     {
         disabledClass = "disabled-btn";
-        
+
     }
     <!--Button class, adds classes based on data passed icon
     via parameters
     -->
-    <button @onclick="OnClickFunc" type="button" 
-    class="btn btn-@Variant @alignment @disabledClass w-100" 
-    disabled=@IsDisabled>
+    <button @onclick="OnClickFunc" type="button" class="btn btn-@Variant @alignment @disabledClass w-100"
+        disabled=@IsDisabled>
         <!--Button content-->
         <span class="icon"><i class="@Icon"></i></span><span class="btn-element">@ChildContent</span>
-        
+
     </button>
-   
+
 </div>
 
 @code {
@@ -59,47 +58,47 @@ Author: Josh Rodack (2/10/2025)-->
     public string? Id { get; set; }
 
     [Parameter]
-    public required string Variant {get; set;}
+    public required string Variant { get; set; }
 
     [Parameter]
-    public string? Icon {get; set;}
+    public string? Icon { get; set; }
 
     [Parameter]
-    public bool IsDisabled {get; set;}
+    public bool IsDisabled { get; set; }
 
     [Parameter]
-    public string? TextAlignment {get;set;}
+    public string? TextAlignment { get; set; }
 
     [Parameter]
-    public required RenderFragment ChildContent{get;set;}
+    public required RenderFragment ChildContent { get; set; }
     //Parameter to pass in the method from the parent component dynamically
     [Parameter]
-    public EventCallback OnClickFunction {get; set;}
-    
+    public EventCallback OnClickFunction { get; set; }
+
     //string to hold alignment class
     public string alignment;
     //string to hold the disabled class, if
     //not disabled, it adds no text to the class of the button
     public string disabledClass = "";
-    
+
     //When button is clicked this
     //task is called which then calls
     //the method invoked in the parent component
     private async Task OnClickFunc()
     {
-        
+
         if (OnClickFunction.HasDelegate)
         {
-           
-                await OnClickFunction.InvokeAsync(); 
-      
-           
-            
+
+            await OnClickFunction.InvokeAsync();
+
+
+
         }
     }
-    
-    
-    
+
+
+
 
 
 }
