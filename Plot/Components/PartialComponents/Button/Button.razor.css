@@ -15,7 +15,7 @@ Author: Josh Rodack (2/10/2025) */
 }
 
 .btn-primary{
-    background-color: #55B5B1 !important;
+    background-color: var(--platos-blue) !important;
     border: none;
 
 }
@@ -24,7 +24,7 @@ Author: Josh Rodack (2/10/2025) */
     border: none;
 }
 .btn-success{
-    background-color: #3D9747 !important;
+    background-color: var(--success) !important;
     border: none;
 
 }
@@ -34,7 +34,7 @@ Author: Josh Rodack (2/10/2025) */
 
 }
 .btn-danger{
-    background-color: #EF4444 ;
+    background-color: var(--cancel);
     border: none;
 
 }
