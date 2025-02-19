@@ -10,79 +10,26 @@ and allocate floorsets for Platos Closet.
 Author: Josh Rodack (2/10/2025)-->
 @rendermode InteractiveServer
 
-<div class="Dropdown @Class" id="@Id">
-    
 
-    <div class="dropdown" id="toggle">
-        <button @onclick="() => Switch()" type="button" class="btn btn-light">
-            <i class="fa-solid fa-ellipsis"></i>
-        </button>
-        @if (isActive == true)
-        {
-            <ul class="dropdown-list ">
-                
-                @for(int i = 0; i < @OptionList.Count; i++)
-                {
-                    @if(OptionList[i] != null and IdList[i] != null and IconList[i] != null)
-                {
-                    <li id="@IdList[i]">
-                        <i class="@IconList[i]"></i> @OptionList[i]
-                    </li>
-                    }
-                }
-                
-            </ul>
-        }
-        
-
-    </div>
-
+<div class="dropdown @Class" id="@Id">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Dropdown button
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#">Action</a></li>
+    <li><a class="dropdown-item" href="#">Another action</a></li>
+    <li><a class="dropdown-item" href="#">Something else here</a></li>
+  </ul>
 </div>
 
 
-@code {
-    //@rendermode InteractiveServer
+@code
+{
     [Parameter]
     public string? Id { get; set; }
 
     [Parameter]
     public string? Class { get; set; }
 
-    [Parameter]
-    public string DropdownLabel {get; set;}
 
-    /*
-    [Parameter]
-    public string Options { get; set; }
-    
-    [Parameter]
-    public string Icons {get; set;}
-
-    [Parameter]
-    public string Ids {get; set;} 
-*/
-    [Parameter]
-    public List<string>? OptionList {get; set;}
-
-    [Parameter]
-    public List<string>? IconList {get; set;}
-
-    [Parameter]
-    public List<string>? IdList {get; set;}
-
-
-    public bool isActive = false;
-
-  /*
-            optionList = Options.Split(',');
-      
-            iconList = Icons.Split(',');
-       
-            idList = Ids.Split(',');
-    */   
-   
-    public async Task Switch()
-    {
-        isActive = !isActive;
-    }
 }
