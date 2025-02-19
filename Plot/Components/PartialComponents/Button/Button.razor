@@ -19,6 +19,8 @@ Author: Josh Rodack (2/10/2025)-->
     If Statement to set alignment for
     icons and text for The button
     -->
+    @if(TextAlignment is not null)
+    {
     @if (TextAlignment.Equals("right"))
     {
         alignment = "text-start";
@@ -30,6 +32,7 @@ Author: Josh Rodack (2/10/2025)-->
     else
     {
         alignment = "text-end";
+    }
     }
     <!--Add additional class If The button is disabled-->
     @if (IsDisabled)
@@ -81,6 +84,7 @@ Author: Josh Rodack (2/10/2025)-->
     //not disabled, it adds no text to the class of the button
     public string disabledClass = "";
 
+    
     //When button is clicked this
     //task is called which then calls
     //the method invoked in the parent component
