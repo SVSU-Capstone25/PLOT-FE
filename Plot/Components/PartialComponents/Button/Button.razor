@@ -23,16 +23,13 @@ Author: Josh Rodack (2/10/2025)-->
     {
     @if (TextAlignment.Equals("right"))
     {
-        alignment = "text-start";
+        alignment = "text-end";
     }
     else if (TextAlignment.Equals("center"))
     {
         alignment = "text-center";
     }
-    else
-    {
-        alignment = "text-end";
-    }
+    
     }
     <!--Add additional class If The button is disabled-->
     @if (IsDisabled)
@@ -79,7 +76,7 @@ Author: Josh Rodack (2/10/2025)-->
     public EventCallback OnClickFunction { get; set; }
 
     //string to hold alignment class
-    public string alignment = "";
+    public string alignment = "text-start";
     //string to hold the disabled class, if
     //not disabled, it adds no text to the class of the button
     public string disabledClass = "";
