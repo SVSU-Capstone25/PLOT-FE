@@ -1,6 +1,6 @@
 meter
 {
-  /*background-color: rgba(0,0,0,0.25);*/
+  background: rgba(0,0,0,0.25);
   height: 90%;
   border-radius: 50vh;
   width: 100%;
@@ -20,11 +20,5 @@ label
 .progress-overfilled
 {
   border: 2px dashed gold;
-  background-color: black;
-}
-
-meter::-webkit-meter-bar,
-meter::-moz-meter-bar
-{
-  background: violet;
+  background:black;
 }
