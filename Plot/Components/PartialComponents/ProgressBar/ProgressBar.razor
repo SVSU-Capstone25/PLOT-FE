@@ -8,19 +8,22 @@
     </div>
 
     <div class="col-6">
-        <div class="progress-container @_barClass">
-            <div class="progress-container-text">
-                <div class="progress-container-text-align-center">@barLabel</div>
-            </div>
-            <div class="progress-bar-fill" style="width: @MapProgress()%; background-color: @barColor;"></div>
-        </div>
+        <label for="main-progress">@barLabel</label>
+        <style type="text/CSS">
+            @("#bar_" + ID)::-webkit-meter-bar,
+            @("#bar_" + ID)::-moz-meter-bar
+            {
+                background: @barColor;
+            }
+        </style>
+        <meter id="bar_@ID" class=@_barClass min="@barMin" max="@barMax" value="@barValue">@barValue</meter>
     </div>
 </div>
 
 @code {
     //ID string to pass into the main HTML ID
     [Parameter]
-    public String? ID {get; set;}
+    public String ID {get; set;}
 
     //Class string to pass into the main component HTML Class
     [Parameter]
@@ -38,8 +41,12 @@
     [Parameter]
     public String? barLabel {get; set;}
 
+    //Min number in the progress bar.
+    [Parameter]
+    public int barMin {get; set;} = 0;
+
     //Max number in the progress bar.
-    //Must be greater than 0.
+    //Must be greater than barMin
     [Parameter]
     public int barMax {get; set;} = 100;
 
@@ -85,6 +92,10 @@
     {
         if (usePresetFillWarnings)
         {
+            if (barMax <= barMin)
+            {
+                throw new ArgumentException("Bar Max cannot be less than Bar Min!");
+            }
             if (barValue < barMax)
             {
                 _barClass = _unFilledClass;
