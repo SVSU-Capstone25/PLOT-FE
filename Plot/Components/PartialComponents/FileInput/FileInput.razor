@@ -32,7 +32,7 @@
             <p>or</p>
             <label for="file-upload" class="load-files-label">Select File</label>
             <div class="file-select">
-                <InputFile id="file-upload" OnChange="LoadFile" /> 
+                <InputFile id="file-upload" accept=".xlsx,.xls" OnChange="LoadFile" /> 
             </div>
         </div>
     }
@@ -55,10 +55,17 @@
         document.addEventListener("drop", function (event) {
             event.preventDefault(); // Prevents the window from downloading the file
 
-            // if there is a file being dragged
-            if (event.dataTransfer.files.length > 0) {
-                let fileInput = document.querySelector('#file-upload');
+            var allowedTypes = new Set(
+            [
+                "application/vnd.ms-excel", // .xls (older Excel format)
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // .xlsx (modern Excel format)
+            ]);
 
+            // if there is a file being dragged
+            if (event.dataTransfer.files.length > 0 && allowedTypes.has(event.dataTransfer.files[0].type)) 
+            {
+                let fileInput = document.querySelector('#file-upload');
+                
                 // Add the file to the FileList property of a DataTransfer object
                 let dataTransfer = new DataTransfer(); 
                 dataTransfer.items.add(event.dataTransfer.files[0]); 
@@ -66,9 +73,16 @@
                 // add the FileList to the InputFile element, then call the OnChange event
                 fileInput.files = dataTransfer.files;
                 fileInput.dispatchEvent(new Event('change'))
+            } else 
+            {
+                alertUser();
             }
         });
     };
+
+    window.alertUser = function () {
+        alert("Only Excel files (.xlsx, .xls) allowed!");
+    }
 
 </script>
 
@@ -105,13 +119,28 @@
         {
             // Get the file, then get the filename for the element text
             loadedFile = e.File;
-            Text = loadedFile.Name;
             
-            // Send the file to the parent
-            await OnFileSelected.InvokeAsync(loadedFile);
 
-            // Update the DOM to refresh the filename on the element
-            await InvokeAsync(StateHasChanged);
+            var allowedTypes = new HashSet<string>
+            {
+                "application/vnd.ms-excel", // .xls (older Excel format)
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // .xlsx (modern Excel format)
+            };
+
+            if (allowedTypes.Contains(loadedFile.ContentType)) 
+            {
+                Text = loadedFile.Name;
+                // Send the file to the parent
+                await OnFileSelected.InvokeAsync(loadedFile);
+
+                // Update the DOM to refresh the filename on the element
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alertUser");
+            }
+            
         }
         catch (Exception ex)
         {
