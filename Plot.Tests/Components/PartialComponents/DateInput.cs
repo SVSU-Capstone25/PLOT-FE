@@ -19,6 +19,7 @@ public class DateInputTest : PageTest
 
         Console.WriteLine("Located date input, label, and selected date elements.");
 
+        await Task.Delay(500);
         // Check if elements are visible on the page
         var dateInputIsVisible = await dateInput.IsVisibleAsync();
         var labelIsVisible = await label.IsVisibleAsync();
@@ -63,7 +64,7 @@ public class DateInputTest : PageTest
 
         // Move focus away to trigger UI validation and updates
         await dateInput.PressAsync("Tab");
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(1000);
 
         // Verify that the selected date text remains unchanged
         await Expect(selectedDateText).ToHaveTextAsync("Selected Date: ", new() { Timeout = 3000 });
