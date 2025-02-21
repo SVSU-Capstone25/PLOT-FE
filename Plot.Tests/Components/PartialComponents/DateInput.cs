@@ -93,6 +93,7 @@ public class DateInputTest : PageTest
 
         // Locate elements on the page
         var dateInput = Page.Locator("#date-input");
+        await Expect(dateInput).ToBeVisibleAsync(new() { Timeout = 5000 });
         var selectedDateText = Page.Locator("p:has-text('Selected Date:')");
 
         Console.WriteLine("Located date input and selected date elements.");
@@ -101,7 +102,7 @@ public class DateInputTest : PageTest
         await dateInput.FillAsync("");
         Console.WriteLine("Cleared the date input field.");
         await dateInput.PressAsync("Tab");
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(1000);
 
         // Enter a valid date using keyboard typing
         await dateInput.FocusAsync();
@@ -112,8 +113,8 @@ public class DateInputTest : PageTest
         await dateInput.PressAsync("Tab");
 
         // Verify that the selected date text is updated correctly
-        await Expect(selectedDateText).ToHaveTextAsync("Selected Date: 02/18/2025", new() { Timeout = 3000 });
-        await Expect(dateInput).ToHaveValueAsync("2025-02-18", new() { Timeout = 2000 });
+        await Expect(selectedDateText).ToHaveTextAsync("Selected Date: 02/18/2025", new() { Timeout = 5000 });
+        await Expect(dateInput).ToHaveValueAsync("2025-02-18", new() { Timeout = 5000 });
 
         // Retrieve and log the value of the input field and selected date text
         var validDateValue = await dateInput.InputValueAsync();
