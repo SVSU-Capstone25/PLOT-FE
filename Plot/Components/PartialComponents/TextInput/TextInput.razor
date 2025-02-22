@@ -1,4 +1,5 @@
 @inject IJSRuntime JSRuntime
+
 <script>
     function updateInputStyle(elementId, borderColor, textColor) {
         var input = document.getElementById(elementId);
@@ -43,5 +44,5 @@
 
 <div class="text-input-container @(LabelOnTop ? "label-top" : "label-left")">
     <label for="@Id">@Label</label>
-    <input id="@Id" type="text" value="@Value" @oninput="HandleInput" placeholder="@Placeholder" class="TextInput @Class" />
+    <input id="@Id" type="text" value="@Value" @onchange="HandleInput" placeholder="@Placeholder" class="TextInput @Class" />
 </div>
