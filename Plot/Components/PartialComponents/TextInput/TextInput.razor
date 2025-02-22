@@ -45,37 +45,3 @@
     <label for="@Id">@Label</label>
     <input id="@Id" type="text" value="@Value" @oninput="HandleInput" placeholder="@Placeholder" class="TextInput @Class" />
 </div>
-
-<style>
-    .text-input-container {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-
-    .label-top {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .label-left {
-        flex-direction: row;
-    }
-
-    label {
-        font-weight: bold;
-        margin-bottom: 4px;
-    }
-
-    .label-left label {
-        margin-right: 10px;
-    }
-
-    input {
-        padding: 5px;
-        border: 1px solid red; /* Default border is red */
-        color: red; /* Default text is red */
-        border-radius: 4px;
-        outline: none;
-    }
-</style>
