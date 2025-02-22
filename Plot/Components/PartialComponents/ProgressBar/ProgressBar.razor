@@ -10,8 +10,13 @@
     <div class="col-6">
         <label for="main-progress">@barLabel</label>
         <style type="text/CSS">
-            @("#bar_" + ID)::-webkit-meter-bar,
             @("#bar_" + ID)::-moz-meter-bar
+            {
+                background: @barColor;
+            }
+            @("#bar_" + ID)::-webkit-meter-even-less-good-value,
+            @("#bar_" + ID)::-webkit-meter-suboptimum-value,
+            @("#bar_" + ID)::-webkit-meter-optimum-value
             {
                 background: @barColor;
             }

@@ -5,11 +5,17 @@ meter
   border-radius: 50vh;
   width: 100%;
 }
-
+meter::-webkit-meter-bar
+{
+  height: 1em;
+  border-radius: 50vh;
+  background: rgba(0,0,0,0.25);
+}
 label
 {
   position: absolute;
   padding-left: 0.5rem;
+  z-index: 3;
 }
 
 .progress-unfulfilled
