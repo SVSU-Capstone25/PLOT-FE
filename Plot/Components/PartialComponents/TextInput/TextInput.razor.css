@@ -1,8 +1,3 @@
-.red-outline {
-    border: 2px solid red;
-    color: red;
-}
-
 .text-input-container {
     display: flex;
     align-items: center;
@@ -29,8 +24,8 @@ label {
 
 input {
     padding: 5px;
-    border: 1px solid #ccc; /* Default border is gray */
-    color: black; /* Default text color is black */
+    border: 1px solid #ccc; /* Default border color */
+    color: black; /* Default text color */
     border-radius: 4px;
     outline: none;
 }
