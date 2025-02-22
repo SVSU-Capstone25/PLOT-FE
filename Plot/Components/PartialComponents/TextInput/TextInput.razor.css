@@ -1,35 +1,36 @@
 .red-outline {
     border: 2px solid red;
+    color: red;
 }
-    .text-input-container {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
 
-    .label-top {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+.text-input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
 
-    .label-left {
-        flex-direction: row;
-    }
+.label-top {
+    flex-direction: column;
+    align-items: flex-start;
+}
 
-    label {
-        font-weight: bold;
-        margin-bottom: 4px;
-    }
+.label-left {
+    flex-direction: row;
+}
 
-    .label-left label {
-        margin-right: 10px;
-    }
+label {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
 
-    input {
-        padding: 5px;
-        border: 1px solid red; /* Default border is red */
-        color: red; /* Default text is red */
-        border-radius: 4px;
-        outline: none;
-    }
+.label-left label {
+    margin-right: 10px;
+}
 
+input {
+    padding: 5px;
+    border: 1px solid #ccc; /* Default border is gray */
+    color: black; /* Default text color is black */
+    border-radius: 4px;
+    outline: none;
+}
