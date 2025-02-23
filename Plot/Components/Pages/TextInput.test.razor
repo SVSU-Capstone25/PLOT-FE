@@ -2,11 +2,16 @@
 
 <PageTitle>Test</PageTitle>
 
-<TextInput Id="usernameTop" Label="Username" Placeholder="Enter your username" @bind-Value="username" />
-<TextInput Id="usernameSide" Label="Username" Placeholder="Enter your username" @bind-Value="username" LabelOnTop="false" />
+<TextInput Id="usernameTop" Label="Username" Placeholder="Enter your username" Value="@username" InputChanged="HandleTextInput"/>
+<TextInput Id="usernameSide" Label="Username" Placeholder="Enter your username" @bind="username" LabelOnTop="false" />
 <TextInput Id="usernameNone" Label="" Placeholder="" @bind-Value="username" LabelOnTop="false" />
 
 
 @code {
     private string username = ""; // Define the username variable
+
+    private void HandleTextInput(string input)
+    {
+        username = input;
+    }
 }
