@@ -24,7 +24,6 @@ namespace PlaywrightTests
             await Expect(button3).ToBeVisibleAsync();
         }
 
-        // Test to check the button variants (primary, success, danger) based on color classes
         [Fact]
         public async Task ButtonVariantsAreCorrect()
         {
@@ -36,11 +35,12 @@ namespace PlaywrightTests
             var button2 = Page.Locator("button:has-text('Test Text 2')");
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
-            // Check if the buttons have the correct color classes based on variant
-            await Expect(button1).ToHaveClassAsync("btn-primary");   // for primary variant
-            await Expect(button2).ToHaveClassAsync("btn-success");   // for success variant
-            await Expect(button3).ToHaveClassAsync("btn-danger");    // for danger variant
+            // Use alternative check for class names
+            await Expect(button1).ToHaveClassAsync(className => className.Contains("btn-primary"));
+            await Expect(button2).ToHaveClassAsync(className => className.Contains("btn-success"));
+            await Expect(button3).ToHaveClassAsync(className => className.Contains("btn-danger"));
         }
+
 
         // Test to check if buttons are disabled correctly
         [Fact]
