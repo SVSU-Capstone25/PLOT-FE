@@ -3,8 +3,8 @@
 <PageTitle>Test</PageTitle>
 
 <TextInput Id="usernameTop" Label="Username" Placeholder="Enter your username" Value="@username" InputChanged="HandleTextInput"/>
-<TextInput Id="usernameSide" Label="Username" Placeholder="Enter your username" @bind="username" LabelOnTop="false" />
-<TextInput Id="usernameNone" Label="" Placeholder="" @bind-Value="username" LabelOnTop="false" />
+<TextInput Id="usernameSide" Label="Username" Placeholder="Enter your username" Value="@username" InputChanged="HandleTextInput" />
+<TextInput Id="usernameNone" Label="" Placeholder="" Value="@username" InputChanged="HandleTextInput" LabelOnTop="false" />
 
 
 @code {
