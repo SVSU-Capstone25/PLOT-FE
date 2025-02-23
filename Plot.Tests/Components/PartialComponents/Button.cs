@@ -35,12 +35,11 @@ namespace PlaywrightTests
             var button2 = Page.Locator("button:has-text('Test Text 2')");
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
-            // Use alternative check for class names
-            await Expect(button1).ToHaveClassAsync(className => className.Contains("btn-primary"));
-            await Expect(button2).ToHaveClassAsync(className => className.Contains("btn-success"));
-            await Expect(button3).ToHaveClassAsync(className => className.Contains("btn-danger"));
+            // Correct class assertions
+            await Expect(button1).ToHaveClassAsync("btn-primary");
+            await Expect(button2).ToHaveClassAsync("btn-success");
+            await Expect(button3).ToHaveClassAsync("btn-danger");
         }
-
 
         // Test to check if buttons are disabled correctly
         [Fact]
@@ -56,7 +55,7 @@ namespace PlaywrightTests
             await Expect(button3).ToHaveAttributeAsync("disabled", "true");
 
             // Verify that the cursor is 'not-allowed' for the disabled button
-            await Expect(button3).ToHaveCssClassAsync("not-allowed");
+            await Expect(button3).ToHaveClassAsync("not-allowed");
         }
 
         // Test to check the icons in buttons
