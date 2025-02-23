@@ -16,7 +16,7 @@
     [Parameter] public string Value { get; set; } = "";
     [Parameter] public? string Id { get; set; }
     [Parameter] public? string Class { get; set; }
-    [Parameter] public? EventCallback<string> InputChanged { get; set; }
+    [Parameter] public EventCallback<string> InputChanged { get; set; }
     [Parameter] public? bool LabelOnTop { get; set; } = true;
 
     private async Task HandleInput(ChangeEventArgs e)
