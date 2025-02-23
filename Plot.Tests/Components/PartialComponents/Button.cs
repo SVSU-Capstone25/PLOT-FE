@@ -25,22 +25,29 @@ namespace PlaywrightTests
         }
 
         // Test to check if button variants (colors) are applied correctly.
+        // Test to check if button variants are applied correctly
         [Fact]
         public async Task ButtonVariantsAreCorrect()
         {
-            // Navigate to the test page.
+            // Navigate to the test page
             await Page.GotoAsync("http://localhost:8080/test/button");
 
-            // Locate each button by its text content.
+            // Locate each button by its text content
             var button1 = Page.Locator("button:has-text('Test Text 1')");
             var button2 = Page.Locator("button:has-text('Test Text 2')");
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
-            // Verify that each button's class includes the appropriate variant class.
-            await Expect(button1).ToHaveClassAsync("btn-primary");
-            await Expect(button2).ToHaveClassAsync("btn-success");
-            await Expect(button3).ToHaveClassAsync("btn-danger");
+            // Get the class attribute for each button
+            var classList1 = await button1.GetAttributeAsync("class");
+            var classList2 = await button2.GetAttributeAsync("class");
+            var classList3 = await button3.GetAttributeAsync("class");
+
+            // Check that each button has the correct variant class
+            Assert.Contains("btn-primary", classList1?.Trim()); // Check if button1 has 'btn-primary'
+            Assert.Contains("btn-success", classList2?.Trim()); // Check if button2 has 'btn-success'
+            Assert.Contains("btn-danger", classList3?.Trim()); // Check if button3 has 'btn-danger'
         }
+
 
         // Test to check if the correct icons are displayed in the buttons.
         [Fact]
