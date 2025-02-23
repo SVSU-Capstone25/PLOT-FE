@@ -23,7 +23,7 @@ namespace PlaywrightTests
             await Expect(button3).ToBeVisibleAsync();
         }
 
-        // Test to check the button variants (primary, success, danger)
+        // Test to check the button variants (primary, success, danger) based on color classes
         [Fact]
         public async Task ButtonVariantsAreCorrect()
         {
@@ -35,10 +35,10 @@ namespace PlaywrightTests
             var button2 = Page.Locator("button:has-text('Test Text 2')");
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
-            // Check the variant class for each button
-            await Expect(button1).ToHaveClassAsync("btn-primary");
-            await Expect(button2).ToHaveClassAsync("btn-success");
-            await Expect(button3).ToHaveClassAsync("btn-danger");
+            // Check if the buttons have the correct color classes based on variant
+            await Expect(button1).ToHaveClassAsync("btn-primary");   // for primary variant
+            await Expect(button2).ToHaveClassAsync("btn-success");   // for success variant
+            await Expect(button3).ToHaveClassAsync("btn-danger");    // for danger variant
         }
 
         // Test to check if buttons are disabled correctly
@@ -89,9 +89,9 @@ namespace PlaywrightTests
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
             // Verify the text alignment for each button
-            await Expect(button1).ToHaveCssClassAsync("text-center");
-            await Expect(button2).ToHaveCssClassAsync("text-right");
-            await Expect(button3).ToHaveCssClassAsync("text-left");
+            await Expect(button1).ToHaveClassAsync("text-center");
+            await Expect(button2).ToHaveClassAsync("text-right");
+            await Expect(button3).ToHaveClassAsync("text-left");
         }
     }
 }
