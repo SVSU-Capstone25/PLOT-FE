@@ -64,23 +64,24 @@ namespace PlaywrightTests
         [Fact]
         public async Task ButtonTextAlignmentIsCorrect()
         {
-            // Navigate to the test page.
+            // Navigate to the test page
             await Page.GotoAsync("http://localhost:8080/test/button");
 
-            // For the first button, expecting center alignment.
+            // Locate the first button and check its class for the correct alignment
             var button1 = Page.Locator("button:has-text('Test Text 1')");
-            var style1 = await button1.GetAttributeAsync("style");
-            Assert.Contains("center", style1 ?? string.Empty);
+            var classList1 = await button1.GetAttributeAsync("class");
+            Assert.Contains("text-center", classList1?.Trim()); // Check if class contains 'text-center'
 
-            // For the second button, expecting right alignment.
+            // Locate the second button and check for right alignment (use 'text-end' for Bootstrap 5)
             var button2 = Page.Locator("button:has-text('Test Text 2')");
-            var style2 = await button2.GetAttributeAsync("style");
-            Assert.Contains("right", style2 ?? string.Empty);
+            var classList2 = await button2.GetAttributeAsync("class");
+            Assert.Contains("text-end", classList2?.Trim()); // Check if class contains 'text-end'
 
-            // For the third button, expecting left alignment.
+            // Locate the third button and check for left alignment (use 'text-start' for left alignment)
             var button3 = Page.Locator("button:has-text('Test Text 3')");
-            var style3 = await button3.GetAttributeAsync("style");
-            Assert.Contains("left", style3 ?? string.Empty);
+            var classList3 = await button3.GetAttributeAsync("class");
+            Assert.Contains("text-start", classList3?.Trim()); // Check if class contains 'text-start'
         }
+
     }
 }
