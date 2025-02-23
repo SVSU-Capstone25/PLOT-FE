@@ -37,9 +37,9 @@ namespace PlaywrightTests
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
             // Check if buttons have the correct classes for each variant
-            await Expect(button1).ToHaveClassAsync(className => className.Contains("btn-primary"));
-            await Expect(button2).ToHaveClassAsync(className => className.Contains("btn-success"));
-            await Expect(button3).ToHaveClassAsync(className => className.Contains("btn-danger"));
+            await Expect(button1).ToHaveClassAsync("btn-primary");
+            await Expect(button2).ToHaveClassAsync("btn-success");
+            await Expect(button3).ToHaveClassAsync("btn-danger");
         }
 
         // Test to check if buttons are disabled correctly
@@ -53,7 +53,7 @@ namespace PlaywrightTests
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
             // Verify that the button has the 'disabled' attribute
-            await Expect(button3).ToHaveAttributeAsync("disabled");
+            await Expect(button3).ToHaveAttributeAsync("disabled", "true");
 
             // Verify that the cursor is 'not-allowed' for the disabled button
             var cursorStyle = await button3.GetAttributeAsync("style");
@@ -91,9 +91,9 @@ namespace PlaywrightTests
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
             // Verify the text alignment for each button
-            await Expect(button1).ToHaveClassAsync(className => className.Contains("text-center"));
-            await Expect(button2).ToHaveClassAsync(className => className.Contains("text-right"));
-            await Expect(button3).ToHaveClassAsync(className => className.Contains("text-left"));
+            await Expect(button1).ToHaveClassAsync("text-center");
+            await Expect(button2).ToHaveClassAsync("text-right");
+            await Expect(button3).ToHaveClassAsync("text-left");
         }
     }
 }
