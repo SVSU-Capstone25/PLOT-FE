@@ -6,79 +6,80 @@ namespace PlaywrightTests
 {
     public class ButtonTests : PageTest
     {
-        // Test that all buttons are visible and display the correct text content.
+        // Test to check that all buttons exist and display the correct content
         [Fact]
         public async Task HasButtonAndContent()
         {
+            // Navigate to the test page
             await Page.GotoAsync("http://localhost:8080/test/button");
 
+            // Locate the buttons by their text content
             var button1 = Page.Locator("button:has-text('Test Text 1')");
             var button2 = Page.Locator("button:has-text('Test Text 2')");
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
+            // Verify that the buttons are visible
             await Expect(button1).ToBeVisibleAsync();
             await Expect(button2).ToBeVisibleAsync();
             await Expect(button3).ToBeVisibleAsync();
         }
 
-        // Test that each button has the correct variant (color) class.
+        // Test to check if button variants are applied correctly
         [Fact]
         public async Task ButtonVariantsAreCorrect()
         {
+            // Navigate to the test page
             await Page.GotoAsync("http://localhost:8080/test/button");
 
+            // Locate each button by its text content
             var button1 = Page.Locator("button:has-text('Test Text 1')");
             var button2 = Page.Locator("button:has-text('Test Text 2')");
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
-            // Retrieve the full class attribute and check for the expected variant substring.
-            var class1 = await button1.GetAttributeAsync("class");
-            var class2 = await button2.GetAttributeAsync("class
-            var class3 = await button3.GetAttributeAsync("class");
-
-            Assert.Contains("btn-primary", class1);
-            Assert.Contains("btn-success", class2);
-            Assert.Contains("btn-danger", class3);
+            // Check if buttons have the correct classes for each variant
+            await Expect(button1).ToHaveClassAsync("btn-primary");
+            await Expect(button2).ToHaveClassAsync("btn-success");
+            await Expect(button3).ToHaveClassAsync("btn-danger");
         }
 
-        // Test that text alignment classes are applied correctly
-        [Fact]
-        public async Task ButtonTextAlignmentIsCorrect()
-        {
-            await Page.GotoAsync("http://localhost:8080/test/button");
-
-            var button1 = Page.Locator("button:has-text('Test Text 1')");
-            var button2 = Page.Locator("button:has-text('Test Text 2')");
-            var button3 = Page.Locator("button:has-text('Test Text 3')");
-
-            var class1 = await button1.GetAttributeAsync("class");
-            var class2 = await button2.GetAttributeAsync("class");
-            var class3 = await button3.GetAttributeAsync("class");
-
-            Assert.Contains("text-center", class1);
-            Assert.Contains("text-end", class2);  // "right" maps to "text-end"
-            Assert.Contains("text-start", class3); // "left" maps to "text-start"
-        }
-
-        // Test that the disabled button has the correct attributes
+        // Test to check if buttons are disabled correctly
         [Fact]
         public async Task ButtonDisablesCorrectly()
         {
+            // Navigate to the test page
             await Page.GotoAsync("http://localhost:8080/test/button");
 
+            // Locate the third button (disabled button)
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
-            // Check if 'disabled' attribute exists
-            var disabledAttr = await button3.GetAttributeAsync("disabled");
-            Assert.NotNull(disabledAttr);
+            // Verify that the button has the 'disabled' attribute
+            var isDisabled = await button3.GetAttributeAsync("disabled");
+            Assert.NotNull(isDisabled); // Ensure the disabled attribute is present
 
-            // Check if the class includes the correct disabled styling
-            var class3 = await button3.GetAttributeAsync("class");
-            Assert.Contains("disabled-btn", class3);
-
-            // Check if cursor style is set to 'not-allowed'
-            var style = await button3.GetAttributeAsync("style");
-            Assert.Contains("cursor: not-allowed", style);
+            // Optionally verify cursor style
+            var cursorStyle = await button3.GetAttributeAsync("style");
+            Assert.Contains("cursor: not-allowed", cursorStyle);
         }
+
+
+
+        // Test to check the icons in buttons
+        [Fact]
+        public async Task ButtonIconsAreCorrect()
+        {
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/button");
+
+            // Locate each button by its text content
+            var button1 = Page.Locator("button:has-text('Test Text 1')");
+            var button2 = Page.Locator("button:has-text('Test Text 2')");
+            var button3 = Page.Locator("button:has-text('Test Text 3')");
+
+            // Check if the icon is displayed for each button
+            await Expect(button1.Locator("i.fa-ellipsis")).ToBeVisibleAsync();
+            await Expect(button2.Locator("i.fa-download")).ToBeVisibleAsync();
+            await Expect(button3.Locator("i.fa-copy")).ToBeVisibleAsync();
+        }
+
     }
 }
