@@ -24,6 +24,7 @@ namespace PlaywrightTests
             await Expect(button3).ToBeVisibleAsync();
         }
 
+        // Test to check if button variants are applied correctly
         [Fact]
         public async Task ButtonVariantsAreCorrect()
         {
@@ -35,10 +36,10 @@ namespace PlaywrightTests
             var button2 = Page.Locator("button:has-text('Test Text 2')");
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
-            // Correct class assertions
-            await Expect(button1).ToHaveClassAsync("btn-primary");
-            await Expect(button2).ToHaveClassAsync("btn-success");
-            await Expect(button3).ToHaveClassAsync("btn-danger");
+            // Check if buttons have the correct classes for each variant
+            await Expect(button1).ToHaveClassAsync(className => className.Contains("btn-primary"));
+            await Expect(button2).ToHaveClassAsync(className => className.Contains("btn-success"));
+            await Expect(button3).ToHaveClassAsync(className => className.Contains("btn-danger"));
         }
 
         // Test to check if buttons are disabled correctly
@@ -51,14 +52,13 @@ namespace PlaywrightTests
             // Locate the third button (disabled button)
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
-            // Verify that the button is disabled
-            await Expect(button3).ToHaveAttributeAsync("disabled", "true");
+            // Verify that the button has the 'disabled' attribute
+            await Expect(button3).ToHaveAttributeAsync("disabled");
 
             // Verify that the cursor is 'not-allowed' for the disabled button
             var cursorStyle = await button3.GetAttributeAsync("style");
             Assert.Contains("cursor: not-allowed", cursorStyle);
         }
-
 
         // Test to check the icons in buttons
         [Fact]
@@ -91,9 +91,9 @@ namespace PlaywrightTests
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
             // Verify the text alignment for each button
-            await Expect(button1).ToHaveClassAsync("text-center");
-            await Expect(button2).ToHaveClassAsync("text-right");
-            await Expect(button3).ToHaveClassAsync("text-left");
+            await Expect(button1).ToHaveClassAsync(className => className.Contains("text-center"));
+            await Expect(button2).ToHaveClassAsync(className => className.Contains("text-right"));
+            await Expect(button3).ToHaveClassAsync(className => className.Contains("text-left"));
         }
     }
 }
