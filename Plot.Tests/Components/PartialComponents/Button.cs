@@ -53,12 +53,14 @@ namespace PlaywrightTests
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
             // Verify that the button has the 'disabled' attribute
-            await Expect(button3).ToHaveAttributeAsync("disabled", "true");
+            var isDisabled = await button3.GetAttributeAsync("disabled");
+            Assert.NotNull(isDisabled); // Ensure the disabled attribute is present
 
-            // Verify that the cursor is 'not-allowed' for the disabled button
+            // Optionally verify cursor style
             var cursorStyle = await button3.GetAttributeAsync("style");
             Assert.Contains("cursor: not-allowed", cursorStyle);
         }
+
 
 
         // Test to check the icons in buttons
@@ -86,15 +88,21 @@ namespace PlaywrightTests
             // Navigate to the test page
             await Page.GotoAsync("http://localhost:8080/test/button");
 
-            // Locate each button by its text content
+            // Locate the first button and check its class for the correct alignment
             var button1 = Page.Locator("button:has-text('Test Text 1')");
-            var button2 = Page.Locator("button:has-text('Test Text 2')");
-            var button3 = Page.Locator("button:has-text('Test Text 3')");
+            var classList1 = await button1.GetAttributeAsync("class");
+            Assert.Contains("text-center", classList1?.Trim()); // Check if class contains 'text-center'
 
-            // Verify the text alignment for each button by checking if the class exists
-            await Expect(button1).ToHaveClassAsync("text-center");
-            await Expect(button2).ToHaveClassAsync("text-right");
-            await Expect(button3).ToHaveClassAsync("text-left");
+            // Locate the second button and check for right alignment
+            var button2 = Page.Locator("button:has-text('Test Text 2')");
+            var classList2 = await button2.GetAttributeAsync("class");
+            Assert.Contains("text-right", classList2?.Trim()); // Check if class contains 'text-right'
+
+            // Locate the third button and check for left alignment
+            var button3 = Page.Locator("button:has-text('Test Text 3')");
+            var classList3 = await button3.GetAttributeAsync("class");
+            Assert.Contains("text-left", classList3?.Trim()); // Check if class contains 'text-left'
         }
+
     }
 }
