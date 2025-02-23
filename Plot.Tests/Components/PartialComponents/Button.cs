@@ -1,30 +1,97 @@
 using Microsoft.Playwright.Xunit;
 using Xunit;
 
-namespace PlaywrightTests;
-
-public class ButtonTest : PageTest
+namespace PlaywrightTests
 {
-    [Fact]
-    public async Task HasButtonAndContent()
+    public class ButtonTests : PageTest
     {
-        // Go to test page.
-        await Page.GotoAsync("http://localhost:8080/test/button");
+        // Test to check that all buttons exist and display the correct content
+        [Fact]
+        public async Task HasButtonAndContent()
+        {
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/button");
 
-        // Expect the page to have a body visibile.
-        await Expect(Page.Locator("body")).ToBeVisibleAsync();
+            // Locate the buttons by their text content
+            var button1 = Page.Locator("button:has-text('Test Text 1')");
+            var button2 = Page.Locator("button:has-text('Test Text 2')");
+            var button3 = Page.Locator("button:has-text('Test Text 3')");
 
-        var button = Page.Locator("button");
+            // Verify that the buttons are visible
+            await Expect(button1).ToBeVisibleAsync();
+            await Expect(button2).ToBeVisibleAsync();
+            await Expect(button3).ToBeVisibleAsync();
+        }
 
-        // Expect a button to be on the page.
-        await Expect(button).ToBeVisibleAsync();
+        // Test to check the button variants (primary, success, danger)
+        [Fact]
+        public async Task ButtonVariantsAreCorrect()
+        {
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/button");
 
-        // Expect the button to have "Hello World" as it's body text.
-        await Expect(button).ToHaveTextAsync("Hello World");
+            // Locate each button by its text content
+            var button1 = Page.Locator("button:has-text('Test Text 1')");
+            var button2 = Page.Locator("button:has-text('Test Text 2')");
+            var button3 = Page.Locator("button:has-text('Test Text 3')");
 
-        // Expect the button to have a data-id attribute with the value "hello".
-        await Expect(button).ToHaveAttributeAsync("data-test", "hello");
-        
+            // Check the variant class for each button
+            await Expect(button1).ToHaveClassAsync("btn-primary");
+            await Expect(button2).ToHaveClassAsync("btn-success");
+            await Expect(button3).ToHaveClassAsync("btn-danger");
+        }
+
+        // Test to check if buttons are disabled correctly
+        [Fact]
+        public async Task ButtonDisablesCorrectly()
+        {
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/button");
+
+            // Locate the third button (disabled button)
+            var button3 = Page.Locator("button:has-text('Test Text 3')");
+
+            // Verify that the button is disabled
+            await Expect(button3).ToHaveAttributeAsync("disabled", "true");
+
+            // Verify that the cursor is 'not-allowed' for the disabled button
+            await Expect(button3).ToHaveCssClassAsync("not-allowed");
+        }
+
+        // Test to check the icons in buttons
+        [Fact]
+        public async Task ButtonIconsAreCorrect()
+        {
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/button");
+
+            // Locate each button by its text content
+            var button1 = Page.Locator("button:has-text('Test Text 1')");
+            var button2 = Page.Locator("button:has-text('Test Text 2')");
+            var button3 = Page.Locator("button:has-text('Test Text 3')");
+
+            // Check if the icon is displayed for each button
+            await Expect(button1.Locator("i.fa-ellipsis")).ToBeVisibleAsync();
+            await Expect(button2.Locator("i.fa-download")).ToBeVisibleAsync();
+            await Expect(button3.Locator("i.fa-copy")).ToBeVisibleAsync();
+        }
+
+        // Test to check the text alignment in buttons
+        [Fact]
+        public async Task ButtonTextAlignmentIsCorrect()
+        {
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/button");
+
+            // Locate each button by its text content
+            var button1 = Page.Locator("button:has-text('Test Text 1')");
+            var button2 = Page.Locator("button:has-text('Test Text 2')");
+            var button3 = Page.Locator("button:has-text('Test Text 3')");
+
+            // Verify the text alignment for each button
+            await Expect(button1).ToHaveCssClassAsync("text-center");
+            await Expect(button2).ToHaveCssClassAsync("text-right");
+            await Expect(button3).ToHaveCssClassAsync("text-left");
+        }
     }
-
 }
