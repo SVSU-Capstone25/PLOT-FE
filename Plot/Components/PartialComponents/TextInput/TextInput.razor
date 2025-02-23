@@ -11,13 +11,13 @@
 </script>
 
 @code {
-    [Parameter] public string Label { get; set; } = "Enter text";
-    [Parameter] public string Placeholder { get; set; } = "Type here...";
-    [Parameter] public string Value { get; set; } = "";
-    [Parameter] public string Id { get; set; }
-    [Parameter] public string Class { get; set; }
-    [Parameter] public EventCallback<string> ValueChanged { get; set; }
-    [Parameter] public bool LabelOnTop { get; set; } = true;
+    [Parameter] public? string Label { get; set; } = "Enter text";
+    [Parameter] public? string Placeholder { get; set; } = "Type here...";
+    [Parameter] public? string Value { get; set; } = "";
+    [Parameter] public? string Id { get; set; }
+    [Parameter] public? string Class { get; set; }
+    [Parameter] public? EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public? bool LabelOnTop { get; set; } = true;
 
     private async Task HandleInput(ChangeEventArgs e)
     {
