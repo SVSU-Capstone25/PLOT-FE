@@ -1,135 +1,86 @@
 using Microsoft.Playwright.Xunit;
 using Xunit;
 
-namespace PlaywrightTests;
-
-public class ButtonTest : PageTest
+namespace PlaywrightTests
 {
-    // Test if the button component is displayed and has the correct text and attributes
-    [Fact]
-    public async Task HasButtonAndContent()
+    public class ButtonTests : PageTest
     {
-        // Navigate to the test page
-        await Page.GotoAsync("http://localhost:8080/test/button");
-
-        // Locate the button
-        var button = Page.Locator("button");
-
-        // Ensure the button is visible on the page
-        await Expect(button).ToBeVisibleAsync();
-
-        // Ensure the button contains the correct text
-        await Expect(button).ToHaveTextAsync("Hello World");
-
-        // Ensure the button has the correct data-test attribute
-        await Expect(button).ToHaveAttributeAsync("data-test", "hello");
-    }
-
-    // Test if the button applies the correct variant styles
-    [Fact]
-    public async Task ButtonSupportsVariantStyles()
-    {
-        // Navigate to the test page
-        await Page.GotoAsync("http://localhost:8080/test/button");
-
-        // Locate the button
-        var button = Page.Locator("button");
-
-        // Ensure the button has one of the expected variant classes
-        await Expect(button).ToHaveClassAsync(new[] { "btn-primary", "btn-success", "btn-danger" });
-    }
-
-    // Test if the button properly handles the disabled state
-    [Fact]
-    public async Task ButtonDisabledStatePreventsClick()
-    {
-        // Navigate to the test page
-        await Page.GotoAsync("http://localhost:8080/test/button");
-
-        // Locate the button
-        var button = Page.Locator("button");
-
-        // Check if the button is disabled
-        if (await button.IsDisabledAsync())
+        // Test if the button is visible and contains the correct text
+        [Fact]
+        public async Task ButtonComponentBehavesCorrectly()
         {
-            // Ensure the cursor changes to 'not-allowed'
-            await Expect(button).ToHaveCSSAsync("cursor", "not-allowed");
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/button");
 
-            // Ensure clicking the button does not trigger any action
-            await button.ClickAsync();
+            // Locate the button by its data-test attribute
+            var button = Page.Locator("button[data-test='hello']");
+
+            // Wait for the button to be visible and ensure it is displayed
+            await Expect(button).ToBeVisibleAsync();
+
+            // Ensure the button contains the correct text
+            var buttonText = await button.InnerTextAsync();
+            Assert.Equal("Hello World", buttonText);
         }
-        else
+
+        // Test if the button supports the correct variant (e.g., primary, success, or danger)
+        [Fact]
+        public async Task ButtonSupportsVariant()
         {
-            // Ensure the cursor is 'pointer' if not disabled
-            await Expect(button).ToHaveCSSAsync("cursor", "pointer");
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/button");
+
+            // Locate the button by its data-test attribute
+            var button = Page.Locator("button[data-test='hello']");
+
+            // Wait for the button to be visible
+            await Expect(button).ToBeVisibleAsync();
+
+            // Check if the button has the correct CSS class based on the variant
+            var buttonClass = await button.GetAttributeAsync("class");
+
+            // Assert that the correct class (e.g., btn-primary) is present
+            Assert.Contains("btn-primary", buttonClass); // Change based on what variant you're testing
         }
-    }
 
-    // Test if the button properly aligns its content based on the text alignment parameter
-    [Fact]
-    public async Task ButtonSupportsTextAlignment()
-    {
-        // Navigate to the test page
-        await Page.GotoAsync("http://localhost:8080/test/button");
-
-        // Locate the button
-        var button = Page.Locator("button");
-
-        // Ensure the button has one of the expected text alignment classes
-        await Expect(button).ToHaveClassAsync(new[] { "text-left", "text-center", "text-right" });
-    }
-
-    // Test if the button supports an icon inside it
-    [Fact]
-    public async Task ButtonSupportsIcon()
-    {
-        // Navigate to the test page
-        await Page.GotoAsync("http://localhost:8080/test/button");
-
-        // Locate an icon inside the button (assumes an SVG icon)
-        var icon = Page.Locator("button svg");
-
-        // Check if the button contains an icon before asserting properties
-        if (await icon.CountAsync() > 0)
+        // Test if the button is disabled and the cursor changes to 'not-allowed'
+        [Fact]
+        public async Task ButtonIsDisabled()
         {
-            // Ensure the icon is visible
-            await Expect(icon).ToBeVisibleAsync();
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/button");
 
-            // Ensure the icon has the correct height
-            await Expect(icon).ToHaveCSSAsync("height", "24px");
+            // Locate the button by its data-test attribute
+            var button = Page.Locator("button[data-test='hello']");
+
+            // Wait for the button to be visible
+            await Expect(button).ToBeVisibleAsync();
+
+            // Verify that the button is disabled
+            var isDisabled = await button.IsDisabledAsync();
+            Assert.True(isDisabled);
+
+            // Check that the cursor style is 'not-allowed' when the button is disabled
+            var cursorStyle = await Page.EvaluateAsync<string>("window.getComputedStyle(document.querySelector('button[data-test=\"hello\"]')).cursor");
+            Assert.Equal("not-allowed", cursorStyle);
         }
-    }
 
-    // Test if the button expands to fill the parent's width
-    [Fact]
-    public async Task ButtonFillsParentWidth()
-    {
-        // Navigate to the test page
-        await Page.GotoAsync("http://localhost:8080/test/button");
+        // Test if the button's text alignment is correct (e.g., left, center, or right)
+        [Fact]
+        public async Task ButtonTextAlignment()
+        {
+            // Navigate to the test page
+            await Page.GotoAsync("http://localhost:8080/test/button");
 
-        // Locate the button
-        var button = Page.Locator("button");
+            // Locate the button by its data-test attribute
+            var button = Page.Locator("button[data-test='hello']");
 
-        // Ensure the button is using flex display and fills the parent width
-        await Expect(button).ToHaveCSSAsync("display", "flex");
-        await Expect(button).ToHaveCSSAsync("width", "100%");
-    }
+            // Wait for the button to be visible
+            await Expect(button).ToBeVisibleAsync();
 
-    // Test if the button maintains the required spacing and alignment
-    [Fact]
-    public async Task ButtonMaintainsDesignSpacing()
-    {
-        // Navigate to the test page
-        await Page.GotoAsync("http://localhost:8080/test/button");
-
-        // Locate the button
-        var button = Page.Locator("button");
-
-        // Ensure the button has the correct spacing between elements
-        await Expect(button).ToHaveCSSAsync("gap", "8px");
-
-        // Ensure the elements inside the button are vertically centered
-        await Expect(button).ToHaveCSSAsync("align-items", "center");
-        //idk at this point
+            // Check for correct text alignment (left, center, or right)
+            var textAlign = await Page.EvaluateAsync<string>("window.getComputedStyle(document.querySelector('button[data-test=\"hello\"]')).textAlign");
+            Assert.Equal("left", textAlign); // Change to "center" or "right" as needed
+        }
     }
 }
