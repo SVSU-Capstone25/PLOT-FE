@@ -55,8 +55,10 @@ namespace PlaywrightTests
             await Expect(button3).ToHaveAttributeAsync("disabled", "true");
 
             // Verify that the cursor is 'not-allowed' for the disabled button
-            await Expect(button3).ToHaveClassAsync("not-allowed");
+            var cursorStyle = await button3.GetAttributeAsync("style");
+            Assert.Contains("cursor: not-allowed", cursorStyle);
         }
+
 
         // Test to check the icons in buttons
         [Fact]
