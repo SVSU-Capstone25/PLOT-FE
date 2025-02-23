@@ -16,13 +16,13 @@
     [Parameter] public? string Value { get; set; } = "";
     [Parameter] public? string Id { get; set; }
     [Parameter] public? string Class { get; set; }
-    [Parameter] public? EventCallback<string> ValueChanged { get; set; }
+    @* [Parameter] public? EventCallback<string> ValueChanged { get; set; } *@
     [Parameter] public? bool LabelOnTop { get; set; } = true;
 
     private async Task HandleInput(ChangeEventArgs e)
     {
         Value = e.Value?.ToString() ?? "";
-        await ValueChanged.InvokeAsync(Value);
+        @* await ValueChanged.InvokeAsync(Value); *@
 
         // Determine border & text color
         var borderColor = string.IsNullOrWhiteSpace(Value) ? "red" : "#ccc";
