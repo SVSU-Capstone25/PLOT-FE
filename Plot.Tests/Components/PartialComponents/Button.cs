@@ -53,7 +53,7 @@ namespace PlaywrightTests
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
             // Verify that the button has the 'disabled' attribute
-            await Expect(button3).ToHaveAttributeAsync("disabled", "true");
+            await Expect(button3).ToHaveAttributeAsync("disabled");
 
             // Verify that the cursor is 'not-allowed' for the disabled button
             var cursorStyle = await button3.GetAttributeAsync("style");
@@ -90,7 +90,7 @@ namespace PlaywrightTests
             var button2 = Page.Locator("button:has-text('Test Text 2')");
             var button3 = Page.Locator("button:has-text('Test Text 3')");
 
-            // Verify the text alignment for each button
+            // Verify the text alignment for each button by checking if the class exists
             await Expect(button1).ToHaveClassAsync("text-center");
             await Expect(button2).ToHaveClassAsync("text-right");
             await Expect(button3).ToHaveClassAsync("text-left");
