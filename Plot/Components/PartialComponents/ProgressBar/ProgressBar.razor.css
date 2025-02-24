@@ -1,3 +1,8 @@
+.ProgressBar
+{
+  --progress-bar-background-color: lightblue;
+}
+
 meter
 {
   background: rgba(0,0,0,0.25);
@@ -5,12 +10,33 @@ meter
   border-radius: 50vh;
   width: 100%;
 }
+
 meter::-webkit-meter-bar
 {
   height: 1em;
   border-radius: 50vh;
-  background: rgba(0,0,0,0.25);
 }
+
+meter::-moz-meter-bar
+{
+  background: var(--progress-bar-background-color);
+}
+
+meter::-webkit-meter-even-less-good-value
+{
+  background: var(--progress-bar-background-color);
+}
+
+meter::-webkit-meter-suboptimum-value
+{
+  background: var(--progress-bar-background-color);
+}
+
+meter::-webkit-meter-optimum-value
+{
+  background: var(--progress-bar-background-color);
+}
+
 label
 {
   position: absolute;

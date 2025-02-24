@@ -1,4 +1,4 @@
-<div class="ProgressBar row @Class" id = "@ID">
+<div class="ProgressBar row @Class" id="@ID" style="--progress-bar-background-color: @barColor;">
     <div class="col-6">
         @if(iconString != null)
         {
@@ -9,26 +9,14 @@
 
     <div class="col-6">
         <label for="main-progress">@barLabel</label>
-        <style type="text/CSS">
-            @("#bar_" + ID)::-moz-meter-bar
-            {
-                background: @barColor;
-            }
-            @("#bar_" + ID)::-webkit-meter-even-less-good-value,
-            @("#bar_" + ID)::-webkit-meter-suboptimum-value,
-            @("#bar_" + ID)::-webkit-meter-optimum-value
-            {
-                background: @barColor;
-            }
-        </style>
-        <meter id="bar_@ID" class=@_barClass min="@barMin" max="@barMax" value="@barValue">@barValue</meter>
+        <meter class=@_barClass min="@barMin" max="@barMax" value="@barValue" optimum="@barMax">@barValue</meter>
     </div>
 </div>
 
 @code {
     //ID string to pass into the main HTML ID
     [Parameter]
-    public String ID {get; set;}
+    public String? ID {get; set;}
 
     //Class string to pass into the main component HTML Class
     [Parameter]
@@ -63,7 +51,7 @@
 
     //PROGRESS BAR COLOR
     [Parameter]
-    public String barColor {get; set;} = "aliceblue";
+    public String barColor {get; set;} = "lightblue";
 
     //Toggle for using over/underfill styling presets. Defaults to true, since this is most likely used primarily in allocations page.
     [Parameter]
