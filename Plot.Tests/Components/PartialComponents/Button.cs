@@ -14,9 +14,9 @@ namespace PlaywrightTests
             await Page.GotoAsync("http://localhost:8080/test/button");
 
             //locate each button
-            var button1 = Page.Locator("button:has-text('Test Text 1')");
-            var button2 = Page.Locator("button:has-text('Test Text 2')");
-            var button3 = Page.Locator("button:has-text('Test Text 3')");
+            var button1 = Page.Locator("#buttonPrimary");
+            var button2 = Page.Locator("#buttonSuccess");
+            var button3 = Page.Locator("#buttonDanger");
 
             //verify that are visable (content is checked when we locate them)
             await Expect(button1).ToBeVisibleAsync();
@@ -32,9 +32,9 @@ namespace PlaywrightTests
             await Page.GotoAsync("http://localhost:8080/test/button");
 
             //locate each button
-            var button1 = Page.Locator("button:has-text('Test Text 1')");
-            var button2 = Page.Locator("button:has-text('Test Text 2')");
-            var button3 = Page.Locator("button:has-text('Test Text 3')");
+            var button1 = Page.Locator("#buttonPrimary");
+            var button2 = Page.Locator("#buttonSuccess");
+            var button3 = Page.Locator("#buttonDanger");
 
             //get class atrributes
             var classList1 = await button1.GetAttributeAsync("class");
@@ -56,9 +56,9 @@ namespace PlaywrightTests
             await Page.GotoAsync("http://localhost:8080/test/button");
 
             //locate each button
-            var button1 = Page.Locator("button:has-text('Test Text 1')");
-            var button2 = Page.Locator("button:has-text('Test Text 2')");
-            var button3 = Page.Locator("button:has-text('Test Text 3')");
+            var button1 = Page.Locator("#buttonPrimary");
+            var button2 = Page.Locator("#buttonSuccess");
+            var button3 = Page.Locator("#buttonDanger");
 
             //verify their respective icons are visable
             await Expect(button1.Locator("i.fa-ellipsis")).ToBeVisibleAsync();
@@ -74,9 +74,9 @@ namespace PlaywrightTests
             await Page.GotoAsync("http://localhost:8080/test/button");
 
             //locate each button
-            var button1 = Page.Locator("button:has-text('Test Text 1')");
-            var button2 = Page.Locator("button:has-text('Test Text 2')");
-            var button3 = Page.Locator("button:has-text('Test Text 3')");
+            var button1 = Page.Locator("#buttonPrimary");
+            var button2 = Page.Locator("#buttonSuccess");
+            var button3 = Page.Locator("#buttonDanger");
 
             //get the class list from each button
             var classList1 = await button1.GetAttributeAsync("class");
