@@ -9,11 +9,11 @@
         if (!element.value)
         {
             element.style.color = 'red';
-            element.style.bordercolor = 'red';
+            element.style.borderColor = 'red';
         }
         else {
             element.style.color = '';
-            element.style.bordercolor= '';
+            element.style.borderColor= '';
         }
         // you can just grab the element and then set the styles like this for example
         // document.getElementById("about").style.color = 'blue'; (makes the text blue)
@@ -26,7 +26,7 @@
 
 <div class="text-input-container @(LabelOnTop == true ? "label-top" : "label-left")">
     <label for="@Id">@Label</label>
-    <input id="@Id" type="text" value="@Value" onchange="handleValueChanged(@Id)" placeholder="@Placeholder" class="TextInput @Class" />
+    <input id="@Id" type="text" value="@Value" oninput="handleValueChanged(@Id)" placeholder="@Placeholder" class="TextInput @Class" />
 </div>
 
 @code {
