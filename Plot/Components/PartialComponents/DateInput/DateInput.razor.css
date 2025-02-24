@@ -75,3 +75,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
     pointer-events: auto;
 }
+
+@-moz-document url-prefix() {
+	.custom-calendar-icon {
+		display: none;
+	}
+}
