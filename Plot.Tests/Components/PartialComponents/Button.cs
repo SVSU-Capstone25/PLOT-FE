@@ -56,9 +56,13 @@ namespace PlaywrightTests
             await Page.GotoAsync("http://localhost:8080/test/button");
 
             //locate each button
-            var button1 = Page.Locator("#buttonPrimary");
-            var button2 = Page.Locator("#buttonSuccess");
-            var button3 = Page.Locator("#buttonDanger");
+            var classList1 = await button1.GetAttributeAsync("class");
+            var classList2 = await button2.GetAttributeAsync("class");
+            var classList3 = await button3.GetAttributeAsync("class");
+
+            Console.WriteLine($"Button 1 Classes: {classList1}");
+            Console.WriteLine($"Button 2 Classes: {classList2}");
+            Console.WriteLine($"Button 3 Classes: {classList3}");
 
             //verify their respective icons are visable
             await Expect(button1.Locator("i.fa-ellipsis")).ToBeVisibleAsync();
