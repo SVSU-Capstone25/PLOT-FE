@@ -6,11 +6,17 @@
         console.log(element); // so this gets the entire element for some reason. 
         // it looks like this in dev console
         // <input id="usernameTop" type="text" value onchange="handleValueChanged (usernameTop)" placeholder="Enter your username" class="TextInput "b-764kiuodh9>
-
+        if (!element.value)
+        {
+            element.style.color = 'red';
+            element.style.bordercolor = 'red';
+        }
+        else {
+            element.style.color = '';
+            element.style.bordercolor= '';
+        }
         // you can just grab the element and then set the styles like this for example
         // document.getElementById("about").style.color = 'blue'; (makes the text blue)
-        element.style.color = 'red';
-        element.style.bordercolor = 'red';
 
         // you can grab the value and check the length of it like this
         // element.value.length
