@@ -34,6 +34,47 @@ public class DateInputTest : PageTest
         Assert.True(labelIsVisible, "Label is not visible.");
         Assert.True(selectedDateTextIsVisible, "Selected date text is not visible.");
     }
+    
+    [Fact]
+    public async Task TestValidDateEntry()
+    {
+        // Navigate to the test page containing the date input field
+        await Page.GotoAsync("http://localhost:8080/test/date-input");
+        Console.WriteLine("Navigated to test page.");
+
+        // Locate elements on the page
+        var dateInput = Page.Locator("#date-input");
+        await Expect(dateInput).ToBeVisibleAsync(new() { Timeout = 5000 });
+        var selectedDateText = Page.Locator("p:has-text('Selected Date:')");
+        var header = Page.Locator("h1"); // Click target to move focus away
+
+
+        Console.WriteLine("Located date input and selected date elements.");
+
+        // Clear the date input field before entering a valid date
+        await dateInput.FillAsync("");
+        Console.WriteLine("Cleared the date input field.");
+        await header.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
+
+        // Enter a valid date using keyboard typing
+        await dateInput.FillAsync("2025-02-18"); // Valid date (02/18/2025)
+        Console.WriteLine("Typed valid date: 02182025");
+
+        // Move focus away to apply the valid date
+        await header.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
+
+        // Verify that the selected date text is updated correctly
+        await Expect(selectedDateText).ToHaveTextAsync("Selected Date: 02/18/2025", new() { Timeout = 5000 });
+        await Expect(dateInput).ToHaveValueAsync("2025-02-18", new() { Timeout = 5000 });
+
+        // Retrieve and log the value of the input field and selected date text
+        var validDateValue = await dateInput.InputValueAsync();
+        var selectedDateValue = await selectedDateText.InnerTextAsync();
+        Console.WriteLine($"Date input field value after valid entry: {validDateValue}");
+        Console.WriteLine($"Selected date text after valid entry: {selectedDateValue}");
+    }
 
     [Fact]
     public async Task TestInvalidDateEntry()
@@ -85,48 +126,6 @@ public class DateInputTest : PageTest
     // Note: I couldn't test the "Invalid Date!" label directly, as entering an invalid date 
     // sometimes results in the input being populated with a default value (e.g., "275760-05-05") 
     // or remaining blank. The test still accurately checks that the "Selected Date" should be empty.
-
-    [Fact]
-    public async Task TestValidDateEntry()
-    {
-        // Navigate to the test page containing the date input field
-        await Page.GotoAsync("http://localhost:8080/test/date-input");
-        Console.WriteLine("Navigated to test page.");
-
-        // Locate elements on the page
-        var dateInput = Page.Locator("#date-input");
-        await Expect(dateInput).ToBeVisibleAsync(new() { Timeout = 5000 });
-        var selectedDateText = Page.Locator("p:has-text('Selected Date:')");
-        var header = Page.Locator("h1"); // Click target to move focus away
-
-
-        Console.WriteLine("Located date input and selected date elements.");
-
-        // Clear the date input field before entering a valid date
-        await dateInput.FillAsync("");
-        Console.WriteLine("Cleared the date input field.");
-        await dateInput.PressAsync("Tab");
-        await Page.WaitForTimeoutAsync(1000);
-
-        // Enter a valid date using keyboard typing
-        await dateInput.FocusAsync();
-        await Page.Keyboard.TypeAsync("02182025"); // Valid date (02/18/2025)
-        Console.WriteLine("Typed valid date: 02182025");
-
-        // Move focus away to apply the valid date
-        await header.ClickAsync();
-        await Page.WaitForTimeoutAsync(1000);
-
-        // Verify that the selected date text is updated correctly
-        await Expect(selectedDateText).ToHaveTextAsync("Selected Date: 02/18/2025", new() { Timeout = 5000 });
-        await Expect(dateInput).ToHaveValueAsync("2025-02-18", new() { Timeout = 5000 });
-
-        // Retrieve and log the value of the input field and selected date text
-        var validDateValue = await dateInput.InputValueAsync();
-        var selectedDateValue = await selectedDateText.InnerTextAsync();
-        Console.WriteLine($"Date input field value after valid entry: {validDateValue}");
-        Console.WriteLine($"Selected date text after valid entry: {selectedDateValue}");
-    }
 }
 
 // Note: I couldn't test the actual calendar UI of the date input field programmatically, 
