@@ -64,7 +64,7 @@ public class DateInputTest : PageTest
         Console.WriteLine("Typed invalid date: 02312025");
 
         // Move focus away to trigger UI validation and updates
-        await Page.ClickAsync("body");
+        await header.ClickAsync();
         await Page.WaitForTimeoutAsync(1000);
 
         // Verify that the selected date text remains unchanged
@@ -114,7 +114,7 @@ public class DateInputTest : PageTest
         Console.WriteLine("Typed valid date: 02182025");
 
         // Move focus away to apply the valid date
-        await Page.ClickAsync("body");
+        await header.ClickAsync();
         await Page.WaitForTimeoutAsync(1000);
 
         // Verify that the selected date text is updated correctly
