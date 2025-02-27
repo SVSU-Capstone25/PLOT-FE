@@ -1,0 +1,12 @@
+@page "/test/text-input"
+
+<PageTitle>Test</PageTitle>
+
+<TextInput Id="usernameTop" Label="Username" Placeholder="Enter your username" Value="@username"/>
+<TextInput Id="usernameSide" Label="Username" Placeholder="Enter your username" Value="@username" />
+<TextInput Id="usernameNone" Label="" Placeholder="" Value="@username" LabelOnTop="false" />
+
+
+@code {
+    private string username = ""; // Define the username variable
+}

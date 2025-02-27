@@ -1,0 +1,31 @@
+.text-input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.label-top {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.label-left {
+    flex-direction: row;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.label-left label {
+    margin-right: 10px;
+}
+
+input {
+    padding: 5px;
+    border: 1px solid #ccc; /* Default border color */
+    color: black; /* Default text color */
+    border-radius: 4px;
+    outline: none;
+}
