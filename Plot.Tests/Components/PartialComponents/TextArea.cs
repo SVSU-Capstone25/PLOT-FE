@@ -78,6 +78,5 @@ namespace PlaywrightTests
             var headerWithoutIcon = Page.Locator("#textBoxWithoutIcon h5 p");
             await Expect(headerWithoutIcon).ToHaveTextAsync("No Icon Header");
         }
-
     }
 }
