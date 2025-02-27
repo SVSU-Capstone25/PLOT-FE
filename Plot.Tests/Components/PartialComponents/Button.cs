@@ -3,84 +3,85 @@ using Xunit;
 
 namespace PlaywrightTests
 {
-    public class ButtonTests : PageTest
+
+    public class TextAreaTest : PageTest
     {
-        // Test if the button is visible and contains the correct text
+        // Test if the text area component is displayed and has the expected label and icon
         [Fact]
-        public async Task ButtonComponentBehavesCorrectly()
+        public async Task TextAreaComponentBehavesCorrectly()
         {
             // Navigate to the test page
-            await Page.GotoAsync("http://localhost:8080/test/button");
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-            // Locate the button by its data-test attribute
-            var button = Page.Locator("button[data-test='hello']");
+            // Locate the text areas by ID
+            var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
+            var textAreaWithoutIcon = Page.Locator("#textBoxWithoutIcon");
 
-            // Wait for the button to be visible and ensure it is displayed
-            await Expect(button).ToBeVisibleAsync();
+            // Wait for them to be visible and ensure both are displayed
+            await Expect(textAreaWithIcon).ToBeVisibleAsync();
+            await Expect(textAreaWithoutIcon).ToBeVisibleAsync();
 
-            // Ensure the button contains the correct text
-            var buttonText = await button.InnerTextAsync();
-            Assert.Equal("Hello World", buttonText);
+            // Ensure the icon is present for the first text area (with icon)
+            await Expect(Page.Locator(".fa-pen")).ToBeVisibleAsync();
         }
 
-        // Test if the button supports the correct variant (e.g., primary, success, or danger)
+        // Test if the text area saves input after closing (clicking outside)
         [Fact]
-        public async Task ButtonSupportsVariant()
+        public async Task TextAreaSavesOnClose()
         {
             // Navigate to the test page
-            await Page.GotoAsync("http://localhost:8080/test/button");
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-            // Locate the button by its data-test attribute
-            var button = Page.Locator("button[data-test='hello']");
+            // Locate the textarea inside the #textBoxWithIcon div
+            var textArea = Page.Locator("#textBoxWithIcon textarea");
 
-            // Wait for the button to be visible
-            await Expect(button).ToBeVisibleAsync();
+            // Wait for the textarea to be visible and attached
+            await Expect(textArea).ToBeVisibleAsync();
+            await Expect(textArea).ToBeAttachedAsync();
 
-            // Check if the button has the correct CSS class based on the variant
-            var buttonClass = await button.GetAttributeAsync("class");
+            // Fill the textarea with text
+            await textArea.FillAsync("Updated text");
 
-            // Assert that the correct class (e.g., btn-primary) is present
-            Assert.Contains("btn-primary", buttonClass); // Change based on what variant you're testing
+            // Simulate closing by clicking outside (click anywhere on the body)
+            await Page.ClickAsync("body");
+
+            // Verify that the text is retained in the textarea (saved)
+            await Expect(textArea).ToHaveValueAsync("Updated text");
         }
 
-        // Test if the button is disabled and the cursor changes to 'not-allowed'
+        // Test if the placeholder appears correctly in the text area
         [Fact]
-        public async Task ButtonIsDisabled()
+        public async Task TextAreaHasCorrectPlaceholder()
         {
             // Navigate to the test page
-            await Page.GotoAsync("http://localhost:8080/test/button");
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-            // Locate the button by its data-test attribute
-            var button = Page.Locator("button[data-test='hello']");
+            // Locate the text area with the placeholder text
+            var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
 
-            // Wait for the button to be visible
-            await Expect(button).ToBeVisibleAsync();
+            // Locate the actual textarea element inside the #textBoxWithIcon div
+            var textArea = Page.Locator("#textBoxWithIcon textarea");
 
-            // Verify that the button is disabled
-            var isDisabled = await button.IsDisabledAsync();
-            Assert.True(isDisabled);
-
-            // Check that the cursor style is 'not-allowed' when the button is disabled
-            var cursorStyle = await Page.EvaluateAsync<string>("window.getComputedStyle(document.querySelector('button[data-test=\"hello\"]')).cursor");
-            Assert.Equal("not-allowed", cursorStyle);
+            // Check if the placeholder is correct
+            await Expect(textAreaWithIcon).ToHaveAttributeAsync("placeholder", "Text box with an icon here...");
+            await Expect(textArea).ToHaveAttributeAsync("placeholder", "Text box with an icon here...");
         }
 
-        // Test if the button's text alignment is correct (e.g., left, center, or right)
+
+        // Test if the label is displayed correctly
         [Fact]
-        public async Task ButtonTextAlignment()
+        public async Task TextAreaDisplaysCorrectLabel()
         {
             // Navigate to the test page
-            await Page.GotoAsync("http://localhost:8080/test/button");
+            await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-            // Locate the button by its data-test attribute
-            var button = Page.Locator("button[data-test='hello']");
-
-            // Wait for the button to be visible
-            await Expect(button).ToBeVisibleAsync();
-
-            // Check for correct text alignment (left, center, or right)
-            var textAlign = await Page.EvaluateAsync<string>("window.getComputedStyle(document.querySelector('button[data-test=\"hello\"]')).textAlign");
-            Assert.Equal("left", textAlign); // Change to "center" or "right" as needed
+            // Check for the header text (Icon Header) for the first text area
+            var headerWithIcon = Page.Locator("#textBoxWithIcon h5 p");
+            await Expect(headerWithIcon).ToHaveTextAsync("Icon Header");
+            
+            // Check for the header text (No Icon Header) for the second text area
+            var headerWithoutIcon = Page.Locator("#textBoxWithoutIcon h5 p");
+            await Expect(headerWithoutIcon).ToHaveTextAsync("No Icon Header");
         }
     }
 }
