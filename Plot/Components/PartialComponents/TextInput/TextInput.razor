@@ -3,10 +3,7 @@
 <script>
     function handleValueChanged(element)
     { 
-        console.log(element); // so this gets the entire element for some reason. 
-        // it looks like this in dev console
-        // <input id="usernameTop" type="text" value onchange="handleValueChanged (usernameTop)" placeholder="Enter your username" class="TextInput "b-764kiuodh9>
-        if (!element.value)
+        if (element.value.trim().length < 1)
         {
             element.style.color = 'red';
             element.style.borderColor = 'red';
@@ -15,12 +12,6 @@
             element.style.color = '';
             element.style.borderColor= '';
         }
-        // you can just grab the element and then set the styles like this for example
-        // document.getElementById("about").style.color = 'blue'; (makes the text blue)
-
-        // you can grab the value and check the length of it like this
-        // element.value.length
-        console.log(element.value.length);
     }
 </script>
 
