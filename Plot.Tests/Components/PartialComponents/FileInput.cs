@@ -50,7 +50,7 @@ public class FileInputTest : PageTest
     /// <summary>
     /// Test to verify that the FileInput component can take an uploaded file via the input element.
     /// </summary>
-    /*[Fact]
+    [Fact]
     public async Task SimulateFileUpload()
     {
         // Go to test page.
@@ -62,16 +62,22 @@ public class FileInputTest : PageTest
         var fileInput = Page.Locator("#TestFileInput .file-select input[type='file']");
 
         // Simulate file upload.
-        await fileInput.SetInputFilesAsync(new[] { "../../../Components/PartialComponents/TestImages/myman.jpg" });
+        await fileInput.SetInputFilesAsync(new[] { "../../../Components/PartialComponents/TestImages/test2.xlsx" });
 
-        // Verify that the background image is set correctly.
-        var fileInputZone = Page.Locator("#TestFileInput");
-        var backgroundImage = await fileInputZone.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage");
-        Assert.Contains("data:image/jpeg;base64,", backgroundImage);
+        // Verify that the file name label is displayed.
+        var fileNameLabel = Page.Locator("#TestFileInput .file-name");
+        await Expect(fileNameLabel).ToBeVisibleAsync();
+        var fileNameText = await fileNameLabel.InnerTextAsync();
+        Assert.Equal("test2.xlsx", fileNameText);
+
+        // Verify that the discard button is displayed.
+        var discardButton = Page.Locator("#TestFileInput .remove-file-btn");
+        await Expect(discardButton).ToBeVisibleAsync();
 
         // Verify that the border style is removed after file upload.
+        var fileInputZone = Page.Locator("#TestFileInput");
         var updatedBorderStyle = await fileInputZone.EvaluateAsync<string>("element => getComputedStyle(element).borderStyle");
         Assert.Equal("none", updatedBorderStyle);
-    }*/
+    }
 
 }
