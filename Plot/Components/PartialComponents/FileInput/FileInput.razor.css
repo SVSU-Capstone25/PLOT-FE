@@ -1,0 +1,88 @@
+/* 
+    Filename:- FileInput.razor.css
+    Part of Project: Plot
+
+    File Purpose:
+    This file styles the elements in the FileInput.razor file.
+
+    Program Purpose:
+    The purpose of PLOT is to allow users to easily create, manage,
+    and allocate floorsets for Plato's Closet.
+
+    Author: Andrew Kennedy (2/8/2025)
+*/
+
+.file-select {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    display: none;
+}
+
+.no-file {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    border-radius: 10px;
+    padding: 2rem;
+}
+
+.file-name {
+    margin: 0 2rem;
+    align-self: center;
+}
+
+.has-file {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #d5d5d5;
+    align-self: flex-start;
+    margin-top: .5rem;
+}
+
+.has-file i {
+    align-self: center;
+}
+
+.file-input-zone {
+    border: 2px dashed gray;
+    align-items: center;
+    justify-content: center;
+    background-color: #ebebeb;
+    font-size: 1.5rem;
+    position: relative;
+    min-height: 150px;
+    border-radius: 10px;
+    height: 16rem;
+    padding: 0 .5rem;
+}
+
+.file-input-zone:has(div.has-file) {
+    border: 2px solid gray;
+}
+
+.dragging:has(div.no-file) {
+    background-color: linen;
+}
+
+label.load-files-label {
+    color: dodgerblue;
+    cursor: pointer;
+}
+
+    
+.remove-file-btn {
+    padding: 5px 5px;
+    background: none;
+    border: none;
+    border-radius: 5px;
+    display: flex;
+}
+    .remove-file-btn:hover {
+        background-color:lightcoral;
+        transition: background-color 100ms linear;
+    }
+

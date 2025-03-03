@@ -1,0 +1,191 @@
+@* 
+    Filename: FileInput.razor
+    Part of Project: Plot
+
+    File Purpose:
+    The purpose of this file is to create a file input element.
+
+    Program Purpose:
+    The purpose of PLOT is to allow users to easily create, manage,
+    and allocate floorsets for Plato's Closet.
+
+    Author: Andrew Kennedy (2/8/2025)
+*@
+
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+@inherits LayoutComponentBase
+@inject ILogger<FileInput> Logger
+
+@* Set the div to prevent default action of all drop events *@
+<div class="FileInput file-input-zone d-flex @Class @Dragging" id="@Id" 
+                @ondragover="OnOver"    @ondragover:preventDefault="true" 
+                @ondrop="OnDrop"        @ondrop:preventDefault="true" 
+                @ondragleave="OnLeave"  @ondragleave:preventDefault="true">
+
+    @* If the user has not entered a file, or has cleared it, show the initial div *@
+    @if (string.IsNullOrEmpty(Text))
+    {
+        <div class="no-file d-flex ">
+            <p><i class="fa-solid fa-arrow-up-from-bracket fa-lg"></i></p>
+            <p>Drag and Drop</p>
+            <p>or</p>
+            <label for="file-upload" class="load-files-label">Select File</label>
+            <div class="file-select">
+                <InputFile id="file-upload" accept=".xlsx,.xls" OnChange="LoadFile" /> 
+            </div>
+        </div>
+    }
+    @* Otherwise, show a block with the filename, and a remove file button *@
+    else 
+    {
+        <div class="has-file d-flex flex">         
+            <i class="fa-regular fa-file-lines fa-lg"></i>
+            <p class="file-name">@Text</p>
+            <button class="remove-file-btn ms-auto" @onclick="RemoveFile" > 
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    }   
+</div>            
+
+@* This script block handles the drag & drop functionality of the element. *@
+<script>
+    window.setDropEvent = function (dotNetHelper) {
+        document.addEventListener("drop", function (event) {
+            event.preventDefault(); // Prevents the window from downloading the file
+
+            var allowedTypes = new Set(
+            [
+                "application/vnd.ms-excel", // .xls (older Excel format)
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // .xlsx (modern Excel format)
+            ]);
+
+            // if there is a file being dragged
+            if (event.dataTransfer.files.length > 0 && allowedTypes.has(event.dataTransfer.files[0].type)) 
+            {
+                let fileInput = document.querySelector('#file-upload');
+                
+                // Add the file to the FileList property of a DataTransfer object
+                let dataTransfer = new DataTransfer(); 
+                dataTransfer.items.add(event.dataTransfer.files[0]); 
+
+                // add the FileList to the InputFile element, then call the OnChange event
+                fileInput.files = dataTransfer.files;
+                fileInput.dispatchEvent(new Event('change'))
+            } else 
+            {
+                alertUser();
+            }
+        });
+    };
+
+    window.alertUser = function () {
+        alert("Only Excel files (.xlsx, .xls) allowed!");
+    }
+
+</script>
+
+@code {
+
+    [Parameter]
+    public string? Class {get;set;}
+
+    [Parameter]
+    public string? Id {get;set;}
+    
+    [Parameter]
+    public EventCallback<IBrowserFile> OnFileSelected {get;set;} // How the parent will get the file
+
+    private IBrowserFile? loadedFile;
+    private string? Text = "";
+    private string? Dragging;
+
+    /* This method is called after the page renders. */
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) {
+            // Initialize the file drop zone's 'drop' event
+            await JS.InvokeVoidAsync("setDropEvent");
+        }
+    }
+
+    /*
+        The LoadFile function sends the file loaded by the user
+        to the parent.
+    */
+    private async Task LoadFile(InputFileChangeEventArgs e)    
+    {      
+        try
+        {
+            // Get the file, then get the filename for the element text
+            loadedFile = e.File;
+            
+
+            var allowedTypes = new HashSet<string>
+            {
+                "application/vnd.ms-excel", // .xls (older Excel format)
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // .xlsx (modern Excel format)
+            };
+
+            if (allowedTypes.Contains(loadedFile.ContentType)) 
+            {
+                Text = loadedFile.Name;
+                // Send the file to the parent
+                await OnFileSelected.InvokeAsync(loadedFile);
+
+                // Update the DOM to refresh the filename on the element
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alertUser");
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            // Log the error if an exception occurs
+            Logger.LogError("File: {FileName} Error: {Error}", 
+                e.File.Name, ex.Message);
+        }
+    }
+    
+
+    /*
+        The RemoveFile function clears the Text property,
+        which removes the file and puts the form in its 
+        original state. 
+    */
+    private async Task RemoveFile() 
+    {
+        Text = "";
+        loadedFile = null;
+
+        await OnFileSelected.InvokeAsync(loadedFile);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /*  
+        Drag & Drop methods.  If the user is dragging a file over the drop zone,
+        set the '.dragging' class.  If drag-leaving or drag-dropping, revoke the 
+        '.dragging' class.
+    */
+
+    private async Task OnDrop(DragEventArgs e)
+    {        
+        Dragging = "";
+        await InvokeAsync(StateHasChanged);
+    }   
+
+    private async Task OnOver(DragEventArgs e)
+    {
+        Dragging = "dragging";
+        await InvokeAsync(StateHasChanged);
+    }
+    private async Task OnLeave(DragEventArgs e)
+    {
+        Dragging = "";
+        await InvokeAsync(StateHasChanged);
+    }
+}
+
