@@ -10,7 +10,7 @@ namespace PlaywrightTests
         {
             // Navigate to the test page
             await Page.GotoAsync("http://localhost:8080/test/text-area");
-            
+
             // Locate the text areas by ID
             var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
             var textAreaWithoutIcon = Page.Locator("#textBoxWithoutIcon");
