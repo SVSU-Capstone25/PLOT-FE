@@ -22,28 +22,28 @@
     color: var(--platos-blue);
     font: .8em sans-serif;
     margin-left: 1rem;
-    
 }
 
 .inner-date-label.error {
     color: var(--cancel) !important;
-
 }
 
 .date-input.error {
-    border-color: var(--cancel) !important;    
+    border-color: var(--cancel) !important;
 }
 
-    .date-input.error:focus, .date-input.error:hover {
-        box-shadow: 0 0 0 .15rem rgba(220, 53, 69, .25) !important;
-    }
+.date-input.error:focus,
+.date-input.error:hover {
+    box-shadow: 0 0 0 .15rem rgba(220, 53, 69, .25) !important;
+}
 
 input[type="date"]::-webkit-calendar-picker-indicator {
     display: none !important;
     -webkit-appearance: none;
 }
 
-.form-control:hover, .form-control:focus {
+.form-control:hover,
+.form-control:focus {
     border-color: var(--platos-blue);
     box-shadow: 0 0 0 .15rem var(--platos-blue);
 }
@@ -61,8 +61,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .custom-date-input {
-    padding-right: 40px; /* Space for the icon */
-    width: 400px; /* Adjust width */
+    padding-right: 40px;
+    /* Space for the icon */
+    width: 400px;
+    /* Adjust width */
 }
 
 .custom-calendar-icon {
@@ -77,7 +79,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 @-moz-document url-prefix() {
-	.custom-calendar-icon {
-		display: none;
-	}
+    .custom-calendar-icon {
+        display: none;
+    }
 }
