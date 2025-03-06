@@ -1,0 +1,64 @@
+@*
+    Filename:- NumericInput.razor
+    Part of Project: Plot
+
+    File Purpose:
+    The purpose of this file is to create a numeric input element.
+
+    Program Purpose:
+    The purpose of PLOT is to allow users to easily create, manage,
+    and allocate floorsets for Plato's Closet.
+
+    Author: Andrew Kennedy (2/10/2025)
+*@
+
+@rendermode InteractiveServer
+@inherits LayoutComponentBase
+
+<div class="@Class form-group d-flex flex-column" id="@Id">
+    <label for="number-input">@Label</label>
+    <input type="number" class="p-2 mt-1" id="number-input" @onchange='HandleNumberChange' placeholder="@Placeholder" />
+    <small class="form-text text-muted">@Description</small>
+</div>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    [Parameter]
+    public string? Description { get; set; }
+
+    [Parameter]
+    public EventCallback<String> ValueChanged { get; set; }
+    
+    /*
+        This function runs whenever the input text is changed, 
+        and it will return the contents of the textbox.
+    */
+    private async Task HandleNumberChange(ChangeEventArgs e) {
+        // If the textbox is not empty
+        if (e.Value != null)
+        {            
+            // Send the value to the parent
+            await ValueChanged.InvokeAsync(e.Value.ToString());
+        }
+        else
+        {
+            // Send the empty string if null
+            await ValueChanged.InvokeAsync("");
+        }
+    }
+
+    
+
+    
+}
