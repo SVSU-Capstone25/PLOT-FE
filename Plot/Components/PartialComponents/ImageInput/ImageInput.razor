@@ -1,0 +1,30 @@
+@using Microsoft.AspNetCore.Components.Web
+
+<!-- Filename: ImageInput.razor
+Part of Project: PLOT
+
+File Purpose:
+The purpose of this file is be a resubable ImageInput component throughout
+the PLOT application. The ID and text can be set dynamically through parameters.
+You can also pass a parameters for if the ImageInput is initially checked
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Danielle Smith (2/10/2025) -->
+
+<div class="ImageInput drag-drop-box">
+    <h5 class="text-decoration-underline my-auto text-center">
+        <i class="fa-solid fa-image"></i> @Label
+    </h5>
+    <input type="file" id="@Id" class="d-none" @onchange="OnFileSelected">
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Upload Image";  // text on the image input
+    [Parameter] public string Id { get; set; }; // id
+    [Parameter] public string? Class { get; set; } // string of classes (nullable)
+    [Parameter] public string? Width { get; set; } // width of drag/drop box example: 100px, 40%
+    [Parameter] public string? Length { get; set; } // width of drag/drop box example: 100px, 40%
+}
