@@ -23,7 +23,7 @@ Author: Danielle Smith (2/10/2025) -->
 
 @code {
     [Parameter] public string Label { get; set; } = "Upload Image";  // text on the image input
-    [Parameter] public string Id { get; set; }; // id
+    [Parameter] public string? Id { get; set; } // id
     [Parameter] public string? Class { get; set; } // string of classes (nullable)
     [Parameter] public string? Width { get; set; } // width of drag/drop box example: 100px, 40%
     [Parameter] public string? Length { get; set; } // width of drag/drop box example: 100px, 40%
