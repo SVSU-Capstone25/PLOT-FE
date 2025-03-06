@@ -10,24 +10,21 @@ and allocate floorsets for Platos Closet.
 
 Author: Josh Rodack (2/10/2025)-->
 
+<script src="https://kit.fontawesome.com/b9b256c8f6.js" crossorigin="anonymous"></script>
 
-
-            <script src="https://kit.fontawesome.com/b9b256c8f6.js" crossorigin="anonymous"></script>
-            
-            <div class="Loader @Class" id="@Id">
-            <div class="fa-3x">
-            <i class="fa-solid fa-spinner fa-spin-pulse"></i>
-            </div>
-            <label>
-                @LabelText
-            </label>
-            </div>
-            
+<div class="Loader @Class" id="@Id">
+    <div class="fa-3x">
+        <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+    </div>
+    <label>
+        @LabelText
+    </label>
+</div>
 
 @code {
 
-    [Parameter]
-    public string LabelText { get; set;}
+    [Parameter, Editor Required]
+    public required string LabelText { get; set; }
 
     [Parameter]
     public string? Id { get; set; }
