@@ -14,18 +14,15 @@
 
 @inherits LayoutComponentBase
 
-<div class="@Class" id="@Id">
-    <!-- Toggle Button -->
-    <button class="btn btn-light toggle-btn shadow-sm" 
-                        id='toggle-btn' onclick="toggleSidebar()">
-        <i class="fa-solid fa-chevron-right"></i>
-    </button>
+<!-- Toggle Button -->
+<button class="btn btn-light toggle-btn shadow-sm collapsed" id='toggle-btn' onclick="toggleSidebar()">
+    <i class="fa-solid fa-chevron-right"></i>
+</button>
 
-    <!-- Sidebar -->
-    <aside class="collapse-sidebar">
-        @Body
-    </aside>
-</div>
+<!-- Sidebar -->
+<aside class="SlideOut collapse-sidebar collapsed @Class" id="@Id">
+    @ChildContent
+</aside>
 
 <script>
     /*
@@ -33,15 +30,11 @@
         based on the height of the navbar.
     */
     function adjustSidebar() {
-        const navbar = document.querySelector('.top-row'); 
+        const navbar = document.querySelector('.top-row');
         const sidebar = document.querySelector('.collapse-sidebar');
 
         // If the navbar and the sidebar exist
         if (navbar && sidebar) {
-
-            const navbarHeight = navbar.offsetHeight;
-            const sidebarHeight = sidebar.offsetHeight; // Get actual sidebar height
-            const sidebarWidth = sidebar.offsetWidth;
 
             const navbarHeight = navbar.offsetHeight;
 
@@ -66,7 +59,7 @@
         window.adjustSidebar();
 
     }
-    
+
     // Adjust the sidebar when page is loaded
     window.addEventListener('load', () => {
         setTimeout(adjustSidebar, 100); // Ensure layout has fully rendered
@@ -78,11 +71,11 @@
 
 @code {
     [Parameter]
-    public string? Id {get; set;}
+    public string? Id { get; set; }
 
     [Parameter]
-    public string? Class {get; set;}    
-    [Parameter]
-    public RenderFragment? ChildContent {get; set;}
+    public string? Class { get; set; }
 
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 }

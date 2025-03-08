@@ -15,46 +15,46 @@
 
 
 .collapse-sidebar {
-    width: 500px;
-    background: #ffffff;
-    border-left: 1px solid #e5e7eb;
-    height: 100vh;
-    position: fixed;
-    right: 0;
-    top: 0;
-    transition: transform 0.3s;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
-    overflow-y: auto;
-    z-index: 11;
+  width: 500px;
+  background: #ffffff;
+  border-left: 1px solid #e5e7eb;
+  height: 100vh;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transition: transform 0.3s;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+  z-index: 11;
 }
 
 .collapse-sidebar.collapsed {
-    transform: translateX(100%);
+  transform: translateX(100%);
 }
 
 .toggle-btn {
-    position: fixed;
-    right: 499px;
-    padding: 2% 1%;
-    top: 45%;
-    z-index: 1000;
-    transition: right 0.3s;
-    background: #ffffff;
-    border-radius: 20px 0 0 20px;
-    box-shadow: -10px 0 10px 1px rgba(0, 0, 0, 0.05);
-    border-right: none;
+  position: fixed;
+  right: 499px;
+  padding: 2% 1%;
+  top: 45%;
+  z-index: 1000;
+  transition: right 0.3s;
+  background: #ffffff;
+  border-radius: 20px 0 0 20px;
+  box-shadow: -10px 0 10px 1px rgba(0, 0, 0, 0.05);
+  border-right: none;
 }
 
 .toggle-btn:hover {
-    background: #ffffff;
-    border-right: none;
+  background: #ffffff;
+  border-right: none;
 }
 
 .toggle-btn.collapsed {
-    right: 0px;
+  right: 0px;
 
 }
 
 .toggle-btn.collapsed i {
-    rotate: 180deg;
+  rotate: 180deg;
 }
