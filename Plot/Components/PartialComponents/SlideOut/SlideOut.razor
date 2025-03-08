@@ -15,17 +15,17 @@
 
 @inherits LayoutComponentBase
 
+<div class="@Class" id="@Id">
+    <!-- Toggle Button -->
+    <button class="btn btn-light toggle-btn shadow-sm" id='toggle-btn' onclick="toggleSidebar()">
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
 
-<!-- Toggle Button -->
-<button class="btn btn-light toggle-btn shadow-sm collapsed" 
-                    id='toggle-btn' onclick="toggleSidebar()">
-    <i class="fa-solid fa-chevron-right"></i>
-</button>
-
-<!-- Sidebar -->
-<aside class="SlideOut collapse-sidebar collapsed @Class" id="@Id">
-    @ChildContent
-</aside>
+    <!-- Sidebar -->
+    <aside class="collapse-sidebar">
+        @Body
+    </aside>
+</div>
 
 <script>
     /*
@@ -36,14 +36,24 @@
         const navbar = document.querySelector('.top-row'); 
         const sidebar = document.querySelector('.collapse-sidebar');
 
-        // If the navbar and the sidebar exist
+    function adjustSidebar() {
+        const navbar = document.querySelector('.top-row'); // Adjust selector based on your navbar
+        const sidebar = document.querySelector('.collapse-sidebar');
+        const toggleBtn = document.querySelector('.toggle-btn');
+        const root = document.documentElement;
+
         if (navbar && sidebar) {
 
             const navbarHeight = navbar.offsetHeight;
+            const sidebarHeight = sidebar.offsetHeight; // Get actual sidebar height
+            const sidebarWidth = sidebar.offsetWidth;
 
-            // Set the top of the sidebar to the bottom of the navbar
+            // Update sidebar position
             sidebar.style.top = navbarHeight + "px";
             sidebar.style.height = `calc(100vh - ${navbarHeight}px)`;
+
+            // Position toggle button at the center of the sidebar
+            toggleBtn.style.top = `45%`;
         }
     }
 
@@ -53,22 +63,18 @@
     function toggleSidebar() {
         const sidebar = document.querySelector('.collapse-sidebar');
         const toggleBtn = document.getElementById('toggle-btn');
-
-        // Toggle the "collapsed" class for the sidebar and toggle button
         sidebar.classList.toggle('collapsed');
         toggleBtn.classList.toggle('collapsed');
 
-        // Update the sidebar's dimensions
         window.adjustSidebar();
 
     }
-    
-    // Adjust the sidebar when page is loaded
+
+
     window.addEventListener('load', () => {
         setTimeout(adjustSidebar, 100); // Ensure layout has fully rendered
     });
 
-    // Adjust the sidebar when the window is resized
     window.addEventListener('resize', adjustSidebar);
 </script>
 
