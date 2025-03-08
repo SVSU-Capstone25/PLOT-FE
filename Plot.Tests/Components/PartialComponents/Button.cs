@@ -14,9 +14,9 @@ namespace PlaywrightTests
             await Page.GotoAsync("http://localhost:8080/test/button");
 
             //locate each button
-            await var button1 = Page.Locator("#buttonPrimary");
-            await var button2 = Page.Locator("#buttonSuccess");
-            await var button3 = Page.Locator("#buttonDanger");
+            var button1 = Page.Locator("#buttonPrimary button");
+            var button2 = Page.Locator("#buttonSuccess button");
+            var button3 = Page.Locator("#buttonDanger button");
 
             //verify that are visable (content is checked when we locate them)
             await Expect(button1).ToBeVisibleAsync();
@@ -32,9 +32,9 @@ namespace PlaywrightTests
             await Page.GotoAsync("http://localhost:8080/test/button");
 
             //locate each button
-            await var button1 = Page.Locator("#buttonPrimary");
-            await var button2 = Page.Locator("#buttonSuccess");
-            await var button3 = Page.Locator("#buttonDanger");
+            var button1 = Page.Locator("#buttonPrimary button");
+            var button2 = Page.Locator("#buttonSuccess button");
+            var button3 = Page.Locator("#buttonDanger button");
 
             //get class atrributes
             var classList1 = await button1.GetAttributeAsync("class");
@@ -56,9 +56,9 @@ namespace PlaywrightTests
             await Page.GotoAsync("http://localhost:8080/test/button");
 
             //locate each button
-            await var button1 = Page.Locator("#buttonPrimary");
-            await var button2 = Page.Locator("#buttonSuccess");
-            await var button3 = Page.Locator("#buttonDanger");
+            var button1 = Page.Locator("#buttonPrimary button");
+            var button2 = Page.Locator("#buttonSuccess button");
+            var button3 = Page.Locator("#buttonDanger button");
 
             //verify their respective icons are visable
             await Expect(button1.Locator("i.fa-ellipsis")).ToBeVisibleAsync();
@@ -74,9 +74,9 @@ namespace PlaywrightTests
             await Page.GotoAsync("http://localhost:8080/test/button");
 
             //locate each button
-            await var button1 = Page.Locator("#buttonPrimary");
-            await var button2 = Page.Locator("#buttonSuccess");
-            await var button3 = Page.Locator("#buttonDanger");
+            var button1 = Page.Locator("#buttonPrimary button");
+            var button2 = Page.Locator("#buttonSuccess button");
+            var button3 = Page.Locator("#buttonDanger button");
 
             //get the class list from each button
             var classList1 = await button1.GetAttributeAsync("class");
