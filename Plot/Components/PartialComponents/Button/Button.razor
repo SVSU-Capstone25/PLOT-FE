@@ -1,0 +1,91 @@
+<!-- Filename: PlotButton.razor
+Part of Project:-- PLOT
+File Purpose:
+Create a component to display a button and its various 
+variants
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Josh Rodack (2/10/2025)-->
+
+<!--Setting to allow dynamic elements-->
+@rendermode InteractiveServer
+
+<!--Button Component-->
+<div class="Button @Class" id="@Id">
+    <!--
+    If Statement to set alignment for
+    icons and text for The button
+    -->
+    @if (TextAlignment is not null)
+    {
+        @if (TextAlignment.Equals("right"))
+        {
+            alignment = "text-end";
+        }
+        else if (TextAlignment.Equals("center"))
+        {
+            alignment = "text-center";
+        }
+    }
+    <!--Add additional class If The button is disabled-->
+    @if (IsDisabled)
+    {
+        disabledClass = "disabled-btn";
+
+    }
+    <!--Button class, adds classes based on data passed icon
+    via parameters
+    -->
+    <button @onclick="OnClickFunc" type="button" class="btn btn-@Variant @alignment @disabledClass w-100"
+        disabled=@IsDisabled>
+        <!--Button content-->
+        <span class="icon"><i class="@Icon"></i></span><span class="btn-element">@ChildContent</span>
+    </button>
+</div>
+
+@code {
+    // all of these are parameters to set up the button dynamically
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    [Parameter]
+    public required string Variant { get; set; }
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    [Parameter]
+    public string? TextAlignment { get; set; }
+
+    [Parameter]
+    public required RenderFragment ChildContent { get; set; }
+    //Parameter to pass in the method from the parent component dynamically
+    [Parameter]
+    public EventCallback OnClickFunction { get; set; }
+
+    //string to hold alignment class
+    public string alignment = "text-start";
+    //string to hold the disabled class, if
+    //not disabled, it adds no text to the class of the button
+    public string disabledClass = "";
+
+    //When button is clicked this
+    //task is called which then calls
+    //the method invoked in the parent component
+    private async Task OnClickFunc()
+    {
+        if (OnClickFunction.HasDelegate)
+        {
+            await OnClickFunction.InvokeAsync();
+        }
+    }
+}
