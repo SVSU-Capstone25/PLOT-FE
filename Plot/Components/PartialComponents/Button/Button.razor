@@ -43,9 +43,7 @@ Author: Josh Rodack (2/10/2025)-->
         disabled=@IsDisabled>
         <!--Button content-->
         <span class="icon"><i class="@Icon"></i></span><span class="btn-element">@ChildContent</span>
-
     </button>
-
 </div>
 
 @code {
@@ -80,7 +78,6 @@ Author: Josh Rodack (2/10/2025)-->
     //not disabled, it adds no text to the class of the button
     public string disabledClass = "";
 
-
     //When button is clicked this
     //task is called which then calls
     //the method invoked in the parent component
@@ -91,9 +88,4 @@ Author: Josh Rodack (2/10/2025)-->
             await OnClickFunction.InvokeAsync();
         }
     }
-
-
-
-
-
 }
