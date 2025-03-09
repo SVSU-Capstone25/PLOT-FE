@@ -33,7 +33,7 @@ Author: Danielle Smith (2/9/2025) -->
 </div>
 
 @code {
-    [Parameter, EditorRequired] 
+    [Parameter, EditorRequired]
     public string Title { get; set; } // modal title
 
     [Parameter]
@@ -41,18 +41,18 @@ Author: Danielle Smith (2/9/2025) -->
 
     [Parameter]
     // modal icon (font awesome icon - nullable)
-    public string? Icon { get; set; } 
+    public string? Icon { get; set; }
 
     [Parameter]
     // modal color - defaults to "standard" if none is passed
-    public string? Variant { get; set; } = "standard"; 
+    public string? Variant { get; set; } = "standard";
 
     [Parameter]
     public string? Class { get; set; } // classes for the modal (nullable)
 
-    [Parameter, EditorRequired] 
+    [Parameter, EditorRequired]
     public RenderFragment BodyContent { get; set; } // body content of the modal
 
-    [Parameter, EditorRequired] 
+    [Parameter, EditorRequired]
     public RenderFragment FooterContent { get; set; } // footer buttons for the modal
 }
