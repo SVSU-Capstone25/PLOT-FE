@@ -24,6 +24,7 @@ namespace PlaywrightTests
 
             // Wait for the modal to be visible
             var standardModal = Page.Locator("div#standardModal");
+            await Page.WaitForTimeoutAsync(500);
             await Expect(standardModal).ToBeVisibleAsync();
 
             // Verify the role attribute of the modal (should be dialog)
@@ -54,6 +55,7 @@ namespace PlaywrightTests
 
             // Wait for the modal to be visible
             var dangerModal = Page.Locator("#dangerModal");
+            await Page.WaitForTimeoutAsync(500);
             await Expect(dangerModal).ToBeVisibleAsync();
 
             // Verify the role attribute of the modal (should be dialog)
@@ -84,6 +86,7 @@ namespace PlaywrightTests
 
             // Wait for the modal to be visible
             var warningModal = Page.Locator("#warningModal");
+            await Page.WaitForTimeoutAsync(500);
             await Expect(warningModal).ToBeVisibleAsync();
 
             // Verify the role attribute of the modal (should be dialog)
@@ -114,6 +117,7 @@ namespace PlaywrightTests
 
             // Wait for the modal to be visible
             var successModal = Page.Locator("#successModal");
+            await Page.WaitForTimeoutAsync(500);
             await Expect(successModal).ToBeVisibleAsync();
 
             // Verify the role attribute of the modal (should be dialog)
