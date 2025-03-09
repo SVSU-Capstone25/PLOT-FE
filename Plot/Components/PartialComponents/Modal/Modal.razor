@@ -34,7 +34,7 @@ Author: Danielle Smith (2/9/2025) -->
 
 @code {
     [Parameter, EditorRequired]
-    public string Title { get; set; } // modal title
+    public string? Title { get; set; } // modal title
 
     [Parameter]
     public string? Id { get; set; } // modal ID (nullable)
@@ -51,8 +51,8 @@ Author: Danielle Smith (2/9/2025) -->
     public string? Class { get; set; } // classes for the modal (nullable)
 
     [Parameter, EditorRequired]
-    public RenderFragment BodyContent { get; set; } // body content of the modal
+    public required RenderFragment BodyContent { get; set; } // body content of the modal
 
     [Parameter, EditorRequired]
-    public RenderFragment FooterContent { get; set; } // footer buttons for the modal
+    public RenderFragment? FooterContent { get; set; } // footer buttons for the modal
 }
