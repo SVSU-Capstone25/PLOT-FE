@@ -52,7 +52,9 @@ public class SlideOutTest : PageTest
         var toggleButton = Page.Locator("button#toggle-btn");
 
         // Verify that the SlideOut is collapsed.
+        // 500ms to account for the speed of change
         var slideOut = Page.Locator("aside#TestSlideOut.collapsed");
+        await Task.Delay(500);
         await Expect(slideOut).ToBeVisibleAsync();
 
         // Click the toggle button to open the SlideOut.
@@ -63,8 +65,10 @@ public class SlideOutTest : PageTest
 
         // Click the toggle button to close the SlideOut.
         await toggleButton.ClickAsync();
-
+        
         // Verify that the SlideOut is collapsed.
+        // 500ms to account for the speed of change
+        await Task.Delay(500);
         await Expect(slideOut).ToBeVisibleAsync();
     }
 
