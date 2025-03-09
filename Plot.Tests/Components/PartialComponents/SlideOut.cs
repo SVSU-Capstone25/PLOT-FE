@@ -51,12 +51,15 @@ public class SlideOutTest : PageTest
         // Locate the toggle button.
         var toggleButton = Page.Locator("button#toggle-btn");
 
+        // Verify that the SlideOut is collapsed.
+        var slideOut = Page.Locator("aside#TestSlideOut.collapsed");
+        await Expect(slideOut).ToBeVisibleAsync();
+
         // Click the toggle button to open the SlideOut.
         await toggleButton.ClickAsync();
 
         // Verify that the SlideOut is not collapsed.
-        var slideOut = Page.Locator("aside#TestSlideOut.collapsed");
-        await Expect(slideOut).Not.ToBeVisibleAsync();
+        await Expect(slideOut).ToBeHiddenAsync();
 
         // Click the toggle button to close the SlideOut.
         await toggleButton.ClickAsync();
@@ -83,7 +86,7 @@ public class SlideOutTest : PageTest
 
         // Verify that the SlideOut is not collapsed.
         var slideOut = Page.Locator("aside#TestSlideOut.collapsed");
-        await Expect(slideOut).Not.ToBeVisibleAsync();
+        await Expect(slideOut).ToBeHiddenAsync();
 
         // Verify that the SlideOut has content.
         var slideOutContent = Page.Locator("aside#TestSlideOut p");
