@@ -55,14 +55,14 @@ public class SlideOutTest : PageTest
         await toggleButton.ClickAsync();
 
         // Verify that the SlideOut is not collapsed.
-        var slideOut = Page.Locator("aside#TestSlideOut");
-        await Expect(slideOut).Not.ToHaveClassAsync(new Regex("(^|\\s)collapsed(\\s|$)"));
+        var slideOut = Page.Locator("aside#TestSlideOut.collapsed");
+        await Expect(slideOut).Not.ToBeVisibleAsync();
 
         // Click the toggle button to close the SlideOut.
         await toggleButton.ClickAsync();
 
         // Verify that the SlideOut is collapsed.
-        await Expect(slideOut).ToHaveClassAsync(new Regex("(^|\\s)collapsed(\\s|$)"));
+        await Expect(slideOut).ToBeVisibleAsync();
     }
 
     /// <summary>
@@ -82,11 +82,11 @@ public class SlideOutTest : PageTest
         await toggleButton.ClickAsync();
 
         // Verify that the SlideOut is not collapsed.
-        var slideOut = Page.Locator("aside#TestSlideOut");
-        await Expect(slideOut).Not.ToHaveClassAsync(new Regex("(^|\\s)collapsed(\\s|$)"));
+        var slideOut = Page.Locator("aside#TestSlideOut.collapsed");
+        await Expect(slideOut).Not.ToBeVisibleAsync();
 
         // Verify that the SlideOut has content.
-        var slideOutContent = Page.Locator("p");
+        var slideOutContent = Page.Locator("aside#TestSlideOut p");
         await Expect(slideOutContent).ToBeVisibleAsync();
     }
 
