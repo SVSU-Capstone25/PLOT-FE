@@ -23,6 +23,7 @@ namespace PlaywrightTests
             await standardModalButton.ClickAsync();
 
             // Wait for the modal to be visible
+            await Page.WaitForTimeoutAsync(500);
             var standardModal = Page.Locator("#standardModal");
             await Expect(standardModal).ToBeVisibleAsync();
 
@@ -53,6 +54,7 @@ namespace PlaywrightTests
             await dangerModalButton.ClickAsync();
 
             // Wait for the modal to be visible
+            await Page.WaitForTimeoutAsync(500);
             var dangerModal = Page.Locator("#dangerModal");
             await Expect(dangerModal).ToBeVisibleAsync();
 
@@ -83,6 +85,7 @@ namespace PlaywrightTests
             await warningModalButton.ClickAsync();
 
             // Wait for the modal to be visible
+            await Page.WaitForTimeoutAsync(500);
             var warningModal = Page.Locator("#warningModal");
             await Expect(warningModal).ToBeVisibleAsync();
 
@@ -113,6 +116,7 @@ namespace PlaywrightTests
             await successModalButton.ClickAsync();
 
             // Wait for the modal to be visible
+            await Page.WaitForTimeoutAsync(500);
             var successModal = Page.Locator("#successModal");
             await Expect(successModal).ToBeVisibleAsync();
 
