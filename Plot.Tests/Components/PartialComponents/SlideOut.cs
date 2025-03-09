@@ -12,6 +12,7 @@
     Author: Blake Pearsall (2/13/2025)
 */
 
+using System.Text.RegularExpressions;
 using Microsoft.Playwright.Xunit;
 using Xunit;
 
@@ -31,7 +32,7 @@ public class SlideOutTest : PageTest
         // Expect the page to have a body visibile.
         await Expect(Page.Locator("body")).ToBeVisibleAsync();
 
-        var slideOut = Page.Locator("#TestSlideOut");
+        var slideOut = Page.Locator("aside#TestSlideOut");
 
         // Expect a button to be on the page.
         await Expect(slideOut).ToBeVisibleAsync();
@@ -48,20 +49,20 @@ public class SlideOutTest : PageTest
         await Page.GotoAsync("http://localhost:8080/test/slide-out");
 
         // Locate the toggle button.
-        var toggleButton = Page.Locator("#toggle-btn");
+        var toggleButton = Page.Locator("button#toggle-btn");
 
         // Click the toggle button to open the SlideOut.
         await toggleButton.ClickAsync();
 
         // Verify that the SlideOut is not collapsed.
-        var slideOut = Page.Locator(".collapse-sidebar");
-        await Expect(slideOut).Not.ToHaveClassAsync("SlideOut collapse-sidebar collapsed");
+        var slideOut = Page.Locator("aside#TestSlideOut");
+        await Expect(slideOut).Not.ToHaveClassAsync(new Regex("collapsed"));
 
         // Click the toggle button to close the SlideOut.
         await toggleButton.ClickAsync();
 
         // Verify that the SlideOut is collapsed.
-        await Expect(slideOut).ToHaveClassAsync("SlideOut collapse-sidebar collapsed");
+        await Expect(slideOut).ToHaveClassAsync(new Regex("collapsed"));
     }
 
     /// <summary>
@@ -75,14 +76,14 @@ public class SlideOutTest : PageTest
         await Page.GotoAsync("http://localhost:8080/test/slide-out");
 
         // Locate the toggle button.
-        var toggleButton = Page.Locator("#toggle-btn");
+        var toggleButton = Page.Locator("button#toggle-btn");
 
         // Click the toggle button to open the SlideOut.
         await toggleButton.ClickAsync();
 
         // Verify that the SlideOut is not collapsed.
-        var slideOut = Page.Locator(".collapse-sidebar");
-        await Expect(slideOut).Not.ToHaveClassAsync("SlideOut collapse-sidebar collapsed");
+        var slideOut = Page.Locator("aside#TestSlideOut");
+        await Expect(slideOut).Not.ToHaveClassAsync(new Regex("collapsed"));
 
         // Verify that the SlideOut has content.
         var slideOutContent = Page.Locator("p");
