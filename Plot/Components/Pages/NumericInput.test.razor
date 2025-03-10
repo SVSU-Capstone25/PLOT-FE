@@ -3,7 +3,8 @@
 @rendermode InteractiveServer
 
 
-<NumericInput Label="Dimensions" Placeholder="2ft" Description="Enter the Dimensions in feet" ValueChanged="NumberChanged" />
+<NumericInput Label="Dimensions" Placeholder="2ft" Description="Enter the Dimensions in feet"
+    ValueChanged="NumberChanged" />
 
 <p>Number is: @currentNumber</p>
 @code {
@@ -11,14 +12,15 @@
     private double currentNumber;
 
     /* This function is called when the number is changed */
-    private async Task NumberChanged(string strNumber) {
+    private async Task NumberChanged(string strNumber)
+    {
         // String will be either a positive number or ""
         Double.TryParse(strNumber, out double newNumber);
-        
+
         currentNumber = newNumber; // Number will be 0 if string is ""
-       
+
         await InvokeAsync(StateHasChanged);
-        
-    }   
+
+    }
 
 }
