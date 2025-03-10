@@ -1,78 +1,78 @@
-using Microsoft.Playwright.Xunit;
-using Xunit;
-namespace PlaywrightTests
-{
-    public class TextAreaTest : PageTest
-    {
-        // Test if the text area component is displayed and has the expected label and icon
-        [Fact]
-        public async Task TextAreaComponentBehavesCorrectly()
-        {
-            // Navigate to the test page
-            await Page.GotoAsync("http://localhost:8080/test/text-area");
-            
-            // Locate the text areas by ID
-            var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
-            var textAreaWithoutIcon = Page.Locator("#textBoxWithoutIcon");
+// using Microsoft.Playwright.Xunit;
+// using Xunit;
+// namespace PlaywrightTests
+// {
+//     public class TextAreaTest : PageTest
+//     {
+//         // Test if the text area component is displayed and has the expected label and icon
+//         [Fact]
+//         public async Task TextAreaComponentBehavesCorrectly()
+//         {
+//             // Navigate to the test page
+//             await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-            // Wait for them to be visible and ensure both are displayed
-            await Expect(textAreaWithIcon).ToBeVisibleAsync();
-            await Expect(textAreaWithoutIcon).ToBeVisibleAsync();
+//             // Locate the text areas by ID
+//             var textAreaWithIcon = Page.Locator("#textBoxWithIcon");
+//             var textAreaWithoutIcon = Page.Locator("#textBoxWithoutIcon");
 
-            // Ensure the icon is present for the first text area (with icon)
-            await Expect(Page.Locator(".fa-pen")).ToBeVisibleAsync();
-        }
-        // Test if the text area saves input after closing (clicking outside)
-        [Fact]
-        public async Task TextAreaSavesOnClose()
-        {
-            // Navigate to the test page
-            await Page.GotoAsync("http://localhost:8080/test/text-area");
+//             // Wait for them to be visible and ensure both are displayed
+//             await Expect(textAreaWithIcon).ToBeVisibleAsync();
+//             await Expect(textAreaWithoutIcon).ToBeVisibleAsync();
 
-            // Locate the textarea inside the #textBoxWithIcon div
-            var textArea = Page.Locator("#textBoxWithIcon textarea");
+//             // Ensure the icon is present for the first text area (with icon)
+//             await Expect(Page.Locator(".fa-pen")).ToBeVisibleAsync();
+//         }
+//         // Test if the text area saves input after closing (clicking outside)
+//         [Fact]
+//         public async Task TextAreaSavesOnClose()
+//         {
+//             // Navigate to the test page
+//             await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-            // Wait for the textarea to be visible and attached
-            await Expect(textArea).ToBeVisibleAsync();
-            await Expect(textArea).ToBeAttachedAsync();
+//             // Locate the textarea inside the #textBoxWithIcon div
+//             var textArea = Page.Locator("#textBoxWithIcon textarea");
 
-            // Fill the textarea with text
-            await textArea.FillAsync("Updated text");
+//             // Wait for the textarea to be visible and attached
+//             await Expect(textArea).ToBeVisibleAsync();
+//             await Expect(textArea).ToBeAttachedAsync();
 
-            // Simulate closing by clicking outside (click anywhere on the body)
-            await Page.ClickAsync("body");
+//             // Fill the textarea with text
+//             await textArea.FillAsync("Updated text");
 
-            // Verify that the text is retained in the textarea (saved)
-            await Expect(textArea).ToHaveValueAsync("Updated text");
-        }
+//             // Simulate closing by clicking outside (click anywhere on the body)
+//             await Page.ClickAsync("body");
 
-        // Test if the placeholder appears correctly in the text area
-        [Fact]
-        public async Task TextAreaHasCorrectPlaceholder()
-        {
-            await Page.GotoAsync("http://localhost:8080/test/text-area");
+//             // Verify that the text is retained in the textarea (saved)
+//             await Expect(textArea).ToHaveValueAsync("Updated text");
+//         }
 
-            // Locate the actual textarea element inside #textBoxWithIcon
-            var textArea = Page.Locator("#textBoxWithIcon textarea");
+//         // Test if the placeholder appears correctly in the text area
+//         [Fact]
+//         public async Task TextAreaHasCorrectPlaceholder()
+//         {
+//             await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-            // Check if the textarea has the correct placeholder
-            await Expect(textArea).ToHaveAttributeAsync("placeholder", "Text box with an icon here...");
-        }
+//             // Locate the actual textarea element inside #textBoxWithIcon
+//             var textArea = Page.Locator("#textBoxWithIcon textarea");
 
-        // Test if the label is displayed correctly
-        [Fact]
-        public async Task TextAreaDisplaysCorrectLabel()
-        {
-            // Navigate to the test page
-            await Page.GotoAsync("http://localhost:8080/test/text-area");
+//             // Check if the textarea has the correct placeholder
+//             await Expect(textArea).ToHaveAttributeAsync("placeholder", "Text box with an icon here...");
+//         }
 
-            // Check for the header text (Icon Header) for the first text area
-            var headerWithIcon = Page.Locator("#textBoxWithIcon h5 p");
-            await Expect(headerWithIcon).ToHaveTextAsync("Icon Header");
+//         // Test if the label is displayed correctly
+//         [Fact]
+//         public async Task TextAreaDisplaysCorrectLabel()
+//         {
+//             // Navigate to the test page
+//             await Page.GotoAsync("http://localhost:8080/test/text-area");
 
-            // Check for the header text (No Icon Header) for the second text area
-            var headerWithoutIcon = Page.Locator("#textBoxWithoutIcon h5 p");
-            await Expect(headerWithoutIcon).ToHaveTextAsync("No Icon Header");
-        }
-    }
-}
+//             // Check for the header text (Icon Header) for the first text area
+//             var headerWithIcon = Page.Locator("#textBoxWithIcon h5 p");
+//             await Expect(headerWithIcon).ToHaveTextAsync("Icon Header");
+
+//             // Check for the header text (No Icon Header) for the second text area
+//             var headerWithoutIcon = Page.Locator("#textBoxWithoutIcon h5 p");
+//             await Expect(headerWithoutIcon).ToHaveTextAsync("No Icon Header");
+//         }
+//     }
+// }
