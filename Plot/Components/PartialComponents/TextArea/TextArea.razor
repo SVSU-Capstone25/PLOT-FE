@@ -1,6 +1,6 @@
 <div class="TextArea @Class" id="@ID">
     <h5 class="row">
-        @if(iconString == null)
+        @if (iconString == null)
         {
             @((MarkupString)@_blankIcon)
         }
@@ -22,24 +22,24 @@
 {
     //Custom string to add to this item's HTML class
     [Parameter]
-    public String? Class {get; set;}
+    public String? Class { get; set; }
 
     //Custom string to add to this item's HTML id tag
     [Parameter]
-    public String? ID {get; set;}
+    public String? ID { get; set; }
 
     //String reference to a FontAwesome icon to display next to the label.
     [Parameter]
-    public String? iconString {get; set;}
+    public String? iconString { get; set; }
 
     //Insert this string as markup to space elements correctly, when no icon is specified.
     private String _blankIcon = """<i class="col-auto fa-fw fa-solid fa-square" style="opacity: 0%;"></i>""";
 
     //Text to display above the text box area
     [Parameter, EditorRequired]
-    public required String label {get; set;}
+    public required String label { get; set; }
 
     //Placeholder text to display in the text area.
     [Parameter]
-    public String? placeholder {get; set;} = "Enter Text Here...";
+    public String? placeholder { get; set; } = "Enter Text Here...";
 }

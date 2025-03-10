@@ -1,11 +1,9 @@
-textarea
-{
+textarea {
     resize: none;
     border: none;
     outline: none;
 }
 
-p 
-{
+p {
     margin-bottom: 0;
 }
