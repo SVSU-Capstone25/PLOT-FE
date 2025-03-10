@@ -43,7 +43,7 @@ public class ImageInputTest : PageTest
         var initialBackgroundColor = await imageInput.EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor");
         var initialBorderStyle = await imageInput.EvaluateAsync<string>("element => getComputedStyle(element).borderStyle");
         Assert.Equal("rgb(242, 242, 242)", initialBackgroundColor); // #f2f2f2 in RGB
-        Assert.Equal("dashed", initialBorderStyle); 
+        Assert.Equal("dashed", initialBorderStyle);
     }
 
     /// <summary>
@@ -110,6 +110,9 @@ public class ImageInputTest : PageTest
         await Page.DispatchEventAsync("#ExampleImageInput", "dragenter", new { dataTransfer });
         await Page.DispatchEventAsync("#ExampleImageInput", "dragover", new { dataTransfer });
         await Page.DispatchEventAsync("#ExampleImageInput", "drop", new { dataTransfer });
+
+        // Wait for drag & drop to trigger
+        await Page.WaitForTimeoutAsync(500);
 
         // Verify that the background image is set correctly
         var backgroundImage = await imageInput.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage");
