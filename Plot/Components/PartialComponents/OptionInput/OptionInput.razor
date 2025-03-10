@@ -1,0 +1,77 @@
+<div class="OptionInput @Class" id="@ID">
+    <h5 class="row">
+        @if(iconString == null)
+        {
+            @((MarkupString)_blankIcon)
+        }
+        else
+        {
+            <i class="col-auto fa-fw @iconString"></i>
+        }
+        <p class="col-md-11">
+            @label
+        </p>
+    </h5>
+    <div class="row">
+        @((MarkupString)_blankIcon)
+        <select class="col-md-11">
+            @for (var i = 0; i < optionsValues.Count; i++)
+            {
+                <option value=@optionsValues[i]>@optionsText[i]</option>
+            }
+        </select>
+    </div>
+</div>
+
+@code
+{
+    //Custom string to add to this item's HTML class
+    [Parameter]
+    public String? Class {get; set;}
+
+    //Custom string to add to this item's HTML id tag
+    [Parameter]
+    public String? ID {get; set;}
+
+    //String reference to a FontAwesome icon to display next to the label.
+    [Parameter]
+    public String? iconString {get; set;}
+
+    //Insert this string as markup to space elements correctly, when no icon is specified.
+    private String _blankIcon = """<i class="col-auto fa-solid fa-square fa-fw" style="opacity: 0%;"></i>""";
+
+    //Text to display above the text box area
+    [Parameter, EditorRequired]
+    public required String label {get; set;}
+
+    //Array of option values in the selector.
+    [Parameter, EditorRequired]
+    public required List<String> optionsValues {get; set;}
+
+    //Array of options to display as text in the selector.
+    [Parameter, EditorRequired]
+    public required List<String> optionsText {get; set;}
+
+    //Validate that the option list has valid arguments: more than 0 entries, and matching number of display and value entries.
+    protected override async Task OnParametersSetAsync(){
+        await base.OnParametersSetAsync();
+
+        if(optionsValues == null)
+        {
+            throw new ArgumentNullException("Options values list was not initialized: Did you add entries?");
+        }
+        if(optionsText == null)
+        {
+            throw new ArgumentNullException("Options text list was not initialized: Did you add entries?");
+        }
+        if(optionsValues.Count == 0 || optionsText.Count == 0)
+        {
+            throw new ArgumentException(String.Format("Cannot have zero entries in values (length {0}) or text (length {1}) lists.",optionsValues.Count, optionsText.Count));
+        }
+        if(optionsValues.Count != optionsText.Count)
+        {
+            throw new ArgumentException(String.Format("Option values count, {0}, does not match options text count, {1}.",optionsValues.Count, optionsText.Count));
+        }
+        
+    }
+}
