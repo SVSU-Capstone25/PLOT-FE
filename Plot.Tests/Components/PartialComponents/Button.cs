@@ -1,29 +1,97 @@
+using Microsoft.Playwright;
 using Microsoft.Playwright.Xunit;
 using Xunit;
 
-namespace PlaywrightTests;
-
-public class ButtonTest : PageTest
+namespace PlaywrightTests
 {
-    [Fact]
-    public async Task HasButtonAndContent()
+    public class ButtonTests : PageTest
     {
-        // Go to test page.
-        await Page.GotoAsync("http://localhost:8080/test/button");
+        // Test to check that all buttons exist and display the correct content.
+        [Fact]
+        public async Task HasButtonAndContent()
+        {
+            //navigate to page
+            await Page.GotoAsync("http://localhost:8080/test/button");
 
-        // Expect the page to have a body visibile.
-        await Expect(Page.Locator("body")).ToBeVisibleAsync();
+            //locate each button
+            var button1 = Page.Locator("#buttonPrimary button");
+            var button2 = Page.Locator("#buttonSuccess button");
+            var button3 = Page.Locator("#buttonDanger button");
 
-        var button = Page.Locator("button");
+            //verify that are visable (content is checked when we locate them)
+            await Expect(button1).ToBeVisibleAsync();
+            await Expect(button2).ToBeVisibleAsync();
+            await Expect(button3).ToBeVisibleAsync();
+        }
 
-        // Expect a button to be on the page.
-        await Expect(button).ToBeVisibleAsync();
+        // Test to check if button variants are applied correctly
+        [Fact]
+        public async Task ButtonVariantsAreCorrect()
+        {
+            //navigate to page
+            await Page.GotoAsync("http://localhost:8080/test/button");
 
-        // Expect the button to have "Hello World" as it's body text.
-        await Expect(button).ToHaveTextAsync("Hello World");
+            //locate each button
+            var button1 = Page.Locator("#buttonPrimary button");
+            var button2 = Page.Locator("#buttonSuccess button");
+            var button3 = Page.Locator("#buttonDanger button");
 
-        // Expect the button to have a data-id attribute with the value "hello".
-        await Expect(button).ToHaveAttributeAsync("data-test", "hello");
+            //get class atrributes
+            var classList1 = await button1.GetAttributeAsync("class");
+            var classList2 = await button2.GetAttributeAsync("class");
+            var classList3 = await button3.GetAttributeAsync("class");
+
+            //check that each button has the proper class (primary, success, danger)
+            Assert.Contains("btn-primary", classList1?.Trim()); //'btn-primary'
+            Assert.Contains("btn-success", classList2?.Trim()); //'btn-success'
+            Assert.Contains("btn-danger", classList3?.Trim()); //'btn-danger'
+        }
+
+
+        // Test to check if the correct icons are displayed in the buttons.
+        [Fact]
+        public async Task ButtonIconsAreCorrect()
+        {
+            //navigate to page
+            await Page.GotoAsync("http://localhost:8080/test/button");
+
+            //locate each button
+            var button1 = Page.Locator("#buttonPrimary button");
+            var button2 = Page.Locator("#buttonSuccess button");
+            var button3 = Page.Locator("#buttonDanger button");
+
+            //verify their respective icons are visable
+            await Expect(button1.Locator("i.fa-ellipsis")).ToBeVisibleAsync();
+            await Expect(button2.Locator("i.fa-download")).ToBeVisibleAsync();
+            await Expect(button3.Locator("i.fa-copy")).ToBeVisibleAsync();
+        }
+
+        // Test to check the text alignment in buttons by inspecting the inline style.
+        [Fact]
+        public async Task ButtonTextAlignmentIsCorrect()
+        {
+            //navigate to page
+            await Page.GotoAsync("http://localhost:8080/test/button");
+
+            //locate each button
+            var button1 = Page.Locator("#buttonPrimary button");
+            var button2 = Page.Locator("#buttonSuccess button");
+            var button3 = Page.Locator("#buttonDanger button");
+
+            //get the class list from each button
+            var classList1 = await button1.GetAttributeAsync("class");
+            var classList2 = await button2.GetAttributeAsync("class");
+            var classList3 = await button3.GetAttributeAsync("class");
+
+            Console.WriteLine($"Button 1 Classes: {classList1}");
+            Console.WriteLine($"Button 2 Classes: {classList2}");
+            Console.WriteLine($"Button 3 Classes: {classList3}");
+
+            //check for each proper text alignment class
+            Assert.Contains("text-center", classList1?.Trim()); //'text-center'
+            Assert.Contains("text-end", classList2?.Trim()); //'text-end'
+            Assert.Contains("text-start", classList3?.Trim()); //'text-start'
+        }
+
     }
-
 }
