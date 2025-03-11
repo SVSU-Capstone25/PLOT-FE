@@ -1,0 +1,85 @@
+<!-- Filename: Dropdown.razor
+Part of Project:-- PLOT
+File Purpose:
+Create a component to display a dropdown menu
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Josh Rodack (2/10/2025)-->
+@inject IJSRuntime JSRuntime
+
+<div class="dropend @Class" id="@Id">
+  <button type="button" class="btn" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fa-solid fa-ellipsis"></i>
+  </button>
+
+  <ul class="dropdown-menu">
+    <h6 class="dropdown-header">@LabelText Options</h6>
+    <div class="dropdown-divider"></div>
+    @for(int i = 0; i < DropdownText.Count; i++)
+    {
+      <li><a class="dropdown-item" target="_blank" href="@DropdownLinks[i]">
+        <i class="@DropdownIcons[i]"></i> @DropdownText[i]
+      </a></li>
+    }
+  </ul>
+</div>
+
+@code
+{
+  [Parameter]
+  public string? Id { get; set; }
+
+  [Parameter]
+  public string? Class { get; set; }
+
+  [Parameter]
+  public required string LabelText{get;set;}
+
+  [Parameter]
+  public required List<string> DropdownText {get; set;}
+  
+  [Parameter]
+  public required List<string> DropdownLinks {get; set;}
+
+  [Parameter]
+  public required List<string> DropdownIcons {get; set;}
+
+  // Danielle Smith - 3/10/2025
+  // When a dropdown is loaded, call a global JS function 
+  // to initialize it properly with Bootstrap
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender && !string.IsNullOrEmpty(Id))
+    {
+      await JSRuntime.InvokeVoidAsync("reinitializeDropdownById", Id);
+    }
+  }
+    
+  protected override async Task OnParametersSetAsync(){
+    await base.OnParametersSetAsync();
+
+    if(DropdownText == null)
+    {
+      throw new ArgumentNullException("Dropdown must have entries to show users. Please fill in values");
+    }
+    if(DropdownLinks == null)
+    {
+      throw new ArgumentNullException("Dropdown must have links to move to on selection. Please fill in values");
+    }
+    if(DropdownIcons == null)
+    {
+      throw new ArgumentNullException("Dropdown must have icons to match text. Please fill in values");
+    }
+    if(DropdownText.Count == 0 || DropdownLinks.Count == 0 || DropdownIcons.Count == 0)
+    {
+      throw new ArgumentException("Cannot pass in 0 arguments for any list");
+    }
+    if(DropdownText.Count != DropdownLinks.Count || DropdownText.Count != DropdownIcons.Count )
+    {
+      throw new ArgumentException("Must have an entry for link and link for every entry and an Icon for each entry. Make sure lists match length");
+    }
+  }
+}

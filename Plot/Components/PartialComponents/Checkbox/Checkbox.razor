@@ -1,0 +1,42 @@
+<!-- Filename: Checkbox.razor
+Part of Project: PLOT
+
+File Purpose:
+The purpose of this file is be a resubable checkbox component throughout
+the PLOT application. The ID and text can be set dynamically through parameters.
+You can also pass a parameters for if the checkbox is initially checked
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Danielle Smith (2/9/2025) -->
+
+<div class="form-check">
+    <input type="checkbox" class="Checkbox form-check-input @Class" id="@Id"
+           @bind="CheckedValue" @bind:event="onchange" />
+    <label class="form-check-label" for="@Id">@Text</label>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public required string Text { get; set; } = "";  // text next to the checkbox
+    [Parameter] public string? Id { get; set; } // id (nullable)
+    [Parameter] public string? Class { get; set; } // string of classes (nullable)
+    [Parameter] public bool? Checked { get; set; } // if it is checked initially
+    [Parameter] public EventCallback<bool> CheckedChanged { get; set; } // event callback
+
+    private bool CheckedValue
+    {
+        get => Checked ?? false;
+        set
+        {
+            Checked = value;
+            CheckedChanged.InvokeAsync(value);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckedChanged.InvokeAsync(CheckedValue);
+    }
+}
