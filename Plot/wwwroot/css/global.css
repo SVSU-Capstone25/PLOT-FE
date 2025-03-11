@@ -1,11 +1,11 @@
 :root {
-  --navbar-blue: #1EA6A1; 
-  --platos-blue: #55B5B1;
-  --platos-pink: #EE334E;
-  --womens-allocation: #FFAAD6;
-  --mens-allocation: #AAD9FF;
-  --accessories-allocation: #5FBD6A;
-  --danger: #FFBB3D;
-  --success: #3D9747;
-  --cancel: #EF4444;
+    --navbar-blue: #1EA6A1; 
+    --platos-blue: #55B5B1;
+    --platos-pink: #EE334E;
+    --womens-allocation: #FFAAD6;
+    --mens-allocation: #AAD9FF;
+    --accessories-allocation: #5FBD6A;
+    --danger: #FFBB3D;
+    --success: #3D9747;
+    --cancel: #EF4444;
 }
