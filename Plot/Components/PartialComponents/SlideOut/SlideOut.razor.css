@@ -1,0 +1,60 @@
+/* 
+    Filename: SlideOut.css
+    Part of Project: PLOT
+
+    File Purpose: 
+    This is CSS that works specifically with the SlideOut partial component.
+
+    Program Purpose:
+    The purpose of PLOT is to allow users to easily create, manage,
+    and allocate floorsets for Plato's Closet.
+
+    Author: Andrew Kennedy (2/7/2025)
+
+*/
+
+
+.collapse-sidebar {
+  width: 500px;
+  background: #ffffff;
+  border-left: 1px solid #e5e7eb;
+  height: 100vh;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transition: transform 0.3s;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+  z-index: 11;
+}
+
+.collapse-sidebar.collapsed {
+  transform: translateX(100%);
+}
+
+.toggle-btn {
+  position: fixed;
+  right: 499px;
+  padding: 2% 1%;
+  top: 45%;
+  z-index: 1000;
+  transition: right 0.3s;
+  background: #ffffff;
+  border-radius: 20px 0 0 20px;
+  box-shadow: -10px 0 10px 1px rgba(0, 0, 0, 0.05);
+  border-right: none;
+}
+
+.toggle-btn:hover {
+  background: #ffffff;
+  border-right: none;
+}
+
+.toggle-btn.collapsed {
+  right: 0px;
+
+}
+
+.toggle-btn.collapsed i {
+  rotate: 180deg;
+}
