@@ -1,0 +1,16 @@
+/* Filename: Checkbox.razor.css
+Part of Project: PLOT
+
+File Purpose:
+This is CSS that works specifically with the checkbox component. 
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Danielle Smith (2/9/2025) */
+.Checkbox:checked {
+    background-color: var(--platos-blue);
+    border-color: var(--platos-blue);
+    accent-color: var(--platos-blue);
+}
