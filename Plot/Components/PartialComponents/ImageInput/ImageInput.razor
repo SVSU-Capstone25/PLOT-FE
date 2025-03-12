@@ -24,6 +24,8 @@ Author: Danielle Smith (2/10/2025)  *@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        console.log("hit DOMContentLoaded");
+
         // get the drag/drop area as well as the file input
         const dropArea = document.getElementById("@Id");
         const fileInput = document.getElementById("@Id-fileInput");
@@ -32,6 +34,8 @@ Author: Danielle Smith (2/10/2025)  *@
         // drag/drop area that opens the file input
         dropArea.addEventListener("click", () => fileInput.click());
 
+        console.log("hit click listener add");
+
         // add effect when something is dragged over the drag/drop area
         dropArea.addEventListener("dragover", (event) => {
             event.preventDefault();
@@ -39,10 +43,14 @@ Author: Danielle Smith (2/10/2025)  *@
             event.dataTransfer.dropEffect = "copy";
         });
 
+        console.log("hit dragover listener add");
+
         // remove effect when something is dragged away from the drag/drop area
         dropArea.addEventListener("dragleave", () => {
             dropArea.classList.remove("drag-over");
         });
+
+        console.log("hit dragleave listener add");
 
         // when a file is dropped in the drag/drop area, remove effect
         // put the file in the file input
@@ -55,6 +63,8 @@ Author: Danielle Smith (2/10/2025)  *@
                 fileInput.dispatchEvent(new Event("change"));
             }
         });
+
+        console.log("hit drop listener add");
     });
 
     // if a valid image file was selected, change the background 
