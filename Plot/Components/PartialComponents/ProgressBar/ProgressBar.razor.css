@@ -1,56 +1,46 @@
-.ProgressBar
-{
+.ProgressBar {
   --progress-bar-background-color: lightblue;
 }
 
-meter
-{
-  background: rgba(0,0,0,0.25);
+meter {
+  background: rgba(0, 0, 0, 0.25);
   height: 1.2rem;
   border-radius: 50vh;
   width: 100%;
 }
 
-meter::-webkit-meter-bar
-{
+meter::-webkit-meter-bar {
   height: 1em;
   border-radius: 50vh;
 }
 
-meter::-moz-meter-bar
-{
+meter::-moz-meter-bar {
   background: var(--progress-bar-background-color);
 }
 
-meter::-webkit-meter-even-less-good-value
-{
+meter::-webkit-meter-even-less-good-value {
   background: var(--progress-bar-background-color);
 }
 
-meter::-webkit-meter-suboptimum-value
-{
+meter::-webkit-meter-suboptimum-value {
   background: var(--progress-bar-background-color);
 }
 
-meter::-webkit-meter-optimum-value
-{
+meter::-webkit-meter-optimum-value {
   background: var(--progress-bar-background-color);
 }
 
-label
-{
+label {
   position: absolute;
   padding-left: 0.5rem;
   z-index: 3;
 }
 
-.progress-unfulfilled
-{
+.progress-unfulfilled {
   border: 2px solid #EF4444;
 }
 
-.progress-overfilled
-{
+.progress-overfilled {
   border: 2px dashed gold;
-  background:black;
+  background: black;
 }
