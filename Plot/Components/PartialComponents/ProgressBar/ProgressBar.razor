@@ -1,4 +1,4 @@
-<div class="ProgressBar row @Class" id="@ID" style="--progress-bar-background-color: @barColor;">
+<div class="ProgressBar row @Class" id="@Id" style="--progress-bar-background-color: @barColor;">
     <div class="col-6">
         @if(iconString != null)
         {
@@ -14,9 +14,9 @@
 </div>
 
 @code {
-    //ID string to pass into the main HTML ID
+    //Id string to pass into the main HTML Id
     [Parameter]
-    public String? ID {get; set;}
+    public String? Id {get; set;}
 
     //Class string to pass into the main component HTML Class
     [Parameter]
