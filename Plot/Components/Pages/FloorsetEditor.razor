@@ -1,0 +1,23 @@
+@page "/floorset-editor"
+@using Plot.Components.PartialComponents.SlideOut
+
+<!-- Grid Area -->
+<div class="wrapper" width="500px" height="500px">
+    <div class="main-content">
+        <div class="grid">
+            @for (int i = 0; i < 50; i++)
+            {
+                @for (int j = 0; j < 50; j++)
+                {
+                    <div class="grid-cell" id="cell-@i-@j"></div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<SlideOut Id="FloorsetSlideOut">
+    <p>
+        text
+    </p>
+</SlideOut>
