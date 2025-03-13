@@ -1,0 +1,72 @@
+/* Filename: PlotButton.razor.css
+Part of Project: PLOT
+
+File Purpose:
+This is CSS that works specifically with the Button blazor component. 
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Josh Rodack (2/10/2025) */
+
+.disabled-btn {
+    cursor: not-allowed !important;
+    pointer-events: auto !important;
+}
+
+.btn-primary {
+    background-color: var(--platos-blue) !important;
+    border: none;
+
+}
+
+.btn-primary:hover {
+    background-color: #4ca39f !important;
+    border: none;
+}
+
+.btn-success {
+    background-color: var(--success) !important;
+    border: none;
+
+}
+
+.btn-success:hover {
+    background-color: #34823d !important;
+    border: none;
+
+}
+
+.btn-danger {
+    background-color: var(--cancel);
+    border: none;
+
+}
+
+.btn-danger:hover {
+    background-color: #d53b3b !important;
+    border: none;
+
+}
+
+.text-start {
+    text-align: start;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-end {
+    text-align: end;
+}
+
+.icon {
+    height: 24px;
+    height: 50%;
+}
+
+.btn-element {
+    margin: 8px;
+}

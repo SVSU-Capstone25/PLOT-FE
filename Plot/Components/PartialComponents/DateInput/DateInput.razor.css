@@ -1,0 +1,85 @@
+/*
+    Filename:- DateInput.razor.css
+    Part of Project: Plot
+
+    File Purpose:
+    This file styles the elements of the DateInput.razor file.
+
+    Program Purpose:
+    The purpose of PLOT is to allow users to easily create, manage,
+    and allocate floorsets for Plato's Closet.
+
+    Author: Andrew Kennedy (2/10/2025)
+*/
+
+.date-input {
+    padding: 1rem;
+    border: 2px solid var(--platos-blue);
+    width: 40%;
+}
+
+.date-label {
+    color: var(--platos-blue);
+    font: .8em sans-serif;
+    margin-left: 1rem;
+}
+
+.inner-date-label.error {
+    color: var(--cancel) !important;
+}
+
+.date-input.error {
+    border-color: var(--cancel) !important;
+}
+
+.date-input.error:focus,
+.date-input.error:hover {
+    box-shadow: 0 0 0 .15rem rgba(220, 53, 69, .25) !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none !important;
+    -webkit-appearance: none;
+}
+
+.form-control:hover,
+.form-control:focus {
+    border-color: var(--platos-blue);
+    box-shadow: 0 0 0 .15rem var(--platos-blue);
+}
+
+.date-format-label {
+    display: block;
+    margin: .2rem 0 0 .5rem;
+    color: var(--platos-blue);
+    font-size: small;
+}
+
+.custom-date-wrapper {
+    position: relative;
+    display: inline-flex;
+}
+
+.custom-date-input {
+    padding-right: 40px;
+    /* Space for the icon */
+    width: 400px;
+    /* Adjust width */
+}
+
+.custom-calendar-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--platos-blue);
+    font-size: 16px;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+@-moz-document url-prefix() {
+    .custom-calendar-icon {
+        display: none;
+    }
+}
