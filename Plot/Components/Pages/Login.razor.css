@@ -26,12 +26,14 @@ html, body {
 
 .body-content {
     display: flex;  /* Center login modal */
+    flex-direction: column;
     justify-content: center;  /* Horizontally center */
     align-items: center;      /* Vertically center */
 }
 
 .footer-content {
     display: flex;  /* Center login modal */
+    flex-direction: column;
     justify-content: center;  /* Horizontally center */
     align-items: center;      /* Vertically center */
 }

@@ -5,7 +5,7 @@
     <div class="login">
         <ModalDialog Title="Login" ModalID="loginModal" ModalLabel="loginModalLabel" ModalSize="">
             <BodyContent class="body-content">
-                <img src="../../wwwroot/img/PlatoLogo.png" alt="Plato's closet logo">
+                <img src="img/PlatoLogo.png" alt="Plato's closet logo">
                 <h4>Welcome to PLOT, Plato's Layout Optimization Tool</h4>
                 <p>Please log in to your account to continue</p>
                 <div>Username TextInput</div>
@@ -39,7 +39,7 @@
     private void ValidateInput()
     {
         // Check if username is "temp" and redirect to localhost:8080 if true
-        if (username == "temp")
+        if (username == password)
         {
             isInvalid = false;
             // Redirect to localhost:8080
