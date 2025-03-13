@@ -13,20 +13,23 @@ html, body {
     justify-content: center;  /* Horizontally center */
     align-items: center;      /* Vertically center */
     padding: 0 20px; /* Optional: add some padding to prevent the modal from touching the edges on mobile */
+    padding-top: 150px;
+    padding-bottom: 150px;
 }
 
 /* The modal or login container */
 .login {
     background: white; /* Ensure modal has a solid white background */
-    width: 500px; /* Set width for the modal */
+    width: 450px; /* Set width for the modal */
     max-width: 90%; /* Optional: ensures the modal doesn't exceed 90% of the screen width on small devices */
     border-radius: 8px; /* Optional: rounded corners for the modal */
     padding: 20px; /* Optional: add padding inside the modal for content spacing */
     overflow: hidden; /* Prevent any content from overflowing */
     
+    
     /* Height adjustments */
-    min-height: 650px; /* Set a minimum height */
-    max-height: 80vh; /* Limit height to 80% of the viewport height */
+    min-height: 550px; /* Set a minimum height */
+    max-height: 70vh; /* Limit height to 80% of the viewport height */
     height: auto; /* Allow the height to adjust based on content */
 }
 
