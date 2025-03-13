@@ -17,11 +17,12 @@
 
 <div class="text-input-container @(LabelOnTop == true ? "label-top" : "label-left")">
     <label for="@Id">@Label</label>
-    <input id="@Id" type="@GetInputType()" @bind="Value" oninput="handleValueChanged(this)" placeholder="@Placeholder" class="TextInput @Class" />
+    <input id="@Id" type="@Type" @bind="Value" oninput="handleValueChanged(this)" placeholder="@Placeholder" class="TextInput @Class" />
 </div>
 
 @code {
     [Parameter] public string? Label { get; set; } = "Enter text";
+    [Parameter] public string Type { get; set; } = "text"; // Default value
     [Parameter] public string? Placeholder { get; set; } = "Type here...";
     [Parameter] public string? Value { get; set; } = "";
     [Parameter] public string? Id { get; set; }
