@@ -1,0 +1,14 @@
+@* Originally done by Andrew Kennedy *@
+
+@inject IJSRuntime JS;
+
+<div class="draggable">@Title</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Fixture";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("dragDrop", ".draggable", ".sidebar",".grid");
+    }
+}
