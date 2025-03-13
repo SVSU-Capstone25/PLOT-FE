@@ -22,7 +22,7 @@ html, body {
     border-radius: 8px; /* Optional: rounded corners for the modal */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow around the modal */
     padding: 20px; /* Optional: add padding inside the modal for content spacing */
-    height: auto; /* Allow the height to adjust based on content */
+    height: 650px; /* Allow the height to adjust based on content */
 }
 
 /* Center content vertically and horizontally inside the modal */
