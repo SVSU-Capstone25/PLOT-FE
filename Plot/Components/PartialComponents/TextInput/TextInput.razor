@@ -1,0 +1,30 @@
+@inject IJSRuntime JSRuntime
+
+<script>
+    function handleValueChanged(element)
+    { 
+        if (element.value.trim().length < 1)
+        {
+            element.style.color = 'red';
+            element.style.borderColor = 'red';
+        }
+        else {
+            element.style.color = '';
+            element.style.borderColor= '';
+        }
+    }
+</script>
+
+<div class="text-input-container @(LabelOnTop == true ? "label-top" : "label-left")">
+    <label for="@Id">@Label</label>
+    <input id="@Id" type="text" value="@Value" oninput="handleValueChanged(@Id)" placeholder="@Placeholder" class="TextInput @Class" />
+</div>
+
+@code {
+    [Parameter] public string? Label { get; set; } = "Enter text";
+    [Parameter] public string? Placeholder { get; set; } = "Type here...";
+    [Parameter] public string? Value { get; set; } = "";
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public bool? LabelOnTop { get; set; } = true;
+}
