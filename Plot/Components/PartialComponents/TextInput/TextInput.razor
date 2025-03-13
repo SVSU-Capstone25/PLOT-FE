@@ -27,9 +27,10 @@
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public bool? LabelOnTop { get; set; } = true;
-     private string GetInputType()
+    private string GetInputType()
     {
         // If the input is for password, set type to password, otherwise text
         return Id?.ToLower().Contains("password") == true ? "password" : "text";
     }
+    
 }
