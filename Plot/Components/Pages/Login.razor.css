@@ -15,4 +15,6 @@ html, body {
 
 .login {
     background: white; /* Ensure the login box has a white background */
+    height: 25%;
+    width: 10%;
 }
