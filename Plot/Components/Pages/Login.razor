@@ -15,8 +15,7 @@
 <!-- Password input with visibility toggle -->
                 <div class="password-container">
                     <TextInput Id="passwordTop" Label="Password" Placeholder="" Value="@password" Class="masked" Type="@passwordType" />
-                    <button type="button" @onclick="TogglePasswordVisibility" class="toggle-password">
-                        <img src="eye-icon.png" alt="Toggle password visibility" />
+                    <button type="button" @onclick="TogglePasswordVisibility" class="toggle-password fa-thin fa-eye">
                     </button>
                 </div>                
                 <Link Id="link" Class="test" Url="http://localhost:8080/recover_password">Forgot Password?</Link>
