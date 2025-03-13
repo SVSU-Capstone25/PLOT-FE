@@ -12,6 +12,7 @@ html, body {
     display: flex;  /* Center login modal */
     justify-content: center;  /* Horizontally center */
     align-items: center;      /* Vertically center */
+    padding: 0 20px; /* Optional: add some padding to prevent the modal from touching the edges on mobile */
 }
 
 /* The modal or login container */
@@ -21,8 +22,13 @@ html, body {
     max-width: 90%; /* Optional: ensures the modal doesn't exceed 90% of the screen width on small devices */
     border-radius: 8px; /* Optional: rounded corners for the modal */
     padding: 20px; /* Optional: add padding inside the modal for content spacing */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow around the modal */
+    overflow: hidden; /* Prevent any content from overflowing */
+    
+    /* Height adjustments */
+    min-height: 400px; /* Set a minimum height */
+    max-height: 80vh; /* Limit height to 80% of the viewport height */
     height: auto; /* Allow the height to adjust based on content */
-    overflow: hidden;
 }
 
 /* Center content vertically and horizontally inside the modal */
