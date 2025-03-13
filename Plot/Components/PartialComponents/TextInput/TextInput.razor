@@ -17,7 +17,18 @@
 
 <div class="text-input-container @(LabelOnTop == true ? "label-top" : "label-left")">
     <label for="@Id">@Label</label>
-    <input id="@Id" type="@Type" @bind="Value" oninput="handleValueChanged(this)" placeholder="@Placeholder" class="TextInput @Class" />
+    <div class="input-wrapper">
+        <!-- Text Input Field -->
+        <input id="@Id" type="@Type" @bind="Value" oninput="handleValueChanged(this)" placeholder="@Placeholder" class="TextInput @Class" />
+        
+        <!-- Toggle Password Visibility Button (only for password fields) -->
+        @if (Id?.ToLower().Contains("password") == true)
+        {
+            <button type="button" @onclick="TogglePasswordVisibility" class="toggle-password">
+                <i class="fa-thin fa-eye"></i>
+            </button>
+        }
+    </div>
 </div>
 
 @code {
@@ -28,10 +39,24 @@
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public bool? LabelOnTop { get; set; } = true;
+    private string passwordType = "password"; // Default to password type for password fields
+
     private string GetInputType()
     {
         // If the input is for password, set type to password, otherwise text
         return Id?.ToLower().Contains("password") == true ? "password" : "text";
     }
-    
+
+    // Method to toggle password visibility
+    private void TogglePasswordVisibility()
+    {
+        if (Type == "password")
+        {
+            Type = "text"; // Show password
+        }
+        else
+        {
+            Type = "password"; // Mask password
+        }
+    }
 }
