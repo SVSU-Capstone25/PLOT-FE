@@ -39,13 +39,12 @@
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public bool? LabelOnTop { get; set; } = true;
-    private string passwordType = "password"; // Default to password type for password fields
 
-    private string GetInputType()
+    @* private string GetInputType()
     {
         // If the input is for password, set type to password, otherwise text
         return Id?.ToLower().Contains("password") == true ? "password" : "text";
-    }
+    } *@
 
     // Method to toggle password visibility
     private void TogglePasswordVisibility()
