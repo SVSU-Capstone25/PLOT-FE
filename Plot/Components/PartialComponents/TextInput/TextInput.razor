@@ -17,7 +17,7 @@
 
 <div class="text-input-container @(LabelOnTop == true ? "label-top" : "label-left")">
     <label for="@Id">@Label</label>
-    <input id="@Id" type="@GetInputType()" value="@Value" oninput="handleValueChanged(@Id)" placeholder="@Placeholder" class="TextInput @Class" />
+    <input id="@Id" type="@GetInputType()" @bind="Value" oninput="handleValueChanged(@Id)" placeholder="@Placeholder" class="TextInput @Class" />
 </div>
 
 @code {
