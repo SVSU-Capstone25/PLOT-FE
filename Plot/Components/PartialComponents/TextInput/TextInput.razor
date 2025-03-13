@@ -22,7 +22,7 @@
         <input id="@Id" type="@Type" @bind="Value" oninput="handleValueChanged(this)" placeholder="@Placeholder" class="TextInput @Class" />
         
         <!-- Toggle Password Visibility Button (only for password fields) -->
-        @if (Type == "password")
+        @if (@Type == "password")
         {
             <button type="button" @onclick="TogglePasswordVisibility" class="toggle-password">
                 <i class="fa-thin fa-eye"></i>
