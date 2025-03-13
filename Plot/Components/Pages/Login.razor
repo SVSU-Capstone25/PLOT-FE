@@ -4,7 +4,7 @@
 <body class="background">
     <div class="login">
         <ModalDialog Title="Login" ModalID="loginModal" ModalLabel="loginModalLabel" ModalSize="">
-            <BodyContent>
+            <BodyContent class="body-content">
                 <img src="../../PLOT/wwwroot/img/PlatoLogo.png" alt="Plato's closet logo">
                 <h4>Welcome to PLOT, Plato's Layout Optimization Tool</h4>
                 <p>Please log in to your account to continue</p>
@@ -16,7 +16,7 @@
                     Log in
                 </Button>
             </BodyContent>
-            <FooterConent>
+            <FooterConent class="footer-content">
                 @if (isInvalid)
                 {
                     <p style="color: red; font-weight: bold;">Incorrect Email or Password</p>
