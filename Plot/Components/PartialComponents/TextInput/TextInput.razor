@@ -22,16 +22,16 @@
         <input id="@Id" type="@Type" @bind="Value" oninput="handleValueChanged(this)" placeholder="@Placeholder" class="TextInput @Class" />
         
         <!-- Toggle Password Visibility Button (only for password fields) -->
-        @if (Id?.ToLower().Contains("password") == true)
+        @if (Type == "password")
         {
             <button type="button" @onclick="TogglePasswordVisibility" class="toggle-password">
                 <i class="fa-thin fa-eye"></i>
             </button>
-            <p>Current Type: @Type</p> <!-- Debug message to show Type -->
+            @* <p>Current Type: @Type</p> <!-- Debug message to show Type --> *@
         }
         else
         {
-            <p>@Id</p> <!-- Debug message to show Id -->
+            @* <p>@Id</p> <!-- Debug message to show Id --> *@
         }
     </div>
 </div>
