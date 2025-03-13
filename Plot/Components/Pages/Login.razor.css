@@ -53,3 +53,9 @@ html, body {
 h4 {
     text-align: center;  /* Center align text inside h4 */
 }
+
+.masked {
+    -webkit-text-security: disc;
+    -moz-text-security: disc;
+    text-security: disc;
+}
