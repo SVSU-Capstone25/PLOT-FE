@@ -12,31 +12,34 @@ html, body {
     display: flex;  /* Center login modal */
     justify-content: center;  /* Horizontally center */
     align-items: center;      /* Vertically center */
+    padding: 0 20px;  /* Optional: add some padding to prevent the modal from touching the edges on mobile */
 }
 
 /* The modal or login container */
 .login {
     background: white; /* Ensure modal has a solid white background */
-    height: 650px;
+    height: 650px; /* Set height for the modal */
     width: 500px; /* Set width for the modal */
     max-width: 90%; /* Optional: ensures the modal doesn't exceed 90% of the screen width on small devices */
-    padding-bottom: 100px;
     border-radius: 8px; /* Optional: rounded corners for the modal */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow around the modal */
 }
 
+/* Center content vertically and horizontally inside the modal */
 .body-content {
-    display: flex;  /* Center login modal */
+    display: flex;
     flex-direction: column;
-    justify-content: center;  /* Horizontally center */
-    align-items: center;      /* Vertically center */
+    justify-content: center;  /* Vertically center the content */
+    align-items: center;      /* Horizontally center the content */
+    height: 100%;  /* Ensure the content takes the full height of the modal */
+    text-align: center;  /* Center align the text within the body-content */
 }
 
+/* Center footer content vertically and horizontally */
 .footer-content {
-    display: flex;  /* Center login modal */
+    display: flex;
     flex-direction: column;
-    justify-content: center;  /* Horizontally center */
-    align-items: center;      /* Vertically center */
+    justify-content: center;  /* Vertically center */
+    align-items: center;      /* Horizontally center */
 }
 
 /* Style for the h4 to ensure it is centered */
