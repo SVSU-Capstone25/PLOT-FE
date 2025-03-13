@@ -20,7 +20,6 @@ html, body {
     width: 500px; /* Set width for the modal */
     max-width: 90%; /* Optional: ensures the modal doesn't exceed 90% of the screen width on small devices */
     border-radius: 8px; /* Optional: rounded corners for the modal */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow around the modal */
     padding: 20px; /* Optional: add padding inside the modal for content spacing */
     height: 650px; /* Allow the height to adjust based on content */
 }
