@@ -1,12 +1,18 @@
+/* Apply gradient to the entire viewport */
+html, body {
+    height: 100%;  /* Ensure the gradient covers the entire height */
+    margin: 0;     /* Remove default margin */
+}
+
 .background {
-    height: 100%;
-    margin: 0;
+    height: 100%;  /* Full height */
+    margin: 0;     /* Remove margin */
+    background: linear-gradient(to bottom, #55B5B1, white); /* Apply gradient */
     display: flex;
     justify-content: center;
     align-items: center;
-    background:linear-gradient(to bottom, #55B5B1, white);
 }
 
 .login {
-    background:white;
+    background: white; /* Ensure the login box has a white background */
 }
