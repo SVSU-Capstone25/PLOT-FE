@@ -1,12 +1,36 @@
-@* <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        if (typeof window.FontAwesome !== 'undefined') {
-            window.FontAwesome.dom.i2svg();
-        }
-    });
-</script> *@
+
 @page "/users"
 
-<PageTitle>Users</PageTitle>
+<NavBar ShowStores="true" ShowUsers="true" ShowHelp="false" ShowLogout="true" />
 
-<h1>Hello User</h1>
+<div class="container mt-4">
+
+    <!-- Users Table -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Employee Name</th>
+                <th scope="col">Employee Number</th>
+                <th scope="col">Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Example row - replace with dynamic data -->
+            <tr>
+                <td>Clayton Cook</td>
+                <td>#1234567890</td>
+                <td>Owner</td>
+            </tr>
+            <tr>
+                <td>John Doe</td>
+                <td>#1234567890</td>
+                <td>Manager</td>
+            </tr>
+            <tr>
+                <td>Jane Smith</td>
+                <td>#1234567890</td>
+                <td>Employee</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
