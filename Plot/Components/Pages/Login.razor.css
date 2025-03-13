@@ -13,7 +13,6 @@ html, body {
     justify-content: center;  /* Horizontally center */
     align-items: center;      /* Vertically center */
     padding: 0 20px; /* Optional: add some padding to prevent the modal from touching the edges on mobile */
-    padding-top: 150px;
     padding-bottom: 150px;
 }
 
