@@ -32,6 +32,10 @@ html, body {
     height: auto; /* Allow the height to adjust based on content */
 }
 
+.login * {
+    border-radius: 8px;
+}
+
 /* Center content vertically and horizontally inside the modal */
 .body-content {
     display: flex;
