@@ -16,14 +16,38 @@
                     Log in
                 </Button>
             </BodyContent>
+            <FooterConent>
+                @if (isInvalid)
+                {
+                    <p style="color: red; font-weight: bold;">Incorrect Email or Password</p>
+                }
+            </FooterConent>
         </ModalDialog>
     </div>
 </body>
 
 @code
 {
+    // Inject NavigationManager to redirect
+    [Inject]
+    NavigationManager Navigation { get; set; }
+
+    string username = "temp";
+    string password = "temp";
+    bool isInvalid = false;
+
     private void ValidateInput()
     {
-        
+        // Check if username is "temp" and redirect to localhost:8080 if true
+        if (username == "temp")
+        {
+            isInvalid = false;
+            // Redirect to localhost:8080
+            Navigation.NavigateTo("http://localhost:8080");
+        }
+        else 
+        {
+            isInvalid = true;
+        }
     }
 }
