@@ -6,3 +6,7 @@
     align-items: center;
     background:linear-gradient(to bottom, #55B5B1, white);
 }
+
+.login {
+    background:white;
+}
