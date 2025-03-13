@@ -38,4 +38,11 @@ html, body {
 .footer-content {
     display: flex;
     flex-direction: column;
-    justify-content:
+    justify-content: center;  /* Vertically center */
+    align-items: center;      /* Horizontally center */
+}
+
+/* Style for the h4 to ensure it is centered */
+h4 {
+    text-align: center;  /* Center align text inside h4 */
+}
