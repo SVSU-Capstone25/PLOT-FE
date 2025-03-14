@@ -92,14 +92,8 @@ Author: Andrew Fulton (3/12/2025)  *@
         @* Name and location *@
         <div class="modal-split-container">
             <div class="modal-split-left-side">
-                <div class="input-group">
-                    <label for="textbox">Name</label>
-                    <input id="editModalStoreName" type="text"/>
-                </div>
-                <div class="input-group">
-                    <label for="textbox2">Location</label>
-                    <input id="editModalStoreLocation" type="text"/>
-                </div>
+                <TextInput Id="editModalStoreName" Label="Name" Placeholder="Store Name"/>
+                <TextInput Id="editModalStoreLocation" Label="Location" Placeholder="Store Address"/>
             </div>
          @* upload image for store component *@
             <div class="modal-split-right-side">
@@ -199,8 +193,7 @@ Author: Andrew Fulton (3/12/2025)  *@
 
         <BodyContent>
             <h5>Are you SURE you want to delete this store?</h5>
-            <p>If so, type DELETE below</p>
-            <input type="text"/>
+            <TextInput Id="deleteModalTextInput" Label="If so, type DELETE below"/>
         </BodyContent>
     
         <FooterContent>
@@ -238,14 +231,8 @@ Author: Andrew Fulton (3/12/2025)  *@
         @* Name and location (labels and input boxes)*@
         <div class="modal-split-container">
             <div class="modal-split-left-side">
-                <div class="input-group">
-                    <label for="textbox">Name</label>
-                    <input type="text"/>
-                </div>
-                <div class="input-group">
-                    <label for="textbox2">Location</label>
-                    <input type="text"/>
-                </div>
+                <TextInput Id="addModalStoreName" Label="Name" Placeholder="Store Name"/>
+                <TextInput Id="addModalStoreLocation" Label="Location" Placeholder="Store Address"/>
             </div>
          @* upload image for store component *@
             <div class="modal-split-right-side">
