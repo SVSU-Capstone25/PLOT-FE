@@ -1,3 +1,7 @@
+<!--
+User dashboard for managing, adding, editing, and deleting users
+-->
+
 @page "/users"
 
 <div class="container mt-4">
@@ -19,11 +23,14 @@
                 <td class="border border-light border-2">#1234567890</td>
                 <td class="border border-light border-2">
                     <div>
-                        <span>Owner</span>
-                        <Dropdown Class="New Dropdown" id=5 DropdownText="@(new List<string> { "Youtube", "Google", "SVSU" })"
-                            DropdownLinks="@(new List<string> { "https://www.youtube.com/", "https://www.google.com/", "https://www.svsu.edu/" })"
-                            LabelText="New Dropdown"
-                            DropdownIcons="@(new List<string> { "fa-solid fa-copy", "fa-solid fa-trash-can", "fa-solid fa-layer-group" })" />
+                        <div>Owner</div>
+                        <div>
+                            <!-- ToDo: Fix dropdown bug, add dropdowns to other rows -->
+                            <Dropdown DropdownText="@(new List<string> { "Youtube", "Google", "SVSU" })"
+    DropdownLinks="@(new List<string> { "https://www.youtube.com/", "https://www.google.com/", "https://www.svsu.edu/" })"
+    LabelText="Test Dropdown"
+    DropdownIcons="@(new List<string> { "fa-solid fa-copy", "fa-solid fa-trash-can", "fa-solid fa-layer-group" })" />
+                        </div>
                     </div>
                 </td>
             </tr>
@@ -40,10 +47,47 @@
         </tbody>
     </table>
 
-    <!-- Button -->
-    <Button Class="Test Button" Id="buttonPrimary" Variant="primary" OnClickFunction="TestFunction"
-        Icon="fa-solid fa-ellipsis" IsDisabled=false TextAlignment="center">
+    <!--Add User Button -->
+    <button class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#standardModal">
         + Add User
-    </Button>
+    </button>
+
+    <!-- Add User Modal -->
+<Modal Title="Add User" Id="addUserModal" Variant="success" Icon="fa-solid fa-check" Class="standard modal-dialog">
+    <BodyContent>
+        <h1>Create User</h1>
+        <p>Add a new user to be added to the system.</p>
+        <TextInput Id="FirstName" Label="First Name" Placeholder="First Name" Value="@firstname"/>
+        <TextInput Id="LastName" Label="LastName" Placeholder="Last Name" Value="@lastname"/>
+        <TextInput Id="Email" Label="Email" Placeholder="Email" Value="@email" />
+        
+        <!-- Todo: Add dropdowns -->
+        <Dropdown></Dropdown>
+
+        <img src="/img/platos_closet_logo.png">
+    </BodyContent>
+
+    <!-- To do: Footer Buttons -->
+    <FooterContent>
+    </FooterContent>
+</Modal>
+
+    <!-- TODO: Edit User Modal -->
+
+    <!-- Confirm Deletion Modal -->
+<Modal Title="Confirm Deletion" Id="confirmDeleteModal" Variant="success" Icon="fa-solid fa-check" Class="standard modal-dialog">
+    <BodyContent>
+        <h1>Are you SURE you want to delete this user?</h1>
+        <TextInput Id="deleteTextInput" Label="If so, type DELETE here" Placeholder="Type DELETE here" Value="@delete"/>
+
+    </BodyContent>
+
+    <!-- To do: Footer Buttons -->
+    <FooterContent>
+
+    </FooterContent>
+
+</Modal>
+
 
 </div>
