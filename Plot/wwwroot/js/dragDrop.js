@@ -1,125 +1,154 @@
-// Orignally done by Andrew Kennedy 
-window.dragDrop = function(className, sidebarSelector, gridSelector, gridSize = 50) {
-    let selectedElement = null;
+// // Orignally done by Andrew Kennedy 
 
-    interact(className).draggable({
-        autoScroll: true,
-        listeners: {
-            start(event) {
-                const target = event.target;
-                const isFromSidebar = target.closest(sidebarSelector) !== null;
+// var container = document.getElementById("container");
+// var box = document.querySelector(".box");
 
-                if (isFromSidebar) {
-                    // Clone the element from the sidebar
-                    const clonedElement = target.cloneNode(true);
-                    clonedElement.id = "dragged-" + Date.now();
+// var width = 50;
+// var height = 50;
+// var rows = 12;
+// var cols = 12;
+// var snap = 50;
 
-                    // Apply styles for positioning
-                    clonedElement.style.position = "absolute";
-                    clonedElement.style.zIndex = "1000";
-                    clonedElement.style.opacity = "1";
+// for (var i = 0; i < rows * cols; i++) {
+//   var y = Math.floor(i / cols) * height;
+//   var x = i * width % (cols * width);
+//   $("<div class=\"grid-cell\"></div>").css({ top: y, left: x, position: "absolute" }).prependTo(container);
+// }
 
-                    // Append the clone to the body
-                    document.body.appendChild(clonedElement);
+// Draggable.create(box, {
+//   bounds: container,
+//   onDrag: onDrag });
 
-                    // Get bounding box of original element
-                    const rect = target.getBoundingClientRect();
-                    const offsetX = event.pageX - (rect.left + window.scrollX);
-                    const offsetY = event.pageY - (rect.top + window.scrollY);
 
-                    // Set absolute position for clone
-                    clonedElement.style.left = `${event.pageX - offsetX}px`;
-                    clonedElement.style.top = `${event.pageY - offsetY}px`;
+// function onDrag() {
 
-                    clonedElement.dataset.x = clonedElement.offsetLeft;
-                    clonedElement.dataset.y = clonedElement.offsetTop;
+//   TweenLite.to(box, 0.5, {
+//     x: Math.round(this.x / snap) * snap,
+//     y: Math.round(this.y / snap) * snap,
+//     ease: Back.easeOut.config(2) });
 
-                    event.target.dataset.clonedId = clonedElement.id;
-                    selectedElement = clonedElement;
-                } else {
-                    selectedElement = target;
-                }
-            },
-            move(event) {
-                let target = event.target;
-                const clonedElement = document.getElementById(target.dataset.clonedId);
-                if (clonedElement) {
-                    target = clonedElement;
-                }
+// }
+// window.dragDrop = function(className, sidebarSelector, gridSelector, gridSize = 50) {
+//     let selectedElement = null;
 
-                let x = (parseFloat(target.dataset.x) || 0) + event.dx;
-                let y = (parseFloat(target.dataset.y) || 0) + event.dy;
+//     interact(className).draggable({
+//         autoScroll: true,
+//         listeners: {
+//             start(event) {
+//                 const target = event.target;
+//                 const isFromSidebar = target.closest(sidebarSelector) !== null;
 
-                target.style.left = `${x}px`;
-                target.style.top = `${y}px`;
+//                 if (isFromSidebar) {
+//                     // Clone the element from the sidebar
+//                     const clonedElement = target.cloneNode(true);
+//                     clonedElement.id = "dragged-" + Date.now();
 
-                target.dataset.x = x;
-                target.dataset.y = y;
+//                     // Apply styles for positioning
+//                     clonedElement.style.position = "absolute";
+//                     clonedElement.style.zIndex = "1000";
+//                     clonedElement.style.opacity = "1";
 
-                selectedElement = target;
-            },
-            end(event) {
-                let target = event.target;
-                let clonedElement = document.getElementById(target.dataset.clonedId);
-                const sidebar = document.querySelector(sidebarSelector);
-                const grid = document.querySelector(gridSelector);
+//                     // Append the clone to the body
+//                     document.body.appendChild(clonedElement);
 
-                if (clonedElement) {
-                    const clonedRect = clonedElement.getBoundingClientRect();
-                    const sidebarRect = sidebar.getBoundingClientRect();
+//                     // Get bounding box of original element
+//                     const rect = target.getBoundingClientRect();
+//                     const offsetX = event.pageX - (rect.left + window.scrollX);
+//                     const offsetY = event.pageY - (rect.top + window.scrollY);
 
-                    if (isOverElement(clonedRect, sidebarRect)) {
-                        clonedElement.remove();
-                        return;
-                    } else {
-                        clonedElement.style.zIndex = "10";
-                        clonedElement.dataset.clonedId = "";
-                        selectedElement = clonedElement;
-                    }
-                }
+//                     // Set absolute position for clone
+//                     clonedElement.style.left = `${event.pageX - offsetX}px`;
+//                     clonedElement.style.top = `${event.pageY - offsetY}px`;
 
-                // **🟢 Get Grid Position for Snapping**
-                const gridRect = grid.getBoundingClientRect();
+//                     clonedElement.dataset.x = clonedElement.offsetLeft;
+//                     clonedElement.dataset.y = clonedElement.offsetTop;
 
-                // Convert absolute position to grid-relative position
-                let relativeX = parseFloat(target.style.left) - gridRect.left;
-                let relativeY = parseFloat(target.style.top) - gridRect.top;
+//                     event.target.dataset.clonedId = clonedElement.id;
+//                     selectedElement = clonedElement;
+//                 } else {
+//                     selectedElement = target;
+//                 }
+//             },
+//             move(event) {
+//                 let target = event.target;
+//                 const clonedElement = document.getElementById(target.dataset.clonedId);
+//                 if (clonedElement) {
+//                     target = clonedElement;
+//                 }
 
-                // **Snap to the nearest grid square**
-                let snappedX = Math.round(relativeX / gridSize) * gridSize;
-                let snappedY = Math.round(relativeY / gridSize) * gridSize;
+//                 let x = (parseFloat(target.dataset.x) || 0) + event.dx;
+//                 let y = (parseFloat(target.dataset.y) || 0) + event.dy;
 
-                // Convert back to absolute position
-                let finalX = snappedX + gridRect.left;
-                let finalY = snappedY + gridRect.top;
+//                 target.style.left = `${x}px`;
+//                 target.style.top = `${y}px`;
 
-                // Apply the snapped position
-                target.style.left = `${finalX}px`;
-                target.style.top = `${finalY}px`;
+//                 target.dataset.x = x;
+//                 target.dataset.y = y;
 
-                target.dataset.x = finalX;
-                target.dataset.y = finalY;
+//                 selectedElement = target;
+//             },
+//             end(event) {
+//                 let target = event.target;
+//                 let clonedElement = document.getElementById(target.dataset.clonedId);
+//                 const sidebar = document.querySelector(sidebarSelector);
+//                 const grid = document.querySelector(gridSelector);
 
-                target.style.zIndex = "10";
-                selectedElement = target;
-            }
-        }
-    });
+//                 if (clonedElement) {
+//                     const clonedRect = clonedElement.getBoundingClientRect();
+//                     const sidebarRect = sidebar.getBoundingClientRect();
 
-    document.addEventListener("keydown", function(event) {
-        if (event.key === "Delete" && selectedElement) {
-            selectedElement.remove();
-            selectedElement = null;
-        }
-    });
-};
+//                     if (isOverElement(clonedRect, sidebarRect)) {
+//                         clonedElement.remove();
+//                         return;
+//                     } else {
+//                         clonedElement.style.zIndex = "10";
+//                         clonedElement.dataset.clonedId = "";
+//                         selectedElement = clonedElement;
+//                     }
+//                 }
 
-// Function to check if one element is over another
-function isOverElement(draggableRect, staticRect) {
-    return (
-        draggableRect.top < staticRect.bottom &&
-        draggableRect.bottom > staticRect.top &&
-        draggableRect.left < staticRect.right &&
-        draggableRect.right > staticRect.left
-    );
-}
+//                 // **🟢 Get Grid Position for Snapping**
+//                 const gridRect = grid.getBoundingClientRect();
+
+//                 // Convert absolute position to grid-relative position
+//                 let relativeX = parseFloat(target.style.left) - gridRect.left;
+//                 let relativeY = parseFloat(target.style.top) - gridRect.top;
+
+//                 // **Snap to the nearest grid square**
+//                 let snappedX = Math.round(relativeX / gridSize) * gridSize;
+//                 let snappedY = Math.round(relativeY / gridSize) * gridSize;
+
+//                 // Convert back to absolute position
+//                 let finalX = snappedX + gridRect.left;
+//                 let finalY = snappedY + gridRect.top;
+
+//                 // Apply the snapped position
+//                 target.style.left = `${finalX}px`;
+//                 target.style.top = `${finalY}px`;
+
+//                 target.dataset.x = finalX;
+//                 target.dataset.y = finalY;
+
+//                 target.style.zIndex = "10";
+//                 selectedElement = target;
+//             }
+//         }
+//     });
+
+//     document.addEventListener("keydown", function(event) {
+//         if (event.key === "Delete" && selectedElement) {
+//             selectedElement.remove();
+//             selectedElement = null;
+//         }
+//     });
+// };
+
+// // Function to check if one element is over another
+// function isOverElement(draggableRect, staticRect) {
+//     return (
+//         draggableRect.top < staticRect.bottom &&
+//         draggableRect.bottom > staticRect.top &&
+//         draggableRect.left < staticRect.right &&
+//         draggableRect.right > staticRect.left
+//     );
+// }
