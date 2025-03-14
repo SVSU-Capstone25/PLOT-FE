@@ -1,0 +1,12 @@
+@page "/floorsets/{storeId}/{storeLocation}"
+
+<h1>Floorsets for Store @storeId</h1>
+<h3>@storeLocation</h3>
+
+@code {
+    [Parameter]
+    public string? storeId { get; set; }
+
+    [Parameter]
+    public string? storeLocation { get; set; }
+}
