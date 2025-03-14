@@ -41,6 +41,7 @@
         // Check if username is "temp" and redirect to localhost:8080 if true
         if (username == password)
         {
+            Console.log("Username: " + username + " --- Password: " + password)
             isInvalid = false;
             // Redirect to localhost:8080
             Navigation.NavigateTo("http://localhost:8080/home");
