@@ -48,6 +48,9 @@
     [Parameter] public string? Class { get; set; }
     [Parameter] public bool? LabelOnTop { get; set; } = true;
 
+    // This is used for JS interop
+    private DotNetObjectReference<TextInput> DotNetHelper;
+
     // Method to toggle password visibility
     private void TogglePasswordVisibility()
     {
