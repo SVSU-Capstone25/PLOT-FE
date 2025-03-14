@@ -1,8 +1,10 @@
 @inject IJSRuntime JSRuntime
 
 <script>
-    function handleValueChanged(element)
+    function handleValueChanged(element, dotNetHelper)
     { 
+         // Call the Blazor method to update the value
+        dotNetHelper.invokeMethodAsync('OnValueChanged', element.value);
         if (element.value.trim().length < 1)
         {
             element.style.color = 'red';
@@ -58,9 +60,23 @@
             Type = "password"; // Mask password
         }
     }
-    private async Task OnValueChanged(ChangeEventArgs e)
+     // This method will be called via JS interop
+    [JSInvokable]
+    public async Task OnValueChanged(string newValue)
     {
-        Value = e.Value.ToString();
+        Value = newValue;
         await ValueChanged.InvokeAsync(Value); // Notify the parent component about the change
+    }
+
+    // Dispose DotNetHelper when the component is disposed
+    public void Dispose()
+    {
+        DotNetHelper?.Dispose();
+    }
+
+    // Component initialization
+    protected override void OnInitialized()
+    {
+        DotNetHelper = DotNetObjectReference.Create(this);
     }
 }
