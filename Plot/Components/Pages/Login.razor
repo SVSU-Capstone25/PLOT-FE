@@ -12,6 +12,7 @@
                 <TextInput Id="usernameTop" Type="text" Label="Username" Placeholder="" Value="@username" />
                 <TextInput Id="testTop" Type="password" Label="Password" Placeholder="" Value="@password" Class="masked" />
                 <Link Id="link" Class="test" Url="http://localhost:8080/recover_password">Forgot Password?</Link>
+                <p>@username @password</p>
                 <Button Class="Button" Id="buttonLogin" Variant="primary" OnClickFunction="ValidateInput"
                     Icon="" IsDisabled=false TextAlignment="center">
                     Log in
