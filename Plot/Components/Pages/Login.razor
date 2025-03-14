@@ -9,8 +9,8 @@
                 <h4>Welcome to PLOT, </h4>
                 <h4>Plato's Layout Optimization Tool</h4>
                 <p>Please log in to your account to continue</p>
-                <TextInput Id="usernameTop" Type="text" Label="Username" Placeholder="" @bind-Value="username" />
-                <TextInput Id="testTop" Type="password" Label="Password" Placeholder="" @bind-Value="password" Class="masked" />
+                <TextInput Id="usernameTop" Type="text" Label="Username" Placeholder="" @bind-Value="username" ValueChanged="@(e => username = e)"/>
+                <TextInput Id="testTop" Type="password" Label="Password" Placeholder="" @bind-Value="password" ValueChanged="@(e => password = e)"Class="masked" />
                 <Link Id="link" Class="test" Url="http://localhost:8080/recover_password">Forgot Password?</Link>
                 <Button Class="Button" Id="buttonLogin" Variant="primary" OnClickFunction="ValidateInput"
                     Icon="" IsDisabled=false TextAlignment="center">

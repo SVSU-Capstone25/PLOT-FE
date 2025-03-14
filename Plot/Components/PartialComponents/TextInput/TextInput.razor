@@ -41,6 +41,7 @@
     [Parameter] public string? Type { get; set; } = "password"; // Default type for password
     [Parameter] public string? Placeholder { get; set; } = "Type here...";
     [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }  // Event callback for ValueChanged
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public bool? LabelOnTop { get; set; } = true;
@@ -56,5 +57,10 @@
         {
             Type = "password"; // Mask password
         }
+    }
+    private async Task OnValueChanged(ChangeEventArgs e)
+    {
+        Value = e.Value.ToString();
+        await ValueChanged.InvokeAsync(Value); // Notify the parent component about the change
     }
 }
