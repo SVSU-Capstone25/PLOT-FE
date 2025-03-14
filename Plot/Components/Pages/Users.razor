@@ -3,35 +3,47 @@
 <div class="container mt-4">
 
     <!-- Users Table -->
-    <table class="table table-striped">
+    <table class="table border border-light">
         <thead>
             <tr>
-                <th scope="col">Employee Name</th>
-                <th scope="col">Employee Number</th>
-                <th scope="col">Role</th>
+                <td class="border border-light border-2">Employee Name</td>
+                <td class="border border-light border-2">Employee Number</td>
+                <td class="border border-light border-2">Role</td>
             </tr>
         </thead>
         <tbody>
             <!-- Hardcoded rows for the demo --- 
             Replace with dynamic rows for finished product -->
             <tr>
-                <td>Clayton Cook</td>
-                <td>#1234567890</td>
-                <td>Owner</td>
+                <td class="border border-light border-2">Clayton Cook</td>
+                <td class="border border-light border-2">#1234567890</td>
+                <td class="border border-light border-2">
+                    <div>
+                        <span>Owner</span>
+                        <Dropdown Class="New Dropdown" id=5 DropdownText="@(new List<string> { "Youtube", "Google", "SVSU" })"
+                            DropdownLinks="@(new List<string> { "https://www.youtube.com/", "https://www.google.com/", "https://www.svsu.edu/" })"
+                            LabelText="New Dropdown"
+                            DropdownIcons="@(new List<string> { "fa-solid fa-copy", "fa-solid fa-trash-can", "fa-solid fa-layer-group" })" />
+                    </div>
+                </td>
             </tr>
             <tr>
-                <td>John Doe</td>
-                <td>#1234567890</td>
-                <td>Manager</td>
+                <td class="border border-light border-2">John Doe</td>
+                <td class="border border-light border-2">#1234567890</td>
+                <td class="border border-light border-2">Manager</td>
             </tr>
             <tr>
-                <td>Jane Smith</td>
-                <td>#1234567890</td>
-                <td>Employee</td>
+                <td class="border border-light border-2">Jane Smith</td>
+                <td class="border border-light border-2">#1234567890</td>
+                <td class="border border-light border-2">Employee</td>
             </tr>
         </tbody>
     </table>
 
     <!-- Button -->
-    <Button Variant="primary" IsDisabled="true" TextAlignment="center" />
+    <Button Class="Test Button" Id="buttonPrimary" Variant="primary" OnClickFunction="TestFunction"
+        Icon="fa-solid fa-ellipsis" IsDisabled=false TextAlignment="center">
+        + Add User
+    </Button>
+
 </div>
