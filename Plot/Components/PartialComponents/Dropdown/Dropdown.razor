@@ -20,9 +20,16 @@ Author: Josh Rodack (2/10/2025)-->
     <div class="dropdown-divider"></div>
     @for(int i = 0; i < DropdownText.Count; i++)
     {
-      <li><a class="dropdown-item" target="_blank" href="@DropdownLinks[i]">
-        <i class="@DropdownIcons[i]"></i> @DropdownText[i]
-      </a></li>
+      if(@IsLinkModal[i]){
+        <li data-bs-toggle="modal" data-bs-target="#@DropdownLinks[i]">
+          <i class="@DropdownIcons[i]"></i> @DropdownText[i]
+        </li>
+      }
+      else{
+        <li><a class="dropdown-item" target="_blank" href="@DropdownLinks[i]">
+          <i class="@DropdownIcons[i]"></i> @DropdownText[i]
+        </a></li>
+      }
     }
   </ul>
 </div>
@@ -34,6 +41,9 @@ Author: Josh Rodack (2/10/2025)-->
 
   [Parameter]
   public string? Class { get; set; }
+
+  [Parameter]
+  public List<bool>? IsLinkModal {get; set;}
 
   [Parameter]
   public required string LabelText{get;set;}
@@ -80,6 +90,12 @@ Author: Josh Rodack (2/10/2025)-->
     if(DropdownText.Count != DropdownLinks.Count || DropdownText.Count != DropdownIcons.Count )
     {
       throw new ArgumentException("Must have an entry for link and link for every entry and an Icon for each entry. Make sure lists match length");
+    }
+    if(IsLinkModal == null){
+          for(int i = 0; i < DropdownText.Count; i++)
+          {
+            IsLinkModal[i] = false;
+          }
     }
   }
 }

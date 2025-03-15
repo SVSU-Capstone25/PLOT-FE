@@ -7,6 +7,7 @@ Author (Updated File): Andrew Miller (3/14/2025)
 -->
 
 @page "/users"
+@inject IJSRuntime JSRuntime
 
 <div class="container mt-4">
 
@@ -32,10 +33,10 @@ Author (Updated File): Andrew Miller (3/14/2025)
                             <Dropdown
                             Id="RoleDropDown"
                             DropdownText="@(new List<string> { "Edit", "Delete" })"
-                            DropdownLinks="@(new List<string> { "users#EditUserModal", "users#DeleteUserModal"  })"
+                            DropdownLinks="@(new List<string> { "EditUserModal", "DeleteUserModal"  })"
                             LabelText="Role"
                             DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-regular fa-trash-can" })"
-                            
+                            IsLinkModal="@(new List<bool> {true, true})"
                              />
                         </div>
                     </div>
@@ -101,6 +102,7 @@ Author (Updated File): Andrew Miller (3/14/2025)
 <!-- Edit User Modal -->
 
 <Modal Title="Edit User" Id="EditUserModal" Variant="success" Class="standard modal-dialog">
+
     <BodyContent>
         <h1>Edit User</h1>
         <p>Edit user information</p>
@@ -134,9 +136,6 @@ Author (Updated File): Andrew Miller (3/14/2025)
     <FooterContent></FooterContent>
 
 </Modal>
-
-
-
 
 <!-- Delete User Modal -->
 
