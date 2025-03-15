@@ -11,7 +11,7 @@
                 <p>Please log in to your account to continue</p>
                 <TextInput Id="usernameTop" Type="text" Label="Username" Placeholder="" Value="@username" ValueChanged="@(e => username = e)"/>
                 <TextInput Id="testTop" Type="password" Label="Password" Placeholder="" Value="@password" ValueChanged="@(e => password = e)"Class="masked" />
-                <Link Id="link" Class="test" Url="http://localhost:8080/recover_password">Forgot Password?</Link>
+                <Link Id="link" Class="test" Url="/recover_password">Forgot Password?</Link>
                 <Button Class="Button" Id="buttonLogin" Variant="primary" OnClickFunction="ValidateInput"
                     Icon="" IsDisabled=false TextAlignment="center">
                     Log in
@@ -44,7 +44,7 @@
             Console.WriteLine("Username: " + username + " --- Password: " + password);
             isInvalid = false;
             // Redirect to localhost:8080
-            Navigation.NavigateTo("http://localhost:8080/home");
+            Navigation.NavigateTo("/home");
         }
         else 
         {
