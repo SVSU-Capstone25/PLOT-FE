@@ -92,9 +92,10 @@ Author: Josh Rodack (2/10/2025)-->
       throw new ArgumentException("Must have an entry for link and link for every entry and an Icon for each entry. Make sure lists match length");
     }
     if(IsLinkModal == null){
+          IsLinkModal = new List<bool>();
           for(int i = 0; i < DropdownText.Count; i++)
           {
-            IsLinkModal[i] = false;
+            IsLinkModal.Add(false);
           }
     }
   }
