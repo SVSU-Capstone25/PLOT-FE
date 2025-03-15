@@ -64,13 +64,6 @@
         DotNetHelper?.Dispose();
     }
 
-    private async Task OnInputChange(ChangeEventArgs e)
-    {
-        Value = e.Value?.ToString() ?? "";
-        await ValueChanged.InvokeAsync(Value);
-    }
-
-
     // Component initialization
     protected override void OnInitialized()
     {
