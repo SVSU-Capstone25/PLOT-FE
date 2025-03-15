@@ -1,4 +1,4 @@
-@* Originally by Luke Wollenweber  *@
+@* Originally by Luke Wollenweber *@
 @inject IJSRuntime JSRuntime
 
 <script>
@@ -41,6 +41,15 @@
     // This is used for JS interop
     private DotNetObjectReference<TextInput> DotNetHelper;
 
+    /* Danielle Smith 3/15/2025
+    this method ensures that value updates to the properly binded 
+    value so you can pull it back out of the TextInput */
+    private async Task OnInputChange(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? "";
+        await ValueChanged.InvokeAsync(Value);
+    }
+    
      // This method will be called via JS interop
     [JSInvokable]
     public async Task OnValueChanged(string newValue)
@@ -55,9 +64,6 @@
         DotNetHelper?.Dispose();
     }
 
-    /* Danielle Smith 3/15/2025
-    this method ensures that value updates to the properly binded 
-    value so you can pull it back out of the TextInput */
     private async Task OnInputChange(ChangeEventArgs e)
     {
         Value = e.Value?.ToString() ?? "";
