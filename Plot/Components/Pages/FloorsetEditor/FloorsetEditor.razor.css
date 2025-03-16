@@ -1,3 +1,8 @@
+/* Style for the slide-out container to add space around edges */
+.slide-out-container {
+    padding: 20px; /* Adds space around the edges of the slide-out container */
+}
+
 /* Style for the header when the pane is expanded */
 .header {
     text-decoration: underline; /* Underline the header text */
@@ -8,8 +13,8 @@
 
 /* Style for the button when the pane is collapsed */
 .button-with-spacing {
-    margin: 10px; /* Add space around the button */
-    padding: 10px 20px; /* Add internal padding for better visual spacing */
+    margin: 10px; /* Adds space around the button */
+    padding: 10px 20px; /* Adds internal padding for better visual spacing */
 }
 
 /* Style for the container when the pane is expanded */
