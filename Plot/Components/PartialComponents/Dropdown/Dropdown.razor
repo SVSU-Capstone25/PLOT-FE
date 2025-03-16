@@ -50,9 +50,6 @@ Author: Josh Rodack (2/10/2025)-->
   public string? Class { get; set; }
 
   [Parameter]
-  public List<bool>? IsLinkModal {get; set;}
-
-  [Parameter]
   public required string LabelText{get;set;}
 
   [Parameter]
@@ -97,13 +94,6 @@ Author: Josh Rodack (2/10/2025)-->
     if(DropdownText.Count != DropdownLinks.Count || DropdownText.Count != DropdownIcons.Count )
     {
       throw new ArgumentException("Must have an entry for link and link for every entry and an Icon for each entry. Make sure lists match length");
-    }
-    if(IsLinkModal == null){
-          IsLinkModal = new List<bool>();
-          for(int i = 0; i < DropdownText.Count; i++)
-          {
-            IsLinkModal.Add(false);
-          }
     }
   }
 }
