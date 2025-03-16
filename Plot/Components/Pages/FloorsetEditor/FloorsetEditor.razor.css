@@ -12,12 +12,7 @@
 }
 
 /* Style for the button when the pane is collapsed */
-.button-with-spacing {
-    margin: 10px; /* Adds space around the button */
-    padding: 10px 20px; /* Adds internal padding for better visual spacing */
-}
-
-/* Style for the container when the pane is expanded */
-.expanded-container {
-    padding: 15px; /* Adds space inside the container when expanded */
-}
+.button-with-padding {
+    padding: 20px; /* Adds space on all sides of the button */
+    margin: 0; /* Ensure there's no additional margin around the button */
+    width: 100%; /* Optionally m
