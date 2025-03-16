@@ -22,7 +22,13 @@
         <div class="expanded-container">
             <h3 class="header" @onclick="TogglePane">Header of Expanded Area</h3>
             <!-- Add other components here when the pane is expanded -->
-            <YourComponent />
+            <NumericInput Label="Dimensions" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
+            ValueChanged="NumberChanged" />
+            <Checkbox id="checkboxOne" Text="Employee Only Area" />
+            <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+                Icon="" IsDisabled="false" TextAlignment="center">
+                Apply
+            </Button>
         </div>
     }
     else
@@ -41,6 +47,24 @@
     private void TogglePane()
     {
         isPaneExpanded = !isPaneExpanded;
+    }
+
+    private double currentNumber;
+
+    /* This function is called when the number is changed */
+    private async Task NumberChanged(string strNumber)
+    {
+        // String will be either a positive number or ""
+        Double.TryParse(strNumber, out double newNumber);
+
+        currentNumber = newNumber; // Number will be 0 if string is ""
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void ApplyDimensions()
+    {
+
     }
 }
 
