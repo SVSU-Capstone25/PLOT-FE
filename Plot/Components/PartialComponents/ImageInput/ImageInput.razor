@@ -22,10 +22,6 @@ Author: Danielle Smith (2/10/2025)  *@
     <input type="file" id="@($"{Id}-fileInput")" class="d-none" onchange="onImageSelected(event, '@Id')">
 </div>
 
-<script>
-
-</script>
-
 @code {
     // text for the label - defaults to 'Upload Image'
     [Parameter, EditorRequired] public required string Label { get; set; } = "Upload Image";
