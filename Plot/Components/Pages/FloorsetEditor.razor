@@ -16,7 +16,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
 
 <div id="container">                
-    <div class="box"></div>
+
 </div>
 
 
@@ -60,18 +60,37 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     <div class="p-3 mt-3 d-flex flex-column mb-2">
         
         
-            @for (int i = 0; i < 3; i++) 
-            {                
-                <div class="fixture mb-3 d-flex flex-row" @ondragstart="OnDragStart" draggable="true" @ondragstart:preventDefault="true">
-                    <div class="drag-start-area d-flex flex-row" >
-                        <img class="fixture-img disable-select grab-cursor" src="img/LayoutPhotoExample.png" alt="">
-                        <p class="fixture-text m-2 disable-select grab-cursor">Two Way Rack</p>                    
-                    </div>
-                    <button class="fixture-options ms-auto disable-select">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </button>
-                </div>
-            }
+                       
+        <div class="fixture mb-3 d-flex flex-row" @ondragstart="OnDragStart" draggable="true" @ondragstart:preventDefault="true">
+            <div class="drag-start-area d-flex flex-row" >
+                <img class="fixture-img disable-select grab-cursor" src="img/LayoutPhotoExample.png" alt="">
+                <p class="fixture-text m-2 disable-select grab-cursor">Two Way Rack</p>                    
+            </div>
+            <button class="fixture-options ms-auto disable-select">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+        </div>
+
+        <div class="fixture mb-3 d-flex flex-row" @ondragstart="OnDragStart" draggable="true" @ondragstart:preventDefault="true">
+            <div class="drag-start-area d-flex flex-row" >
+                <img class="fixture-img disable-select grab-cursor" src="img/LayoutPhotoExample.png" alt="">
+                <p class="fixture-text m-2 disable-select grab-cursor">Two Way Rack</p>                    
+            </div>
+            <button class="fixture-options ms-auto disable-select">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+        </div>
+        
+        <div class="fixture mb-3 d-flex flex-row" @ondragstart="OnDragStart" draggable="true" @ondragstart:preventDefault="true">
+            <div class="drag-start-area d-flex flex-row" >
+                <img class="fixture-img disable-select grab-cursor" src="img/LayoutPhotoExample.png" alt="">
+                <p class="fixture-text m-2 disable-select grab-cursor">Two Way Rack</p>                    
+            </div>
+            <button class="fixture-options ms-auto disable-select">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+        </div>
+    
             
             
        
@@ -90,58 +109,95 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     var cols = 48;
     var snap = 50;
 
-    document.getElementById("container").style.height = (width * rows) + "px";
-    document.getElementById("container").style.width = (width * rows) + "px";
+    container.style.height = (width * rows) + "px";
+    container.style.width = (width * rows) + "px";
     
     for (var i = 0; i < rows * cols; i++) {
         var y = Math.floor(i / cols) * height;
         var x = i * width % (cols * width);
         $("<div class=\"grid-cell\"></div>").css({ top: y, left: x, position: "absolute" }).prependTo(container);
-    }
-    Draggable.create(box, {
-            bounds: container,
-            onDrag: onDrag });
+    }    
 
     function createDraggable(event) {
         
-        console.log("Here");
+        var sidebar = document.getElementById("FloorsetSlideOut");
+        
         var newBox = document.createElement("div");
 
-        document.querySelector("#container").appendChild(newBox);
+
+        container.appendChild(newBox);
 
         newBox.className = "box";     
         newBox.style.position = "absolute";   
+
+        newBox.style.height = height * 2 + "px";
+        newBox.style.width = width + "px";
+        newBox.style.background = "grey";
+        newBox.style.borderRadius = "8px";
         
-        var mouse_x = event.clientX;
-        var mouse_y = event.clientY;
+        
+        // Get container position relative to viewport
+        var containerRect = container.getBoundingClientRect();
 
-        var div_x = mouse_x - (width / 2);
-        var div_y = mouse_y - (height / 2);
+        var mouseX = event.clientX;
+        var mouseY = event.clientY;
 
-        newBox.style.left = div_x + "px";
-        newBox.style.top = div_y + "px";
+        var snappedX = Math.round((mouseX-snap*2) / snap) * snap;
+        var snappedY = Math.round((mouseY-snap*2) / snap) * snap;
 
+        newBox.style.left = snappedX + "px";
+        newBox.style.top = snappedY + "px";
         
 
-        console.log(newBox.style.left );
+        var draggable = Draggable.create(newBox, {
+            bounds: container,
+            onDrag: function () {
+                TweenLite.to(newBox, 0.5, {
+                    x: Math.round(this.endX / snap) * snap,
+                    y: Math.round(this.y / snap) * snap,
+                    ease: Back.easeOut.config(2)
+                });
+            },
+            onDragEnd: function () {
+                var boxRect = newBox.getBoundingClientRect();
+                var sidebarRect = sidebar.getBoundingClientRect();
+                if (isOverElement(boxRect,sidebarRect)) {
+                    container.removeChild(newBox);
+                } else {
+                    newBox.style.zIndex = 1;
+                }
+                
+            }
+        });
+
+        setTimeout(() => {
+            var evt = new MouseEvent("mousedown",{
+                bubbles: true,
+                cancelable: true,
+                clientX: mouseX,
+                clientY: mouseY
+            });
+            newBox.dispatchEvent(evt);
+        },10);
+        
+        
+
+    }
+
+    function isOverElement(draggableRect, staticRect) {
+        return (
+            draggableRect.top < staticRect.bottom &&
+            draggableRect.bottom > staticRect.top &&
+            draggableRect.left < staticRect.right &&
+            draggableRect.right > staticRect.left
+        );
     }
     
-
-
-
-    function onDrag() {
-
-        TweenLite.to(box, 0.5, {
-            x: Math.round(this.x / snap) * snap,
-            y: Math.round(this.y / snap) * snap,
-            ease: Back.easeOut.config(2) });
-
-    }
 </script>
 
 @code {
-    private void OnDragStart(DragEventArgs e) {
-        Console.WriteLine("In OnDragStart");
-        JS.InvokeVoidAsync("createDraggable",e);
+    private async Task OnDragStart(DragEventArgs e) {
+        await JS.InvokeVoidAsync("createDraggable",e);
+        
     }
 }

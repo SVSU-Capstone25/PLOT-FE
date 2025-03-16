@@ -46,6 +46,7 @@
     width: 100px;
     position: absolute;
     background: green;
+    border-radius: 5px;
 }
 
 .grid-cell {    
