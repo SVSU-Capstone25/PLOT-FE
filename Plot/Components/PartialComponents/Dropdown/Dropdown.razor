@@ -20,16 +20,23 @@ Author: Josh Rodack (2/10/2025)-->
     <div class="dropdown-divider"></div>
     @for(int i = 0; i < DropdownText.Count; i++)
     {
-      if(@IsLinkModal[i]){
-        <li data-bs-toggle="modal" data-bs-target="#@DropdownLinks[i]">
-          <i class="@DropdownIcons[i]"></i> @DropdownText[i]
-        </li>
-      }
-      else{
-        <li><a class="dropdown-item" target="_blank" href="@DropdownLinks[i]">
-          <i class="@DropdownIcons[i]"></i> @DropdownText[i]
-        </a></li>
-      }
+      // Danielle Smith - 3/12/2025
+      // If the link contains a #, make it a link that can toggle a modal
+      // Otherwise, leave it as a normal link
+      <li>
+        @if (DropdownLinks[i].Contains("#"))
+        {
+          <a class="dropdown-item" href="@DropdownLinks[i]" data-bs-toggle="modal">
+            <i class="@DropdownIcons[i]"></i> @DropdownText[i]
+          </a>
+        }
+        else
+        {
+          <a class="dropdown-item" href="@DropdownLinks[i]">
+            <i class="@DropdownIcons[i]"></i> @DropdownText[i]
+          </a>
+        }
+      </li>
     }
   </ul>
 </div>
