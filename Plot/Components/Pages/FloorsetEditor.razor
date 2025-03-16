@@ -15,8 +15,29 @@
         </div>
     </div>
 
+</div>
+
 <SlideOut Id="FloorsetSlideOut">
     <p>
         text
     </p>
+    <Button Class="Button" Id="buttonImportFile" Variant="primary" data-bs-toggle="modal" data-bs-target="#importExcelModal"
+        Icon="fa-solid fa-file-import" IsDisabled=true TextAlignment="center">
+        Import Excel File
+    </Button>
+
+    <Modal Title="Import Excel File" Id="importExcelModal" Class="modal-dialog">
+    <BodyContent>
+        <h4>Import an Excel File</h4>
+		<FileInput id="ImportFile" OnFileSelected="ImportFile"></FileInput>
+    </BodyContent>
+
+    <FooterContent>
+		<!--Import button-->
+		<Button Id="buttonImportSalesData" Variant="success"
+			IsDisabled=true TextAlignment="left">
+		Cancel
+		</Button>
+    </FooterContent>
+    </Modal>
 </SlideOut>
