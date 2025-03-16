@@ -12,15 +12,14 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script>
+
+
 <!-- Grid Area -->
-
-
-<div id="container">                
-
+<div id="container">
 </div>
 
 
-
+<!-- Sidebar -->
 <SlideOut Id="FloorsetSlideOut">
     <!-- Header -->
     <div class="sidebar-header p-3">
@@ -40,68 +39,71 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     <!-- Search Bar -->
     <div class="p-3 mb-2 border-bottom">
         <div class="d-flex align-items-center mb-2">
-            
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="filter-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
-                    <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="filter-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
                 </svg>
-                </button>            
-            
+            </button>
+
         </div>
         <div class="align-items-center mt-3 d-flex">
             <button type="button" class="btn btn-primary btn-lg w-100">Add Fixture</button>
         </div>
-            
+
     </div>
 
 
     <!-- Fixture Area -->
     <div class="p-3 mt-3 d-flex flex-column mb-2">
-        
-        
-                       
-        <div class="fixture mb-3 d-flex flex-row" @ondragstart="OnDragStart" draggable="true" @ondragstart:preventDefault="true">
-            <div class="drag-start-area d-flex flex-row" >
+
+
+
+        <div class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e, "5x1"))" draggable="true"
+            @ondragstart:preventDefault="true">
+            <div class="drag-start-area d-flex flex-row">
                 <img class="fixture-img disable-select grab-cursor" src="img/LayoutPhotoExample.png" alt="">
-                <p class="fixture-text m-2 disable-select grab-cursor">Two Way Rack</p>                    
+                <p class="fixture-text m-2 disable-select grab-cursor">5x1 Rack</p>
             </div>
             <button class="fixture-options ms-auto disable-select">
                 <i class="fa-solid fa-ellipsis-vertical"></i>
             </button>
         </div>
 
-        <div class="fixture mb-3 d-flex flex-row" @ondragstart="OnDragStart" draggable="true" @ondragstart:preventDefault="true">
-            <div class="drag-start-area d-flex flex-row" >
+        <div class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e, "2x3"))" draggable="true"
+            @ondragstart:preventDefault="true">
+            <div class="drag-start-area d-flex flex-row">
                 <img class="fixture-img disable-select grab-cursor" src="img/LayoutPhotoExample.png" alt="">
-                <p class="fixture-text m-2 disable-select grab-cursor">Two Way Rack</p>                    
+                <p class="fixture-text m-2 disable-select grab-cursor">2x3 Rack</p>
             </div>
             <button class="fixture-options ms-auto disable-select">
                 <i class="fa-solid fa-ellipsis-vertical"></i>
             </button>
         </div>
-        
-        <div class="fixture mb-3 d-flex flex-row" @ondragstart="OnDragStart" draggable="true" @ondragstart:preventDefault="true">
-            <div class="drag-start-area d-flex flex-row" >
+
+        <div class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e, "4x4"))" draggable="true"
+            @ondragstart:preventDefault="true">
+            <div class="drag-start-area d-flex flex-row">
                 <img class="fixture-img disable-select grab-cursor" src="img/LayoutPhotoExample.png" alt="">
-                <p class="fixture-text m-2 disable-select grab-cursor">Two Way Rack</p>                    
+                <p class="fixture-text m-2 disable-select grab-cursor">4x4 Rack</p>
             </div>
             <button class="fixture-options ms-auto disable-select">
                 <i class="fa-solid fa-ellipsis-vertical"></i>
             </button>
         </div>
-    
-            
-            
-       
-    </div>    
-    
+
+
+    </div>
+
 </SlideOut>
 
 <script>
     var container = document.getElementById("container");
     var box = document.querySelector(".box");
-    
+
 
     var width = 50;
     var height = 50;
@@ -111,43 +113,48 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
     container.style.height = (width * rows) + "px";
     container.style.width = (width * rows) + "px";
-    
+
     for (var i = 0; i < rows * cols; i++) {
         var y = Math.floor(i / cols) * height;
         var x = i * width % (cols * width);
         $("<div class=\"grid-cell\"></div>").css({ top: y, left: x, position: "absolute" }).prependTo(container);
-    }    
+    }
 
-    function createDraggable(event) {
-        
+    function createDraggable(event, size) {
+
         var sidebar = document.getElementById("FloorsetSlideOut");
-        
+
         var newBox = document.createElement("div");
 
 
         container.appendChild(newBox);
 
-        newBox.className = "box";     
-        newBox.style.position = "absolute";   
+        newBox.className = "box";
+        newBox.style.position = "absolute";
 
-        newBox.style.height = height * 2 + "px";
-        newBox.style.width = width + "px";
+        console.log(event);
+        var boxSize = size.split("x");
+
+
+        newBox.style.height = boxSize[0] * height + "px";
+        newBox.style.width = boxSize[1] * width + "px";
+
         newBox.style.background = "grey";
         newBox.style.borderRadius = "8px";
-        
-        
+
+
         // Get container position relative to viewport
         var containerRect = container.getBoundingClientRect();
 
         var mouseX = event.clientX;
         var mouseY = event.clientY;
 
-        var snappedX = Math.round((mouseX-snap*2) / snap) * snap;
-        var snappedY = Math.round((mouseY-snap*2) / snap) * snap;
+        var snappedX = Math.round((mouseX - snap * 2) / snap) * snap;
+        var snappedY = Math.round((mouseY - snap * 2) / snap) * snap;
 
         newBox.style.left = snappedX + "px";
         newBox.style.top = snappedY + "px";
-        
+
 
         var draggable = Draggable.create(newBox, {
             bounds: container,
@@ -157,30 +164,31 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                     y: Math.round(this.y / snap) * snap,
                     ease: Back.easeOut.config(2)
                 });
+
             },
             onDragEnd: function () {
                 var boxRect = newBox.getBoundingClientRect();
                 var sidebarRect = sidebar.getBoundingClientRect();
-                if (isOverElement(boxRect,sidebarRect)) {
+                if (isOverElement(boxRect, sidebarRect)) {
                     container.removeChild(newBox);
                 } else {
                     newBox.style.zIndex = 1;
                 }
-                
+
             }
         });
 
         setTimeout(() => {
-            var evt = new MouseEvent("mousedown",{
+            var evt = new MouseEvent("mousedown", {
                 bubbles: true,
                 cancelable: true,
                 clientX: mouseX,
                 clientY: mouseY
             });
             newBox.dispatchEvent(evt);
-        },10);
-        
-        
+        }, 10);
+
+
 
     }
 
@@ -192,12 +200,13 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             draggableRect.right > staticRect.left
         );
     }
-    
+
 </script>
 
 @code {
-    private async Task OnDragStart(DragEventArgs e) {
-        await JS.InvokeVoidAsync("createDraggable",e);
-        
+
+    private async Task OnDragStart(DragEventArgs e, string size)
+    {
+        await JS.InvokeVoidAsync("createDraggable", e, size);
     }
 }
