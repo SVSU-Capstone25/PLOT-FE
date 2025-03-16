@@ -17,19 +17,14 @@ Author: Tristan Calay (3/15/2025)-->
         <div class="categories-div">
             <div class="categories-list">
                 <div style="display: flex;">
-                    <search>
-                        <form action="./search/">
-                            <input type="search" id="category" name="category-query" placeholder="Search...">
-                        </form>
-                    </search>
+                    <TextInput Id="category-search" Label="" Type="search" Placeholder="Category Search..." Value="@categorySearch" ValueChanged="@(e => categorySearch = e)" />
 
-                    <button>
-                        <i class="fa-solid fa-sort"></i>
-                    </button>
+                    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-sort" 
+                    OnClickFunction="sortCategory" TextAlignment="center"/>
 
-                    <button>
-                        <i class="fa-solid fa-filter"></i>
-                    </button>
+                    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-filter" 
+                    OnClickFunction="filterCategory" TextAlignment="center"/>
+                
                 </div>
                     
                     <ProgressBar Id=1 iconString="fa-solid fa-chevron-down" mainLabel="Men's" barColor="#AAD9FF" barMax=480 barValue=290 barLabel="290/480 LF"/>
@@ -54,29 +49,25 @@ Author: Tristan Calay (3/15/2025)-->
     <div style="justify-content: center; display: flex;">
         <div class="toolbar-group btn-group">
             <!-- Edit Fixture Button -->
-            <button class="toolbar-button">
-                <i class="fa-solid fa-pen-to-square"></i>
-            </button>
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" 
+                    OnClickFunction="editFixture" TextAlignment="center"/>
 
             <!-- Paint Category Button -->
-            <button class="toolbar-button">
-                <i class=" fa-solid fa-brush"></i>
-            </button>
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" 
+                    OnClickFunction="paintCategory" TextAlignment="center"/>
 
             <!-- Erase Category Button -->
-            <button class="toolbar-button">
-                <i class=" fa-solid fa-eraser"></i>
-            </button>
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" 
+                    OnClickFunction="eraseCategory" TextAlignment="center"/>
+            
 
             <!-- View Fullfillment Button -->
-            <button class="toolbar-button">
-                <i class=" fa-solid fa-eye"></i>
-            </button>
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eye" 
+                    OnClickFunction="viewFulfillment" TextAlignment="center"/>
 
             <!-- Edit Layout Button -->
-            <button class="toolbar-button">
-                <i class=" fa-solid fa-wrench"></i>
-            </button>
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-wrench" 
+                    OnClickFunction="editLayout" TextAlignment="center"/>
         </div>
     </div>
 </div>
@@ -88,4 +79,41 @@ Author: Tristan Calay (3/15/2025)-->
 
     [Parameter]
     public String? ID {get; set;}
+
+    private String categorySearch = ""; //Default storage of the category search textbox.
+
+    private void filterCategory()
+    {
+        Console.WriteLine("Filter Category Search Function");
+    }
+
+    private void sortCategory()
+    {
+        Console.WriteLine("Sort Categories Function");
+    }
+
+    private void editFixture()
+    {
+        Console.WriteLine("Edit Fixture Function");
+    }
+
+    private void paintCategory()
+    {
+        Console.WriteLine("Paint Category Function");
+    }
+
+    private void eraseCategory()
+    {
+        Console.WriteLine("Erase Category Function");
+    }
+
+    private void viewFulfillment()
+    {
+        Console.WriteLine("View Fulfillment Function");
+    }
+
+    private void editLayout()
+    {
+        Console.WriteLine("Edit Layout Function");
+    }
  }
