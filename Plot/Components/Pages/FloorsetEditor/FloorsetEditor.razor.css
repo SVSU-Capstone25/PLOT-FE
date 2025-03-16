@@ -1,0 +1,18 @@
+/* Style for the header when the pane is expanded */
+.header {
+    text-decoration: underline; /* Underline the header text */
+    cursor: pointer; /* Add a pointer cursor to indicate that it's clickable */
+    padding: 10px 0; /* Optional: Adds some spacing around the header */
+    font-weight: bold; /* Optional: Make the header bold */
+}
+
+/* Style for the button when the pane is collapsed */
+.button-with-spacing {
+    margin: 10px; /* Add space around the button */
+    padding: 10px 20px; /* Add internal padding for better visual spacing */
+}
+
+/* Style for the container when the pane is expanded */
+.expanded-container {
+    padding: 15px; /* Adds space inside the container when expanded */
+}

@@ -1,0 +1,46 @@
+@page "/floorset-editor"
+@using Plot.Components.PartialComponents.SlideOut
+
+<!-- Grid Area -->
+<div class="wrapper" width="500px" height="500px">
+    <div class="main-content">
+        <div class="grid">
+            @for (int i = 0; i < 50; i++)
+            {
+                @for (int j = 0; j < 50; j++)
+                {
+                    <div class="grid-cell" id="cell-@i-@j"></div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<SlideOut Id="FloorsetSlideOut">
+    @if (isPaneExpanded)
+    {
+        <div class="expanded-container">
+            <h3 class="header" @onclick="TogglePane">Header of Expanded Area</h3>
+            <!-- Add other components here when the pane is expanded -->
+            <YourComponent />
+        </div>
+    }
+    else
+    {
+        <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary" OnClickFunction="TogglePane"
+        Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+            Edit Building Walls
+        </Button>
+    }
+</SlideOut>
+
+@code
+{
+    private bool isPaneExpanded = false;
+
+    private void TogglePane()
+    {
+        isPaneExpanded = !isPaneExpanded;
+    }
+}
+
