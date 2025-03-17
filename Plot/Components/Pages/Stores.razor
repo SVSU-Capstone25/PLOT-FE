@@ -23,39 +23,31 @@ Author: Andrew Fulton (3/12/2025)  *@
     <button class="btn-style">
 
         <Card CardText="Flint, MI" CardImage="img/LayoutPhotoExample.png">
-                <div class="menu-container">
-                
-                    @* <Dropdown Class="Test Dropdown" Id="flintDropdown" DropdownText="@(new List<string> { "Layouts", "Edit", "Delete" })"
-                        DropdownLinks="@(new List<string> { "http://localhost:8080/layouts", "#editStoreModal", "http://localhost:8080/stores" })"
-                        LabelText="Store"
-                        DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" /> *@
 
-                    <button class="btn-main btn-style">...</button>
-                    <div class="submenu">
-                        <button class="submenu-item" @onclick="floorsetsSubmenuClickedFlint">Floorsets</button>
-                        <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#editStoreModal" @onclick="changeInputTextFlint">Edit</button>
-                        <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteStoreModal">Delete</button>
-                    </div>
-                </div>
-            </Card>
+            <Dropdown Class="Test Dropdown" Id="flintDropdown"
+                DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
+                DropdownLinks="@(new List<string> { "http://localhost:8080/floorsets/Flint, MI/3192 S Linden Rd, Flint, MI 48507", "#editStoreModal", "#deleteStoreModal" })"
+                LabelText="Store"
+                DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
+
+        </Card>
 
     </button>
 
 
 
-@* Second store hard coded *@
+    @* Second store hard coded *@
     <button class="btn-style">
 
         <Card CardText="Dallas, TX" CardImage="img/LayoutPhotoExample.png">
-                <div class="menu-container">
-                    <button class="btn-main btn-style">...</button>
-                    <div class="submenu">
-                        <button class="submenu-item" @onclick="floorsetsSubmenuClickedDallas">Floorsets</button>
-                        <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#editStoreModal" @onclick="changeInputTextDallas">Edit</button>
-                        <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteStoreModal">Delete</button>
-                    </div>
-                </div>
-            </Card>
+
+            <Dropdown Class="Test Dropdown" Id="DallasDropdown"
+                DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
+                DropdownLinks="@(new List<string> { "http://localhost:8080/floorsets/Dallas, TX/8430 Abrams Rd, Dallas, TX 75243", "#editStoreModal", "#deleteStoreModal" })"
+                LabelText="Store"
+                DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
+
+        </Card>
 
     </button>
 
@@ -64,15 +56,14 @@ Author: Andrew Fulton (3/12/2025)  *@
     <button class="btn-style">
 
         <Card CardText="Utica, MI" CardImage="img/LayoutPhotoExample.png">
-                <div class="menu-container">
-                    <button class="btn-main btn-style">...</button>
-                    <div class="submenu">
-                        <button class="submenu-item" @onclick="floorsetsSubmenuClickedUtica">Floorsets</button>
-                        <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#editStoreModal" @onclick="changeInputTextUtica">Edit</button>
-                        <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteStoreModal">Delete</button>
-                    </div>
-                </div>
-            </Card>
+
+            <Dropdown Class="Test Dropdown" Id="UticaDropdown"
+                DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
+                DropdownLinks="@(new List<string> { "http://localhost:8080/floorsets/Utica, MI/13287 Hall Rd, Utica, MI 48315", "#editStoreModal", "#deleteStoreModal" })"
+                LabelText="Store"
+                DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
+
+        </Card>
 
     </button>
 
@@ -81,110 +72,111 @@ Author: Andrew Fulton (3/12/2025)  *@
 
 
 
-    
+
     @* modals for the submenus of the ... button on the card *@
     @* HARD CODED MODAL: edit store modal *@
     <Modal Title="Edit Store" Id="editStoreModal" Class="modal-dialog modal-lg">
 
         <BodyContent>
             <h5>Edit Store</h5>
-        <p>Edit this store's information</p>
-        @* Name and location *@
-        <div class="modal-split-container">
-            <div class="modal-split-left-side">
-                <TextInput Id="editModalStoreName" Label="Name" Placeholder="Store Name"/>
-                <TextInput Id="editModalStoreLocation" Label="Location" Placeholder="Store Address"/>
-            </div>
-         @* upload image for store component *@
-            <div class="modal-split-right-side">
-                <ImageInput Label="Upload Image" Id="ExampleImageInput" width="300px" height="300px" />
-            </div>
-        </div>
-        @* Employees section: EMPLOYEES HARD CODED *@
-        <h5>Employees</h5>
-        <div id="employeesEdit" class="horizontal-items">
-
-            <div class="circle-container">
-                <button class="circle" @onclick="addNewEmployee">+</button>
-                <p class="name">Add Employee</p>
-            </div>
-
-
-            <div class="circle-container">
-                <div class="circle">
-                    <span class="initials">JS</span>
+            <p>Edit this store's information</p>
+            @* Name and location *@
+            <div class="modal-split-container">
+                <div class="modal-split-left-side">
+                    <TextInput Id="editModalStoreName" Label="Name" Placeholder="Store Name" />
+                    <TextInput Id="editModalStoreLocation" Label="Location" Placeholder="Store Address" />
                 </div>
-                <p class="name">James Smith</p>
-            </div>
-
-            <div class="circle-container">
-                <div class="circle">
-                    <span class="initials">EM</span>
+                @* upload image for store component *@
+                <div class="modal-split-right-side">
+                    <ImageInput Label="Upload Image" Id="ExampleImageInput" width="300px" height="300px" />
                 </div>
-                <p class="name">Emma Miller</p>
             </div>
+            @* Employees section: EMPLOYEES HARD CODED *@
+            <h5>Employees</h5>
+            <div id="employeesEdit" class="horizontal-items">
 
-            <div class="circle-container">
-                <div class="circle">
-                    <span class="initials">OL</span>
+                <div class="circle-container">
+                    <button class="circle" @onclick="addNewEmployee">+</button>
+                    <p class="name">Add Employee</p>
                 </div>
-                <p class="name">Oliver Lewis</p>
-            </div>
 
-            <div class="circle-container">
-                <div class="circle">
-                    <span class="initials">SC</span>
-                </div>
-                <p class="name">Sophia Carter</p>
-            </div>
 
-            <div class="circle-container">
-                <div class="circle">
-                    <span class="initials">WL</span>
+                <div class="circle-container">
+                    <div class="circle">
+                        <span class="initials">JS</span>
+                    </div>
+                    <p class="name">James Smith</p>
                 </div>
-                <p class="name">William Lee</p>
-            </div>
 
-            <div class="circle-container">
-                <div class="circle">
-                    <span class="initials">AV</span>
+                <div class="circle-container">
+                    <div class="circle">
+                        <span class="initials">EM</span>
+                    </div>
+                    <p class="name">Emma Miller</p>
                 </div>
-                <p class="name">Ava Vasquez</p>
-            </div>
 
-            <div class="circle-container">
-                <div class="circle">
-                    <span class="initials">BD</span>
+                <div class="circle-container">
+                    <div class="circle">
+                        <span class="initials">OL</span>
+                    </div>
+                    <p class="name">Oliver Lewis</p>
                 </div>
-                <p class="name">Benjamin Davis</p>
-            </div>
 
-            <div class="circle-container">
-                <div class="circle">
-                    <span class="initials">CL</span>
+                <div class="circle-container">
+                    <div class="circle">
+                        <span class="initials">SC</span>
+                    </div>
+                    <p class="name">Sophia Carter</p>
                 </div>
-                <p class="name">Charlotte Lopez</p>
-            </div>
 
-            <div class="circle-container">
-                <div class="circle">
-                    <span class="initials">EL</span>
+                <div class="circle-container">
+                    <div class="circle">
+                        <span class="initials">WL</span>
+                    </div>
+                    <p class="name">William Lee</p>
                 </div>
-                <p class="name">Ethan Long</p>
-            </div>
 
-            <div class="circle-container">
-                <div class="circle">
-                    <span class="initials">GM</span>
+                <div class="circle-container">
+                    <div class="circle">
+                        <span class="initials">AV</span>
+                    </div>
+                    <p class="name">Ava Vasquez</p>
                 </div>
-                <p class="name">Grace Mitchell</p>
+
+                <div class="circle-container">
+                    <div class="circle">
+                        <span class="initials">BD</span>
+                    </div>
+                    <p class="name">Benjamin Davis</p>
+                </div>
+
+                <div class="circle-container">
+                    <div class="circle">
+                        <span class="initials">CL</span>
+                    </div>
+                    <p class="name">Charlotte Lopez</p>
+                </div>
+
+                <div class="circle-container">
+                    <div class="circle">
+                        <span class="initials">EL</span>
+                    </div>
+                    <p class="name">Ethan Long</p>
+                </div>
+
+                <div class="circle-container">
+                    <div class="circle">
+                        <span class="initials">GM</span>
+                    </div>
+                    <p class="name">Grace Mitchell</p>
+                </div>
+
             </div>
-        
-        </div>
         </BodyContent>
 
         <FooterContent>
-            <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="updateStoreInformation">Update Store</Button>
+            <Button Class="Test Button" TextAlignment="center" Variant="primary"
+                OnClickFunction="updateStoreInformation">Update Store</Button>
         </FooterContent>
 
     </Modal>
@@ -193,15 +185,16 @@ Author: Andrew Fulton (3/12/2025)  *@
 
         <BodyContent>
             <h5>Are you SURE you want to delete this store?</h5>
-            <TextInput Id="deleteModalTextInput" Label="If so, type DELETE below"/>
+            <TextInput Id="deleteModalTextInput" Label="If so, type DELETE below" />
         </BodyContent>
-    
+
         <FooterContent>
-            <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="deleteStore">Yes, Delete</Button>
+            <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="deleteStore">Yes,
+                Delete</Button>
         </FooterContent>
-    
+
     </Modal>
-    
+
 </div>
 
 
@@ -212,7 +205,8 @@ Author: Andrew Fulton (3/12/2025)  *@
 @* + Add Store button fixed to the bottom right of the screen *@
 <button class="fixed-bottom-right">
     @* add store button that brings up the Add Store modal *@
-    <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="ShowAddStoreModal">+ Add Store</Button>
+    <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="ShowAddStoreModal">+ Add
+        Store</Button>
 </button>
 
 
@@ -231,10 +225,10 @@ Author: Andrew Fulton (3/12/2025)  *@
         @* Name and location (labels and input boxes)*@
         <div class="modal-split-container">
             <div class="modal-split-left-side">
-                <TextInput Id="addModalStoreName" Label="Name" Placeholder="Store Name"/>
-                <TextInput Id="addModalStoreLocation" Label="Location" Placeholder="Store Address"/>
+                <TextInput Id="addModalStoreName" Label="Name" Placeholder="Store Name" />
+                <TextInput Id="addModalStoreLocation" Label="Location" Placeholder="Store Address" />
             </div>
-         @* upload image for store component *@
+            @* upload image for store component *@
             <div class="modal-split-right-side">
                 <ImageInput Label="Upload Image" Id="ExampleImageInput" width="300px" height="300px" />
             </div>
@@ -247,14 +241,15 @@ Author: Andrew Fulton (3/12/2025)  *@
                 <button class="circle" @onclick="addNewEmployee">+</button>
                 <p class="name">Add Employee</p>
             </div>
-        
+
         </div>
-        
+
     </BodyContent>
 
     <FooterContent>
         @* button for adding the store *@
-        <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="createNewStore">Add Store</Button>
+        <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="createNewStore">Add
+            Store</Button>
     </FooterContent>
 
 </Modal>
@@ -312,8 +307,7 @@ Author: Andrew Fulton (3/12/2025)  *@
     This is used right now for just changing the text
     in the demo for the program *@
 <script>
-   function updateInputText(inputId, newValue) 
-   {
+    function updateInputText(inputId, newValue) {
         document.getElementById(inputId).value = newValue;
     } 
 </script>
@@ -322,114 +316,118 @@ Author: Andrew Fulton (3/12/2025)  *@
 
 @code {
 
-//change text on boxes ONLY FOR DEMO. This has one for each location
-private async Task changeInputTextFlint()
-{
-    await JS.InvokeVoidAsync("updateInputText", "editModalStoreLocation", "3192 S Linden Rd, Flint, MI 48507");
-    await JS.InvokeVoidAsync("updateInputText", "editModalStoreName", "Flint, MI");
-}
-private async Task changeInputTextDallas()
-{
-    await JS.InvokeVoidAsync("updateInputText", "editModalStoreLocation", "35400 Brodie Ln Ste 240, Austin, TX 78745");
-    await JS.InvokeVoidAsync("updateInputText", "editModalStoreName", "South Austin, TX");
-}
-private async Task changeInputTextUtica()
-{
-    await JS.InvokeVoidAsync("updateInputText", "editModalStoreLocation", "13287 Hall Rd, Utica, MI 48315");
-    await JS.InvokeVoidAsync("updateInputText", "editModalStoreName", "Utica, MI");
-}
+    //change text on boxes ONLY FOR DEMO. This has one for each location
+    private async Task changeInputTextFlint()
+    {
+        await JS.InvokeVoidAsync("updateInputText", "editModalStoreLocation", "3192 S Linden Rd, Flint, MI 48507");
+        await JS.InvokeVoidAsync("updateInputText", "editModalStoreName", "Flint, MI");
+    }
+    private async Task changeInputTextDallas()
+    {
+        await JS.InvokeVoidAsync("updateInputText", "editModalStoreLocation", "35400 Brodie Ln Ste 240, Austin, TX 78745");
+        await JS.InvokeVoidAsync("updateInputText", "editModalStoreName", "South Austin, TX");
+    }
+    private async Task changeInputTextUtica()
+    {
+        await JS.InvokeVoidAsync("updateInputText", "editModalStoreLocation", "13287 Hall Rd, Utica, MI 48315");
+        await JS.InvokeVoidAsync("updateInputText", "editModalStoreName", "Utica, MI");
+    }
 
 
 
 
-//                                              show modals section
+    // show modals section
 
-//+ Add Store modal
-private async Task ShowAddStoreModal()
-{
-    await JS.InvokeVoidAsync("showModal", "addStoreModal");
-}
-//Edit Store modal
-private async Task ShowEditStoreModal()
-{
-    await JS.InvokeVoidAsync("showModal", "editStoreModal");
-}
-//Delete store modal
-private async Task ShowDeleteStoreModal()
-{
-    await JS.InvokeVoidAsync("showModal", "deleteStoreModal");
-}
-
-
-                                              
+    //+ Add Store modal
+    private async Task ShowAddStoreModal()
+    {
+        await JS.InvokeVoidAsync("showModal", "addStoreModal");
+    }
+    //Edit Store modal
+    private async Task ShowEditStoreModal()
+    {
+        await JS.InvokeVoidAsync("showModal", "editStoreModal");
+    }
+    //Delete store modal
+    private async Task ShowDeleteStoreModal()
+    {
+        await JS.InvokeVoidAsync("showModal", "deleteStoreModal");
+    }
 
 
-//                                              Basic button fucntions
-
-//general function to take us to the floorsets page for a specidifc store
-private void floorsetsSubmenuClicked(string strName, string strLocation)
-{
-    Navigation.NavigateTo("/floorsets/"+strName+"/"+strLocation);
-}
-//function to take us to the floorsets page for the dallas store
-private void floorsetsSubmenuClickedDallas(){
-    floorsetsSubmenuClicked("Dallas, TX","8430 Abrams Rd, Dallas, TX 75243");
-}
-//function to take us to the floorsets page for the flint store
-private void floorsetsSubmenuClickedFlint(){
-    floorsetsSubmenuClicked("Flint, MI","3192 S Linden Rd, Flint, MI 48507");
-}
-//function to take us to the floorsets page for the utica store
-private void floorsetsSubmenuClickedUtica(){
-    floorsetsSubmenuClicked("Utica, MI","13287 Hall Rd, Utica, MI 48315");
-}
 
 
-//test button to see if it was clicked
-private void optionClicked(){
-    Console.WriteLine("OPTION CLICKED");
-}
-//test button to see if it was clicked
-private void testFunction()
-{
-    
-}
-//test button to see if it was clicked
-private void threeButtons()
-{
-    Console.WriteLine("THREE DOTS");
-}
 
-//function to create a new store
-private void addStore()
-{
+    // Basic button fucntions
 
-}
+    //general function to take us to the floorsets page for a specidifc store
+    private void floorsetsSubmenuClicked(string strName, string strLocation)
+    {
+        Navigation.NavigateTo("/floorsets/" + strName + "/" + strLocation);
+    }
+    //function to take us to the floorsets page for the dallas store
+    private void floorsetsSubmenuClickedDallas()
+    {
+        floorsetsSubmenuClicked("Dallas, TX", "8430 Abrams Rd, Dallas, TX 75243");
+    }
+    //function to take us to the floorsets page for the flint store
+    private void floorsetsSubmenuClickedFlint()
+    {
+        floorsetsSubmenuClicked("Flint, MI", "3192 S Linden Rd, Flint, MI 48507");
+    }
+    //function to take us to the floorsets page for the utica store
+    private void floorsetsSubmenuClickedUtica()
+    {
+        floorsetsSubmenuClicked("Utica, MI", "13287 Hall Rd, Utica, MI 48315");
+    }
 
-//functun for the three dots on a store
-//opens an optionsinput(component) for each store
-private void StoreOpionInput()
-{
 
-}
-//function for deleting a store
-private void deleteStore()
-{
-    Console.WriteLine("DELETE THE STORE");
-}
-//function for creating a store
-private void createNewStore()
-{
-    Console.WriteLine("CREATE NEW STORE");
-}
-//function for adding a new employee
-private void addNewEmployee()
-{
-    Console.WriteLine("ADD NEW EMPLOYEE");
-}
-//function fir updating a store's info
-private void updateStoreInformation()
-{
-    Console.WriteLine("UPDATE THE STORE");
-}
+    //test button to see if it was clicked
+    private void optionClicked()
+    {
+        Console.WriteLine("OPTION CLICKED");
+    }
+    //test button to see if it was clicked
+    private void testFunction()
+    {
+
+    }
+    //test button to see if it was clicked
+    private void threeButtons()
+    {
+        Console.WriteLine("THREE DOTS");
+    }
+
+    //function to create a new store
+    private void addStore()
+    {
+
+    }
+
+    //functun for the three dots on a store
+    //opens an optionsinput(component) for each store
+    private void StoreOpionInput()
+    {
+
+    }
+    //function for deleting a store
+    private void deleteStore()
+    {
+        Console.WriteLine("DELETE THE STORE");
+    }
+    //function for creating a store
+    private void createNewStore()
+    {
+        Console.WriteLine("CREATE NEW STORE");
+    }
+    //function for adding a new employee
+    private void addNewEmployee()
+    {
+        Console.WriteLine("ADD NEW EMPLOYEE");
+    }
+    //function fir updating a store's info
+    private void updateStoreInformation()
+    {
+        Console.WriteLine("UPDATE THE STORE");
+    }
 }
