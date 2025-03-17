@@ -18,27 +18,13 @@ Author: Andrew Fulton (3/13/2025)  *@
 <div class="container">
     <div class="left">
 
-        <h1 font-size="3em" >Floorsets for @storeId Store</h1>
+        <h1 font-size="3em">Floorsets for @storeId Store</h1>
         <h3>@storeLocation</h3>
 
     </div>
     <div class="right">
 
         <img height="auto" width="500px" src="/img/FloorsetPhotoExample.png">
-
-        @* <Card Id="card2" Class="Card" CardText="Nov24 Layout" CardImage="/img/FloorsetPhotoExample.png">
-
-            <div class="menu-container">
-                <button class="btn-main btn-style">. . .</button>
-                    <div class="submenu">
-                        <button class="submenu-item" @onclick="doSomething">Floorsets</button>
-                        <button class="submenu-item"  @onclick="goToFloorsetEditorPage">Edit</button>
-                        <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteFloorsetModal">Delete</button>
-                    </div>
-            </div>
-
-
-        </Card> *@
 
     </div>
 </div>
@@ -48,110 +34,101 @@ Author: Andrew Fulton (3/13/2025)  *@
 
     @* A bunch of hard coded Cards *@
     <Card Id="Nov24Floorset" Class="Card" CardText="Nov24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <div class="menu-container">
-            <button class="btn-main btn-style">. . .</button>
-                <div class="submenu">
-                    <button class="submenu-item" @onclick="goToFloorsetEditorPage">Edit</button>
-                    <button class="submenu-item"  @onclick="copyFloorset">Copy</button>
-                    <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteFloorsetModal">Delete</button>
-                </div>
-        </div>
+
+        <Dropdown Class="Test Dropdown" Id="Nov24Dropdown"
+            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
+            LabelText="Floorset"
+            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+
     </Card>
 
     <Card Id="Aug24Floorset" Class="Card" CardText="Aug24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <div class="menu-container">
-            <button class="btn-main btn-style">. . .</button>
-                <div class="submenu">
-                    <button class="submenu-item" @onclick="goToFloorsetEditorPage">Edit</button>
-                    <button class="submenu-item"  @onclick="copyFloorset">Copy</button>
-                    <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteFloorsetModal">Delete</button>
-                </div>
-        </div>
+
+        <Dropdown Class="Test Dropdown" Id="Aug24Dropdown"
+            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
+            LabelText="Floorset"
+            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+
     </Card>
 
 
     <Card Id="Apr23Floorset" Class="Card" CardText="Apr23 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <div class="menu-container">
-            <button class="btn-main btn-style">. . .</button>
-                <div class="submenu">
-                    <button class="submenu-item" @onclick="goToFloorsetEditorPage">Edit</button>
-                    <button class="submenu-item"  @onclick="copyFloorset">Copy</button>
-                    <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteFloorsetModal">Delete</button>
-                </div>
-        </div>
+
+        <Dropdown Class="Test Dropdown" Id="Apr23Dropdown"
+            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
+            LabelText="Floorset"
+            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+
     </Card>
 
 
     <Card Id="Jan25Floorset" Class="Card" CardText="Jan25 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <div class="menu-container">
-            <button class="btn-main btn-style">. . .</button>
-                <div class="submenu">
-                    <button class="submenu-item" @onclick="goToFloorsetEditorPage">Edit</button>
-                    <button class="submenu-item"  @onclick="copyFloorset">Copy</button>
-                    <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteFloorsetModal">Delete</button>
-                </div>
-        </div>
+
+        <Dropdown Class="Test Dropdown" Id="Jan25Dropdown"
+            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
+            LabelText="Floorset"
+            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+
     </Card>
 
 
     <Card Id="Feb24Floorset" Class="Card" CardText="Feb24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <div class="menu-container">
-            <button class="btn-main btn-style">. . .</button>
-                <div class="submenu">
-                    <button class="submenu-item" @onclick="goToFloorsetEditorPage">Edit</button>
-                    <button class="submenu-item"  @onclick="copyFloorset">Copy</button>
-                    <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteFloorsetModal">Delete</button>
-                </div>
-        </div>
+
+        <Dropdown Class="Test Dropdown" Id="Feb24Dropdown"
+            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
+            LabelText="Floorset"
+            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+
     </Card>
 
 
     <Card Id="Apr24Floorset" Class="Card" CardText="Apr24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <div class="menu-container">
-            <button class="btn-main btn-style">. . .</button>
-                <div class="submenu">
-                    <button class="submenu-item" @onclick="goToFloorsetEditorPage">Edit</button>
-                    <button class="submenu-item"  @onclick="copyFloorset">Copy</button>
-                    <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteFloorsetModal">Delete</button>
-                </div>
-        </div>
+
+        <Dropdown Class="Test Dropdown" Id="Apr24Dropdown"
+            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
+            LabelText="Floorset"
+            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+
     </Card>
 
 
     <Card Id="Jan24Floorset" Class="Card" CardText="Jan24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <div class="menu-container">
-            <button class="btn-main btn-style">. . .</button>
-                <div class="submenu">
-                    <button class="submenu-item" @onclick="goToFloorsetEditorPage">Edit</button>
-                    <button class="submenu-item"  @onclick="copyFloorset">Copy</button>
-                    <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteFloorsetModal">Delete</button>
-                </div>
-        </div>
+
+        <Dropdown Class="Test Dropdown" Id="Jan24Dropdown"
+            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
+            LabelText="Floorset"
+            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+
     </Card>
 
 
     <Card Id="Oct24Floorset" Class="Card" CardText="Oct24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <div class="menu-container">
-            <button class="btn-main btn-style">. . .</button>
-                <div class="submenu">
-                    <button class="submenu-item" @onclick="goToFloorsetEditorPage">Edit</button>
-                    <button class="submenu-item"  @onclick="copyFloorset">Copy</button>
-                    <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteFloorsetModal">Delete</button>
-                </div>
-        </div>
+
+        <Dropdown Class="Test Dropdown" Id="Oct24Dropdown"
+            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
+            LabelText="Floorset"
+            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+
     </Card>
 
 
     <Card Id="Dec24Floorset" Class="Card" CardText="Dec24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <div class="menu-container">
-            <button class="btn-main btn-style">. . .</button>
-                <div class="submenu">
-                    <button class="submenu-item" @onclick="goToFloorsetEditorPage">Edit</button>
-                    <button class="submenu-item"  @onclick="copyFloorset">Copy</button>
-                    <button class="submenu-item" data-bs-toggle="modal" data-bs-target="#deleteFloorsetModal">Delete</button>
-                </div>
-        </div>
-    </Card>                  
+
+        <Dropdown Class="Test Dropdown" Id="Dec24Dropdown"
+            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
+            LabelText="Floorset"
+            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+
+    </Card>
 
 </div>
 
@@ -163,7 +140,8 @@ Author: Andrew Fulton (3/13/2025)  *@
 @* + Add Floorset button fixed to the bottom right of the screen *@
 <button class="fixed-bottom-right">
     @* add store button that brings up the Add Store modal *@
-    <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="goToFloorsetEditorPage">+ Add Floorset</Button>
+    <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="goToFloorsetEditorPage">+ Add
+        Floorset</Button>
 </button>
 
 
@@ -173,18 +151,19 @@ Author: Andrew Fulton (3/13/2025)  *@
 
 
 @* HARD CODED MODAL: Delete Floorset modal *@
-    <Modal Title="Confirm Deletion" Id="deleteFloorsetModal" Class="standard">
+<Modal Title="Confirm Deletion" Id="deleteFloorsetModal" Class="standard">
 
-        <BodyContent>
-            <h5>Are you SURE you want to delete this Floorset?</h5>
-            <TextInput Id="deleteModalTextInput" Label="If so, type DELETE below"/>
-        </BodyContent>
-    
-        <FooterContent>
-            <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="deleteFloorset">Yes, Delete</Button>
-        </FooterContent>
-    
-    </Modal>
+    <BodyContent>
+        <h5>Are you SURE you want to delete this Floorset?</h5>
+        <TextInput Id="deleteModalTextInput" Label="If so, type DELETE below" />
+    </BodyContent>
+
+    <FooterContent>
+        <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="deleteFloorset">Yes,
+            Delete</Button>
+    </FooterContent>
+
+</Modal>
 
 
 
