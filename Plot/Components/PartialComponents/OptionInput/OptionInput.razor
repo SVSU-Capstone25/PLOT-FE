@@ -1,10 +1,10 @@
+@* Originally written by Tristan Calay  *@
+
+@* Danielle Smith - 3/17/2025
+i changed how it handles the alignment when there is not an icon  *@
 <div class="OptionInput @Class" id="@ID">
     <h5 class="row">
-        @if(iconString == null)
-        {
-            @((MarkupString)_blankIcon)
-        }
-        else
+        @if(iconString != null)
         {
             <i class="col-auto fa-fw @iconString"></i>
         }
@@ -13,7 +13,10 @@
         </p>
     </h5>
     <div class="row">
-        @((MarkupString)_blankIcon)
+        @if(iconString != null)
+        {
+            @((MarkupString)_blankIcon)
+        }
         <select class="col-md-11">
             @for (var i = 0; i < optionsValues.Count; i++)
             {
