@@ -10,6 +10,7 @@ and allocate floorsets for Platos Closet.
 
 Author: Andrew Fulton (3/13/2025)  *@
 
+@* /floorsets/Flint, MI/3192 S Linden Rd, Flint, MI 48507 *@
 @page "/floorsets/{storeId}/{storeLocation}"
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
@@ -19,6 +20,7 @@ Author: Andrew Fulton (3/13/2025)  *@
     <div class="left">
 
         <h1 font-size="3em">Floorsets for @storeId Store</h1>
+        <br>
         <h3>@storeLocation</h3>
 
     </div>
@@ -159,6 +161,7 @@ Author: Andrew Fulton (3/13/2025)  *@
     </BodyContent>
 
     <FooterContent>
+        <p style="margin-left: auto;"></p>
         <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="deleteFloorset">Yes,
             Delete</Button>
     </FooterContent>
