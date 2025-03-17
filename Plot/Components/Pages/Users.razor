@@ -19,22 +19,33 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
     <table class="table w-100">
     <tbody>
         <tr>
+            <!-- Headers -->
             <td class="border border-light border-2">Employee Name</td>
             <td class="border border-light border-2">Employee Number</td>
             <td class="border border-light border-2">Role</td>
         </tr>
+
+        <!-- A row for each user in the list of users -->
+        <!-- ToDo Post-demo: Change this so this loads from the database -->
         @foreach (var user in users)
         {
             <tr>
+                <!-- Name -->
                 <td class="border border-light border-2">@user.FirstName @user.LastName</td>
+
+                <!-- User Id -->
                 <td class="border border-light border-2">@user.Id</td>
+
+                <!-- Role and Dropdown menu for editing or deleting the user -->
                 <td class="border border-light border-2">
                     <div>
                         <div class="d-flex justify-content-between">
+
+                            <!-- Role of User-->
                             <p>@user.Role</p>
 
-                            <!-- Set user on click -->
-                            <div @onclick="(() => setUser(user))"> <!-- Sets selectedUser variable to user for row clicked on -->
+                            <!-- Set selectedUser on click of dropdown menu -->
+                            <div @onclick="(() => setUser(user))">
 
                                 <!-- Role Options Dropdown menu with id dynamically reflecting the id of the user
                                 Provides Edit and Delete options which open Edit User and Delete User Modals -->
@@ -55,7 +66,9 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 </table>
 
     <!--Add User Button -->
-    <button class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#AddUserModal">
+    <button class="btn text-white" id="buttonAddUserDashboard"
+    style="background-color: #489b97" data-bs-toggle="modal"
+    data-bs-target="#AddUserModal">
         + Add User
     </button>
 
@@ -63,42 +76,48 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 
     <!-- Add User Modal -->
 
-    <Modal Title="Add User" Id="AddUserModal" Variant="success" Class="modal-dialog">
+    <Modal Title="Add User" Id="AddUserModal" Variant="standard" Class="modal-dialog">
         <BodyContent>
-            <h1>Create User</h1>
+            <h3>Create User</h3>
             <p>Add a new user to be added to the system.</p>
 
             <!-- First Name -->
-            <TextInput Id="FirstNameAdd" Label="First Name" Placeholder="First Name" Value="@userToAdd.FirstName"/>
+            <TextInput Id="FirstNameAdd" Label="First Name"
+            @bind-Value="@userToAdd.FirstName" Type="Text"/>
 
             <!-- Last Name -->
-            <TextInput Id="LastNameAdd" Label="LastName" Placeholder="Last Name" Value="@userToAdd.LastName"/>
+            <TextInput Id="LastNameAdd" Label="Last Name"
+            @bind-Value="@userToAdd.LastName" Type="Text"/>
 
             <!-- Email -->
-            <TextInput Id="EmailAdd" Label="Email" Placeholder="Email" Value="@userToAdd.Email"/>
+            <TextInput Id="EmailAdd" Label="Email"
+            @bind-Value="@userToAdd.Email" Type="Text"/>
             
             <!-- Role and Store Select Options -->
 
             <!-- Role Select Option -->
-            <select class="form-select" id="RoleAdd" @onchange="setAddedRole">
-                <option selected>Select an Option</option>
-
-                <option value="Owner">Owner</option>
-                <option value="Manager">Manager</option>
-                <option value="Employee">Employee</option>
-            </select>
+            <div class="my-2">
+                <p class="fw-bold">Role</p>
+                <select class="form-select" id="RoleAdd" @onchange="setAddedRole">
+                    <option selected>Select an Option</option>
+                    <option value="Owner">Owner</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Employee">Employee</option>
+                </select>
+            </div>
 
             <!-- Store Select Option -->
-            <select class="form-select" id="StoreAdd" @onchange="setAddedStore">
-                <option selected>Select an Option</option>
+            <div class="my-2">
+                <p class="fw-bold">Store</p>
+                <select class="form-select" id="StoreAdd" @onchange="setAddedStore">
+                    <option selected>Select an Option</option>
 
-                <!-- List of stores -->
-                @foreach (var store in stores){
-
-                    <option value="@store">@store</option>
-
-                }
-            </select>
+                    <!-- List of stores -->
+                    @foreach (var store in stores){
+                        <option value="@store">@store</option>
+                    }
+                </select>
+            </div>
 
         </BodyContent>
 
@@ -107,10 +126,9 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 
             <!-- Add user button, Cancel button comes with Modal component -->
 
-            <Button Class=" Button" Id="buttonAddUser" Variant="primary"
-                TextAlignment="center" OnClickFunction="AddUser">
-                Add User
-            </Button> 
+            <button class="btn text-white" id="buttonAddUserModal"
+            style="background-color: #489b97" @onclick="AddUser"
+            data-bs-dismiss="modal">Add User</button>
 
         </FooterContent>
 
@@ -118,239 +136,266 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 
 <!-- Edit User Modal -->
 
-<Modal Title="Edit User" Id="EditUserModal" Variant="success" Class="modal-dialog">
+<Modal Title="Edit User" Id="EditUserModal"
+Variant="success" Class="modal-dialog">
+<!-- ToDo: Post-Demo, fields should be populated by the database-->
 
     <BodyContent>
-        <h1>Edit User</h1>
+        <h3>Edit User</h3>
         <p>Edit user information</p>
 
         <!--To do post-demo: populate Placeholders with names from database-->
 
         <!-- First Name -->
-        <TextInput Id="FirstNameEdit" Label="First Name" Value="@editedUserInfo.FirstName" />
+        <TextInput Id="FirstNameEdit" Label="First Name"
+        @bind-Value="@editedUserInfo.FirstName" Type="Text" />
 
         <!-- Last Name -->
-        <TextInput Id="LastNameEdit" Label="LastName" Value="@editedUserInfo.LastName" />
+        <TextInput Id="LastNameEdit" Label="Last Name"
+        @bind-Value="@editedUserInfo.LastName" Type="Text"/>
 
         <!-- Email -->
-        <TextInput Id="EmailEdit" Label="Email" Value="@editedUserInfo.Email" />
+        <TextInput Id="EmailEdit" Label="Email"
+        @bind-Value="@editedUserInfo.Email" Type="Text"/>
         
         <!-- Role and Store Select Options -->
 
         <!-- Role Select Option -->
-        <select class="form-select" id="RoleEdit" @onchange="setEditedRole"> <!-- Sets user role -->
-            <option selected>@selectedUser.Role</option>
-            <option value="Owner">Owner</option>
-            <option value="Manager">Manager</option>
-            <option value="Employee">Employee</option>
-        </select>
+        <div class="my-2">
+            <p class="fw-bold">Role</p>
+            <select class="form-select" id="RoleEdit" @onchange="setEditedRole">
+                <option selected>Select an Option</option>
+                    <option value="Owner">Owner</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Employee">Employee</option>
+            </select>
+        </div>
 
         <!-- Store Select Option -->
-        <select class="form-select" id="StoreEdit" @onchange="setEditedStore"> <!-- Sets store of user-->
-            <option selected>@selectedUser.Store</option>
+        <div class="my-2">
+            <p class="fw-bold">Store</p>
+            <select class="my-2 form-select" id="StoreEdit" @onchange="setEditedStore">
+            <!-- Sets store of user on save-->
+                
+                <option selected>Select an Option</option>
 
-            <!-- List of stores -->
-            @foreach (var store in stores){
+                <!-- List of stores -->
+                @foreach (var store in stores){
+                    <option value="@store">@store</option>
+                }
+            </select>
+        </div>
 
-                <option value="@store">@store</option>
-
-            }
-        </select>
-
-        <img src="/img/platos_closet_logo.png">
     </BodyContent>
-
 
     <FooterContent>
         
-        <!-- Save changes button, Cancel button comces with Modal component-->
+        <!-- Save changes button, Cancel button comes with Modal component
+             Changes saved with SaveChanges method -->
 
-        <Button Class="Button" Id="buttonEditUser" Variant="primary"
-            TextAlignment="center" OnClickFunction="SaveChanges"> <!-- Saves changes to selected user-->
-            Save Changes
-        </Button> 
+        <button class="btn btn-primary" id="buttonEditUser" 
+        style="background-color: #489b97" @onclick="SaveChanges" 
+        data-bs-dismiss="modal">Save Changes</button>
+
     </FooterContent>
 
 </Modal>
 
 <!-- Delete User Modal -->
 
-<Modal Title="Confirm Deletion" Id="DeleteUserModal" Variant="danger" Icon="fa-solid fa-check" Class="modal-dialog">
+<Modal Title="Confirm Deletion" Id="DeleteUserModal"
+Variant="success" Class="modal-dialog">
 
+    <!-- Confirm delete Question and Textbox -->
     <BodyContent>
-        <h1>Are you SURE you want to delete this user?</h1>
-        <TextInput Id="deleteTextInput" Label="If so, type DELETE here" Placeholder="Type DELETE here" />
+
+        <h2>Are you SURE you want to delete this user?</h2>
+
+        <!-- confirmDelete variable compared to check if delete is confirmed -->
+        <TextInput Id="deleteTextInput" Label="If so, type DELETE here"
+        Placeholder="Type DELETE here" Type="Text" @bind-Value="confirmDelete"/>
 
     </BodyContent>
 
     <!-- Button to confirm delete -->
     <FooterContent>
 
-        <Button Class=" Button" Id="buttonConfirmDelete" Variant="primary"
-            TextAlignment="center" OnClickFunction="DeleteUser">
-            Yes, Delete
-        </Button>        
+        <!-- Cancel button is provided with Modal custom component -->
+
+        <!-- Delete user button deletes user if DELETE was typed in Textbox
+             by calling the DeleteUser method -->
+        <button class="btn btn-primary" id="buttonConfirmDelete"
+        style="background-color: #489b97" @onclick="DeleteUser" 
+        data-bs-dismiss="modal">Yes, Delete</button>
+        
     </FooterContent>
 
 </Modal>
 
 </div>
 
-    @code{
-        private List<User> users = new List<User>(); // list of users in table
-        private User selectedUser = new User {
-                                    Id = -1,
-                                    FirstName = "None",
-                                    LastName = "None",
-                                    Email = "None",
-                                    Role = "None",
-                                    Store = "None"
-                                    }; // User selected when clicking on a row
+@code{
 
-        private User userToAdd = new User {
-                                    Id = -1,
-                                    FirstName = "",
-                                    LastName = "",
-                                    Email = "",
-                                    Role = "",
-                                    Store = ""
-                                    };
+    /*On initialization*/
+    protected override void OnInitialized()
+    { 
 
-        private User editedUserInfo = new User {
-                                    Id = -1,
-                                    FirstName = "None",
-                                    LastName = "None",
-                                    Email = "None",
-                                    Role = UNEDITED,
-                                    Store = UNEDITED
-                                    };
-
-        // Unedited string
-        private static string UNEDITED = "NOT EDITED";
-
-        // The role or store as it is edited
-        private static string editedRole = UNEDITED;
-        private static string editedStore = UNEDITED;
-        private int nextUserId = 1;
-
-        private static string OWNER_ROLE = "owner";
-        private static string MANAGER_ROLE = "manager";
-        private static string EMPLOYEE_ROLE = "employee";
-
-        // Placeholder list of stores
-        private List<string> stores = new List<string> { "Store 1", "Store 2", "Store 3"};
- 
-        protected override void OnInitialized(){
-
-            // Example data for demo
-            users = new List<User>
-            {
-                new User {  Id = nextUserId++,  // Id increments for the next user
-                            FirstName = "Clayton",
-                            LastName = "Cook",
-                            Email = "clayton@company.com",
-                            Role = "Owner",
-                            Store = stores[0]
-                },
-                new User {  Id = nextUserId++, // Id increments for the next user
-                            FirstName = "John",
-                            LastName = "Doe",
-                            Email = "john@company.com",
-                            Role = "Manager",
-                            Store = stores[1]
-                },
-                new User {  Id = nextUserId++, // Id increments for the next user
-                            FirstName = "Jane",
-                            LastName = "Smith",
-                            Email = "jane@company.com",
-                            Role = "Employee",
-                            Store = stores[2]
-                }
-            };
-        }
-
-        // Set selected user to user in row clicked upon
-        private void setUser(User user){
-            selectedUser = user;
-        }
-
-        // Set for role
-        // When adding role
-        private void setAddedRole(ChangeEventArgs e){
-            userToAdd.Role = e.Value.ToString();
-        }
-
-        // When editing role
-        private void setEditedRole(ChangeEventArgs e){
-            string newEdit = e.Value.ToString();
-            if(newEdit != UNEDITED) {
-                editedUserInfo.Role = e.Value.ToString();
-            }
-
-        }
-
-        // Set for store
-        // When adding user
-        private void setAddedStore(ChangeEventArgs e){
-            userToAdd.Store = e.Value.ToString();
-        }
-
-        // When editing user
-        private void setEditedStore(ChangeEventArgs e){
-            string newEdit = e.Value.ToString();
-            if(newEdit != UNEDITED) {
-                editedUserInfo.Store = e.Value.ToString();
-            }
-        }
-
-        // Add new user
-        private void AddUser()
+        // Example data for demo
+        users = new List<User>
         {
-            users.Add(
-                new User
-                {
-                    Id = nextUserId++,          // Id increments for the next user
-                    FirstName = userToAdd.FirstName,
-                    LastName = userToAdd.LastName,
-                    Email = userToAdd.Email,
-                    Role = userToAdd.Role,
-                    Store = userToAdd.Store
-                }
-            );
-
-
-            // Reset user for adding new user
-            userToAdd = new User {
-                                    Id = -1,
-                                    FirstName = "",
-                                    LastName = "",
-                                    Email = "",
-                                    Role = "",
-                                    Store = ""
-                                    };
-
-        }
-
-        // Save edited user as the selected user
-        private void SaveChanges()
-        {
-            selectedUser = editedUserInfo;
-        }
-
-        // Delete selected user
-        private void DeleteUser() {
-            users.Remove(selectedUser);
-        }
-
-        // User class
-        public class User {
-            public int Id { get; set; }
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string Email { get; set; }
-            public string Role { get; set; }
-            public string Store { get; set; }
-        }
-
+            new User {  Id = nextUserId++,  // Id increments for the next user
+                        FirstName = "Clayton",
+                        LastName = "Cook",
+                        Email = "clayton@company.com",
+                        Role = "Owner",
+                        Store = stores[0]
+            },
+            new User {  Id = nextUserId++, // Id increments for the next user
+                        FirstName = "John",
+                        LastName = "Doe",
+                        Email = "john@company.com",
+                        Role = "Manager",
+                        Store = stores[1]
+            },
+            new User {  Id = nextUserId++, // Id increments for the next user
+                        FirstName = "Jane",
+                        LastName = "Smith",
+                        Email = "jane@company.com",
+                        Role = "Employee",
+                        Store = stores[2]
+            }
+        };
     }
+
+    /* Handling Roles */
+
+    // List of roles
+    private List<string> roles = new List<string>{"Owner", "Manager", "Employee"};
+
+    // Set for role
+    // When adding role
+    private void setAddedRole(ChangeEventArgs e){
+        userToAdd.Role = e.Value.ToString();
+    }
+
+    // When editing role
+    
+    private void setEditedRole(ChangeEventArgs e){
+        editedUserInfo.Role = e.Value.ToString();
+    }
+
+    /* Handling Store Information */
+
+    // Placeholder list of stores
+    private List<string> stores = new List<string> { "Store 1", "Store 2", "Store 3"};
+
+    // Set for store
+    // When adding user
+    private void setAddedStore(ChangeEventArgs e){
+        userToAdd.Store = e.Value.ToString();
+    }
+
+    // When editing user
+    private void setEditedStore(ChangeEventArgs e){
+        editedUserInfo.Store = e.Value.ToString();
+    }
+
+    /* Handling Deletion */
+    // Deletion confirmation string, initialized as empty
+    private string confirmDelete = "";
+
+    // Constant used to confirm deletion
+    private const string DELETE_CONFIRM = "DELETE"; 
+
+    /* Handling User Data */
+
+    // list of users in table
+    private List<User> users = new List<User>();
+
+    // User selected when clicking on a row
+    private User selectedUser = new User();
+
+    // User potentially added
+    private User userToAdd = new User();
+
+    // User object has potential edits of selectedUser
+    private User editedUserInfo = new User();
+
+    // Id of next user if another is added initialized at 1
+    private int nextUserId = 1;
+
+    // Set selected user to user in row clicked upon
+    private void setUser(User user){
+        // User of row clicked is selected user
+        selectedUser = user;
+
+        // Copy user info for editing in case "Edit" is clicked
+        editedUserInfo = new User{
+            Id = selectedUser.Id,
+            FirstName = selectedUser.FirstName,
+            LastName = selectedUser.LastName,
+            Email = selectedUser.Email,
+            Role = selectedUser.Role,
+            Store = selectedUser.Store
+        };
+    }
+
+    // Add new user
+    private void AddUser()
+    {
+        printUsers(new List<User>{userToAdd});
+
+        users.Add(
+            new User
+            {
+                Id = nextUserId++,          // Id increments for the next user
+                FirstName = userToAdd.FirstName,
+                LastName = userToAdd.LastName,
+                Email = userToAdd.Email,
+                Role = userToAdd.Role,
+                Store = userToAdd.Store
+            }
+        );
+
+        // Reset user for adding new user
+        userToAdd = new User();
+        printUsers(users);
+    }
+
+    // Save edited user as the selected user
+    private void SaveChanges()
+    {
+
+        var index = users.FindIndex(u => u.Id == selectedUser.Id);
+        users[index] = editedUserInfo;
+
+        StateHasChanged(); // Table is updated to reflect changes
+    }
+
+    // Delete selected user
+    private void DeleteUser() {
+        if(confirmDelete.Equals(DELETE_CONFIRM)){
+            var index = users.FindIndex(u => u.Id == selectedUser.Id);
+            users.RemoveAt(index);
+            StateHasChanged(); // Table is updated to reflected changes
+        }
+    }
+
+    // User class
+    public class User {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Role { get; set; }
+        public string Store { get; set; }
+    }
+
+    // Debug Utilities
+        private void printUsers(List<User> users){
+        foreach(var user in users){
+            Console.WriteLine("ID: " + user.Id + "Name: " + user.FirstName + " " + user.LastName + " Email: " + user.Email + " Role: " + user.Role + " Store: " + user.Store);
+        }
+    }
+}
 
