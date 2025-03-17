@@ -1,9 +1,20 @@
 <!--
-Program Purpose:
+File Purpose:
 User dashboard for managing, adding, editing, and deleting users.
 
-Note: Some skeleton code was present before. No author was given.
+Note: Current design aimed primarily to be appropriate for demoing.
+Database is not hooked up yet, so a lot of functionality here
+will be replaced with functionality that gets information from
+the database.
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
 Author (Developed from skeleton): Andrew Miller (3/14/2025)
+Note: A small amount of skeleton code was present before. 
+No author was given.
+
 -->
 
 @page "/users"
@@ -66,8 +77,8 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 </table>
 
     <!--Add User Button -->
-    <button class="btn text-white" id="buttonAddUserDashboard"
-    style="background-color: #489b97" data-bs-toggle="modal"
+    <button class="btn btn-primary text-white" id="buttonAddUserDashboard"
+    data-bs-toggle="modal"
     data-bs-target="#AddUserModal">
         + Add User
     </button>
@@ -76,7 +87,8 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 
     <!-- Add User Modal -->
 
-    <Modal Title="Add User" Id="AddUserModal" Variant="standard" Class="modal-dialog">
+    <Modal Title="Add User" Id="AddUserModal"
+    Variant="standard" Class="modal-dialog">
         <BodyContent>
             <h3>Create User</h3>
             <p>Add a new user to be added to the system.</p>
@@ -98,18 +110,25 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
             <!-- Role Select Option -->
             <div class="my-2">
                 <p class="fw-bold">Role</p>
-                <select class="form-select" id="RoleAdd" @onchange="setAddedRole">
+
+                <select class="form-select" id="RoleAdd"
+                @onchange="setAddedRole">
+
                     <option selected>Select an Option</option>
                     <option value="Owner">Owner</option>
                     <option value="Manager">Manager</option>
                     <option value="Employee">Employee</option>
+
                 </select>
             </div>
 
             <!-- Store Select Option -->
             <div class="my-2">
                 <p class="fw-bold">Store</p>
-                <select class="form-select" id="StoreAdd" @onchange="setAddedStore">
+
+                <select class="form-select" id="StoreAdd"
+                @onchange="setAddedStore">
+
                     <option selected>Select an Option</option>
 
                     <!-- List of stores -->
@@ -126,8 +145,8 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 
             <!-- Add user button, Cancel button comes with Modal component -->
 
-            <button class="btn text-white" id="buttonAddUserModal"
-            style="background-color: #489b97" @onclick="AddUser"
+            <button class="btn btn-primary text-white" id="buttonAddUserModal"
+            @onclick="AddUser"
             data-bs-dismiss="modal">Add User</button>
 
         </FooterContent>
@@ -137,7 +156,7 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 <!-- Edit User Modal -->
 
 <Modal Title="Edit User" Id="EditUserModal"
-Variant="success" Class="modal-dialog">
+Variant="standard" Class="modal-dialog">
 <!-- ToDo: Post-Demo, fields should be populated by the database-->
 
     <BodyContent>
@@ -168,6 +187,7 @@ Variant="success" Class="modal-dialog">
                     <option value="Owner">Owner</option>
                     <option value="Manager">Manager</option>
                     <option value="Employee">Employee</option>
+
             </select>
         </div>
 
@@ -194,7 +214,7 @@ Variant="success" Class="modal-dialog">
              Changes saved with SaveChanges method -->
 
         <button class="btn btn-primary" id="buttonEditUser" 
-        style="background-color: #489b97" @onclick="SaveChanges" 
+        @onclick="SaveChanges" 
         data-bs-dismiss="modal">Save Changes</button>
 
     </FooterContent>
@@ -204,14 +224,16 @@ Variant="success" Class="modal-dialog">
 <!-- Delete User Modal -->
 
 <Modal Title="Confirm Deletion" Id="DeleteUserModal"
-Variant="success" Class="modal-dialog">
+Variant="standard" Class="modal-dialog">
 
     <!-- Confirm delete Question and Textbox -->
     <BodyContent>
 
         <h2>Are you SURE you want to delete this user?</h2>
 
-        <!-- confirmDelete variable compared to check if delete is confirmed -->
+        <!-- confirmDelete variable bound with the input text
+        compared to check if delete is confirmed
+        with EnableDelete function every time the text changes -->
         <TextInput Id="deleteTextInput" Label="If so, type DELETE here"
         Placeholder="Type DELETE here" Type="Text" @bind-Value="confirmDelete"/>
 
@@ -225,7 +247,7 @@ Variant="success" Class="modal-dialog">
         <!-- Delete user button deletes user if DELETE was typed in Textbox
              by calling the DeleteUser method -->
         <button class="btn btn-primary" id="buttonConfirmDelete"
-        style="background-color: #489b97" @onclick="DeleteUser" 
+        @onclick="DeleteUser" 
         data-bs-dismiss="modal">Yes, Delete</button>
         
     </FooterContent>
@@ -251,9 +273,9 @@ Variant="success" Class="modal-dialog">
                         Store = stores[0]
             },
             new User {  Id = nextUserId++, // Id increments for the next user
-                        FirstName = "John",
-                        LastName = "Doe",
-                        Email = "john@company.com",
+                        FirstName = "Andrew",
+                        LastName = "Miller",
+                        Email = "andrew@company.com",
                         Role = "Manager",
                         Store = stores[1]
             },
@@ -301,6 +323,7 @@ Variant="success" Class="modal-dialog">
     }
 
     /* Handling Deletion */
+
     // Deletion confirmation string, initialized as empty
     private string confirmDelete = "";
 
@@ -377,7 +400,7 @@ Variant="success" Class="modal-dialog">
         if(confirmDelete.Equals(DELETE_CONFIRM)){
             var index = users.FindIndex(u => u.Id == selectedUser.Id);
             users.RemoveAt(index);
-            StateHasChanged(); // Table is updated to reflected changes
+        StateHasChanged(); // Table is updated to reflected changes
         }
     }
 
@@ -393,6 +416,8 @@ Variant="success" Class="modal-dialog">
 
     // Debug Utilities
         private void printUsers(List<User> users){
+
+            // Output information on list of users to the console
         foreach(var user in users){
             Console.WriteLine("ID: " + user.Id + "Name: " + user.FirstName + " " + user.LastName + " Email: " + user.Email + " Role: " + user.Role + " Store: " + user.Store);
         }
