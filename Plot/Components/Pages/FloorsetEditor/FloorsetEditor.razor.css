@@ -71,3 +71,39 @@
 .button-green {
     background-color: rgb(27, 176, 27);
 }
+
+/* Slide-out container with padding */
+.slide-out-container {
+    padding: 20px; /* Adds padding around the entire container */
+}
+
+/* Expanded container inside SlideOut */
+.expanded-container {
+    padding: 20px; /* Adds padding inside the expanded container */
+}
+
+/* Ensure that inputs and buttons also have space around them */
+.numeric-input-container {
+    margin-bottom: 15px; /* Adds space between numeric inputs */
+}
+
+/* Ensure horizontal inputs are spaced out as well */
+.horizantal-inputs {
+    display: flex;
+    gap: 10px; /* Adds space between the inputs */
+    align-items: center; /* Aligns the inputs vertically in the center */
+}
+
+/* Add padding to header text */
+.header {
+    padding: 10px 0; /* Adds space above and below the header */
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* Style for the button to ensure spacing */
+.Apply.button-green {
+    margin-top: 15px; /* Adds space above the Apply button */
+    padding: 10px 20px; /* Adds internal padding to the button */
+}
