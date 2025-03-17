@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@inject NavigationManager navManager
 
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -15,11 +16,16 @@
 <script src="https://kit.fontawesome.com/b9b256c8f6.js" crossorigin="anonymous"></script>
 <div class="page">
     <main>
-        <div class="top-row px-4">
-            <NavBar id="NavBar" class="Main">
+        @* Danielle Smith - 3/16/2025
+        make layout only show navbar if NOT on login screen *@
+        @if (!navManager.Uri.Contains("login")) {
+            <div class="top-row px-4">
+                <NavBar id="NavBar" class="Main">
 
-            </NavBar>
-        </div>
+                </NavBar>
+            </div>
+        }
+        
 
         <article class="content px-4">
             @Body
