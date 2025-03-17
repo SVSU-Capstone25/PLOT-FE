@@ -89,7 +89,7 @@ Author: Andrew Fulton (3/12/2025) */
 .circle-container {
     display: flex;
     flex-direction: column;
-    align-items: left;
+    align-items: center;
     text-align: center;
 }
 

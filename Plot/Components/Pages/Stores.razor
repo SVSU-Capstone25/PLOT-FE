@@ -20,52 +20,52 @@ Author: Andrew Fulton (3/12/2025)  *@
 @* Div to hold the stores *@
 <div class="horizontal-items">
     @* First store hard coded *@
-    <button class="btn-style">
+    @* <button class="btn-style"> *@
 
-        <Card CardText="Flint, MI" CardImage="img/LayoutPhotoExample.png">
+    <Card CardText="Flint, MI" CardImage="img/LayoutPhotoExample.png">
 
-            <Dropdown Class="Test Dropdown" Id="flintDropdown"
-                DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
-                DropdownLinks="@(new List<string> { "http://localhost:8080/floorsets/Flint, MI/3192 S Linden Rd, Flint, MI 48507", "#editStoreModal", "#deleteStoreModal" })"
-                LabelText="Store"
-                DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
+        <Dropdown Class="Test Dropdown" Id="flintDropdown"
+            DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorsets/Flint, MI/3192 S Linden Rd, Flint, MI 48507", "#editStoreModal", "#deleteStoreModal" })"
+            LabelText="Store"
+            DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
 
-        </Card>
+    </Card>
 
-    </button>
+    @* </button> *@
 
 
 
     @* Second store hard coded *@
-    <button class="btn-style">
+    @* <button class="btn-style"> *@
 
-        <Card CardText="Dallas, TX" CardImage="img/LayoutPhotoExample.png">
+    <Card CardText="Dallas, TX" CardImage="img/LayoutPhotoExample.png">
 
-            <Dropdown Class="Test Dropdown" Id="DallasDropdown"
-                DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
-                DropdownLinks="@(new List<string> { "http://localhost:8080/floorsets/Dallas, TX/8430 Abrams Rd, Dallas, TX 75243", "#editStoreModal", "#deleteStoreModal" })"
-                LabelText="Store"
-                DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
+        <Dropdown Class="Test Dropdown" Id="DallasDropdown"
+            DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorsets/Dallas, TX/8430 Abrams Rd, Dallas, TX 75243", "#editStoreModal", "#deleteStoreModal" })"
+            LabelText="Store"
+            DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
 
-        </Card>
+    </Card>
 
-    </button>
+    @* </button> *@
 
 
     @* Third store hard coded *@
-    <button class="btn-style">
+    @* <button class="btn-style"> *@
 
-        <Card CardText="Utica, MI" CardImage="img/LayoutPhotoExample.png">
+    <Card CardText="Utica, MI" CardImage="img/LayoutPhotoExample.png">
 
-            <Dropdown Class="Test Dropdown" Id="UticaDropdown"
-                DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
-                DropdownLinks="@(new List<string> { "http://localhost:8080/floorsets/Utica, MI/13287 Hall Rd, Utica, MI 48315", "#editStoreModal", "#deleteStoreModal" })"
-                LabelText="Store"
-                DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
+        <Dropdown Class="Test Dropdown" Id="UticaDropdown"
+            DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
+            DropdownLinks="@(new List<string> { "http://localhost:8080/floorsets/Utica, MI/13287 Hall Rd, Utica, MI 48315", "#editStoreModal", "#deleteStoreModal" })"
+            LabelText="Store"
+            DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
 
-        </Card>
+    </Card>
 
-    </button>
+    @* </button> *@
 
 
 
@@ -83,8 +83,9 @@ Author: Andrew Fulton (3/12/2025)  *@
             @* Name and location *@
             <div class="modal-split-container">
                 <div class="modal-split-left-side">
-                    <TextInput Id="editModalStoreName" Label="Name" Placeholder="Store Name" />
-                    <TextInput Id="editModalStoreLocation" Label="Location" Placeholder="Store Address" />
+                    <TextInput LabelOnTop="false" Id="editModalStoreName" Label="Name" Placeholder="Store Name" />
+                    <TextInput LabelOnTop="false" Id="editModalStoreLocation" Label="Location"
+                        Placeholder="Store Address" />
                 </div>
                 @* upload image for store component *@
                 <div class="modal-split-right-side">
@@ -96,7 +97,7 @@ Author: Andrew Fulton (3/12/2025)  *@
             <div id="employeesEdit" class="horizontal-items">
 
                 <div class="circle-container">
-                    <button class="circle" @onclick="addNewEmployee">+</button>
+                    <button class="circle btn-style" @onclick="addNewEmployee">+</button>
                     <p class="name">Add Employee</p>
                 </div>
 
@@ -175,6 +176,7 @@ Author: Andrew Fulton (3/12/2025)  *@
         </BodyContent>
 
         <FooterContent>
+            <p style="margin-left: auto;"></p>
             <Button Class="Test Button" TextAlignment="center" Variant="primary"
                 OnClickFunction="updateStoreInformation">Update Store</Button>
         </FooterContent>
@@ -189,6 +191,7 @@ Author: Andrew Fulton (3/12/2025)  *@
         </BodyContent>
 
         <FooterContent>
+            <p style="margin-left: auto;"></p>
             <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="deleteStore">Yes,
                 Delete</Button>
         </FooterContent>
@@ -225,8 +228,8 @@ Author: Andrew Fulton (3/12/2025)  *@
         @* Name and location (labels and input boxes)*@
         <div class="modal-split-container">
             <div class="modal-split-left-side">
-                <TextInput Id="addModalStoreName" Label="Name" Placeholder="Store Name" />
-                <TextInput Id="addModalStoreLocation" Label="Location" Placeholder="Store Address" />
+                <TextInput LabelOnTop="false" Id="addModalStoreName" Label="Name" Placeholder="Store Name" />
+                <TextInput LabelOnTop="false" Id="addModalStoreLocation" Label="Location" Placeholder="Store Address" />
             </div>
             @* upload image for store component *@
             <div class="modal-split-right-side">
@@ -238,7 +241,7 @@ Author: Andrew Fulton (3/12/2025)  *@
         <div id="employees" class="horizontal-items">
 
             <div class="circle-container">
-                <button class="circle" @onclick="addNewEmployee">+</button>
+                <button class="circle btn-style" @onclick="addNewEmployee">+</button>
                 <p class="name">Add Employee</p>
             </div>
 
@@ -248,6 +251,7 @@ Author: Andrew Fulton (3/12/2025)  *@
 
     <FooterContent>
         @* button for adding the store *@
+        <p style="margin-left: auto;"></p>
         <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="createNewStore">Add
             Store</Button>
     </FooterContent>
