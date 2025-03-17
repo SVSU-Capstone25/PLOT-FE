@@ -1,7 +1,18 @@
 @page "/test/dropdown"
 
 <h1>Test Page</h1>
-<Dropdown Class="Test Dropdown" Id="123" DropdownText="@(new List<string> { "Youtube", "Google", "SVSU" })"
-    DropdownLinks="@(new List<string> { "https://www.youtube.com/", "https://www.google.com/", "https://www.svsu.edu/" })"
+<Dropdown Class="Test Dropdown" Id="123" DropdownText="@(new List<string> { "Youtube", "Google", "Test Modal" })"
+    DropdownLinks="@(new List<string> { "https://www.youtube.com/", "https://www.google.com/", "#testModal" })"
     LabelText="Test Dropdown"
     DropdownIcons="@(new List<string> { "fa-solid fa-copy", "fa-solid fa-trash-can", "fa-solid fa-layer-group" })" />
+
+<!-- Danielle Smith -- 3/13/2025 -->
+<!-- modal for testing -->
+<Modal Title="Test Modal" Id="testModal" Class="modal-dialog">
+    <BodyContent>
+        <h4>Modal content 1</h4>
+        <img src="/img/platos_closet_logo.png">
+    </BodyContent>
+
+    <FooterContent></FooterContent>
+</Modal>
