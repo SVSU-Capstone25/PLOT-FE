@@ -4,11 +4,18 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 # Set the working directory
 WORKDIR /app
 
-# Copy everything to the working directory
-COPY . ./
+# Copy over solution file for whole project
+COPY *.sln ./
+
+# Copy over project files for both sub-projects
+COPY Plot/*.csproj Plot/
+COPY Plot.Tests/*.csproj Plot.Tests/
 
 # Restore dependencies
 RUN dotnet restore
+
+# Copy everything to the working directory
+COPY . ./
 
 # Build and publish the app (for production)
 RUN dotnet publish -c Release -o /publish \
