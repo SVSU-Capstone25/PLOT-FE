@@ -14,6 +14,7 @@ Author (of import excel file code): Andrew Miller (3/16/2025)
 
 @page "/floorset-editor"
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.Button
 @using Plot.Components.PartialComponents.FileInput
@@ -36,36 +37,23 @@ Author (of import excel file code): Andrew Miller (3/16/2025)
 </div>
 
 <SlideOut Id="FloorsetSlideOut">
-    <p>Import an Excel File</p>
-    <!--
-    <Button Class="Button" Id="buttonImportFile" Variant="primary" data-bs-toggle="modal" data-bs-target="#importExcelModal"
+    <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="OpenImportModal"
         Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
         Import Excel File
     </Button>
-    -->
-
-    <!-- This will be replaced with the button from the FloorSet Grid FE task. The value for data-bs-target will need to be harmonized
-    with the id of the modal
-    -->
-    <button class="btn btn-success text-white" id="buttonImportFile" data-bs-toggle="modal" data-bs-target="#importExcelModal">
-        Import Excel File
-    </button>
-
 </SlideOut>
 
 <!-- Everything below should be kept when creating the final FloorsetEditor file
      id of importExcelModal must be harmonized with the id used for data-bs-target in the Button component for importing a file
-
-     Import button will need to be set 
 -->
 
-    <!-- Import Excel File Modal -->
-    <Modal Title="Import Excel File" Id="importExcelModal" Class="modal-dialog">
-    
+<!-- Import Excel File Modal -->
+<Modal Title="Import Excel File" Id="importExcelModal" Class="modal-dialog">
+
     <!--Body content includes file to upload-->
     <BodyContent>
         <p>Import an Excel File</p>
-		<FileInput Id="ImportFile" OnFileSelected="HandleFileSelected"></FileInput>
+        <FileInput Id="ImportFile" OnFileSelected="HandleFileSelected"></FileInput>
     </BodyContent>
 
     <FooterContent>
@@ -79,37 +67,48 @@ Author (of import excel file code): Andrew Miller (3/16/2025)
         To fix: File persists when cancel button is pressed.
         -->
         <Button Class="Button" Id="buttonConfirmImport" Variant="primary" OnClickFunction="HandleExcelFile"
-        IsDisabled=false TextAlignment="center">
+            IsDisabled=false TextAlignment="center">
             Import
         </Button>
-
     </FooterContent>
-    </Modal>
+</Modal>
 
-@if (selectedFile != null) {
-    <p>@selectedFile.Name</p>
-}
+<script>
+    function OpenImportModal() {
+        /* Danielle Smith - 3/16/2025
+        grabs the import excel modal and opens it */
+        bootstrap.Modal.getOrCreateInstance('#importExcelModal').show();
+    }
+</script>
 
 @code {
     private IBrowserFile? selectedFile;
 
-    /* 
-        Set selectedFile to file placed in FileInput Tool
+    /*
+    Set selectedFile to file placed in FileInput Tool
     */
-    private void HandleFileSelected(IBrowserFile file) 
+    private void HandleFileSelected(IBrowserFile file)
     {
         selectedFile = file;
     }
 
-    <!-- Replace below with processing from the FloorSet Grid FE task-->
-    <!-- Processes it-->
-    private void ProcessExcelFile(IBrowserFile file){
-        <!-- Processing of excel file -->
+    // Replace below with processing from the FloorSet Grid FE task
+    // Processes it
+    private void ProcessExcelFile(IBrowserFile file)
+    {
+        // Processing of excel file
     }
 
-    <!-- Runs when import button is pressed inside modal -->
-    private void HandleExcelFile(){
+    // Runs when import button is pressed inside modal
+    private void HandleExcelFile()
+    {
         ProcessExcelFile(selectedFile);
     }
 
+    /* Danielle Smith - 3/16/2025
+    function that calls a javascript function to open the import file modal */
+    private async Task OpenImportModal()
+    {
+        JS.InvokeVoidAsync("OpenImportModal");
+    }
 }
