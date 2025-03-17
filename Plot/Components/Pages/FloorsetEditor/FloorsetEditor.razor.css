@@ -25,3 +25,17 @@
 .button-green {
     background-color: green;
 }
+
+/* Ensure the inputs and X are aligned horizontally */
+.horizantal-inputs {
+    display: flex; /* Align children horizontally */
+    align-items: center; /* Vertically align the items in the center */
+    gap: 10px; /* Optional: adds spacing between the inputs and X */
+}
+
+/* Style the X separator between the two inputs */
+.dimension-separator {
+    font-size: 20px; /* Adjust the font size of the X */
+    font-weight: bold; /* Make the X bold */
+    text-align: center; /* Center the X */
+}

@@ -23,8 +23,13 @@
         <div class="expanded-container">
             <h3 class="header" @onclick="TogglePane">Header of Expanded Area</h3>
             <!-- Add other components here when the pane is expanded -->
-            <NumericInput Label="" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
-            ValueChanged="NumberChanged" />
+            <div class="horizantal-inputs">
+                <NumericInput Label="" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
+                ValueChanged="NumberChanged" />
+                <span class="dimension-separator">X</span> <!-- The X to separate the two inputs -->
+                <NumericInput Label="" Placeholder="" Description=""
+                ValueChanged="NumberChanged" />
+            </div>
             <Checkbox id="checkboxOne" Text="Employee Only Area" />
             <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
                 Icon="" IsDisabled="false" TextAlignment="center">
