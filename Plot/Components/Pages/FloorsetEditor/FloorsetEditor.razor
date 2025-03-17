@@ -1,5 +1,6 @@
 @page "/floorset-editor"
 @using Plot.Components.PartialComponents.SlideOut
+@using Plot.Components.PartialComponents.NumericInput
 
 <!-- Grid Area -->
 <div class="wrapper" width="500px" height="500px">
@@ -22,7 +23,7 @@
         <div class="expanded-container">
             <h3 class="header" @onclick="TogglePane">Header of Expanded Area</h3>
             <!-- Add other components here when the pane is expanded -->
-            <NumericInput Label="Dimensions" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
+            <NumericInput Label="" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
             ValueChanged="NumberChanged" />
             <Checkbox id="checkboxOne" Text="Employee Only Area" />
             <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
