@@ -1,5 +1,8 @@
 @* Originally by Luke Wollenweber *@
+
 @page "/login"
+
+@inject NavigationManager Navigation
 
 <PageTitle>Login</PageTitle>
 
@@ -33,10 +36,6 @@
 
 @code
 {
-    // Inject NavigationManager to redirect
-    [Inject]
-    NavigationManager Navigation { get; set; }
-
     string username = ""; // Define the username variable
     string password = "";
     bool isInvalid = false;
