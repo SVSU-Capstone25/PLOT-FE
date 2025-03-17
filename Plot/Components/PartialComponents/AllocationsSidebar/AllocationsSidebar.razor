@@ -10,43 +10,42 @@ and allocate floorsets for Platos Closet.
 Author: Tristan Calay (3/15/2025)-->
 
 <div class="AllocationsSidebar @Class" id="@ID">
-    <div style="background-color: lightgrey;">
-        <h3><i class="fa-solid fa-boxes-stacked"></i> Category Fullfillment</h3>
-        <hr>
+    <div class="inner-container">
+        <h3 style="font-weight: bold;"><i class="fa-solid fa-boxes-stacked"></i> Category Fullfillment</h3>
+        <hr style="opacity: 1.0; color:black;">
 
         <div class="categories-div">
-            <div class="categories-list">
-                <div style="display: flex;">
-                    <TextInput Id="category-search" Label="" Type="search" Placeholder="Category Search..." Value="@categorySearch" ValueChanged="@(e => categorySearch = e)" />
+            <div class="search-bar" style="display: flex; flex-direction: row; justify-content: space-between;">
+                <TextInput Id="category-search" Label="" Type="search" Placeholder="Category Search..." Value="@categorySearch" ValueChanged="@(e => categorySearch = e)" />
 
-                    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-sort" 
-                    OnClickFunction="sortCategory" TextAlignment="center"/>
+                <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-arrow-up-short-wide" 
+                OnClickFunction="sortCategory" Class="search-button" TextAlignment="center"/>
 
-                    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-filter" 
-                    OnClickFunction="filterCategory" TextAlignment="center"/>
-                
-                </div>
-                    
-                    <ProgressBar Id=1 iconString="fa-solid fa-chevron-down" mainLabel="Men's" barColor="#AAD9FF" barMax=480 barValue=290 barLabel="290/480 LF"/>
-                    <ProgressBar Id=2 mainLabel="Pants" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF"/>
-                    <ProgressBar Id=3 mainLabel="Shirts" barColor="#AAD9FF" barMax=100 barValue=30 barLabel="30/100 LF"/>
-                    <ProgressBar Id=4 mainLabel="Shoes" barColor="#AAD9FF" barMax=100 barValue=60 barLabel="60/100 LF"/>
-                    <ProgressBar Id=5 mainLabel="Socks" barColor="#AAD9FF" barMax=80 barValue=80 barLabel="80/80 LF"/>
-                    <ProgressBar Id=6 mainLabel="Jackets" barColor="#AAD9FF" barMax=100 barValue=100 barLabel="100/100 LF"/>
-                    <ProgressBar Id=7 mainLabel="OverFill Test" barColor="#AAD9FF" barMax=100 barValue=120 barLabel="120/100 LF"/>
-                    <ProgressBar Id=8 iconString="fa-solid fa-chevron-down" mainLabel="Women's" barColor="#FFAAD6" barMax=40 barValue=20 barLabel="20/40 LF"/>
-                    <ProgressBar Id=9 mainLabel="Pants" barColor="#FFAAD6" barMax=40 barValue=20 barLabel="20/40 LF"/>
-                    <ProgressBar Id=10 iconString="fa-solid fa-chevron-down" mainLabel="Accessories" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF"/>
-                    <ProgressBar Id=11 mainLabel="Belts" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF"/> 
-                <div>
-                </div>
-            </div> 
+                <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-filter" 
+                OnClickFunction="filterCategory" Class="search-button" TextAlignment="center"/>
+            </div>
+            <div class="progress-area">
+                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Men's" barColor="#AAD9FF" barMax=480 barValue=290 barLabel="290/480 LF"/>
+                <ProgressBar mainLabel="Pants" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF"/>
+                <ProgressBar mainLabel="Pants" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF"/>
+                <ProgressBar mainLabel="Shirts" barColor="#AAD9FF" barMax=100 barValue=30 barLabel="30/100 LF"/>
+                <ProgressBar mainLabel="Shoes" barColor="#AAD9FF" barMax=100 barValue=60 barLabel="60/100 LF"/>
+                <ProgressBar mainLabel="Socks" barColor="#AAD9FF" barMax=80 barValue=80 barLabel="80/80 LF"/>
+                <ProgressBar mainLabel="Jackets" barColor="#AAD9FF" barMax=100 barValue=100 barLabel="100/100 LF"/>
+                <ProgressBar mainLabel="OverFill Test" barColor="#AAD9FF" barMax=100 barValue=120 barLabel="120/100 LF"/>
+                <hr class="category-separator">
+                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Women's" barColor="#FFAAD6" barMax=40 barValue=20 barLabel="20/40 LF"/>
+                <ProgressBar mainLabel="Pants" barColor="#FFAAD6" barMax=40 barValue=20 barLabel="20/40 LF"/>
+                <hr class="category-separator">
+                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Accessories" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF"/>
+                <ProgressBar mainLabel="Belts" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF"/> 
+            </div>
         </div>
               
     </div>
     
 
-    <div style="justify-content: center; gap: 16px; display: flex;">
+    <div class="toolbar-buttons">
         <!-- Edit Fixture Button -->
         <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" 
                 OnClickFunction="editFixture" TextAlignment="center"/>

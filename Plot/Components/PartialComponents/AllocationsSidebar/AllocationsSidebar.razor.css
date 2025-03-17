@@ -1,13 +1,45 @@
-.categories-list
+.progress-area
 {
     background-color: white;
     padding: 5px;
     height: 100%;
+    border-radius: .5rem;
 }
 
-.categories-div
+.inner-container
 {
-    width: 95%;
-    height: 85%;
-    margin: auto;
+    background-color: lightgrey;
+    padding:.5rem;
+    border-radius: .5rem;
+}
+
+.AllocationsSidebar
+{
+    padding: 1.5rem;
+
+}
+
+.category-separator
+{
+    margin: 0.2rem;
+    opacity: 0.1;
+}
+
+.toolbar-buttons
+{
+    justify-content: center; 
+    gap: 16px; 
+    display: flex;
+    padding-top: 0.5rem;
+}
+
+.search-button > button
+{
+    color: black;
+    background-color: transparent !important;
+}
+
+.text-input-container
+{
+    flex-grow: 2;
 }
