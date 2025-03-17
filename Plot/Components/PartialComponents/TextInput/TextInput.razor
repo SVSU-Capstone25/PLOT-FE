@@ -39,7 +39,9 @@
     [Parameter] public bool? LabelOnTop { get; set; } = true;
 
     // This is used for JS interop
-    private DotNetObjectReference<TextInput> DotNetHelper;
+    /* Danielle Smith 3/15/2025
+    make DotNetHelper nullable to fix e2e warning */
+    private DotNetObjectReference<TextInput>? DotNetHelper;
 
     /* Danielle Smith 3/15/2025
     this method ensures that value updates to the properly binded 
