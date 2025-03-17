@@ -1,41 +1,73 @@
-/* Style for the slide-out container to add space around edges */
-.slide-out-container {
-    padding: 20px; /* Adds space around the edges of the slide-out container */
+/* Ensures that the container aligns the numeric inputs horizontally */
+.horizantal-inputs {
+    display: flex; /* Align children horizontally */
+    align-items: center; /* Ensure inputs align to the center vertically */
+    gap: 10px; /* Adds space between the inputs and separator */
+    flex-wrap: nowrap; /* Prevents wrapping and forces inputs to stay on the same line */
+    font-size: 10px;
 }
 
-/* Style for the header when the pane is expanded */
 .header {
-    text-decoration: underline; /* Underline the header text */
-    cursor: pointer; /* Add a pointer cursor to indicate that it's clickable */
-    padding: 10px 0; /* Optional: Adds some spacing around the header */
-    font-weight: bold; /* Optional: Make the header bold */
+    text-decoration: underline;
 }
 
-/* Style for the button when the pane is collapsed */
-.button-with-spacing {
-    margin: 10px; /* Adds space around the button */
-    padding: 10px 20px; /* Adds internal padding for better visual spacing */
+/* Ensures the numeric input containers align properly */
+.numeric-input-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Ensures that each input takes equal width */
+    min-width: 0; /* Prevents the container from shrinking too small */
+    position: relative;
 }
 
-/* Style for the container when the pane is expanded */
-.expanded-container {
-    padding: 15px; /* Adds space inside the container when expanded */
+/* Style for the numeric input label, input field, and description */
+.numeric-input-container .label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    display: block;
+}
+
+/* Ensures that inputs have consistent height */
+.numeric-input-container .input-number {
+    height: 40px; /* Ensures a consistent height for the input field */
+    padding: 8px; /* Adds padding for better visual */
+    width: 100%; /* Ensures that the input field takes up the full width of the container */
+    margin-bottom: 5px; /* Optional margin for spacing between input and description */
+}
+
+/* Error message styles */
+.numeric-input-container .error {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    color: red;
+    font-size: 12px;
+    display: none; /* Initially hidden */
+}
+
+/* If there's an error, we show the error message */
+.numeric-input-container.has-error .error {
+    display: block;
+}
+
+/* Separator X */
+.dimension-separator {
+    font-size: 24px;
+    font-weight: bold;
+    align-self: center; /* Centers the separator in the middle of the inputs */
+}
+
+/* Ensures the numeric input container has consistent height */
+.numeric-input-container.has-error {
+    min-height: 160px; /* Increase height to accommodate the error message */
+}
+
+/* To remove the error message if no error */
+.numeric-input-container:not(.has-error) .error {
+    display: none;
 }
 
 .button-green {
-    background-color: green;
-}
-
-/* Ensure the inputs and X are aligned horizontally */
-.horizantal-inputs {
-    display: flex; /* Align children horizontally */
-    align-items: center; /* Vertically align the items in the center */
-    gap: 10px; /* Optional: adds spacing between the inputs and X */
-}
-
-/* Style the X separator between the two inputs */
-.dimension-separator {
-    font-size: 20px; /* Adjust the font size of the X */
-    font-weight: bold; /* Make the X bold */
-    text-align: center; /* Center the X */
+    background-color: rgb(27, 176, 27);
 }

@@ -24,15 +24,15 @@
             <h3 class="header" @onclick="TogglePane">Header of Expanded Area</h3>
             <!-- Add other components here when the pane is expanded -->
             <div class="horizantal-inputs">
-                <NumericInput Label="" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
+                <NumericInput Class="numeric-input-container" Label="Dimensions" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
                 ValueChanged="NumberChanged" />
                 <span class="dimension-separator">X</span> <!-- The X to separate the two inputs -->
-                <NumericInput Label="" Placeholder="" Description=""
-                ValueChanged="NumberChanged" />
+                <NumericInput Class="numeric-input-container" Label="" Placeholder="" Description=""
+                ValueChanged="NumberChanged"/>
             </div>
             <Checkbox id="checkboxOne" Text="Employee Only Area" />
             <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
-                Icon="" IsDisabled="false" TextAlignment="center">
+                Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
                 Apply
             </Button>
         </div>
