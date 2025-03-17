@@ -1,6 +1,18 @@
 @page "/floorset-editor"
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+@* 
+https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js
+https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js
+https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
+ *@
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script>
 
 <!-- Grid Area -->
 <div class="wrapper" width="500px" height="500px">
@@ -17,20 +29,29 @@
     </div>
 </div>
 
-<SlideOut Id="FloorsetSlideOut" Class="slide-out-container">
+<SlideOut Id="FloorsetSlideOut" Class="slide-out">
     @if (isPaneExpanded)
     {
-        <div class="expanded-container">
-            <h3 class="header" @onclick="TogglePane">Header of Expanded Area</h3>
-            <!-- Add other components here when the pane is expanded -->
+        <div class="expanded">
+            <h3 class="header" @onclick="TogglePane">
+                <i class="fas fa-edit"></i> Edit Building Walls
+            </h3>      
             <div class="horizantal-inputs">
-                <NumericInput Class="numeric-input-container" Label="Dimensions" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
-                ValueChanged="NumberChanged" />
+                <NumericInput Class="numeric-input" Label="Dimensions" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
+                ValueChanged="NumberChangedWidth" />
                 <span class="dimension-separator">X</span> <!-- The X to separate the two inputs -->
-                <NumericInput Class="numeric-input-container" Label="" Placeholder="" Description=""
-                ValueChanged="NumberChanged"/>
+                <NumericInput Class="numeric-input" Label="" Placeholder="" Description=""
+                ValueChanged="NumberChangedLength"/>
             </div>
-            <Checkbox id="checkboxOne" Text="Employee Only Area" />
+            @* <p>@width - @length</p> *@
+            @* uncomment the below when testing draggable*@
+            @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
+                @ondragstart:preventDefault="true"> *@
+                <div class="drag-start-area d-flex flex-row">
+                    <div class="fixture-img disable-select grab-cursor"></div>
+                    <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                </div>
+            @* </div> *@
             <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
                 Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
                 Apply
@@ -55,15 +76,26 @@
         isPaneExpanded = !isPaneExpanded;
     }
 
-    private double currentNumber;
+    private double width;
+    private double length;
 
     /* This function is called when the number is changed */
-    private async Task NumberChanged(string strNumber)
+    private async Task NumberChangedWidth(string strWidth)
+    {
+        // String will be either a positive number or ""
+        Double.TryParse(strWidth, out double newNumberWidth);
+
+        width = newNumberWidth; // Number will be 0 if string is ""
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task NumberChangedLength(string strNumber)
     {
         // String will be either a positive number or ""
         Double.TryParse(strNumber, out double newNumber);
 
-        currentNumber = newNumber; // Number will be 0 if string is ""
+        length = newNumber; // Number will be 0 if string is ""
 
         await InvokeAsync(StateHasChanged);
     }
@@ -71,6 +103,19 @@
     private void ApplyDimensions()
     {
 
+    }
+
+    private async Task OnDragStart(DragEventArgs e)
+    {
+        // Extract the mouse position from the DragEventArgs
+        var mouseX = e.ClientX;
+        var mouseY = e.ClientY;
+        string size = $"{width}x{length}";  // size should always be in the form of "10x20"
+
+        await JS.InvokeVoidAsync("console.log", size); // This will log to the browser's console.
+
+        // Call JS function with the mouse coordinates and size
+        await JS.InvokeVoidAsync("createDraggable", mouseX, mouseY, size);
     }
 }
 

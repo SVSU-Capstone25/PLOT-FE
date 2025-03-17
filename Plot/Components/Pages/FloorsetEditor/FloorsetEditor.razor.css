@@ -12,7 +12,7 @@
 }
 
 /* Ensures the numeric input containers align properly */
-.numeric-input-container {
+.numeric-input {
     display: flex;
     flex-direction: column;
     flex-grow: 1; /* Ensures that each input takes equal width */
@@ -21,14 +21,14 @@
 }
 
 /* Style for the numeric input label, input field, and description */
-.numeric-input-container .label {
+.numeric-input .label {
     margin-bottom: 5px;
     font-weight: bold;
     display: block;
 }
 
 /* Ensures that inputs have consistent height */
-.numeric-input-container .input-number {
+.numeric-input .input-number {
     height: 40px; /* Ensures a consistent height for the input field */
     padding: 8px; /* Adds padding for better visual */
     width: 100%; /* Ensures that the input field takes up the full width of the container */
@@ -36,7 +36,7 @@
 }
 
 /* Error message styles */
-.numeric-input-container .error {
+.numeric-input .error {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -47,7 +47,7 @@
 }
 
 /* If there's an error, we show the error message */
-.numeric-input-container.has-error .error {
+.numeric-input.has-error .error {
     display: block;
 }
 
@@ -59,12 +59,12 @@
 }
 
 /* Ensures the numeric input container has consistent height */
-.numeric-input-container.has-error {
+.numeric-input.has-error {
     min-height: 160px; /* Increase height to accommodate the error message */
 }
 
 /* To remove the error message if no error */
-.numeric-input-container:not(.has-error) .error {
+.numeric-input:not(.has-error) .error {
     display: none;
 }
 
@@ -73,12 +73,12 @@
 }
 
 /* Slide-out container with padding */
-.slide-out-container {
+.slide-out {
     padding: 20px; /* Adds padding around the entire container */
 }
 
 /* Expanded container inside SlideOut */
-.expanded-container {
+.expanded {
     padding: 20px; /* Adds padding inside the expanded container */
 }
 
@@ -88,7 +88,7 @@
 }
 
 /* Ensure that inputs and buttons also have space around them */
-.numeric-input-container {
+.numeric-input {
     margin-bottom: 15px; /* Adds space between numeric inputs */
 }
 
@@ -111,4 +111,63 @@
 .Apply.button-green {
     margin-top: 15px; /* Adds space above the Apply button */
     padding: 10px 20px; /* Adds internal padding to the button */
+}
+
+
+.filter-btn {
+    margin-left: .5rem;
+    border: none;
+    border-radius: 4px;
+}
+
+.fixture {
+    border-radius: 4px;
+
+}
+
+.fixture:hover {
+    transition: 25ms;
+    background-color: #f1f1f1;
+}
+
+.fixture-img {
+    height: 55px;
+    width: 55px;
+    background-color: red;
+    border-radius: 8px; /* Rounded corners */
+}
+
+.fixture-text {
+    font-size: x-large;
+}
+
+.fixture-options {
+    background: none;
+    border: none;
+}
+
+.disable-select {
+    user-select: none;
+}
+
+.grab-cursor {
+    cursor: grab;
+}
+
+#container {    
+    position: relative;
+}
+
+.box {
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    background: green;
+    border-radius: 5px;
+}
+
+.grid-cell {    
+    border: 1px solid #444;
+    width: 49px;
+    height: 49px;
 }
