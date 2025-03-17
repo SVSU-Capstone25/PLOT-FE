@@ -82,6 +82,11 @@
     padding: 20px; /* Adds padding inside the expanded container */
 }
 
+/* Expanded container inside SlideOut */
+.button-with-spacing {
+    padding: 20px; /* Adds padding inside the expanded container */
+}
+
 /* Ensure that inputs and buttons also have space around them */
 .numeric-input-container {
     margin-bottom: 15px; /* Adds space between numeric inputs */
