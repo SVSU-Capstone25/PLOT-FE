@@ -1,5 +1,6 @@
 @page "/floorset-editor"
 @using Plot.Components.PartialComponents.SlideOut
+@using Plot.Components.PartialComponents.NumericInput
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 
@@ -25,14 +26,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     <div class="sidebar-header p-3">
         <div class="d-flex align-items-center justify-content-between">
             <h5 class="mb-0"> Add Fixture </h5>
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-light">
-                    <i class="bi bi-gear"></i>
-                </button>
-                <button class="btn btn-sm btn-light">
-                    <i class="bi bi-bell"></i>
-                </button>
-            </div>
+
         </div>
     </div>
 
@@ -41,7 +35,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         <div class="d-flex align-items-center mb-2">
 
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="filter-btn">
+            <button class="filter-btn" @onclick="FilterBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter"
                     viewBox="0 0 16 16">
                     <path
@@ -51,58 +45,262 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
         </div>
         <div class="align-items-center mt-3 d-flex">
-            <button type="button" class="btn btn-primary btn-lg w-100">Add Fixture</button>
+            <button type="button" data-bs-toggle="modal" data-bs-target="#addFixture"
+                class="btn add-fixture btn-lg w-100">Add Fixture</button>
         </div>
 
     </div>
 
 
     <!-- Fixture Area -->
-    <div class="p-3 mt-3 d-flex flex-column mb-2">
+    <div class="fixture-area p-3 mt-3 d-flex mb-2">
 
+        @foreach (Fixture currFixture in fixtures.Values)
+        {
 
-
-        <div class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e, "5x1"))" draggable="true"
-            @ondragstart:preventDefault="true">
-            <div class="drag-start-area d-flex flex-row">
-                <img class="fixture-img disable-select grab-cursor" src="img/LayoutPhotoExample.png" alt="">
-                <p class="fixture-text m-2 disable-select grab-cursor">5x1 Rack</p>
+            <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name"
+                @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width))" draggable="true"
+                @ondragstart:preventDefault="true">
+                <div class="drag-start-area d-flex flex-row">
+                    <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="">
+                    <p class="fixture-text m-2 disable-select grab-cursor">@currFixture.Name</p>
+                </div>
+                @{
+                    string id = currFixture.Name.Replace(" ", "");
+                    List<string> links = new List<string> { "#editFixture-" + id, "#deleteFixture-" + id };
+                    
+                }
+                <Dropdown DropdownLinks="@links" DropdownIcons="@icons" DropdownText="@texts"
+                    class="fixture-options ms-auto disable-select" id="@("fixture-options" + currFixture.Name)"
+                    LabelText="Fixture">
+                </Dropdown>
             </div>
-            <button class="fixture-options ms-auto disable-select">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </button>
-        </div>
 
-        <div class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e, "2x3"))" draggable="true"
-            @ondragstart:preventDefault="true">
-            <div class="drag-start-area d-flex flex-row">
-                <img class="fixture-img disable-select grab-cursor" src="img/LayoutPhotoExample.png" alt="">
-                <p class="fixture-text m-2 disable-select grab-cursor">2x3 Rack</p>
-            </div>
-            <button class="fixture-options ms-auto disable-select">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </button>
-        </div>
 
-        <div class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e, "4x4"))" draggable="true"
-            @ondragstart:preventDefault="true">
-            <div class="drag-start-area d-flex flex-row">
-                <img class="fixture-img disable-select grab-cursor" src="img/LayoutPhotoExample.png" alt="">
-                <p class="fixture-text m-2 disable-select grab-cursor">4x4 Rack</p>
-            </div>
-            <button class="fixture-options ms-auto disable-select">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </button>
-        </div>
 
+        }
 
     </div>
 
 </SlideOut>
 
+@* Add Fixture Modal *@
+@{    
+
+    
+    Console.Write(Length);
+    <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture">
+        <BodyContent>
+            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@Name" ValueChanged="@((v)=> Name = v)"/>
+            <div class="d-flex flex-row align-items-center justify-content-between">
+
+                <div class="dimension">
+                    <NumericInput Id="add-length" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
+                        Value="@Length" ValueChanged="(v) => {
+                            Length = v;
+                            if (!Length.Equals(string.Empty) && !Width.Equals(string.Empty)) {
+                                try {
+                                    LFCapacity = (int.Parse(Length) * int.Parse(Width)) + string.Empty;
+                                } catch (Exception e){
+                                    Console.WriteLine(e.GetBaseException());
+                                }
+                                try {
+                                    TotalLF = (int.Parse(LFCapacity) * int.Parse(HangerStack)) + string.Empty;
+                                } catch (Exception e){
+                                    Console.WriteLine(e.GetBaseException());
+                                }
+                            } else {
+                                TotalLF = string.Empty;
+                            }
+                        }" />
+                </div>
+
+                <i class="fa-solid fa-xmark"></i>
+
+                <div class="dimension">
+                    <NumericInput Id="add-width" Class="dimension" Label="Width" Placeholder="2ft" Description="Enter the width in feet"
+                        Value="@Width" ValueChanged="(v) => {
+                            Width = v;
+                            if (!Length.Equals(string.Empty) && !Width.Equals(string.Empty)) {
+                                try {
+                                    LFCapacity = (int.Parse(Length) * int.Parse(Width)) + string.Empty;
+                                } catch (Exception e){
+                                    Console.WriteLine(e.GetBaseException());
+                                }
+                                try {
+                                    TotalLF = (int.Parse(LFCapacity) * int.Parse(HangerStack)) + string.Empty;
+                                } catch (Exception e){
+                                    Console.WriteLine(e.GetBaseException());
+                                }
+                            } else {
+                                TotalLF = string.Empty;
+                            }
+                        }" />
+                </div>
+            </div>
+
+            <NumericInput Id="add-lfcapacity" Label="Linear Feet Capacity" Placeholder="2ft"
+                Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
+                Value="@LFCapacity" ValueChanged="@(v => {
+                        LFCapacity = v; 
+                        Console.WriteLine(LFCapacity + " " + HangerStack);
+                        if (LFCapacity.Equals("") || HangerStack.Equals("")) {
+                            TotalLF = "";
+                        } else {
+                            try {
+                                TotalLF = (int.Parse(LFCapacity) * int.Parse(HangerStack)).ToString();
+                            } catch (FormatException e) {
+                                Console.WriteLine(e.GetBaseException());
+                            }
+                        }
+                    })" />
+
+            <NumericInput Id="add-hanger-stack" Label="Hanger Stack" Placeholder="2" Description="Enter the number of vertically stacked racks"
+                Value="@HangerStack" ValueChanged="@(v => {
+                        HangerStack = v; 
+                        Console.WriteLine(LFCapacity + " " + HangerStack);
+                        if (LFCapacity.Equals("") || HangerStack.Equals("")) {
+                            TotalLF = "";
+                        } else {
+                            try {
+                                TotalLF = (int.Parse(LFCapacity) * int.Parse(HangerStack)).ToString();
+                            } catch (FormatException e) {
+                                Console.WriteLine(e.GetBaseException());
+                            }
+                        }
+                    })" />
+
+            <NumericInput Id="add-total-lf" Label="Total Linear Feet" Placeholder="4"
+                Description="The final calculation of linear feet (LF capacity x hanger stack)" ReadOnly="true" @bind-Value="TotalLF" />
+
+            
+            <div class="img-input">
+                <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
+                        Id="add-fixtureimg" />
+            </div>
+
+
+
+
+        </BodyContent>
+
+        <FooterContent>
+            <button class="btn add-btn ms-auto" data-bs-dismiss="modal" @onclick=@(async (e) => {
+                await AddFixture(e, new Fixture(Name,Length,Width,HangerStack,FixtureImg));
+
+                ClearTempFixtureData();
+            })>Add</button>
+        </FooterContent>
+    </Modal>
+}
+
+@* Edit Fixture Modal *@
+@foreach (Fixture currFixture in fixtures.Values)
+{
+    string len = currFixture.Length;
+    string wth = currFixture.Width;
+    string lfc = currFixture.LFCapacity;
+    string hst = currFixture.HangerStack;
+    string tlf = currFixture.TotalLF;
+    string img = currFixture.FixtureImg;
+
+    string id = currFixture.Name.Replace(" ", "");
+    List<string> links = new List<string> { "#editFixture-" + id, "#deleteFixture-" + id };
+
+
+    <Modal Class="modal-xl fixture-modal" Id="@("editFixture-" + id)" Title="Edit Fixture">
+        <BodyContent>
+            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" @bind-Value="@currFixture.Name" />
+            <div class="d-flex flex-row align-items-center justify-content-between">
+                <div class="dimension">
+                    <NumericInput Id="@(id + "-edit-length")" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
+                        Value="@currFixture.Length" ValueChanged="(v) => {
+                            currFixture.Length = v;
+                            if (!currFixture.Length.Equals(string.Empty) && !currFixture.Width.Equals(string.Empty)) {
+                                currFixture.UpdateLFCapacity();
+                                currFixture.UpdateTotalLF();
+                            } else {
+                                currFixture.TotalLF = string.Empty;
+                            }
+                        }" />
+                </div>
+                <i class="fa-solid fa-xmark"></i>
+
+                <div class="dimension">
+                    <NumericInput Id="@(id + "-edit-width")" Class="dimension" Label="Width" Placeholder="2ft" Description="Enter the width in feet"
+                        Value="@currFixture.Width" ValueChanged="(v) => {
+                            currFixture.Width = v;
+                            if (!currFixture.Length.Equals(string.Empty) && !currFixture.Width.Equals(string.Empty)) {
+                                currFixture.UpdateLFCapacity();
+                                currFixture.UpdateTotalLF();
+                            } else {
+                                currFixture.TotalLF = string.Empty;
+                            }
+                        }" />
+                </div>
+            </div>
+
+            <NumericInput Id="@(id + "-edit-LFCapacity")" Label="Linear Feet Capacity" Placeholder="2ft"
+                Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
+                    Value="@currFixture.LFCapacity" ValueChanged="(v) => {
+                        currFixture.LFCapacity = v;
+                        if (!currFixture.LFCapacity.Equals(string.Empty) && !currFixture.HangerStack.Equals(string.Empty)) {
+                            currFixture.UpdateTotalLF();
+                        } else {
+                            currFixture.TotalLF = string.Empty;
+                        }
+                    }" />
+
+            <NumericInput Id="@(id + "-edit-HangerStack")" Label="Hanger Stack" Placeholder="2" Description="Enter the number of vertically stacked racks"
+                    Value="@currFixture.HangerStack" ValueChanged="(v) => {
+                        currFixture.HangerStack = v;
+                        if (!currFixture.LFCapacity.Equals(string.Empty) && !currFixture.HangerStack.Equals(string.Empty)) {
+                            currFixture.UpdateTotalLF();
+                        } else {
+                            currFixture.TotalLF = string.Empty;
+                        }
+                    }" />
+
+            <NumericInput Id="@(id + "-edit-TotalLF")" Label="Total Linear Feet" Placeholder="4"
+                Description="The final calculation of linear feet (LF capacity x hanger stack)" @bind-Value="@currFixture.TotalLF"
+                ReadOnly="true" />
+
+            <div class="img-input">
+                <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
+                                        Id="@("ImageInput-" + currFixture.Name)" />
+            </div>
+            
+
+
+            
+
+        </BodyContent>
+
+        <FooterContent>
+            <button class="btn add-btn ms-auto" data-bs-dismiss="modal" @onclick=@((e) => UpdateFixture(e, currFixture, new Fixture(currFixture.Name,len,wth,hst,img)))>Update</button>
+        </FooterContent>
+    </Modal>
+
+    <Modal Title="Delete Fixture"  Id=@("deleteFixture-" + id)>
+
+        <BodyContent>
+            Are you sure you want top delete "@(currFixture.Name)" ?
+        </BodyContent>
+
+        <FooterContent>
+             <button class="btn add-btn ms-auto" data-bs-dismiss="modal" @onclick=@((e) => DeleteFixture(e, currFixture))>Delete</button>
+        </FooterContent>
+
+    </Modal>
+
+}
+
+
 <script>
+
     var container = document.getElementById("container");
     var box = document.querySelector(".box");
+    var isAsc = true;
 
 
     var width = 50;
@@ -126,13 +324,11 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
         var newBox = document.createElement("div");
 
-
         container.appendChild(newBox);
 
         newBox.className = "box";
         newBox.style.position = "absolute";
 
-        console.log(event);
         var boxSize = size.split("x");
 
 
@@ -172,7 +368,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                 if (isOverElement(boxRect, sidebarRect)) {
                     container.removeChild(newBox);
                 } else {
-                    newBox.style.zIndex = 1;
+                    newBox.style.zIndex = 0;
                 }
 
             }
@@ -200,13 +396,175 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             draggableRect.right > staticRect.left
         );
     }
+    
+
+    function flipOrder() {
+        if (isAsc) {
+            document.querySelector(".fixture-area").style.flexDirection = "column-reverse";
+        } else {
+            document.querySelector(".fixture-area").style.flexDirection = "column";
+        }
+        isAsc = !isAsc;
+    }
+
+    function closeModalEvent(dotNet) {
+        $("#addFixture").on('hidden.bs.modal', function (e) {
+            dotNet.invokeMethodAsync("ClearTempFixtureData");
+        })
+    }
+        
+
+    function alertUser(msg) {
+        alert(msg);
+    }
 
 </script>
 
 @code {
+    public class Fixture
+    {
 
+        public string Name { get; set; }
+        public string Length { get; set; }
+        public string Width { get; set; }
+        public string LFCapacity { get; set; }
+        public string HangerStack { get; set; }
+        public string TotalLF { get; set; }
+        public string FixtureImg { get; set; }
+
+        @* public Fixture() {
+            this.Name = "";
+            this.Length = "";
+            this.Width = "";
+            this.LFCapacity = "";
+            this.HangerStack = "";
+            this.TotalLF = "";
+            this.FixtureImg = "";
+        } *@
+
+        public Fixture(string name, string length, string width, string hangerStack, string fixtureImg)
+        {
+            try {
+                this.Name = name;
+                this.Length = length;
+                this.Width = width;
+                this.LFCapacity = Length.Equals(width) && Length.Equals("") ? "" : (int.Parse(Length) * int.Parse(Width)).ToString() + "";;
+                this.HangerStack = hangerStack;
+                this.TotalLF = LFCapacity.Equals(hangerStack) && LFCapacity.Equals("") ? "" : (int.Parse(LFCapacity) * int.Parse(HangerStack)).ToString() + "";
+                this.FixtureImg = fixtureImg;
+            } catch (FormatException e) {
+                Console.WriteLine(e.GetBaseException());
+            }
+        }
+
+
+        public bool HasNullProperties() =>
+        GetType().GetProperties().Any(p => p.GetValue(this) == null || p.GetValue(this).Equals(""));
+
+        public void UpdateLFCapacity() {
+            try {
+                LFCapacity = (int.Parse(Length) * int.Parse(Width)) + "";
+            } catch (Exception e){
+                Console.WriteLine(e.GetBaseException());
+            }
+        }
+
+        public void UpdateTotalLF() {
+            try {
+                TotalLF = (int.Parse(LFCapacity) * int.Parse(HangerStack)) + "";
+            } catch (Exception e){
+                Console.WriteLine(e.GetBaseException());
+            }
+        }
+        public override string ToString() {
+            return  Name + ", " +
+                    Length + ", " +
+                    Width + ", " +
+                    LFCapacity + ", " +
+                    HangerStack + ", " +
+                    TotalLF + ", " +
+                    FixtureImg;
+                
+        }
+
+
+
+    }
+
+    string Name = "";
+    string Length = "";
+    string Width = "";
+    string LFCapacity = "";
+    string HangerStack = "";
+    string TotalLF = "";
+    string FixtureImg = "";
+    DotNetObjectReference<FloorsetEditor>? dotNet;
+
+    private SortedDictionary<string, Fixture> fixtures = new()
+    {
+        ["Single Hung Rack"] = new Fixture("Single Hung Rack", "5", "2", "1", "img/LayoutPhotoExample.png"),
+        ["Double Hung Rack"] = new Fixture("Double Hung Rack", "3", "2", "2", "img/LayoutPhotoExample.png"),
+        ["Shelf"] = new Fixture("Shelf", "2", "1", "1", "img/LayoutPhotoExample.png"),
+
+    };
+
+    private List<string> icons = new List<string> { "fa-regular fa-pen-to-square", "fa-regular fa-trash-can" };
+    private List<string> texts = new List<string> { "Edit", "Delete" };
+
+
+
+    public async Task AddFixture(EventArgs e, Fixture currFixture)
+    {
+    
+        fixtures.Add(currFixture.Name, currFixture);
+        
+    
+    }
+
+    public void UpdateFixture(EventArgs e, Fixture currFixture, Fixture newFixture)
+    {
+        @* Console.WriteLine(currFixture.ToString());
+        currFixture.Name = newFixture.Name;
+        currFixture.Length = newFixture.Length;
+        currFixture.Width = newFixture.Width;
+        currFixture.LFCapacity = newFixture.LFCapacity;
+        currFixture.HangerStack = newFixture.HangerStack;
+        currFixture.TotalLF = newFixture.TotalLF; *@
+
+    }
+
+    public void DeleteFixture(EventArgs e, Fixture currFixture) 
+    {
+        fixtures.Remove(currFixture.Name);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) {
+            dotNet = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("closeModalEvent",dotNet);
+        }
+    }
     private async Task OnDragStart(DragEventArgs e, string size)
     {
+
         await JS.InvokeVoidAsync("createDraggable", e, size);
+    }
+
+    
+    private async Task FilterBtn() {
+        await JS.InvokeVoidAsync("flipOrder");
+    }
+
+    [JSInvokable]
+    public void ClearTempFixtureData() {
+        Console.WriteLine("Here");
+        Name = "";
+        Length = "";
+        Width = "";
+        LFCapacity = "";
+        HangerStack = "";
+        TotalLF = "";
+        FixtureImg = "";
+        StateHasChanged();
     }
 }

@@ -19,8 +19,9 @@
 <div class="NumericInput @Class form-group d-flex flex-column" id="@Id">
     <label for="number-input">@Label</label>
     <div class="number-wrapper">
-        <input type="number" class="input-number p-2 mt-1 @invalidClass" id="number-input" min="@minValue"
-            @oninput='HandleNumberChange' @onfocusout='HandleFocusOut' placeholder="@Placeholder" />
+        <input type="number" class="input-number p-2 mt-1 @invalidClass" value="@Value" id="@Id-number-input"
+            min="@minValue" readonly=@ReadOnly @oninput='HandleNumberChange' @onfocusout='HandleFocusOut'
+            placeholder="@Placeholder" />
     </div>
 
     <small class="form-text text-muted @invalidClass">
@@ -32,10 +33,10 @@
 </div>
 
 <script>
-    window.checkValidNumber = function (dotNetHelper) {
+    window.checkValidNumber = function (dotNetHelper, currId) {
         // Invoke the CheckNumberValid method 
         dotNetHelper.invokeMethodAsync("CheckNumberValid",
-            document.getElementById("number-input").value);
+            document.getElementById(currId + "-number-input").value);
     };
 </script>
 
@@ -48,6 +49,12 @@
 
     [Parameter]
     public string? Label { get; set; }
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public bool? ReadOnly { get; set; }
 
     [Parameter]
     public string? Placeholder { get; set; }
@@ -73,6 +80,7 @@
         if (firstRender)
         {
             dotNet = DotNetObjectReference.Create(this);
+
         }
     }
 
@@ -91,7 +99,7 @@
     */
     private async Task HandleFocusOut(FocusEventArgs e)
     {
-        await JS.InvokeVoidAsync("checkValidNumber", dotNet);
+        await JS.InvokeVoidAsync("checkValidNumber", dotNet, Id);
     }
 
 
@@ -101,7 +109,7 @@
     */
     [JSInvokable]
     public async Task CheckNumberValid(string? input)
-    {
+    {        
         // If the textbox has valid input >= 0
         if (double.TryParse(input, out double newValue) && newValue >= minValue)
         {
