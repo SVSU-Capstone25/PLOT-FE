@@ -7,83 +7,109 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 -->
 
 @page "/users"
-@inject IJSRuntime JSRuntime
 
 <div class="container mt-4">
 
     <!-- Users Table -->
+    <table class="table w-100">
     <tbody>
-    @foreach (var user in users)
-    {
         <tr>
-            <td class="border border-light border-2">@user.FirstName @user.LastName</td>
-            <td class="border border-light border-2">#@user.Id</td>
-            <td class="border border-light border-2">
-                <div>
-                    <div>@user.Role</div>
-                    <div class="d-flex justify-content-between" @onclick="setUser(@user)"> <!-- Set selectedUser to user -->
-                        <Dropdown
-                        Id="Dropdown@user.Id"
-                        DropdownText="@(new List<string> { "Edit", "Delete" })"
-                        DropdownLinks="@(new List<string> { "#EditUserModal", "#DeleteUserModal" })"
-                        LabelText="Role"
-                        DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-regular fa-trash-can" })"
-                         />
-                    </div>
-                </div>
-            </td>
+            <td class="border border-light border-2">Employee Name</td>
+            <td class="border border-light border-2">Employee Number</td>
+            <td class="border border-light border-2">Role</td>
         </tr>
-    }
-</tbody>
+        @foreach (var user in users)
+        {
+            <tr>
+                <td class="border border-light border-2">@user.FirstName @user.LastName</td>
+                <td class="border border-light border-2">@user.Id</td>
+                <td class="border border-light border-2">
+                    <div>
+                        <div class="d-flex justify-content-between"> <!-- Set selectedUser to user -->
+                            <p>@user.Role</p>
+
+                            <!-- Set user on click -->
+                            <div @onclick="(() => setUser(user))">
+                                <Dropdown
+                                    Id="@($"Dropdown-{user.Id}")"
+                                    DropdownText="@(new List<string> { "Edit", "Delete" })"
+                                    DropdownLinks="@(new List<string> { "#EditUserModal", "#DeleteUserModal" })"
+                                    LabelText="Role"
+                                    DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-regular fa-trash-can" })"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
 
     <!--Add User Button -->
     <button class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#AddUserModal">
         + Add User
     </button>
 
+
+</div>
+
+
+
     <!-- Modals -->
 
     <!-- Add User Modal -->
 
     <Modal Title="Add User" Id="AddUserModal" Variant="success" Class="standard modal-dialog">
-    <BodyContent>
-        <h1>Create User</h1>
-        <p>Add a new user to be added to the system.</p>
-        <TextInput Id="FirstNameAdd" Label="First Name" Placeholder="First Name" Value=@userToAdd.FirstName/>
-        <TextInput Id="LastNameAdd" Label="LastName" Placeholder="Last Name" Value=@userToAdd.LastName/>
-        <TextInput Id="EmailAdd" Label="Email" Placeholder="Email" Value=@userToAdd.Email/>
-        
-        <!-- Role and Store Select Options -->
+        <BodyContent>
+            <h1>Create User</h1>
+            <p>Add a new user to be added to the system.</p>
 
-        <!-- Role Select Option -->
-        <select class="form-select" id="RoleAdd" onChange="setAddedRole">
-            <option selected>Select an Option</option>
+            <!-- First Name -->
+            <TextInput Id="FirstNameAdd" Label="First Name" Placeholder="First Name" Value="@userToAdd.FirstName"/>
 
-            <option value="Owner">Owner</option>
-            <option value="Manager">Manager</option>
-            <option value="Employee">Employee</option>
-        </select>
+            <!-- Last Name -->
+            <TextInput Id="LastNameAdd" Label="LastName" Placeholder="Last Name" Value="@userToAdd.LastName"/>
 
-        <!-- Store Select Option -->
-        <select class="form-select" id="StoreAdd" onChange="setAddedStore">
-            <option selected>Select an Option</option>
+            <!-- Email -->
+            <TextInput Id="EmailAdd" Label="Email" Placeholder="Email" Value="@userToAdd.Email"/>
+            
+            <!-- Role and Store Select Options -->
 
-            <!-- List of stores -->
-            @foreach (var store in stores){
+            <!-- Role Select Option -->
+            <select class="form-select" id="RoleAdd" @onChange="(e) => setAddedRole">
+                <option selected>Select an Option</option>
 
-                <option value=@store>@store</option>
+                <option value="Owner">Owner</option>
+                <option value="Manager">Manager</option>
+                <option value="Employee">Employee</option>
+            </select>
 
-            }
-        </select>
+            <!-- Store Select Option -->
+            <select class="form-select" id="StoreAdd" @onChange="(e) => setAddedStore">
+                <option selected>Select an Option</option>
 
-        <img src="/img/platos_closet_logo.png">
-    </BodyContent>
-    <FooterContent>
-        <Button Class=" Button" Id="buttonAddUser" Variant="primary"
-            TextAlignment="center" OnClickFunction="AddUser">
-            Yes, Delete
-        </Button> 
-    </FooterContent>
+                <!-- List of stores -->
+                @foreach (var store in stores){
+
+                    <option value="@store">@store</option>
+
+                }
+            </select>
+
+        </BodyContent>
+
+        <!-- Footer: Cancel button included in Modal, Also adds Add User button -->
+        <FooterContent>
+
+            <!-- Add user button -->
+            <Button Class=" Button" Id="buttonAddUser" Variant="primary"
+                TextAlignment="center" OnClickFunction="AddUser">
+                Add User
+            </Button> 
+
+        </FooterContent>
 
     </Modal>
 
@@ -94,22 +120,24 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
     <BodyContent>
         <h1>Edit User</h1>
         <p>Edit user information</p>
-        <TextInput Id="FirstNameEdit" Label="First Name" Placeholder="@selectedUser.FirstName" Value="@editedUserInfo.FirstName" />
-        <TextInput Id="LastNameEdit" Label="LastName" Placeholder="@selectedUser.LastName" Value="@editedUserInfo.LastName" />
-        <TextInput Id="EmailEdit" Label="Email" Placeholder="@selectedUser.Email" Value="@editedUserInfo.Email" />
+
+        <!--To do post-demo: populate Placeholders with names-->
+        <TextInput Id="FirstNameEdit" Label="First Name" Value="@editedUserInfo.FirstName" />
+        <TextInput Id="LastNameEdit" Label="LastName" Value="@editedUserInfo.LastName" />
+        <TextInput Id="EmailEdit" Label="Email" Value="@editedUserInfo.Email" />
         
         <!-- Role and Store Select Options -->
 
         <!-- Role Select Option -->
-        <select class="form-select" id="RoleEdit" @onChange="SetEditedRole"> <!-- Sets user Role -->
+        <select class="form-select" id="RoleEdit" @onChange="SetEditedRole"> <!-- Sets user role -->
             <option selected>@selectedUser.Role</option>
-            <option value="OwnerEdit">Owner</option>
-            <option value="ManagerEdit">Manager</option>
-            <option value="EmployeeEdit">Employee</option>
+            <option value="Owner">Owner</option>
+            <option value="Manager">Manager</option>
+            <option value="Employee">Employee</option>
         </select>
 
         <!-- Store Select Option -->
-        <select class="form-select" id="StoreEdit" @onChange="SetEditedStore">
+        <select class="form-select" id="StoreEdit" @onChange="SetEditedStore"> <!-- Sets store of user-->
             <option selected>@selectedUser.Store</option>
 
             <!-- List of stores -->
@@ -122,9 +150,11 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 
         <img src="/img/platos_closet_logo.png">
     </BodyContent>
+
+
     <FooterContent>
         <Button Class="Button" Id="buttonEditUser" Variant="primary"
-            TextAlignment="center" OnClickFunction="SaveChanges()"> <!-- Saves changes to selected user-->
+            TextAlignment="center" OnClickFunction="SaveChanges"> <!-- Saves changes to selected user-->
             Save Changes
         </Button> 
     </FooterContent>
@@ -145,7 +175,7 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
     <FooterContent>
 
         <Button Class=" Button" Id="buttonConfirmDelete" Variant="primary"
-            TextAlignment="center" OnClickFunction="DeleteUser()">
+            TextAlignment="center" OnClickFunction="DeleteUser">
             Yes, Delete
         </Button>        
     </FooterContent>
@@ -154,15 +184,37 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 
     @code{
         private List<User> users = new List<User>(); // list of users in table
-        private User selectedUser = null; // User selected when clicking on a row
-        private User userToAdd = null;
-        private User editedUserInfo = null;
+        private User selectedUser = new User {
+                                    Id = -1,
+                                    FirstName = "None",
+                                    LastName = "None",
+                                    Email = "None",
+                                    Role = "None",
+                                    Store = "None"
+                                    }; // User selected when clicking on a row
+        private User userToAdd = new User {
+                                    Id = -1,
+                                    FirstName = "",
+                                    LastName = "",
+                                    Email = "",
+                                    Role = "",
+                                    Store = ""
+                                    };
 
-        private string UNEDITED = "";
+        private User editedUserInfo = new User {
+                                    Id = -1,
+                                    FirstName = "None",
+                                    LastName = "None",
+                                    Email = "None",
+                                    Role = UNEDITED,
+                                    Store = UNEDITED
+                                    };
+
+        private static string UNEDITED = "NOT EDITED";
 
         // Set
-        private string editedRole = UNEDITED;
-        private string editedStore = UNEDITED;
+        private static string editedRole = UNEDITED;
+        private static string editedStore = UNEDITED;
         private int nextUserId = 1;
 
         private String OWNER_ROLE = "owner";
@@ -200,27 +252,23 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
             };
         }
 
-        // Get user by id
-        /* private User getUser(int userId){
-            return users.First(u => u.Id == userId);
-        } */
-
         // Set user to selected user
         private void setUser(User user){
             selectedUser = user;
         }
 
         // Set added store
-        private void setAddedStore(ChangeEventArgs e){
-            userToAdd.Store = e.Value.ToString();
+        private void setAddedRole(ChangeEventArgs e){
+            userToAdd.Role = e.Value.ToString();
         }
 
         // Set edited role
         private void setEditedRole(ChangeEventArgs e){
-            private string newEdit = e.Value.ToString();
-            if(newEdit != UNEDITED) { editedUserInfo.Role = e.Value.ToString(); }
+            string newEdit = e.Value.ToString();
+            if(newEdit != UNEDITED) {
+                editedUserInfo.Role = e.Value.ToString();
+            }
 
-            editedUserInfo.Role = e.Value.ToString();
         }
 
         private void setAddedStore(ChangeEventArgs e){
@@ -228,8 +276,10 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
         }
 
         private void setEditedStore(ChangeEventArgs e){
-            private string newEdit = e.Value.ToString();
-            if(newEdit != UNEDITED) { editedUserInfo.Store = e.Value.ToString(); }
+            string newEdit = e.Value.ToString();
+            if(newEdit != UNEDITED) {
+                editedUserInfo.Store = e.Value.ToString();
+            }
         }
 
         // Add new user
@@ -239,13 +289,23 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
                 new User
                 {
                     Id = nextUserId++, // Id increments for the next user
-                    FirstName = firstNameAdd,
-                    LastName = lastNameAdd,
-                    Email = emailAdd,
-                    Role = roleAdd,
-                    Store = storeAdd
-                };
+                    FirstName = userToAdd.FirstName,
+                    LastName = userToAdd.LastName,
+                    Email = userToAdd.Email,
+                    Role = userToAdd.Role,
+                    Store = userToAdd.Store
+                }
             );
+
+            userToAdd = new User {
+                                    Id = 0,
+                                    FirstName = "",
+                                    LastName = "",
+                                    Email = "",
+                                    Role = "",
+                                    Store = ""
+                                    };
+
         }
 
         // Save edited user as the selected user
@@ -271,5 +331,3 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 
     }
 
-
-</div>
