@@ -102,6 +102,8 @@ Author (of import excel file code): Andrew Miller (3/16/2025)
     // Runs when import button is pressed inside modal
     private void HandleExcelFile()
     {
+        if (selectedFile == null) return;
+
         ProcessExcelFile(selectedFile);
     }
 
@@ -109,6 +111,6 @@ Author (of import excel file code): Andrew Miller (3/16/2025)
     function that calls a javascript function to open the import file modal */
     private async Task OpenImportModal()
     {
-        JS.InvokeVoidAsync("OpenImportModal");
+        await JS.InvokeVoidAsync("OpenImportModal");
     }
 }
