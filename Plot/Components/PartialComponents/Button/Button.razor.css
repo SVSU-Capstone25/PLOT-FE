@@ -10,6 +10,12 @@ and allocate floorsets for Platos Closet.
 
 Author: Josh Rodack (2/10/2025) */
 
+.Button>.btn {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
 .disabled-btn {
     cursor: not-allowed !important;
     pointer-events: auto !important;
@@ -51,22 +57,18 @@ Author: Josh Rodack (2/10/2025) */
 }
 
 .text-start {
-    text-align: start;
+    justify-content: flex-start;
 }
 
 .text-center {
-    text-align: center;
+    justify-content: center;
 }
 
 .text-end {
-    text-align: end;
+    justify-content: flex-end;
 }
 
 .icon {
     height: 24px;
     height: 50%;
-}
-
-.btn-element {
-    margin: 8px;
 }
