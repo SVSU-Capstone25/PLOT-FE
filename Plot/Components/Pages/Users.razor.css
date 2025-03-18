@@ -1,0 +1,18 @@
+/* Filename: PlotButton.razor.css
+Part of Project: PLOT
+
+File Purpose:
+This is CSS that works specifically with the Users page. 
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Josh Rodack (2/10/2025) */
+
+/* For the original button <button></button> component*/
+.btn-primary {
+    background-color: var(--platos-blue) !important;
+    border: none;
+
+}
