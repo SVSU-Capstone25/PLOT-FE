@@ -1,0 +1,185 @@
+@page "/floorset-editor"
+@using Plot.Components.PartialComponents.SlideOut
+@using Plot.Components.PartialComponents.NumericInput
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+@* 
+https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js
+https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js
+https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
+ *@
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script>
+
+<!-- Grid Area -->
+<div class="wrapper" width="500px" height="500px">
+    <div class="main-content">
+        <div class="grid">
+            @for (int i = 0; i < 50; i++)
+            {
+                @for (int j = 0; j < 50; j++)
+                {
+                    <div class="grid-cell" id="cell-@i-@j"></div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<SlideOut Id="FloorsetSlideOut" Class="slide-out">
+    @if (isPaneExpanded)
+    {
+        <div class="expanded">
+            <h3 class="header pt-3" @onclick="TogglePane">
+                <i class="fas fa-edit"></i> Edit Building Walls
+            </h3>
+            <hr style="opacity:1">
+            <label>Dimensions</label>
+            <div class="horizantal-inputs">
+                <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
+                    ValueChanged="@(str => NumberChanged(str, value => width = value))" />
+                @* The X to separate the two inputs *@
+                <span class="dimension-separator">X</span>
+                <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
+                    ValueChanged="@(str => NumberChanged(str, value => length = value))" />
+            </div>
+            <label>Enter the Dimensions (width and length) in feet</label>
+
+            @* uncomment the below when testing draggable*@
+            @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
+                @ondragstart:preventDefault="true"> *@
+            <div class="drag-start-area d-flex flex-row my-3">
+                <div class="fixture-img disable-select grab-cursor"></div>
+                <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+            </div>
+            @* </div> *@
+            <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+                Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
+                Apply
+            </Button>
+        </div>
+    }
+    else
+    {
+        <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
+            OnClickFunction="TogglePane" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+            Edit Building Walls
+        </Button>
+    }
+
+    <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="OpenImportModal"
+        Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
+        Import Excel File
+    </Button>
+</SlideOut>
+
+<Modal Title="Import Excel File" Id="importExcelModal" Class="modal-dialog">
+
+    <!--Body content includes file to upload-->
+    <BodyContent>
+        <p>Import an Excel File</p>
+        <FileInput Id="ImportFile" OnFileSelected="HandleFileSelected"></FileInput>
+    </BodyContent>
+
+    <FooterContent>
+        <!-- To fix: Cancel button is included in PartialComponents/Modal/Modal.razor
+         but appropriate alignment still needs to be handled 
+         -->
+
+        <!--Import button
+        Replace HandleExcelFile with the name of the function used in final FloorsetEditor file to allocate data
+
+        To fix: File persists when cancel button is pressed.
+        -->
+        <Button Class="Button" Id="buttonConfirmImport" Variant="primary" OnClickFunction="HandleExcelFile"
+            IsDisabled=false TextAlignment="center">
+            Import
+        </Button>
+    </FooterContent>
+</Modal>
+
+<script>
+    function OpenImportModal() {
+        @* /* Danielle Smith - 3/16/2025
+        grabs the import excel modal and opens it */ *@
+            bootstrap.Modal.getOrCreateInstance('#importExcelModal').show();
+    }
+</script>
+
+@code
+{
+    private bool isPaneExpanded = false;
+
+    private void TogglePane()
+    {
+        isPaneExpanded = !isPaneExpanded;
+    }
+
+    private double width;
+    private double length;
+
+    /* This function is called when the number is changed */
+    private async Task NumberChanged(string strNumber, Action<double> setValue)
+    {
+        // String will be either a positive number or ""
+        Double.TryParse(strNumber, out double newNumber);
+
+        // Directly modify the referenced variable
+        setValue(newNumber); // Number will be 0 if string is ""
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void ApplyDimensions()
+    {
+
+    }
+
+    @* private async Task OnDragStart(DragEventArgs e)
+    {
+        // Extract the mouse position from the DragEventArgs
+        var mouseX = e.ClientX;
+        var mouseY = e.ClientY;
+        string size = $"{width}x{length}";  // size should always be in the form of "10x20"
+
+        await JS.InvokeVoidAsync("console.log", size); // This will log to the browser's console.
+
+        // Call JS function with the mouse coordinates and size
+        await JS.InvokeVoidAsync("createDraggable", mouseX, mouseY, size);
+    } *@
+
+    private IBrowserFile? selectedFile;
+
+    /*
+    Set selectedFile to file placed in FileInput Tool
+    */
+    private void HandleFileSelected(IBrowserFile file)
+    {
+        selectedFile = file;
+    }
+
+    // Replace below with processing from the FloorSet Grid FE task
+    // Processes it
+    private void ProcessExcelFile(IBrowserFile file)
+    {
+        // Processing of excel file
+    }
+
+    // Runs when import button is pressed inside modal
+    private void HandleExcelFile()
+    {
+        if (selectedFile == null) return;
+
+        ProcessExcelFile(selectedFile);
+    }
+
+    /* Danielle Smith - 3/16/2025
+    function that calls a javascript function to open the import file modal */
+    private async Task OpenImportModal()
+    {
+        await JS.InvokeVoidAsync("OpenImportModal");
+    }
+}
