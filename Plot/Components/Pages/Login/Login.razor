@@ -3,28 +3,29 @@
 @page "/login"
 
 @inject NavigationManager Navigation
+@inject HttpClient Client
 
 <PageTitle>Login</PageTitle>
 
 <body class="background">
     <div class="login">
-        <div class="body-content">
+        <form class="body-content" onsubmit="@OnLoginSubmit">
             <img src="img/PlatoLogo.png" alt="Plato's closet logo">
             <h4>Welcome to PLOT, </h4>
             <h4>Plato's Layout Optimization Tool</h4>
             <p>Please log in to your account to continue</p>
             @* Danielle Smith - 3/16/2025
                 gave better ids and added some margin on the forgot password link *@
-            <TextInput Id="username" Type="text" Label="Username" Placeholder="" Value="@username"
-                ValueChanged="@(e => username = e)" />
+            <TextInput Id="email" Type="email" Label="Email" Placeholder="" Value="@email"
+                ValueChanged="@(e => email = e)" Required="true" />
             <TextInput Id="password" Type="password" Label="Password" Placeholder="" Value="@password"
-                ValueChanged="@(e => password = e)" Class="masked" />
+                ValueChanged="@(e => password = e)" Class="masked" Required="true" />
             <Link Id="link" Class="mb-3" Url="/recover_password">Forgot Password?</Link>
-            <Button Class="Button" Id="buttonLogin" Variant="primary" OnClickFunction="ValidateInput" Icon=""
-                IsDisabled=false TextAlignment="center">
+            <Button Class="Button" Id="buttonLogin" Variant="primary" Icon="" Type="submit" IsDisabled=false
+                TextAlignment="center">
                 Log in
             </Button>
-        </div>
+        </form>
         <div class="footer-content">
             @if (isInvalid)
             {
@@ -36,26 +37,26 @@
 
 @code
 {
-    string username = ""; // Define the username variable
+    string email = ""; // Define the username variable
     string password = "";
     bool isInvalid = false;
 
-    private void ValidateInput()
+    private async void OnLoginSubmit()
     {
-        // Check if username is "temp" and redirect to localhost:8080 if true
-        if (username == password)
+        var request = new HttpRequestMessage(HttpMethod.Post,
+        "http://backend:8085/api/auth/login");
+        request.Headers.Add("Accept", "application/json");
+
+        request.Content = JsonContent.Create(new
         {
-            Console.WriteLine("Username: " + username + " --- Password: " + password);
-            isInvalid = false;
-            // Redirect to localhost:8080
-            Navigation.NavigateTo("/home", forceLoad: true);
-            /* Danielle Smith - 3/16/2025
-            added force load to this so that the page
-            actually reloads and loads the new styles */
-        }
-        else
-        {
-            isInvalid = true;
-        }
+            Email = email,
+            Password = password
+        });
+
+        var response = await Client.SendAsync(request);
+
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        Console.WriteLine(responseBody);
     }
 }
