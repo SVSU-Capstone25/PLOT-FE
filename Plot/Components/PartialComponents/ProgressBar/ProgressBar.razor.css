@@ -31,9 +31,11 @@ meter::-webkit-meter-optimum-value {
 }
 
 label {
-  position: absolute;
+  position: relative;
   padding-left: 0.5rem;
   z-index: 3;
+  top: -1.55rem;
+  /* Danielle Smith - 3/15/2025 changed position to relative so it doesn't overflow when scrolling progress section*/
 }
 
 .progress-unfulfilled {

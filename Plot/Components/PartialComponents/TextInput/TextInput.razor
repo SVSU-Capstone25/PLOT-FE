@@ -18,13 +18,13 @@
 
 <div class="text-input-container @(LabelOnTop == true ? "label-top" : "label-left")">
     <label for="@Id">@Label</label>
-    <div class="input-wrapper">
-        <!-- Text Input Field -->
-        @* Danielle Smith 3/15/2025
-        implemented new OnInputChange method to assure you can pull value back out of the TextInput *@
-        <input id="@Id" type="@Type" value="@Value" @oninput="OnInputChange" placeholder="@Placeholder"
-            class="TextInput @Class" />
-    </div>
+    <!-- Text Input Field -->
+    @* Danielle Smith 3/15/2025
+        implemented new OnInputChange method to assure you can pull value back out of the TextInput
+        removed unecessary input wrapper div *@
+    <input id="@Id" type="@Type" value="@Value" @oninput="OnInputChange" placeholder="@Placeholder"
+        class="TextInput @Class" />
+
 </div>
 
 @code {
