@@ -39,13 +39,14 @@ Author: Josh Rodack (2/10/2025)-->
     <!--Button class, adds classes based on data passed icon
     via parameters
     -->
-    <button @onclick="OnClickFunc" type="button" class="btn btn-@Variant @alignment @disabledClass w-100"
-        disabled=@IsDisabled>
+    <button @onclick="OnClickFunc" class="btn btn-@Variant @alignment @disabledClass w-100" disabled="@IsDisabled"
+        type="@Type">
         <!--Button content-->
         <span class="icon">
             <i class="@Icon"></i>
         </span>
-        @if (ChildContent != null) {
+        @if (ChildContent != null)
+        {
             <span>@ChildContent</span>
         }
     </button>
@@ -58,6 +59,9 @@ Author: Josh Rodack (2/10/2025)-->
 
     [Parameter]
     public string? Id { get; set; }
+
+    [Parameter]
+    public string? Type { get; set; } = "button";
 
     [Parameter]
     public required string Variant { get; set; }
