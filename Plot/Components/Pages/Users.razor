@@ -232,10 +232,11 @@ Variant="standard" Class="modal-dialog">
         <h2>Are you SURE you want to delete this user?</h2>
 
         <!-- confirmDelete variable bound with the input text
-        compared to check if delete is confirmed
+        compared to check if delete button can be enabled
         with EnableDelete function every time the text changes -->
         <TextInput Id="deleteTextInput" Label="If so, type DELETE here"
-        Placeholder="Type DELETE here" Type="Text" @bind-Value="confirmDelete"/>
+        Placeholder="Type DELETE here" Type="Text" Value="@confirmDelete"
+        ValueChanged="EnableDelete" />
 
     </BodyContent>
 
@@ -244,10 +245,11 @@ Variant="standard" Class="modal-dialog">
 
         <!-- Cancel button is provided with Modal custom component -->
 
-        <!-- Delete user button deletes user if DELETE was typed in Textbox
-             by calling the DeleteUser method -->
+        <!-- Delete user button deletes user
+        Disabled unless DELETE is in the TextInput -->
         <button class="btn btn-primary" id="buttonConfirmDelete"
-        @onclick="DeleteUser" 
+        @onclick="DeleteUser"
+        disabled="@isDeleteDisabled" 
         data-bs-dismiss="modal">Yes, Delete</button>
         
     </FooterContent>
@@ -324,6 +326,9 @@ Variant="standard" Class="modal-dialog">
 
     /* Handling Deletion */
 
+    // Is delete button disabled?
+    private bool isDeleteDisabled = true;
+
     // Deletion confirmation string, initialized as empty
     private string confirmDelete = "";
 
@@ -395,13 +400,30 @@ Variant="standard" Class="modal-dialog">
         StateHasChanged(); // Table is updated to reflect changes
     }
 
+    // Enable delete button
+    private void EnableDelete(string value){
+        // set confirmDelete variable to value
+        confirmDelete = value;
+
+        // Check if confirmDelete is equal to
+        // Delete confirmation string
+        if(confirmDelete.Equals(DELETE_CONFIRM)){
+            // Set isDelete disabled to false
+            isDeleteDisabled = false;
+        }
+        else{
+            // Set isDelete disabled to true
+            isDeleteDisabled = true;
+        }
+    }
+
     // Delete selected user
     private void DeleteUser() {
-        if(confirmDelete.Equals(DELETE_CONFIRM)){
-            var index = users.FindIndex(u => u.Id == selectedUser.Id);
-            users.RemoveAt(index);
+        // Get user and remove
+        var index = users.FindIndex(u => u.Id == selectedUser.Id);
+        users.RemoveAt(index);
+
         StateHasChanged(); // Table is updated to reflected changes
-        }
     }
 
     // User class
