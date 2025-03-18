@@ -1,0 +1,69 @@
+/* Filename: Floorsets.razor.css
+Part of Project: PLOT
+
+File Purpose:
+This is CSS that works specifically with the Floorsets blazor component. 
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Andrew Fulton (3/12/2025) */
+
+/* container for a set of items to be shown horizontally */
+.horizontal-items {
+    display: flex;
+    gap: 4vw;
+    /* Danielle Smith - 3/17/2025 updated gap to use view width*/
+    flex-wrap: wrap;
+}
+
+/* transparent button */
+.btn-style {
+    border: none;
+    background-color: white;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+/* CSS used to fix the button in the bottom right */
+.fixed-bottom-right {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 200px;
+    height: 60px;
+    background-color: transparent;
+    border: none;
+    text-align: center;
+    z-index: 1000;
+    /* Ensure it's on top */
+}
+
+/* container for the top section of the page */
+.container {
+    display: flex;
+    max-width: none !important;
+    height: 300px;
+    margin-bottom: 5%;
+    justify-content: center;
+    align-items: center;
+}
+
+/* left side of the conainer */
+.left {
+    flex: 1;
+    max-width: none !important;
+    justify-content: center;
+    align-items: center;
+
+}
+
+/* right side of the container */
+.right {
+    flex: 1;
+    max-width: none !important;
+    justify-content: right;
+    align-items: center;
+    margin-left: 40vw;
+}
