@@ -42,10 +42,15 @@ Author: Josh Rodack (2/10/2025)-->
     <button @onclick="OnClickFunc" type="button" class="btn btn-@Variant @alignment @disabledClass w-100"
         disabled=@IsDisabled>
         <!--Button content-->
-        <span class="icon">
-            <i class="@Icon"></i>
-        </span>
-        @if (ChildContent != null) {
+        @if (Icon != null)
+        {
+            <span class="icon">
+                <i class="@Icon"></i>
+            </span>
+        }
+
+        @if (ChildContent != null)
+        {
             <span>@ChildContent</span>
         }
     </button>

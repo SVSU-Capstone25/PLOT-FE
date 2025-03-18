@@ -10,11 +10,11 @@ and allocate floorsets for Platos Closet.
 
 Author: Andrew Fulton (3/12/2025)  *@
 
-@page "/stores"
+@page "/store-dashboard"
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
 
-<PageTitle>Stores</PageTitle>
+<PageTitle>Store Dashboard</PageTitle>
 
 @* Div to hold the stores *@
 <div class="horizontal-items">
@@ -168,8 +168,9 @@ Author: Andrew Fulton (3/12/2025)  *@
 @* + Add Store button fixed to the bottom right of the screen *@
 <button class="fixed-bottom-right">
     @* add store button that brings up the Add Store modal *@
-    <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="ShowAddStoreModal">
-        <i class="fa-solid fa-plus"></i> Add Store
+    <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="ShowAddStoreModal"
+        Icon="fa-solid fa-plus">
+        Add Store
     </Button>
 </button>
 

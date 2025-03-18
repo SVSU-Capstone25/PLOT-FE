@@ -39,13 +39,20 @@ Author (of import excel file code): Andrew Miller (3/16/2025)
 </div>
 
 <SlideOut Id="FloorsetSlideOut">
+    <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="ShowAllocationsPanel"
+        Icon="fa-solid fa-eye" IsDisabled=false TextAlignment="center">
+        View Allocations
+    </Button>
     <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="OpenImportModal"
         Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
         Import Excel File
     </Button>
-    <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="left"
+    <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
         OnClickFunction="openPrint">
         Print Layout
+    </Button>
+    <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
+        Save
     </Button>
 </SlideOut>
 
