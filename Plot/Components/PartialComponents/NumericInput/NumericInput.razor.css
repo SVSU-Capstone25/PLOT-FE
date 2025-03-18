@@ -44,7 +44,7 @@
     z-index: 1;
 }
 
-#number-input {
+.input-number {
     border-radius: 5px;
     padding: .75rem;
     border: 1px solid #e3e3e3;
@@ -52,17 +52,15 @@
     width: 100%;
 }
 
-#number-input.error {
+.input-number.error {
     border-color: var(--cancel) !important;
 }
 
-#number-input.error:focus,
-#number-input.error:hover {
+.input-number.error:focus,
+.input-number.error:hover {
     box-shadow: 0 0 0 .15rem rgba(220, 53, 69, .25) !important;
     transition: 300ms;
 }
-
-
 
 small.error {
     color: var(--cancel) !important;
