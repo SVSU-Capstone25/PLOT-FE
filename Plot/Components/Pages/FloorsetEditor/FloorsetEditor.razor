@@ -33,24 +33,28 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     @if (isPaneExpanded)
     {
         <div class="expanded">
-            <h3 class="header" @onclick="TogglePane">
+            <h3 class="header pt-3" @onclick="TogglePane">
                 <i class="fas fa-edit"></i> Edit Building Walls
-            </h3>      
+            </h3>
+            <hr style="opacity:1">
+            <label>Dimensions</label>
             <div class="horizantal-inputs">
-                <NumericInput Id="width" Class="numeric-input" Label="Dimensions" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
-                ValueChanged="@(str => NumberChanged(str, value => width = value))" />
-                <span class="dimension-separator">X</span> <!-- The X to separate the two inputs -->
+                <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
+                    ValueChanged="@(str => NumberChanged(str, value => width = value))" />
+                @* The X to separate the two inputs *@
+                <span class="dimension-separator">X</span>
                 <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
-                ValueChanged="@(str => NumberChanged(str, value => length = value))"/>
+                    ValueChanged="@(str => NumberChanged(str, value => length = value))" />
             </div>
-            <p>@width - @length</p>
+            <label>Enter the Dimensions (width and length) in feet</label>
+
             @* uncomment the below when testing draggable*@
             @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
                 @ondragstart:preventDefault="true"> *@
-                <div class="drag-start-area d-flex flex-row">
-                    <div class="fixture-img disable-select grab-cursor"></div>
-                    <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
-                </div>
+            <div class="drag-start-area d-flex flex-row my-3">
+                <div class="fixture-img disable-select grab-cursor"></div>
+                <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+            </div>
             @* </div> *@
             <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
                 Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
@@ -60,8 +64,8 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     }
     else
     {
-        <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary" OnClickFunction="TogglePane"
-        Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+        <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
+            OnClickFunction="TogglePane" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
             Edit Building Walls
         </Button>
     }
@@ -101,7 +105,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     function OpenImportModal() {
         @* /* Danielle Smith - 3/16/2025
         grabs the import excel modal and opens it */ *@
-        bootstrap.Modal.getOrCreateInstance('#importExcelModal').show();
+            bootstrap.Modal.getOrCreateInstance('#importExcelModal').show();
     }
 </script>
 
@@ -179,4 +183,3 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         await JS.InvokeVoidAsync("OpenImportModal");
     }
 }
-
