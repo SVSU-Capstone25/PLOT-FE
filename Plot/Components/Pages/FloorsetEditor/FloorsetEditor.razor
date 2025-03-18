@@ -37,13 +37,13 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                 <i class="fas fa-edit"></i> Edit Building Walls
             </h3>      
             <div class="horizantal-inputs">
-                <NumericInput Class="numeric-input" Label="Dimensions" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
-                ValueChanged="NumberChangedWidth" />
+                <NumericInput Id="width" Class="numeric-input" Label="Dimensions" Placeholder="" Description="Enter the Dimensions (width and length) in feet"
+                ValueChanged="@(str => NumberChanged(str, value => width = value))" />
                 <span class="dimension-separator">X</span> <!-- The X to separate the two inputs -->
-                <NumericInput Class="numeric-input" Label="" Placeholder="" Description=""
-                ValueChanged="NumberChangedLength"/>
+                <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
+                ValueChanged="@(str => NumberChanged(str, value => length = value))"/>
             </div>
-            @* <p>@width - @length</p> *@
+            <p>@width - @length</p>
             @* uncomment the below when testing draggable*@
             @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
                 @ondragstart:preventDefault="true"> *@
@@ -65,7 +65,45 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             Edit Building Walls
         </Button>
     }
+
+    <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="OpenImportModal"
+        Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
+        Import Excel File
+    </Button>
 </SlideOut>
+
+<Modal Title="Import Excel File" Id="importExcelModal" Class="modal-dialog">
+
+    <!--Body content includes file to upload-->
+    <BodyContent>
+        <p>Import an Excel File</p>
+        <FileInput Id="ImportFile" OnFileSelected="HandleFileSelected"></FileInput>
+    </BodyContent>
+
+    <FooterContent>
+        <!-- To fix: Cancel button is included in PartialComponents/Modal/Modal.razor
+         but appropriate alignment still needs to be handled 
+         -->
+
+        <!--Import button
+        Replace HandleExcelFile with the name of the function used in final FloorsetEditor file to allocate data
+
+        To fix: File persists when cancel button is pressed.
+        -->
+        <Button Class="Button" Id="buttonConfirmImport" Variant="primary" OnClickFunction="HandleExcelFile"
+            IsDisabled=false TextAlignment="center">
+            Import
+        </Button>
+    </FooterContent>
+</Modal>
+
+<script>
+    function OpenImportModal() {
+        @* /* Danielle Smith - 3/16/2025
+        grabs the import excel modal and opens it */ *@
+        bootstrap.Modal.getOrCreateInstance('#importExcelModal').show();
+    }
+</script>
 
 @code
 {
@@ -80,22 +118,13 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     private double length;
 
     /* This function is called when the number is changed */
-    private async Task NumberChangedWidth(string strWidth)
-    {
-        // String will be either a positive number or ""
-        Double.TryParse(strWidth, out double newNumberWidth);
-
-        width = newNumberWidth; // Number will be 0 if string is ""
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task NumberChangedLength(string strNumber)
+    private async Task NumberChanged(string strNumber, Action<double> setValue)
     {
         // String will be either a positive number or ""
         Double.TryParse(strNumber, out double newNumber);
 
-        length = newNumber; // Number will be 0 if string is ""
+        // Directly modify the referenced variable
+        setValue(newNumber); // Number will be 0 if string is ""
 
         await InvokeAsync(StateHasChanged);
     }
@@ -105,7 +134,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
     }
 
-    private async Task OnDragStart(DragEventArgs e)
+    @* private async Task OnDragStart(DragEventArgs e)
     {
         // Extract the mouse position from the DragEventArgs
         var mouseX = e.ClientX;
@@ -116,6 +145,38 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
         // Call JS function with the mouse coordinates and size
         await JS.InvokeVoidAsync("createDraggable", mouseX, mouseY, size);
+    } *@
+
+    private IBrowserFile? selectedFile;
+
+    /*
+    Set selectedFile to file placed in FileInput Tool
+    */
+    private void HandleFileSelected(IBrowserFile file)
+    {
+        selectedFile = file;
+    }
+
+    // Replace below with processing from the FloorSet Grid FE task
+    // Processes it
+    private void ProcessExcelFile(IBrowserFile file)
+    {
+        // Processing of excel file
+    }
+
+    // Runs when import button is pressed inside modal
+    private void HandleExcelFile()
+    {
+        if (selectedFile == null) return;
+
+        ProcessExcelFile(selectedFile);
+    }
+
+    /* Danielle Smith - 3/16/2025
+    function that calls a javascript function to open the import file modal */
+    private async Task OpenImportModal()
+    {
+        await JS.InvokeVoidAsync("OpenImportModal");
     }
 }
 
