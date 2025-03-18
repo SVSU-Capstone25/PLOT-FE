@@ -18,16 +18,12 @@ Author: Andrew Fulton (3/13/2025)  *@
 @* Top portion of the page (Showing store, location, and image for the current floorset) *@
 <div class="container">
     <div class="left">
-
         <h1 font-size="3em">Floorsets for @storeId Store</h1>
         <br>
         <h3>@storeLocation</h3>
-
     </div>
     <div class="right">
-
         <img height="auto" width="500px" src="/img/FloorsetPhotoExample.png">
-
     </div>
 </div>
 
@@ -36,121 +32,75 @@ Author: Andrew Fulton (3/13/2025)  *@
 
     @* A bunch of hard coded Cards *@
     <Card Id="Nov24Floorset" Class="Card" CardText="Nov24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-
-        <Dropdown Class="Test Dropdown" Id="Nov24Dropdown"
-            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+        <Dropdown Class="Dropdown" Id="Nov24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
             DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
             LabelText="Floorset"
             DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-
     </Card>
 
     <Card Id="Aug24Floorset" Class="Card" CardText="Aug24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-
-        <Dropdown Class="Test Dropdown" Id="Aug24Dropdown"
-            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+        <Dropdown Class="Dropdown" Id="Aug24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
             DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
             LabelText="Floorset"
             DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-
     </Card>
-
 
     <Card Id="Apr23Floorset" Class="Card" CardText="Apr23 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-
-        <Dropdown Class="Test Dropdown" Id="Apr23Dropdown"
-            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+        <Dropdown Class="Dropdown" Id="Apr23Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
             DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
             LabelText="Floorset"
             DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-
     </Card>
-
 
     <Card Id="Jan25Floorset" Class="Card" CardText="Jan25 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-
-        <Dropdown Class="Test Dropdown" Id="Jan25Dropdown"
-            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+        <Dropdown Class="Dropdown" Id="Jan25Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
             DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
             LabelText="Floorset"
             DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-
     </Card>
-
 
     <Card Id="Feb24Floorset" Class="Card" CardText="Feb24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-
-        <Dropdown Class="Test Dropdown" Id="Feb24Dropdown"
-            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+        <Dropdown Class="Dropdown" Id="Feb24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
             DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
             LabelText="Floorset"
             DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-
     </Card>
-
 
     <Card Id="Apr24Floorset" Class="Card" CardText="Apr24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-
-        <Dropdown Class="Test Dropdown" Id="Apr24Dropdown"
-            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+        <Dropdown Class="Dropdown" Id="Apr24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
             DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
             LabelText="Floorset"
             DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-
     </Card>
-
 
     <Card Id="Jan24Floorset" Class="Card" CardText="Jan24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-
-        <Dropdown Class="Test Dropdown" Id="Jan24Dropdown"
-            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+        <Dropdown Class="Dropdown" Id="Jan24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
             DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
             LabelText="Floorset"
             DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-
     </Card>
-
 
     <Card Id="Oct24Floorset" Class="Card" CardText="Oct24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-
-        <Dropdown Class="Test Dropdown" Id="Oct24Dropdown"
-            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+        <Dropdown Class="Dropdown" Id="Oct24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
             DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
             LabelText="Floorset"
             DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-
     </Card>
-
 
     <Card Id="Dec24Floorset" Class="Card" CardText="Dec24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-
-        <Dropdown Class="Test Dropdown" Id="Dec24Dropdown"
-            DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+        <Dropdown Class="Dropdown" Id="Dec24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
             DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
             LabelText="Floorset"
             DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-
     </Card>
-
 </div>
-
-
-
-
-
 
 @* + Add Floorset button fixed to the bottom right of the screen *@
 <button class="fixed-bottom-right">
-    @* add store button that brings up the Add Store modal *@
-    <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="goToFloorsetEditorPage">+ Add
-        Floorset</Button>
+    <Button Class="Button" TextAlignment="center" Variant="primary" OnClickFunction="goToFloorsetEditorPage">
+        <i class="fa-solid fa-plus"></i> Add Floorset
+    </Button>
 </button>
-
-
-
-
-
-
 
 @* HARD CODED MODAL: Delete Floorset modal *@
 <Modal Title="Confirm Deletion" Id="deleteFloorsetModal" Class="standard">
@@ -162,26 +112,30 @@ Author: Andrew Fulton (3/13/2025)  *@
 
     <FooterContent>
         <p style="margin-left: auto;"></p>
-        <Button Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="deleteFloorset">Yes,
-            Delete</Button>
+        <Button Class="Button" TextAlignment="center" Variant="primary" OnClickFunction="deleteFloorset">
+            Yes, Delete
+        </Button>
     </FooterContent>
-
 </Modal>
 
-
-
-
-
-@* Script to show the whichever modal ID is passed into it *@
 <script>
+    // show the whichever modal ID is passed into it
     function showModal(modalId) {
         var modal = new bootstrap.Modal(document.getElementById(modalId));
         modal.show();
     }
-</script>
 
-@* script to add a floorset image to the floorsets when hitting copy *@
-<script>
+    function HideModal(modalId) {
+        /* Danielle Smith - 3/17/2025
+        hide modal function that works with button component and id of modal passed in
+        call remove modal backdrop twice because opening the delete modal makes two of them for some reason
+        we will need to fix this in the future */
+        document.getElementById(`#${modalId}`).classList.remove('show');
+        document.querySelector('.modal-backdrop')?.remove();
+        document.querySelector('.modal-backdrop')?.remove();
+    }
+
+    // script to add a floorset image to the floorsets when hitting copy
     function addCopiedFloorsetText() {
         // Get the target div
         const floorsetCardsDiv = document.getElementById("floorsetCards");
@@ -199,11 +153,6 @@ Author: Andrew Fulton (3/13/2025)  *@
     }
 </script>
 
-
-
-
-
-
 @code {
     [Parameter]
     public string? storeId { get; set; }
@@ -211,27 +160,17 @@ Author: Andrew Fulton (3/13/2025)  *@
     [Parameter]
     public string? storeLocation { get; set; }
 
-    //test function
-    private void doSomething()
-    {
-        Console.WriteLine("THIS IS DOING SOMETHING");
-    }
     //function for deleting a store
-    private void deleteFloorset()
+    private async void deleteFloorset()
     {
         Console.WriteLine("DELETE THIS FLOORSET");
-    }
-
-    //+ Add floorset modal (NOT IN USE)
-    private async Task ShowAddFloorsetModal()
-    {
-        await JS.InvokeVoidAsync("showModal", "addFloorsetModal");
+        await JS.InvokeVoidAsync("HideModal", "deleteFloorsetModal");
     }
 
     //general function to take us to the floorsets editor page for a floorset store
     private void goToFloorsetEditorPage()
     {
-        Navigation.NavigateTo("/floorset-editor");
+        Navigation.NavigateTo("/floorset-editor", forceLoad: true);
     }
 
     //Add a copied floorset

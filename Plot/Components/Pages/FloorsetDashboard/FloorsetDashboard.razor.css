@@ -10,20 +10,13 @@ and allocate floorsets for Platos Closet.
 
 Author: Andrew Fulton (3/12/2025) */
 
-
-
-
-
-
 /* container for a set of items to be shown horizontally */
 .horizontal-items {
     display: flex;
-    gap: 100px;
+    gap: 4vw;
+    /* Danielle Smith - 3/17/2025 updated gap to use view width*/
     flex-wrap: wrap;
 }
-
-
-
 
 /* transparent button */
 .btn-style {
@@ -46,10 +39,6 @@ Author: Andrew Fulton (3/12/2025) */
     z-index: 1000;
     /* Ensure it's on top */
 }
-
-
-
-
 
 /* container for the top section of the page */
 .container {
