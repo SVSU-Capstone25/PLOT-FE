@@ -249,7 +249,7 @@ Author: Andrew Fulton (3/12/2025)  *@
         hide modal function that works with button component and id of modal passed in
         call remove modal backdrop twice because opening the delete modal makes two of them for some reason
         we will need to fix this in the future */
-        document.getElementById(`#${modalId}`).classList.remove('show');
+        document.getElementById(`${modalId}`).classList.remove('show');
         document.querySelector('.modal-backdrop')?.remove();
         document.querySelector('.modal-backdrop')?.remove();
     }
