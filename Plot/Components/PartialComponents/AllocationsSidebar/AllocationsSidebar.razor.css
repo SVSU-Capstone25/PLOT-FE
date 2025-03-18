@@ -1,0 +1,50 @@
+/* Originally by Tristan Calay */
+.progress-area {
+    background-color: white;
+    padding: 5px;
+    height: 100%;
+    border-radius: .5rem;
+}
+
+.inner-container {
+    background-color: #f0f0f0;
+    padding: .5rem;
+    border-radius: .5rem;
+    height: 84vh;
+    /* Danielle Smith - 3/15/2025 put height on container*/
+}
+
+/* Danielle Smith - 3/15/2025
+class for the area with the progress bars to make them a scrollable area
+with this and the height on inner-container, you now scroll the categories
+without the buttons at the bottom ever getting lost */
+.progress-area {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 70vh;
+}
+
+.AllocationsSidebar {
+    padding: 1.5rem;
+}
+
+.category-separator {
+    margin: 0.2rem;
+    opacity: 0.1;
+}
+
+.toolbar-buttons {
+    justify-content: center;
+    gap: 16px;
+    display: flex;
+    padding-top: 0.5rem;
+}
+
+.search-button>button {
+    color: black;
+    background-color: transparent !important;
+}
+
+.text-input-container {
+    flex-grow: 2;
+}

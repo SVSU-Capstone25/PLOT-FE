@@ -1,6 +1,7 @@
+@* Originally by Tristan Calay *@
 <div class="ProgressBar row @Class" id="@Id" style="--progress-bar-background-color: @barColor;">
     <div class="col-6">
-        @if(iconString != null)
+        @if (iconString != null)
         {
             <i class="@iconString me-2"></i>
         }
@@ -8,54 +9,55 @@
     </div>
 
     <div class="col-6">
-        <label for="main-progress">@barLabel</label>
+        @* Danielle Smith - 3/17/2025 put label on the bottom for spacing purpopses *@
         <meter class=@_barClass min="@barMin" max="@barMax" value="@barValue">@barValue</meter>
+        <label for="main-progress">@barLabel</label>
     </div>
 </div>
 
 @code {
     //Id string to pass into the main HTML Id
     [Parameter]
-    public String? Id {get; set;}
+    public String? Id { get; set; }
 
     //Class string to pass into the main component HTML Class
     [Parameter]
-    public String? Class {get; set;}
+    public String? Class { get; set; }
 
     //FontAwesome icon to display before the text.
     [Parameter]
-    public String? iconString {get; set;}
+    public String? iconString { get; set; }
 
     //Text to display to the left of the progress bar
     [Parameter]
-    public String? mainLabel {get; set;}
+    public String? mainLabel { get; set; }
 
     //Text to display inside the progress bar.
     [Parameter]
-    public String? barLabel {get; set;}
+    public String? barLabel { get; set; }
 
     //Min number in the progress bar.
     [Parameter]
-    public int barMin {get; set;} = 0;
+    public int barMin { get; set; } = 0;
 
     //Max number in the progress bar.
     //Must be greater than barMin
     [Parameter]
-    public int barMax {get; set;} = 100;
+    public int barMax { get; set; } = 100;
 
-    //Amount of current progress in the progress bar. 
+    //Amount of current progress in the progress bar.
     //0 <= barValue <= barMax.
     [Parameter]
-    public int barValue {get; set;} = 50;
-
+    public int barValue { get; set; } = 50;
 
     //PROGRESS BAR COLOR
     [Parameter]
-    public String barColor {get; set;} = "lightblue";
+    public String barColor { get; set; } = "lightblue";
 
-    //Toggle for using over/underfill styling presets. Defaults to true, since this is most likely used primarily in allocations page.
+    //Toggle for using over/underfill styling presets. Defaults to true,
+    // since this is most likely used primarily in allocations page.
     [Parameter]
-    public Boolean usePresetFillWarnings {get; set;} = true;
+    public Boolean usePresetFillWarnings { get; set; } = true;
 
     //Preset styling for the bar - If the barProgress is < 100%, barClass is updated to mark the bar unfulfilled.
     private String _unFilledClass = "progress-unfulfilled";
@@ -73,9 +75,9 @@
     private int MapProgress()
     {
         return Math.Clamp(
-            (int) Single.Lerp(0f, 100f, ((float)barValue / (float)barMax)),
-            0,
-            100
+        (int)Single.Lerp(0f, 100f, ((float)barValue / (float)barMax)),
+        0,
+        100
         );
     }
 

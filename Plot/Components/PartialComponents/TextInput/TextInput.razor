@@ -2,38 +2,37 @@
 @inject IJSRuntime JSRuntime
 
 <script>
-    function handleValueChanged(element, dotNetHelper)
-    { 
-         // Call the Blazor method to update the value
+    function handleValueChanged(element, dotNetHelper) {
+        // Call the Blazor method to update the value
         dotNetHelper.invokeMethodAsync('OnValueChanged', element.value);
-        if (element.value.trim().length < 1)
-        {
+        if (element.value.trim().length < 1) {
             element.style.color = 'red';
             element.style.borderColor = 'red';
         }
         else {
             element.style.color = '';
-            element.style.borderColor= '';
+            element.style.borderColor = '';
         }
     }
 </script>
 
 <div class="text-input-container @(LabelOnTop == true ? "label-top" : "label-left")">
     <label for="@Id">@Label</label>
-    <div class="input-wrapper">
-        <!-- Text Input Field -->
-        @* Danielle Smith 3/15/2025
-        implemented new OnInputChange method to assure you can pull value back out of the TextInput *@
-        <input id="@Id" type="@Type" value="@Value" @oninput="OnInputChange" placeholder="@Placeholder" class="TextInput @Class" />
-    </div>
+    <!-- Text Input Field -->
+    @* Danielle Smith 3/15/2025
+        implemented new OnInputChange method to assure you can pull value back out of the TextInput
+        removed unecessary input wrapper div *@
+    <input id="@Id" type="@Type" value="@Value" @oninput="OnInputChange" placeholder="@Placeholder"
+        class="TextInput @Class" />
+
 </div>
 
 @code {
     [Parameter] public string? Label { get; set; } = "Enter text";
-    [Parameter] public string? Type { get; set; } = "password"; // Default type for password
+    [Parameter] public string? Type { get; set; } = "text"; // Default type for text
     [Parameter] public string? Placeholder { get; set; } = "Type here...";
     [Parameter] public string? Value { get; set; }
-    [Parameter] public EventCallback<string> ValueChanged { get; set; }  // Event callback for ValueChanged
+    [Parameter] public EventCallback<string> ValueChanged { get; set; } // Event callback for ValueChanged
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public bool? LabelOnTop { get; set; } = true;
@@ -44,15 +43,15 @@
     private DotNetObjectReference<TextInput>? DotNetHelper;
 
     /* Danielle Smith 3/15/2025
-    this method ensures that value updates to the properly binded 
+    this method ensures that value updates to the properly binded
     value so you can pull it back out of the TextInput */
     private async Task OnInputChange(ChangeEventArgs e)
     {
         Value = e.Value?.ToString() ?? "";
         await ValueChanged.InvokeAsync(Value);
     }
-    
-     // This method will be called via JS interop
+
+    // This method will be called via JS interop
     [JSInvokable]
     public async Task OnValueChanged(string newValue)
     {

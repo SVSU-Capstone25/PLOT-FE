@@ -1,0 +1,154 @@
+<!-- Filename: AllocationsSidebar.razor
+Part of Project:-- PLOT
+File Purpose:
+Create a component to display the sidebar for the allocations page.
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Tristan Calay (3/15/2025)-->
+
+<div class="AllocationsSidebar @Class" id="@ID">
+    <div class="inner-container">
+        <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
+        <hr style="opacity: 1.0; color:black;">
+
+        <div class="categories-div">
+            @* Danielle Smith 3/17/2025
+            changed how these are being displayed to use bootstrap classes
+            added params to help text input take up proper width *@
+            <div class="row">
+                <div class="col-md-8">
+                    <TextInput Id="category-search" Label="" Type="search" Placeholder="Category Search..."
+                        Value="@categorySearch" ValueChanged="@(e => categorySearch = e)" LabelOnTop="false"
+                        Class="w-100" />
+                </div>
+
+                <div class="col-md-2">
+                    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-arrow-up-short-wide"
+                        OnClickFunction="sortCategory" Class="search-button" TextAlignment="center" />
+                </div>
+
+                <div class="col-md-2">
+                    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-filter"
+                        OnClickFunction="filterCategory" Class="search-button" TextAlignment="center" />
+                </div>
+            </div>
+
+            <div class="progress-area">
+                @* Danielle Smith 3/17/2025
+                added classes for margins on these progressbars
+                added more categories to fill this out for demo purpopses & sorted them alphabetically *@
+
+                @* Men's *@
+                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Men's" barColor="#AAD9FF" barMax=480
+                    barValue=290 barLabel="290/480 LF" />
+                <ProgressBar mainLabel="Jeans" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
+                <ProgressBar mainLabel="Jackets" barColor="#AAD9FF" barMax=100 barValue=120 barLabel="120/100 LF" />
+                <ProgressBar mainLabel="Pants" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
+                <ProgressBar mainLabel="Shirts" barColor="#AAD9FF" barMax=100 barValue=30 barLabel="30/100 LF" />
+                <ProgressBar mainLabel="Shoes" barColor="#AAD9FF" barMax=100 barValue=60 barLabel="60/100 LF" />
+                <ProgressBar mainLabel="Shorts" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
+                <ProgressBar mainLabel="Sports" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
+                <ProgressBar mainLabel="Suits" barColor="#AAD9FF" barMax=100 barValue=100 barLabel="100/100 LF" />
+
+                @* Women's *@
+                <hr class="category-separator">
+                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Women's" barColor="#FFAAD6" barMax=40
+                    barValue=20 barLabel="20/40 LF" />
+                <ProgressBar mainLabel="Dresses" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" />
+                <ProgressBar mainLabel="Jackets" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" />
+                <ProgressBar mainLabel="Jeans" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" />
+                <ProgressBar mainLabel="Pants" barColor="#FFAAD6" barMax=40 barValue=20 barLabel="20/40 LF" />
+                <ProgressBar mainLabel="Shirts" barColor="#FFAAD6" barMax=100 barValue=30 barLabel="30/100 LF" />
+                <ProgressBar mainLabel="Shoes" barColor="#FFAAD6" barMax=100 barValue=60 barLabel="60/100 LF" />
+                <ProgressBar mainLabel="Shorts" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" />
+                <ProgressBar mainLabel="Skirts" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" />
+                <ProgressBar mainLabel="Sports" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" />
+                <ProgressBar mainLabel="Suits" barColor="#FFAAD6" barMax=100 barValue=100 barLabel="100/100 LF" />
+
+                @* Accessories *@
+                <hr class="category-separator">
+                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Accessories" barColor="#5FBD6A" barMax=10
+                    barValue=20 barLabel="20/10 LF" />
+                <ProgressBar mainLabel="Belts" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
+                <ProgressBar mainLabel="Hats" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
+                <ProgressBar mainLabel="Jewelry" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
+                <ProgressBar mainLabel="Purses" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="toolbar-buttons">
+        <!-- Edit Fixture Button -->
+        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="editFixture"
+            TextAlignment="center" />
+
+        <!-- Paint Category Button -->
+        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="paintCategory"
+            TextAlignment="center" />
+
+        <!-- Erase Category Button -->
+        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategory"
+            TextAlignment="center" />
+
+
+        <!-- View Fullfillment Button -->
+        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eye" OnClickFunction="viewFulfillment"
+            TextAlignment="center" />
+
+        <!-- Edit Layout Button -->
+        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-wrench" OnClickFunction="editLayout"
+            TextAlignment="center" />
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public String? Class { get; set; }
+
+    [Parameter]
+    public String? ID { get; set; }
+
+    private String categorySearch = ""; //Default storage of the category search textbox.
+
+    private void filterCategory()
+    {
+        Console.WriteLine("Filter Category Search Function");
+    }
+
+    private void sortCategory()
+    {
+        Console.WriteLine("Sort Categories Function");
+    }
+
+    private void editFixture()
+    {
+        Console.WriteLine("Edit Fixture Function");
+    }
+
+    private void paintCategory()
+    {
+        Console.WriteLine("Paint Category Function");
+    }
+
+    private void eraseCategory()
+    {
+        Console.WriteLine("Erase Category Function");
+    }
+
+    private void viewFulfillment()
+    {
+        Console.WriteLine("View Fulfillment Function");
+    }
+
+    private void editLayout()
+    {
+        Console.WriteLine("Edit Layout Function");
+    }
+}

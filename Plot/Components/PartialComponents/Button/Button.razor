@@ -42,7 +42,12 @@ Author: Josh Rodack (2/10/2025)-->
     <button @onclick="OnClickFunc" type="button" class="btn btn-@Variant @alignment @disabledClass w-100"
         disabled=@IsDisabled>
         <!--Button content-->
-        <span class="icon"><i class="@Icon"></i></span><span class="btn-element">@ChildContent</span>
+        <span class="icon">
+            <i class="@Icon"></i>
+        </span>
+        @if (ChildContent != null) {
+            <span>@ChildContent</span>
+        }
     </button>
 </div>
 
@@ -67,7 +72,7 @@ Author: Josh Rodack (2/10/2025)-->
     public string? TextAlignment { get; set; }
 
     [Parameter]
-    public required RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
     //Parameter to pass in the method from the parent component dynamically
     [Parameter]
     public EventCallback OnClickFunction { get; set; }
