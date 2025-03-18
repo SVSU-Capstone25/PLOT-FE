@@ -24,11 +24,12 @@
         removed unecessary input wrapper div *@
     <input id="@Id" type="@Type" value="@Value" @oninput="OnInputChange" placeholder="@Placeholder"
         class="TextInput @Class" />
+
 </div>
 
 @code {
     [Parameter] public string? Label { get; set; } = "Enter text";
-    [Parameter] public string? Type { get; set; } = "password"; // Default type for password
+    [Parameter] public string? Type { get; set; } = "text"; // Default type for text
     [Parameter] public string? Placeholder { get; set; } = "Type here...";
     [Parameter] public string? Value { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; } // Event callback for ValueChanged
