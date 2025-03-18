@@ -15,6 +15,8 @@ Author (of import excel file code): Andrew Miller (3/16/2025)
 @page "/floorset-editor"
 @rendermode InteractiveServer
 @inject IJSRuntime JS
+
+@inject IJSRuntime JS
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.Button
 @using Plot.Components.PartialComponents.FileInput
@@ -41,13 +43,17 @@ Author (of import excel file code): Andrew Miller (3/16/2025)
         Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
         Import Excel File
     </Button>
+    <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="left"
+        OnClickFunction="openPrint">
+        Print Layout
+    </Button>
 </SlideOut>
 
 <!-- Everything below should be kept when creating the final FloorsetEditor file
      id of importExcelModal must be harmonized with the id used for data-bs-target in the Button component for importing a file
 -->
 
-<!-- Import Excel File Modal -->
+<!-- Import Excel File Modal -- Tristan Calay -->
 <Modal Title="Import Excel File" Id="importExcelModal" Class="modal-dialog">
 
     <!--Body content includes file to upload-->
@@ -73,7 +79,55 @@ Author (of import excel file code): Andrew Miller (3/16/2025)
     </FooterContent>
 </Modal>
 
+<!-- Print Modal -->
+<!-- Tristan Calay -->
+<Modal Title="Print Layout" Id="printModal" Class="modal-dialog">
+    <BodyContent>
+        <h6 style="opacity: 0.5;">Select print options for how you would like your printed document to be formatted.
+        </h6>
+        <img class="w-100" src="/img/printpreviewexample.png">
+
+        @* Danielle Smith - 3/17/2025
+        changed to use bootstrap classes and added some margin *@
+        <div class="row">
+            <div class="col-md-6">
+                <OptionInput ID="printerInput" Class="optionInput my-3" label="Select a Printer"
+                    optionsText="@(new List<String> { "Printer 1", "Printer 2" })"
+                    optionsValues="@(new List<String> { "Printer 1", "Printer 2" })" />
+            </div>
+
+            <div class="col-md-6">
+                <OptionInput ID="pageInput" Class="optionInput my-3" label="Page Size"
+                    optionsText="@(new List<String> { "8.5x11", "A4" })"
+                    optionsValues="@(new List<String> { "standard", "a4" })" />
+            </div>
+        </div>
+
+        <Checkbox id="checkWithAllocations" Text="With Allocations" />
+        <Checkbox id="checkWithNotes" Text="With Notes" />
+    </BodyContent>
+
+    <FooterContent>
+        <Button Variant="primary" isDisabled="false" OnClickFunction="printLayout">
+            Print
+        </Button>
+    </FooterContent>
+</Modal>
+
 <script>
+    function OpenPrintModal() {
+        /* Tristan Calay - 3/17/2025
+        Technique from sales data import modal - find print modal, and open it.*/
+        bootstrap.Modal.getOrCreateInstance('#printModal').show();
+    }
+
+    function HidePrintModal() {
+        /* Danielle Smith - 3/17/2025
+        changed implementation of hiding modal to one that will work */
+        document.getElementById('printModal').classList.remove('show');
+        document.querySelector('.modal-backdrop')?.remove();
+    }
+
     function OpenImportModal() {
         /* Danielle Smith - 3/16/2025
         grabs the import excel modal and opens it */
@@ -112,5 +166,24 @@ Author (of import excel file code): Andrew Miller (3/16/2025)
     private async Task OpenImportModal()
     {
         await JS.InvokeVoidAsync("OpenImportModal");
+    }
+
+    //openPrint Task
+    //Asynchronous task to find and open the print modal on the page.
+    //Called by the "Print Layout" button in the sidebar component.
+    private async Task openPrint()
+    {
+        Console.WriteLine("Showing Print Layout Modal...");
+        await JS.InvokeVoidAsync("OpenPrintModal");
+    }
+
+    //printLayout Task
+    //Asynchronously prints the current grid layout from specified printer and options.
+    //Called by the "Print" button in the print modal.
+    private async Task printLayout()
+    {
+        Console.WriteLine("Print Layout Func...");
+        Console.WriteLine("Hiding Print Modal...");
+        await JS.InvokeVoidAsync("HidePrintModal");
     }
 }
