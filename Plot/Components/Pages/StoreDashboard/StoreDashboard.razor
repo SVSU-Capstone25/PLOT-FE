@@ -255,6 +255,21 @@ Author: Andrew Fulton (3/12/2025)  *@
         document.querySelector('.modal-backdrop')?.remove();
     }
 
+    function DeleteStore() {
+        /* Danielle Smith - 3/18/2025
+        function that mimics deleting a store. still checks if the text equals delete.
+        if so, close the modal to mimic deleting a store. clear the text box for next use
+        otherwise, alert the user */
+        let deleteStr = document.getElementById("deleteModalTextInput").value;
+        if (deleteStr.equals("DELETE")) {
+            document.getElementById("deleteModalTextInput").value = "Delete";
+            HideModal("deleteStoreModal");
+        }
+        else {
+            alert("Incorrect input.")
+        }
+    }
+
     // show the whichever modal ID is passed into it
     function showModal(modalId) {
         var modal = new bootstrap.Modal(document.getElementById(modalId));
@@ -360,7 +375,7 @@ Author: Andrew Fulton (3/12/2025)  *@
     private async void deleteStore()
     {
         Console.WriteLine("DELETE THE STORE");
-        await JS.InvokeVoidAsync("HideModal", "deleteStoreModal");
+        await JS.InvokeVoidAsync("DeleteStore");
     }
     //function for creating a store
     private void createNewStore()
