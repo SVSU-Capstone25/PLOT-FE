@@ -150,3 +150,11 @@
     width: 49px;
     height: 49px;
 }
+
+
+.toolbar-buttons {
+    justify-content: center;
+    gap: 16px;
+    display: flex;
+    padding-top: 0.5rem;
+}

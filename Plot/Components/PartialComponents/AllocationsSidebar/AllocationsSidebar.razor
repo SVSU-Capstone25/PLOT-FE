@@ -81,30 +81,6 @@ Author: Tristan Calay (3/15/2025)-->
         </div>
 
     </div>
-
-
-    <div class="toolbar-buttons">
-        <!-- Edit Fixture Button -->
-        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="editFixture"
-            TextAlignment="center" />
-
-        <!-- Paint Category Button -->
-        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="paintCategory"
-            TextAlignment="center" />
-
-        <!-- Erase Category Button -->
-        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategory"
-            TextAlignment="center" />
-
-
-        <!-- View Fullfillment Button -->
-        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eye" OnClickFunction="viewFulfillment"
-            TextAlignment="center" />
-
-        <!-- Edit Layout Button -->
-        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-wrench" OnClickFunction="editLayout"
-            TextAlignment="center" />
-    </div>
 </div>
 
 @code
@@ -125,30 +101,5 @@ Author: Tristan Calay (3/15/2025)-->
     private void sortCategory()
     {
         Console.WriteLine("Sort Categories Function");
-    }
-
-    private void editFixture()
-    {
-        Console.WriteLine("Edit Fixture Function");
-    }
-
-    private void paintCategory()
-    {
-        Console.WriteLine("Paint Category Function");
-    }
-
-    private void eraseCategory()
-    {
-        Console.WriteLine("Erase Category Function");
-    }
-
-    private void viewFulfillment()
-    {
-        Console.WriteLine("View Fulfillment Function");
-    }
-
-    private void editLayout()
-    {
-        Console.WriteLine("Edit Layout Function");
     }
 }
