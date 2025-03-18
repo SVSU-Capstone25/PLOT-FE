@@ -33,13 +33,6 @@ without the buttons at the bottom ever getting lost */
     opacity: 0.1;
 }
 
-.toolbar-buttons {
-    justify-content: center;
-    gap: 16px;
-    display: flex;
-    padding-top: 0.5rem;
-}
-
 .search-button>button {
     color: black;
     background-color: transparent !important;

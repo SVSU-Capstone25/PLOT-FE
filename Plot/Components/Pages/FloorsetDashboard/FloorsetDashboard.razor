@@ -97,8 +97,9 @@ Author: Andrew Fulton (3/13/2025)  *@
 
 @* + Add Floorset button fixed to the bottom right of the screen *@
 <button class="fixed-bottom-right">
-    <Button Class="Button" TextAlignment="center" Variant="primary" OnClickFunction="goToFloorsetEditorPage">
-        <i class="fa-solid fa-plus"></i> Add Floorset
+    <Button Class="Button" TextAlignment="center" Variant="primary" OnClickFunction="goToFloorsetEditorPage"
+        Icon="fa-solid fa-plus">
+        Add Floorset
     </Button>
 </button>
 
@@ -151,6 +152,21 @@ Author: Andrew Fulton (3/13/2025)  *@
         // Append the new <p> to the div
         floorsetCardsDiv.appendChild(newImage);
     }
+
+    function DeleteFloorset() {
+        /* Danielle Smith - 3/18/2025
+        function that mimics deleting a floorset. still checks if the text equals delete.
+        if so, close the modal to mimic deleting a floorset. clear the text box for next use
+        otherwise, alert the user */
+        let deleteStr = document.getElementById("deleteModalTextInput").value;
+        if (deleteStr.equals("DELETE")) {
+            document.getElementById("deleteModalTextInput").value = "Delete";
+            HideModal("deleteFloorsetModal");
+        }
+        else {
+            alert("Incorrect input.")
+        }
+    }
 </script>
 
 @code {
@@ -164,7 +180,7 @@ Author: Andrew Fulton (3/13/2025)  *@
     private async void deleteFloorset()
     {
         Console.WriteLine("DELETE THIS FLOORSET");
-        await JS.InvokeVoidAsync("HideModal", "deleteFloorsetModal");
+        await JS.InvokeVoidAsync("DeleteFloorset");
     }
 
     //general function to take us to the floorsets editor page for a floorset store

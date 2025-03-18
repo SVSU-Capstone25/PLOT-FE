@@ -1,8 +1,9 @@
 @page "/floorset-editor"
-@using Plot.Components.PartialComponents.SlideOut
-@using Plot.Components.PartialComponents.NumericInput
 @rendermode InteractiveServer
 @inject IJSRuntime JS
+@using Plot.Components.PartialComponents.SlideOut
+@using Plot.Components.PartialComponents.NumericInput
+@using Plot.Components.PartialComponents.FileInput
 
 @* 
 https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js
@@ -14,7 +15,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script>
 
-<!-- Grid Area -->
+@*Grid Area *@
 <div class="wrapper" width="500px" height="500px">
     <div class="main-content">
         <div class="grid">
@@ -30,70 +31,115 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 </div>
 
 <SlideOut Id="FloorsetSlideOut" Class="slide-out">
-    @if (isPaneExpanded)
+    @if (allocationsOpen)
     {
-        <div class="expanded">
-            <h3 class="header pt-3" @onclick="TogglePane">
-                <i class="fas fa-edit"></i> Edit Building Walls
-            </h3>
-            <hr style="opacity:1">
-            <label>Dimensions</label>
-            <div class="horizantal-inputs">
-                <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
-                    ValueChanged="@(str => NumberChanged(str, value => width = value))" />
-                @* The X to separate the two inputs *@
-                <span class="dimension-separator">X</span>
-                <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
-                    ValueChanged="@(str => NumberChanged(str, value => length = value))" />
-            </div>
-            <label>Enter the Dimensions (width and length) in feet</label>
+        <AllocationsSidebar />
 
-            @* uncomment the below when testing draggable*@
-            @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
-                @ondragstart:preventDefault="true"> *@
-            <div class="drag-start-area d-flex flex-row my-3">
-                <div class="fixture-img disable-select grab-cursor"></div>
-                <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
-            </div>
-            @* </div> *@
-            <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
-                Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
-                Apply
-            </Button>
+        <div class="toolbar-buttons">
+            @*Edit Fixture Button *@
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="editFixture"
+                TextAlignment="center" />
+
+            @*Paint Category Button *@
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="paintCategory"
+                TextAlignment="center" />
+
+            @*Erase Category Button *@
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategory"
+                TextAlignment="center" />
+
+
+            @*View Fullfillment Button *@
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eye" OnClickFunction="viewFulfillment"
+                TextAlignment="center" />
+
+            @*Edit Layout Button *@
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-wrench" OnClickFunction="editLayout"
+                TextAlignment="center" />
         </div>
     }
     else
     {
-        <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
-            OnClickFunction="TogglePane" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
-            Edit Building Walls
+        @if (buildingWallsExpanded)
+        {
+            <div class="expanded">
+                <h3 class="header pt-3" @onclick="ToggleBuildingWalls">
+                    <i class="fas fa-edit"></i> Edit Building Walls
+                </h3>
+                <hr style="opacity:1">
+                <label>Dimensions</label>
+                <div class="horizantal-inputs">
+                    <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
+                        ValueChanged="@(str => NumberChanged(str, value => width = value))" />
+                    @* The X to separate the two inputs *@
+                    <span class="dimension-separator">X</span>
+                    <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
+                        ValueChanged="@(str => NumberChanged(str, value => length = value))" />
+                </div>
+                <label>Enter the Dimensions (width and length) in feet</label>
+
+                @* uncomment the below when testing draggable*@
+                @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
+                @ondragstart:preventDefault="true"> *@
+                <div class="drag-start-area d-flex flex-row my-3">
+                    <div class="fixture-img disable-select grab-cursor"></div>
+                    <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                </div>
+                @* </div> *@
+                <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+                    Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
+                    Apply
+                </Button>
+            </div>
+        }
+        else
+        {
+            <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
+                OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+                Edit Building Walls
+            </Button>
+        }
+
+        <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="ToggleAllocations"
+            Icon="fa-solid fa-eye" IsDisabled=false TextAlignment="center">
+            View Allocations
+        </Button>
+
+        <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="OpenImportModal"
+            Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
+            Import Excel File
+        </Button>
+
+        <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
+            OnClickFunction="openPrint">
+            Print Layout
+        </Button>
+
+        <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
+            Save
         </Button>
     }
-
-    <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="OpenImportModal"
-        Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
-        Import Excel File
-    </Button>
 </SlideOut>
 
+@*Import Excel File Modal -- Tristan Calay *@
 <Modal Title="Import Excel File" Id="importExcelModal" Class="modal-dialog">
 
-    <!--Body content includes file to upload-->
+    @*Body content includes file to upload*@
     <BodyContent>
         <p>Import an Excel File</p>
         <FileInput Id="ImportFile" OnFileSelected="HandleFileSelected"></FileInput>
     </BodyContent>
 
     <FooterContent>
-        <!-- To fix: Cancel button is included in PartialComponents/Modal/Modal.razor
+        @*To fix: Cancel button is included in PartialComponents/Modal/Modal.razor
          but appropriate alignment still needs to be handled 
-         -->
+         *@
 
-        <!--Import button
+        @*Import button
         Replace HandleExcelFile with the name of the function used in final FloorsetEditor file to allocate data
 
         To fix: File persists when cancel button is pressed.
-        -->
+        *@
         <Button Class="Button" Id="buttonConfirmImport" Variant="primary" OnClickFunction="HandleExcelFile"
             IsDisabled=false TextAlignment="center">
             Import
@@ -101,21 +147,77 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     </FooterContent>
 </Modal>
 
+@*Print Modal *@
+@*Tristan Calay *@
+<Modal Title="Print Layout" Id="printModal" Class="modal-dialog">
+    <BodyContent>
+        <h6 style="opacity: 0.5;">Select print options for how you would like your printed document to be formatted.
+        </h6>
+        <img class="w-100" src="/img/printpreviewexample.png">
+
+        @* Danielle Smith - 3/17/2025
+        changed to use bootstrap classes and added some margin *@
+        <div class="row">
+            <div class="col-md-6">
+                <OptionInput ID="printerInput" Class="optionInput my-3" label="Select a Printer"
+                    optionsText="@(new List<String> { "Printer 1", "Printer 2" })"
+                    optionsValues="@(new List<String> { "Printer 1", "Printer 2" })" />
+            </div>
+
+            <div class="col-md-6">
+                <OptionInput ID="pageInput" Class="optionInput my-3" label="Page Size"
+                    optionsText="@(new List<String> { "8.5x11", "A4" })"
+                    optionsValues="@(new List<String> { "standard", "a4" })" />
+            </div>
+        </div>
+
+        <Checkbox id="checkWithAllocations" Text="With Allocations" />
+        <Checkbox id="checkWithNotes" Text="With Notes" />
+    </BodyContent>
+
+    <FooterContent>
+        <Button Variant="primary" isDisabled="false" OnClickFunction="printLayout">
+            Print
+        </Button>
+    </FooterContent>
+</Modal>
+
+
 <script>
+    function OpenPrintModal() {
+        /* Tristan Calay - 3/17/2025
+        Technique from sales data import modal - find print modal, and open it.*/
+        bootstrap.Modal.getOrCreateInstance('#printModal').show();
+    }
+
+    function HidePrintModal() {
+        /* Danielle Smith - 3/17/2025
+        changed implementation of hiding modal to one that will work */
+        document.getElementById('printModal').classList.remove('show');
+        document.querySelector('.modal-backdrop')?.remove();
+    }
+
     function OpenImportModal() {
-        @* /* Danielle Smith - 3/16/2025
-        grabs the import excel modal and opens it */ *@
-            bootstrap.Modal.getOrCreateInstance('#importExcelModal').show();
+        /* Danielle Smith - 3/16/2025
+        grabs the import excel modal and opens it */
+        bootstrap.Modal.getOrCreateInstance('#importExcelModal').show();
     }
 </script>
 
 @code
 {
-    private bool isPaneExpanded = false;
+    private bool buildingWallsExpanded = false;
+    private bool allocationsOpen = false;
 
-    private void TogglePane()
+    private void ToggleBuildingWalls()
     {
-        isPaneExpanded = !isPaneExpanded;
+        buildingWallsExpanded = !buildingWallsExpanded;
+    }
+
+    private void ToggleAllocations()
+    {
+        buildingWallsExpanded = false;
+        allocationsOpen = !allocationsOpen;
     }
 
     private double width;
@@ -181,5 +283,50 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     private async Task OpenImportModal()
     {
         await JS.InvokeVoidAsync("OpenImportModal");
+    }
+
+    //openPrint Task
+    //Asynchronous task to find and open the print modal on the page.
+    //Called by the "Print Layout" button in the sidebar component.
+    private async Task openPrint()
+    {
+        Console.WriteLine("Showing Print Layout Modal...");
+        await JS.InvokeVoidAsync("OpenPrintModal");
+    }
+
+    //printLayout Task
+    //Asynchronously prints the current grid layout from specified printer and options.
+    //Called by the "Print" button in the print modal.
+    private async Task printLayout()
+    {
+        Console.WriteLine("Print Layout Func...");
+        Console.WriteLine("Hiding Print Modal...");
+        await JS.InvokeVoidAsync("HidePrintModal");
+    }
+
+    private void editFixture()
+    {
+        Console.WriteLine("Edit Fixture Function");
+        allocationsOpen = false;
+    }
+
+    private void paintCategory()
+    {
+        Console.WriteLine("Paint Category Function");
+    }
+
+    private void eraseCategory()
+    {
+        Console.WriteLine("Erase Category Function");
+    }
+
+    private void viewFulfillment()
+    {
+        Console.WriteLine("View Fulfillment Function");
+    }
+
+    private void editLayout()
+    {
+        Console.WriteLine("Edit Layout Function");
     }
 }
