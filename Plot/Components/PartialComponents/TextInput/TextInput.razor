@@ -1,14 +1,28 @@
+<!-- Filename: TextInput.razor
+Part of Project:-- PLOT
+File Purpose:
+A Text Input component that can be re-used throughout the application
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Luke Wollenweber (3/19/2025)-->
 @inject IJSRuntime JSRuntime
 
 <script>
+    //this function accepts an element as a parameters and is called anytime the value changes in the textinput
     function handleValueChanged(element)
     { 
+        //checks whether the value is less than 1 in length
         if (element.value.trim().length < 1)
         {
+            //sets color to red
             element.style.color = 'red';
             element.style.borderColor = 'red';
         }
         else {
+            //sets color to default 
             element.style.color = '';
             element.style.borderColor= '';
         }
@@ -21,6 +35,7 @@
 </div>
 
 @code {
+    //these are all of the parameters for the component
     [Parameter] public string? Label { get; set; } = "Enter text";
     [Parameter] public string? Placeholder { get; set; } = "Type here...";
     [Parameter] public string? Value { get; set; } = "";
