@@ -1,5 +1,13 @@
-@* Originally by Luke Wollenweber *@
+<!-- Filename: Link.razor
+Part of Project:-- PLOT
+File Purpose:
+A login Page that the username hits first when using PLOT
 
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Luke Wollenweber (3/19/2025)-->
 @page "/login"
 
 @inject NavigationManager Navigation
@@ -36,18 +44,20 @@
 
 @code
 {
-    string username = ""; // Define the username variable
+    //username and password strings
+    string username = "";
     string password = "";
+    //boolean variable to track whether the input is valid
     bool isInvalid = false;
-
+    //this method is called to check whether the input is valid or not
     private void ValidateInput()
     {
-        // Check if username is "temp" and redirect to localhost:8080 if true
+        //this is temporary code as we don't have a backend hooked up yet
         if (username == password)
         {
-            Console.WriteLine("Username: " + username + " --- Password: " + password);
+            //udpates boolean to false to show that the data isn't invalid
             isInvalid = false;
-            // Redirect to localhost:8080
+            //navigates to the home page and forceloads
             Navigation.NavigateTo("/home", forceLoad: true);
             /* Danielle Smith - 3/16/2025
             added force load to this so that the page
@@ -55,6 +65,7 @@
         }
         else
         {
+            //invalid set to true so the validation fires on the screen
             isInvalid = true;
         }
     }
