@@ -13,11 +13,12 @@ builder.Services.AddScoped(sp =>
     {
         UseCookies = true,
         CookieContainer = new System.Net.CookieContainer(),
-        AllowAutoRedirect = true
+        AllowAutoRedirect = false
     };
     return new HttpClient(handler)
     {
         BaseAddress = new Uri(builder.Configuration["BACKEND_URL"] ?? "http://backend:8085/api")
+        
     };
 });
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>

@@ -5,6 +5,7 @@
 @inject NavigationManager Navigation
 @inject HttpClient Client
 
+
 <PageTitle>Login</PageTitle>
 
 <body class="background">
@@ -43,9 +44,15 @@
 
     private async void OnLoginSubmit()
     {
+        var loginAPIUri= new Uri(Client.BaseAddress+"/auth/login");
+        
         var request = new HttpRequestMessage(HttpMethod.Post,
-        "http://backend:8085/api/auth/login");
+        loginAPIUri);
         request.Headers.Add("Accept", "application/json");
+
+        Console.WriteLine("------------------------------------------------------------------------");
+        Console.WriteLine(Client.BaseAddress);
+
 
         request.Content = JsonContent.Create(new
         {
@@ -55,8 +62,22 @@
 
         var response = await Client.SendAsync(request);
 
-        var responseBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(response);
 
-        Console.WriteLine(responseBody);
+        var redirectUrl = response.Headers.Location?.ToString();
+
+        
+
+        if (!string.IsNullOrEmpty(redirectUrl))
+        {
+            Navigation.NavigateTo(redirectUrl, true);
+        }
+        else
+        {
+            isInvalid = true; // Handle the error case
+        }
+
+
+      
     }
 }
