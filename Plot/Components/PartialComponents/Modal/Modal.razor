@@ -30,7 +30,7 @@ specify a method to run when the cancel button is clicked.
             <div class="modal-footer">
                 <!-- cancel buttons for all modals -->
                 <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal"
-                @onclick="OnCancel">Cancel</button>
+                @onclick="OnCancelFunc">Cancel</button>
                 @FooterContent
             </div>
         </div>
@@ -56,11 +56,23 @@ specify a method to run when the cancel button is clicked.
     public string? Class { get; set; } // classes for the modal (nullable)
 
     [Parameter]
-    public EventCallback OnCancel { get; set; } // Method that runs when clicking cancel
+    public EventCallback OnCancelFunction { get; set; } // Method that runs when clicking cancel
 
     [Parameter, EditorRequired]
     public required RenderFragment BodyContent { get; set; } // body content of the modal
 
     [Parameter, EditorRequired]
     public RenderFragment? FooterContent { get; set; } // footer buttons for the modal
+
+    //When cancel button is clicked this
+    //task is called which then calls
+    //the method invoked in the parent component
+    private async Task OnCancelFunc()
+    {
+        // Checks that it points to an actual method
+        if (OnCancelFunction.HasDelegate) 
+        {
+            await OnCancelFunction.InvokeAsync(); // Enables handling asynchronous methods
+        }
+    }
 }
