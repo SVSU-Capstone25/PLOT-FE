@@ -5,9 +5,10 @@ I changed how it handles the alignment when there is not an icon  *@
 
 @* Andrew Miller - 3/19/2025
 Created OnSelectFunction parameter to determine a method that fires 
-when an option is selected. Adapted OnChangeFunc method to check
-if a method is specified. Passes value in option as argument string to
-specified method.
+when an option is selected. Adapted OnSelectFunc method to check
+if a method is specified and handle asynchronous methods
+with InvokeAsync. Passes value in option as argument string 
+to specified method.
 *@
 <div class="OptionInput @Class" id="@ID">
     <h5 class="row">
