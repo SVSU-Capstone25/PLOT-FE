@@ -11,7 +11,11 @@ Program Purpose:
 The purpose of PLOT is to allow users to easily create, manage, 
 and allocate floorsets for Platos Closet. 
 
-Author: Danielle Smith (2/9/2025) -->
+Author: Danielle Smith (2/9/2025) 
+
+Author: Andrew Miller (3/19/2025) - Added OnCancel parameter to
+specify a method to run when the cancel button is clicked.
+-->
 
 <div class="modal fade" id="@Id" tabindex="-1" aria-labelledby="@Id + 'Label'">
     <div class="modal-dialog Modal @Class">
@@ -25,7 +29,8 @@ Author: Danielle Smith (2/9/2025) -->
             </div>
             <div class="modal-footer">
                 <!-- cancel buttons for all modals -->
-                <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal"
+                @onclick="OnCancel">Cancel</button>
                 @FooterContent
             </div>
         </div>
@@ -49,6 +54,9 @@ Author: Danielle Smith (2/9/2025) -->
 
     [Parameter]
     public string? Class { get; set; } // classes for the modal (nullable)
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; } // Method that runs when clicking cancel
 
     [Parameter, EditorRequired]
     public required RenderFragment BodyContent { get; set; } // body content of the modal
