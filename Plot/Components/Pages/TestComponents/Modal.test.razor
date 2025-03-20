@@ -70,8 +70,8 @@ OnCancelFunction="HandleModalCancel">
 </Modal>
 
 <!-- Success Modal -->
-<Modal Title="Test Success Modal" Id="successModal" Variant="success" Icon="fa-solid fa-check" Class="modal-dialog"
-OnCancelFunction="HandleModalCancel">
+<!-- OnCancelFunction purposefully left out for testing purposes-->
+<Modal Title="Test Success Modal" Id="successModal" Variant="success" Icon="fa-solid fa-check" Class="modal-dialog">
     <BodyContent>
         <h4>Modal content 4</h4>
         <img src="/img/platos_closet_logo.png">
@@ -83,6 +83,7 @@ OnCancelFunction="HandleModalCancel">
 
 @code {
     private void HandleModalCancel(){
+        // Should show for all but the Success modal
         Console.WriteLine("Cancel button pressed");
     }
 }
