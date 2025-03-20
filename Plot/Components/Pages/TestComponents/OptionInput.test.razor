@@ -6,3 +6,25 @@
 <OptionInput ID="optionInput2" Class="optionInput" iconString="fa-solid fa-sign-hanging" label="Select Hanging"
     optionsText="@(new List<String> { "Single Hung", "Double Hung", "Triple Hung", "Quadruple Hung" })"
     optionsValues="@(new List<String> { "single", "double", "triple", "quad" })" />
+<OptionInput ID="optionInput3" Class="optionInput" label="Select an Option to Display"
+    optionsText="@(new List<String> { "Select an Option", "Option 1", "Option 2", "Option 3"})"
+    optionsValues="@(new List<String> {"Select an Option", "Option 1", "Option 2", "Option 3"})"
+    OnSelectFunction="DisplayOption3" />
+<div>
+    <h5>Option to display displays here when selected:</h5>
+    <p>@optionInput3Output</p>
+</div>
+
+@code{
+    // Bound variable for displaying output of optionInput3
+    private static string optionInput3Output = "";
+
+    private void DisplayOption3(string selectedOption) {
+        if(selectedOption == "Select an Option"){
+            optionInput3Output = "";
+        }
+        else{
+            optionInput3Output = selectedOption;
+        }
+    }
+}
