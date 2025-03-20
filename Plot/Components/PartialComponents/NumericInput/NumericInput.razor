@@ -33,11 +33,31 @@
 </div>
 
 <script>
+
     window.checkValidNumber = function (dotNetHelper, currId) {
         // Invoke the CheckNumberValid method 
+        id = currId;
         dotNetHelper.invokeMethodAsync("CheckNumberValid",
             document.getElementById(currId + "-number-input").value);
     };
+
+    // Characters that should not be able to be entered
+    var invalidChars = [
+        "-",
+        "+",
+        "e",
+        "E",
+    ];
+
+    // Creates an event listener to ignore invalid chars if a user types one in
+    window.ignoreChars = function (id) {
+        document.getElementById(id).addEventListener("keydown", function (e) {
+            if (invalidChars.includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+    }
+
 </script>
 
 @code {
@@ -71,16 +91,16 @@
     private double minValue = 0;
 
     /*
-    The OnAfterRender function runs after the page is rendered.
+    The OnAfterRenderAsync function runs after the page is rendered.
     This will make a new instance of the DotNetObjectReference
     for JS calls.
     */
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             dotNet = DotNetObjectReference.Create(this);
-
+            await JS.InvokeVoidAsync("ignoreChars", Id);
         }
     }
 
