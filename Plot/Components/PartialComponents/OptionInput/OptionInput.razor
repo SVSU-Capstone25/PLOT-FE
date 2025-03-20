@@ -97,8 +97,9 @@ specified method.
     
     private async Task OnSelectFunc(ChangeEventArgs e)
     {
-        if (OnSelectFunction.HasDelegate)
+        if (OnSelectFunction.HasDelegate) // Checks if method given by OnSelectFunction exists
         {
+            // Enables handling asynchronous methods
             await OnSelectFunction.InvokeAsync(e.Value?.ToString());
         }
     }
