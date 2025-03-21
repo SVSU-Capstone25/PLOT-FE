@@ -45,8 +45,10 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
         </div>
         <div class="align-items-center mt-3 d-flex">
-            <Button  OnClickFunction="OnAddFixture"
-                class="btn add-fixture btn-lg w-100">Add Fixture</Button>
+            <Button class="btn add-fixture btn-lg w-100" OnClickFunction=@(async (e) => {
+                    await JS.InvokeVoidAsync("toggleModal","addFixture",true);
+                })
+            >Add Fixture</Button>
         </div>
 
     </div>
@@ -187,7 +189,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         <FooterContent>
             <Button class="btn add-btn ms-auto" OnClickFunction=@(async (e) => {
                 AddFixture(new Fixture(ModalName,ModalLength,ModalWidth,ModalHangerStack,ModalFixtureImg));
-                await JS.InvokeVoidAsync("toggleModal","#addFixture",false);
+                await JS.InvokeVoidAsync("toggleModal","addFixture",false);
                 ClearTempFixtureData();
             })>Add</Button>
         </FooterContent>
@@ -280,7 +282,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         <FooterContent>
             <Button class="btn add-btn ms-auto"  OnClickFunction=@(async (e) => {
                     UpdateFixture(currFixture, new Fixture(currFixture.Name,len,wth,hst,img));
-                    await JS.InvokeVoidAsync("toggleModal","#editFixture-"+id,false);
+                    await JS.InvokeVoidAsync("toggleModal","editFixture-"+id,false);
                 })>
                 Update
             </Button>
@@ -294,10 +296,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         </BodyContent>
 
         <FooterContent>
-             <Button class="btn add-btn ms-auto" OnClickFunction=@(async (e)=>{
-                    DeleteFixture(currFixture);
-                    await JS.InvokeVoidAsync("toggleModal","#deleteFixture" + id,false);
-                })>
+             <Button class="btn add-btn ms-auto" OnClickFunction=@(()=>DeleteFixture(currFixture, id))>
                 Delete
             </Button>
         </FooterContent>
@@ -434,13 +433,15 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     }
 
     function toggleModal(modalId,showModal) {
-        if (document.querySelector(modalId)) 
+        if (document.getElementById(modalId)) 
         {
-            const test = new bootstrap.Modal(document.querySelector(modalId));
-
+            let test = bootstrap.Modal.getOrCreateInstance(`#${modalId}`);
+            console.log(modalId,showModal,test);
             showModal ? test.show() : test.hide();
         }
     }
+
+    
         
 
     function alertUser(msg) {
@@ -539,7 +540,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
     
     public async Task OnAddFixture() {
-        await JS.InvokeVoidAsync("toggleModal","#addFixture", true);
+        await JS.InvokeVoidAsync("toggleModal","addFixture", true);
     }
 
     public void AddFixture(Fixture currFixture)
@@ -562,9 +563,10 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
     }
 
-    public void DeleteFixture(Fixture currFixture) 
+    public async Task DeleteFixture(Fixture currFixture,string id) 
     {
         fixtures.Remove(currFixture.Name);
+        await JS.InvokeVoidAsync("toggleModal","deleteFixture" + id,false);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
