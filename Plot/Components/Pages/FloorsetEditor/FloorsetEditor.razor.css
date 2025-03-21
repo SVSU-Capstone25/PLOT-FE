@@ -1,7 +1,8 @@
-.add-fixture {
+::deep .add-fixture>button {
     background: var(--platos-blue);
     color: white;
     border: none;
+    padding: 1rem;
 }
 
 .img-input {
@@ -16,7 +17,7 @@
 }
 
 
-.filter-btn  button {
+::deep .Button.filter-btn>button {
     margin-left: .5rem;
     border: none;
     border-radius: 4px;
@@ -53,8 +54,7 @@
 
 
 
-.add-btn {
-    background-color: var(--platos-blue);
+::deep .add-btn {
     color: white;
 }
 

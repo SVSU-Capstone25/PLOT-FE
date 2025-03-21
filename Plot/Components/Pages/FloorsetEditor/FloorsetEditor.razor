@@ -37,18 +37,20 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
             <Button class="filter-btn" OnClickFunction="FilterBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter"
-                    viewBox="0 0 16 16">
+                viewBox="0 0 16 16">
                     <path
-                        d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
+                    d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
                 </svg>
             </Button>
 
         </div>
         <div class="align-items-center mt-3 d-flex">
-            <Button class="btn add-fixture btn-lg w-100" OnClickFunction=@(async (e) => {
+            <Button class="btn add-fixture btn-lg w-100" Variant="primary" OnClickFunction=@(async (e) => {
                     await JS.InvokeVoidAsync("toggleModal","addFixture",true);
-                })
-            >Add Fixture</Button>
+                })>
+                <i class="fa-solid fa-plus" style="margin-right: .5rem;" ></i>
+                Add Fixture
+            </Button>
         </div>
 
     </div>
@@ -61,8 +63,8 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         {
 
             <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name"
-                @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width))" draggable="true"
-                @ondragstart:preventDefault="true">
+            @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width))" draggable="true"
+            @ondragstart:preventDefault="true">
                 <div class="drag-start-area d-flex flex-row">
                     <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="">
                     <p class="fixture-text m-2 disable-select grab-cursor">@currFixture.Name</p>
@@ -70,11 +72,11 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                 @{
                     string id = currFixture.Name.Replace(" ", "");
                     List<string> links = new List<string> { "#editFixture-" + id, "#deleteFixture-" + id };
-                    
+
                 }
                 <Dropdown DropdownLinks="@links" DropdownIcons="@icons" DropdownText="@texts"
-                    class="fixture-options ms-auto disable-select" id="@("fixture-options" + currFixture.Name)"
-                    LabelText="Fixture">
+                class="fixture-options ms-auto disable-select" id="@("fixture-options" + currFixture.Name)"
+                LabelText="Fixture">
                 </Dropdown>
             </div>
 
@@ -89,7 +91,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 @* Add Fixture Modal *@
 @{    
 
-    
+
     Console.Write(ModalLength);
     <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture">
         <BodyContent>
@@ -98,7 +100,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
                 <div class="dimension">
                     <NumericInput Id="add-length" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
-                        Value="@ModalLength" ValueChanged="(v) => {
+                    Value="@ModalLength" ValueChanged="(v) => {
                             ModalLength = v;
                             if (!ModalLength.Equals(string.Empty) && !ModalWidth.Equals(string.Empty)) {
                                 try {
@@ -121,7 +123,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
                 <div class="dimension">
                     <NumericInput Id="add-width" Class="dimension" Label="Width" Placeholder="2ft" Description="Enter the width in feet"
-                        Value="@ModalWidth" ValueChanged="(v) => {
+                    Value="@ModalWidth" ValueChanged="(v) => {
                             ModalWidth = v;
                             if (!ModalLength.Equals(string.Empty) && !ModalWidth.Equals(string.Empty)) {
                                 try {
@@ -142,8 +144,8 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             </div>
 
             <NumericInput Id="add-lfcapacity" Label="Linear Feet Capacity" Placeholder="2ft"
-                Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
-                Value="@ModalLFCapacity" ValueChanged="@(v => {
+            Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
+            Value="@ModalLFCapacity" ValueChanged="@(v => {
                         ModalLFCapacity = v; 
                         Console.WriteLine(ModalLFCapacity + " " + ModalHangerStack);
                         if (ModalLFCapacity.Equals("") || ModalHangerStack.Equals("")) {
@@ -158,7 +160,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                     })" />
 
             <NumericInput Id="add-hanger-stack" Label="Hanger Stack" Placeholder="2" Description="Enter the number of vertically stacked racks"
-                Value="@ModalHangerStack" ValueChanged="@(v => {
+            Value="@ModalHangerStack" ValueChanged="@(v => {
                         ModalHangerStack = v; 
                         Console.WriteLine(ModalLFCapacity + " " + ModalHangerStack);
                         if (ModalLFCapacity.Equals("") || ModalHangerStack.Equals("")) {
@@ -173,12 +175,12 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                     })" />
 
             <NumericInput Id="add-total-lf" Label="Total Linear Feet" Placeholder="4"
-                Description="The final calculation of linear feet (LF capacity x hanger stack)" ReadOnly="true" @bind-Value="ModalTotalLF" />
+            Description="The final calculation of linear feet (LF capacity x hanger stack)" ReadOnly="true" @bind-Value="ModalTotalLF" />
 
-            
+
             <div class="img-input">
                 <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
-                        Id="add-fixtureimg" />
+                Id="add-fixtureimg" />
             </div>
 
 
@@ -187,8 +189,8 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         </BodyContent>
 
         <FooterContent>
-            <Button class="btn add-btn ms-auto" OnClickFunction=@(async (e) => {
-                AddFixture(new Fixture(ModalName,ModalLength,ModalWidth,ModalHangerStack,ModalFixtureImg));
+            <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async (e) => {
+                await AddFixture(new Fixture(ModalName,ModalLength,ModalWidth,ModalHangerStack,ModalFixtureImg));
                 await JS.InvokeVoidAsync("toggleModal","addFixture",false);
                 ClearTempFixtureData();
             })>Add</Button>
@@ -199,6 +201,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 @* Edit Fixture Modal *@
 @foreach (Fixture currFixture in fixtures.Values)
 {
+    string name = currFixture.Name;
     string len = currFixture.Length;
     string wth = currFixture.Width;
     string? lfc = currFixture.LFCapacity;
@@ -212,11 +215,11 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
     <Modal Class="modal-xl fixture-modal" Id="@("editFixture-" + id)" Title="Edit Fixture">
         <BodyContent>
-            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" @bind-Value="@currFixture.Name" />
+            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" @bind-Value="@name" />
             <div class="d-flex flex-row align-items-center justify-content-between">
                 <div class="dimension">
                     <NumericInput Id="@(id + "-edit-length")" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
-                        Value="@currFixture.Length" ValueChanged="(v) => {
+                    Value="@currFixture.Length" ValueChanged="(v) => {
                             currFixture.Length = v;
                             if (!currFixture.Length.Equals(string.Empty) && !currFixture.Width.Equals(string.Empty)) {
                                 currFixture.UpdateLFCapacity();
@@ -230,7 +233,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
                 <div class="dimension">
                     <NumericInput Id="@(id + "-edit-width")" Class="dimension" Label="Width" Placeholder="2ft" Description="Enter the width in feet"
-                        Value="@currFixture.Width" ValueChanged="(v) => {
+                    Value="@currFixture.Width" ValueChanged="(v) => {
                             currFixture.Width = v;
                             if (!currFixture.Length.Equals(string.Empty) && !currFixture.Width.Equals(string.Empty)) {
                                 currFixture.UpdateLFCapacity();
@@ -243,8 +246,8 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             </div>
 
             <NumericInput Id="@(id + "-edit-LFCapacity")" Label="Linear Feet Capacity" Placeholder="2ft"
-                Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
-                    Value="@currFixture.LFCapacity" ValueChanged="(v) => {
+            Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
+            Value="@currFixture.LFCapacity" ValueChanged="(v) => {
                         currFixture.LFCapacity = v;
                         if (!currFixture.LFCapacity.Equals(string.Empty) && !currFixture.HangerStack.Equals(string.Empty)) {
                             currFixture.UpdateTotalLF();
@@ -254,9 +257,9 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                     }" />
 
             <NumericInput Id="@(id + "-edit-HangerStack")" Label="Hanger Stack" Placeholder="2" Description="Enter the number of vertically stacked racks"
-                    Value="@currFixture.HangerStack" ValueChanged="(v) => {
+            Value="@currFixture.HangerStack" ValueChanged="(v) => {
                         currFixture.HangerStack = v;
-                        
+
                         if (currFixture.LFCapacity != null && !currFixture.LFCapacity.Equals(string.Empty) && !currFixture.HangerStack.Equals(string.Empty)) {
                             currFixture.UpdateTotalLF();
                         } else {
@@ -265,22 +268,22 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                     }" />
 
             <NumericInput Id="@(id + "-edit-TotalLF")" Label="Total Linear Feet" Placeholder="4"
-                Description="The final calculation of linear feet (LF capacity x hanger stack)" @bind-Value="@currFixture.TotalLF"
-                ReadOnly="true" />
+            Description="The final calculation of linear feet (LF capacity x hanger stack)" @bind-Value="@currFixture.TotalLF"
+            ReadOnly="true" />
 
             <div class="img-input">
                 <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
-                                        Id="@("ImageInput-" + currFixture.Name)"/>
+                Id="@("ImageInput-" + currFixture.Name)"/>
             </div>
-            
 
 
-            
+
+
 
         </BodyContent>
 
         <FooterContent>
-            <Button class="btn add-btn ms-auto"  OnClickFunction=@(async (e) => {
+            <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async () => {
                     UpdateFixture(currFixture, new Fixture(currFixture.Name,len,wth,hst,img));
                     await JS.InvokeVoidAsync("toggleModal","editFixture-"+id,false);
                 })>
@@ -292,11 +295,14 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     <Modal Title="Delete Fixture"  Id=@("deleteFixture-" + id)>
 
         <BodyContent>
-            Are you sure you want top delete "@(currFixture.Name)" ?
+            Are you sure you want to delete "@(currFixture.Name)" ?
         </BodyContent>
 
         <FooterContent>
-             <Button class="btn add-btn ms-auto" OnClickFunction=@(()=>DeleteFixture(currFixture, id))>
+            <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async ()=>{
+                    DeleteFixture(currFixture, id);
+                    await JS.InvokeVoidAsync("toggleModal","deleteFixture-"+id,false);
+                })>
                 Delete
             </Button>
         </FooterContent>
@@ -317,12 +323,12 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     var rows = 48;
     var cols = 48;
     var snap = 50;
-    
+
 
     container.style.height = (width * rows) + "px";
     container.style.width = (width * rows) + "px";
 
-@*     
+    @*     
     for (var i = 0; i < rows * cols; i++) {
         var y = Math.floor(i / cols) * height;
         var x = i * width % (cols * width);
@@ -334,7 +340,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     container.style.gridTemplateRows = `repeat(${rows},${width}px)`;
 
     for (var i = 0; i < rows * cols; i++) {
-        $("<div class=\"grid-cell\"></div>").prependTo(container);
+    $("<div class=\"grid-cell\"></div>").prependTo(container);
     }
 
     function createDraggable(event, size) {
@@ -372,35 +378,35 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
 
         var draggable = Draggable.create(newBox, {
-            bounds: container,
-            onDrag: function () {
-                TweenLite.to(newBox, 0.5, {
-                    x: Math.round(this.endX / snap) * snap,
-                    y: Math.round(this.y / snap) * snap,
-                    ease: Back.easeOut.config(2)
-                });
+        bounds: container,
+        onDrag: function () {
+        TweenLite.to(newBox, 0.5, {
+        x: Math.round(this.endX / snap) * snap,
+        y: Math.round(this.y / snap) * snap,
+        ease: Back.easeOut.config(2)
+        });
 
-            },
-            onDragEnd: function () {
-                var boxRect = newBox.getBoundingClientRect();
-                var sidebarRect = sidebar.getBoundingClientRect();
-                if (isOverElement(boxRect, sidebarRect)) {
-                    container.removeChild(newBox);
-                } else {
-                    newBox.style.zIndex = 0;
-                }
+        },
+        onDragEnd: function () {
+        var boxRect = newBox.getBoundingClientRect();
+        var sidebarRect = sidebar.getBoundingClientRect();
+        if (isOverElement(boxRect, sidebarRect)) {
+        container.removeChild(newBox);
+        } else {
+        newBox.style.zIndex = 0;
+        }
 
-            }
+        }
         });
 
         setTimeout(() => {
-            var evt = new MouseEvent("mousedown", {
-                bubbles: true,
-                cancelable: true,
-                clientX: mouseX,
-                clientY: mouseY
-            });
-            newBox.dispatchEvent(evt);
+        var evt = new MouseEvent("mousedown", {
+        bubbles: true,
+        cancelable: true,
+        clientX: mouseX,
+        clientY: mouseY
+        });
+        newBox.dispatchEvent(evt);
         }, 10);
 
 
@@ -415,37 +421,45 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             draggableRect.right > staticRect.left
         );
     }
-    
+
 
     function flipOrder() {
-        if (isAsc) {
-            document.querySelector(".fixture-area").style.flexDirection = "column-reverse";
-        } else {
-            document.querySelector(".fixture-area").style.flexDirection = "column";
-        }
+    if (isAsc) {
+        document.querySelector(".fixture-area").style.flexDirection = "column-reverse";
+    } else {
+        document.querySelector(".fixture-area").style.flexDirection = "column";
+    }
         isAsc = !isAsc;
     }
 
-    function closeModalEvent(dotNet) {
-        $("#addFixture").on('hidden.bs.modal', function (e) {
-            dotNet.invokeMethodAsync("ClearTempFixtureData");
-        })
-    }
+    
+    $("#addFixture").on('hidden.bs.modal', function (e) {
+        dotNet.invokeMethodAsync("ClearTempFixtureData");
+    })
+    
 
     function toggleModal(modalId,showModal) {
         if (document.getElementById(modalId)) 
         {
             let test = bootstrap.Modal.getOrCreateInstance(`#${modalId}`);
             console.log(modalId,showModal,test);
-            showModal ? test.show() : test.hide();
+            if (showModal) 
+            {
+                test.show()
+            }
+            else 
+            { 
+                document.getElementById(modalId).classList.remove('show');
+                document.querySelectorAll('.modal-backdrop')?.forEach(m=>m.remove());
+            }
         }
     }
 
-    
-        
+
+
 
     function alertUser(msg) {
-        alert(msg);
+    alert(msg);
     }
 
 </script>
@@ -462,7 +476,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         public string? TotalLF { get; set; } = string.Empty;
         public string FixtureImg { get; set; } = string.Empty;
 
-        
+
         public Fixture(string name, string length, string width, string hangerStack, string fixtureImg)
         {
             try {
@@ -511,7 +525,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                     HangerStack + ", " +
                     TotalLF + ", " +
                     FixtureImg;
-                
+
         }
 
 
@@ -538,21 +552,27 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     private List<string> icons = new List<string> { "fa-regular fa-pen-to-square", "fa-regular fa-trash-can" };
     private List<string> texts = new List<string> { "Edit", "Delete" };
 
-    
+
     public async Task OnAddFixture() {
         await JS.InvokeVoidAsync("toggleModal","addFixture", true);
     }
 
-    public void AddFixture(Fixture currFixture)
+    public async Task AddFixture(Fixture currFixture)
     {
-    
-        fixtures.Add(currFixture.Name, currFixture);
-        
+        try {
+            fixtures.Add(currFixture.Name, currFixture);
+        } catch (ArgumentException)
+        {
+            await JS.InvokeVoidAsync("alertUser","A fixture with that name has already been used.  Please choose another name.");
+        }
+
     
     }
 
     public void UpdateFixture( Fixture currFixture, Fixture newFixture)
     {
+        fixtures.Remove(currFixture.Name);
+        fixtures.Add(newFixture.Name,newFixture);
         @* Console.WriteLine(currFixture.ToString());
         currFixture.Name = newFixture.Name;
         currFixture.Length = newFixture.Length;
@@ -563,16 +583,16 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
     }
 
-    public async Task DeleteFixture(Fixture currFixture,string id) 
+    public void DeleteFixture(Fixture currFixture,string id) 
     {
         fixtures.Remove(currFixture.Name);
-        await JS.InvokeVoidAsync("toggleModal","deleteFixture" + id,false);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender) {
+    protected override void OnAfterRender(bool firstRender) {
         if (firstRender) {
             dotNet = DotNetObjectReference.Create(this);
-            await JS.InvokeVoidAsync("closeModalEvent",dotNet);
+            @* await JS.InvokeVoidAsync("closeModalEvent",dotNet); *@
+            
         }
     }
     private async Task OnDragStart(DragEventArgs e, string size)
