@@ -1,9 +1,8 @@
 @page "/floorset-editor"
-@rendermode InteractiveServer
-@inject IJSRuntime JS
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
-@using Plot.Components.PartialComponents.FileInput
+@rendermode InteractiveServer
+@inject IJSRuntime JS
 
 @* 
 https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js
@@ -15,318 +14,586 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script>
 
-@*Grid Area *@
-<div class="wrapper" width="500px" height="500px">
-    <div class="main-content">
-        <div class="grid">
-            @for (int i = 0; i < 50; i++)
-            {
-                @for (int j = 0; j < 50; j++)
-                {
-                    <div class="grid-cell" id="cell-@i-@j"></div>
-                }
-            }
-        </div>
-    </div>
+
+<!-- Grid Area -->
+<div id="container">
 </div>
 
-<SlideOut Id="FloorsetSlideOut" Class="slide-out">
-    @if (allocationsOpen)
-    {
-        <AllocationsSidebar />
 
-        <div class="toolbar-buttons">
-            @*Edit Fixture Button *@
-            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="editFixture"
-                TextAlignment="center" />
+<!-- Sidebar -->
+<SlideOut Id="FloorsetSlideOut">
+    <!-- Header -->
+    <div class="sidebar-header p-3">
+        <div class="d-flex align-items-center justify-content-between">
+            <h5 class="mb-0"> Add Fixture </h5>
 
-            @*Paint Category Button *@
-            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="paintCategory"
-                TextAlignment="center" />
-
-            @*Erase Category Button *@
-            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategory"
-                TextAlignment="center" />
-
-
-            @*View Fullfillment Button *@
-            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eye" OnClickFunction="viewFulfillment"
-                TextAlignment="center" />
-
-            @*Edit Layout Button *@
-            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-wrench" OnClickFunction="editLayout"
-                TextAlignment="center" />
         </div>
-    }
-    else
-    {
-        @if (buildingWallsExpanded)
-        {
-            <div class="expanded">
-                <h3 class="header pt-3" @onclick="ToggleBuildingWalls">
-                    <i class="fas fa-edit"></i> Edit Building Walls
-                </h3>
-                <hr style="opacity:1">
-                <label>Dimensions</label>
-                <div class="horizantal-inputs">
-                    <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
-                        ValueChanged="@(str => NumberChanged(str, value => width = value))" />
-                    @* The X to separate the two inputs *@
-                    <span class="dimension-separator">X</span>
-                    <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
-                        ValueChanged="@(str => NumberChanged(str, value => length = value))" />
-                </div>
-                <label>Enter the Dimensions (width and length) in feet</label>
+    </div>
 
-                @* uncomment the below when testing draggable*@
-                @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
-                @ondragstart:preventDefault="true"> *@
-                <div class="drag-start-area d-flex flex-row my-3">
-                    <div class="fixture-img disable-select grab-cursor"></div>
-                    <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
-                </div>
-                @* </div> *@
-                <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
-                    Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
-                    Apply
-                </Button>
-            </div>
-        }
-        else
-        {
-            <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
-                OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
-                Edit Building Walls
+    <!-- Search Bar -->
+    <div class="p-3 mb-2 border-bottom">
+        <div class="d-flex align-items-center mb-2">
+
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <Button class="filter-btn" OnClickFunction="FilterBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
+                </svg>
             </Button>
+
+        </div>
+        <div class="align-items-center mt-3 d-flex">
+            <Button  OnClickFunction="OnAddFixture"
+                class="btn add-fixture btn-lg w-100">Add Fixture</Button>
+        </div>
+
+    </div>
+
+
+    <!-- Fixture Area -->
+    <div class="fixture-area p-3 mt-3 d-flex mb-2">
+
+        @foreach (Fixture currFixture in fixtures.Values)
+        {
+
+            <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name"
+                @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width))" draggable="true"
+                @ondragstart:preventDefault="true">
+                <div class="drag-start-area d-flex flex-row">
+                    <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="">
+                    <p class="fixture-text m-2 disable-select grab-cursor">@currFixture.Name</p>
+                </div>
+                @{
+                    string id = currFixture.Name.Replace(" ", "");
+                    List<string> links = new List<string> { "#editFixture-" + id, "#deleteFixture-" + id };
+                    
+                }
+                <Dropdown DropdownLinks="@links" DropdownIcons="@icons" DropdownText="@texts"
+                    class="fixture-options ms-auto disable-select" id="@("fixture-options" + currFixture.Name)"
+                    LabelText="Fixture">
+                </Dropdown>
+            </div>
+
+
+
         }
 
-        <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="ToggleAllocations"
-            Icon="fa-solid fa-eye" IsDisabled=false TextAlignment="center">
-            View Allocations
-        </Button>
+    </div>
 
-        <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="OpenImportModal"
-            Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
-            Import Excel File
-        </Button>
-
-        <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
-            OnClickFunction="openPrint">
-            Print Layout
-        </Button>
-
-        <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
-            Save
-        </Button>
-    }
 </SlideOut>
 
-@*Import Excel File Modal -- Tristan Calay *@
-<Modal Title="Import Excel File" Id="importExcelModal" Class="modal-dialog">
+@* Add Fixture Modal *@
+@{    
 
-    @*Body content includes file to upload*@
-    <BodyContent>
-        <p>Import an Excel File</p>
-        <FileInput Id="ImportFile" OnFileSelected="HandleFileSelected"></FileInput>
-    </BodyContent>
+    
+    Console.Write(ModalLength);
+    <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture">
+        <BodyContent>
+            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@ModalName" ValueChanged="@((v)=> ModalName = v)"/>
+            <div class="d-flex flex-row align-items-center justify-content-between">
 
-    <FooterContent>
-        @*To fix: Cancel button is included in PartialComponents/Modal/Modal.razor
-         but appropriate alignment still needs to be handled 
-         *@
+                <div class="dimension">
+                    <NumericInput Id="add-length" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
+                        Value="@ModalLength" ValueChanged="(v) => {
+                            ModalLength = v;
+                            if (!ModalLength.Equals(string.Empty) && !ModalWidth.Equals(string.Empty)) {
+                                try {
+                                    ModalLFCapacity = (int.Parse(ModalLength) * int.Parse(ModalWidth)) + string.Empty;
+                                } catch (Exception e){
+                                    Console.WriteLine(e.GetBaseException());
+                                }
+                                try {
+                                    ModalTotalLF = (int.Parse(ModalLFCapacity) * int.Parse(ModalHangerStack)) + string.Empty;
+                                } catch (Exception e){
+                                    Console.WriteLine(e.GetBaseException());
+                                }
+                            } else {
+                                ModalTotalLF = string.Empty;
+                            }
+                        }" />
+                </div>
 
-        @*Import button
-        Replace HandleExcelFile with the name of the function used in final FloorsetEditor file to allocate data
+                <i class="fa-solid fa-xmark"></i>
 
-        To fix: File persists when cancel button is pressed.
-        *@
-        <Button Class="Button" Id="buttonConfirmImport" Variant="primary" OnClickFunction="HandleExcelFile"
-            IsDisabled=false TextAlignment="center">
-            Import
-        </Button>
-    </FooterContent>
-</Modal>
-
-@*Print Modal *@
-@*Tristan Calay *@
-<Modal Title="Print Layout" Id="printModal" Class="modal-dialog">
-    <BodyContent>
-        <h6 style="opacity: 0.5;">Select print options for how you would like your printed document to be formatted.
-        </h6>
-        <img class="w-100" src="/img/printpreviewexample.png">
-
-        @* Danielle Smith - 3/17/2025
-        changed to use bootstrap classes and added some margin *@
-        <div class="row">
-            <div class="col-md-6">
-                <OptionInput ID="printerInput" Class="optionInput my-3" label="Select a Printer"
-                    optionsText="@(new List<String> { "Printer 1", "Printer 2" })"
-                    optionsValues="@(new List<String> { "Printer 1", "Printer 2" })" />
+                <div class="dimension">
+                    <NumericInput Id="add-width" Class="dimension" Label="Width" Placeholder="2ft" Description="Enter the width in feet"
+                        Value="@ModalWidth" ValueChanged="(v) => {
+                            ModalWidth = v;
+                            if (!ModalLength.Equals(string.Empty) && !ModalWidth.Equals(string.Empty)) {
+                                try {
+                                    ModalLFCapacity = (int.Parse(ModalLength) * int.Parse(ModalWidth)) + string.Empty;
+                                } catch (Exception e){
+                                    Console.WriteLine(e.GetBaseException());
+                                }
+                                try {
+                                    ModalTotalLF = (int.Parse(ModalLFCapacity) * int.Parse(ModalHangerStack)) + string.Empty;
+                                } catch (Exception e){
+                                    Console.WriteLine(e.GetBaseException());
+                                }
+                            } else {
+                                ModalTotalLF = string.Empty;
+                            }
+                        }" />
+                </div>
             </div>
 
-            <div class="col-md-6">
-                <OptionInput ID="pageInput" Class="optionInput my-3" label="Page Size"
-                    optionsText="@(new List<String> { "8.5x11", "A4" })"
-                    optionsValues="@(new List<String> { "standard", "a4" })" />
+            <NumericInput Id="add-lfcapacity" Label="Linear Feet Capacity" Placeholder="2ft"
+                Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
+                Value="@ModalLFCapacity" ValueChanged="@(v => {
+                        ModalLFCapacity = v; 
+                        Console.WriteLine(ModalLFCapacity + " " + ModalHangerStack);
+                        if (ModalLFCapacity.Equals("") || ModalHangerStack.Equals("")) {
+                            ModalTotalLF = "";
+                        } else {
+                            try {
+                                ModalTotalLF = (int.Parse(ModalLFCapacity) * int.Parse(ModalHangerStack)).ToString();
+                            } catch (FormatException e) {
+                                Console.WriteLine(e.GetBaseException());
+                            }
+                        }
+                    })" />
+
+            <NumericInput Id="add-hanger-stack" Label="Hanger Stack" Placeholder="2" Description="Enter the number of vertically stacked racks"
+                Value="@ModalHangerStack" ValueChanged="@(v => {
+                        ModalHangerStack = v; 
+                        Console.WriteLine(ModalLFCapacity + " " + ModalHangerStack);
+                        if (ModalLFCapacity.Equals("") || ModalHangerStack.Equals("")) {
+                            ModalTotalLF = "";
+                        } else {
+                            try {
+                                ModalTotalLF = (int.Parse(ModalLFCapacity) * int.Parse(ModalHangerStack)).ToString();
+                            } catch (FormatException e) {
+                                Console.WriteLine(e.GetBaseException());
+                            }
+                        }
+                    })" />
+
+            <NumericInput Id="add-total-lf" Label="Total Linear Feet" Placeholder="4"
+                Description="The final calculation of linear feet (LF capacity x hanger stack)" ReadOnly="true" @bind-Value="ModalTotalLF" />
+
+            
+            <div class="img-input">
+                <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
+                        Id="add-fixtureimg" />
             </div>
-        </div>
 
-        <Checkbox id="checkWithAllocations" Text="With Allocations" />
-        <Checkbox id="checkWithNotes" Text="With Notes" />
-    </BodyContent>
 
-    <FooterContent>
-        <Button Variant="primary" isDisabled="false" OnClickFunction="printLayout">
-            Print
-        </Button>
-    </FooterContent>
-</Modal>
+
+
+        </BodyContent>
+
+        <FooterContent>
+            <Button class="btn add-btn ms-auto" OnClickFunction=@(async (e) => {
+                AddFixture(new Fixture(ModalName,ModalLength,ModalWidth,ModalHangerStack,ModalFixtureImg));
+                await JS.InvokeVoidAsync("toggleModal","#addFixture",false);
+                ClearTempFixtureData();
+            })>Add</Button>
+        </FooterContent>
+    </Modal>
+}
+
+@* Edit Fixture Modal *@
+@foreach (Fixture currFixture in fixtures.Values)
+{
+    string len = currFixture.Length;
+    string wth = currFixture.Width;
+    string? lfc = currFixture.LFCapacity;
+    string hst = currFixture.HangerStack;
+    string? tlf = currFixture.TotalLF;
+    string img = currFixture.FixtureImg;
+
+    string id = currFixture.Name.Replace(" ", "");
+    List<string> links = new List<string> { "#editFixture-" + id, "#deleteFixture-" + id };
+
+
+    <Modal Class="modal-xl fixture-modal" Id="@("editFixture-" + id)" Title="Edit Fixture">
+        <BodyContent>
+            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" @bind-Value="@currFixture.Name" />
+            <div class="d-flex flex-row align-items-center justify-content-between">
+                <div class="dimension">
+                    <NumericInput Id="@(id + "-edit-length")" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
+                        Value="@currFixture.Length" ValueChanged="(v) => {
+                            currFixture.Length = v;
+                            if (!currFixture.Length.Equals(string.Empty) && !currFixture.Width.Equals(string.Empty)) {
+                                currFixture.UpdateLFCapacity();
+                                currFixture.UpdateTotalLF();
+                            } else {
+                                currFixture.TotalLF = string.Empty;
+                            }
+                        }" />
+                </div>
+                <i class="fa-solid fa-xmark"></i>
+
+                <div class="dimension">
+                    <NumericInput Id="@(id + "-edit-width")" Class="dimension" Label="Width" Placeholder="2ft" Description="Enter the width in feet"
+                        Value="@currFixture.Width" ValueChanged="(v) => {
+                            currFixture.Width = v;
+                            if (!currFixture.Length.Equals(string.Empty) && !currFixture.Width.Equals(string.Empty)) {
+                                currFixture.UpdateLFCapacity();
+                                currFixture.UpdateTotalLF();
+                            } else {
+                                currFixture.TotalLF = string.Empty;
+                            }
+                        }" />
+                </div>
+            </div>
+
+            <NumericInput Id="@(id + "-edit-LFCapacity")" Label="Linear Feet Capacity" Placeholder="2ft"
+                Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
+                    Value="@currFixture.LFCapacity" ValueChanged="(v) => {
+                        currFixture.LFCapacity = v;
+                        if (!currFixture.LFCapacity.Equals(string.Empty) && !currFixture.HangerStack.Equals(string.Empty)) {
+                            currFixture.UpdateTotalLF();
+                        } else {
+                            currFixture.TotalLF = string.Empty;
+                        }
+                    }" />
+
+            <NumericInput Id="@(id + "-edit-HangerStack")" Label="Hanger Stack" Placeholder="2" Description="Enter the number of vertically stacked racks"
+                    Value="@currFixture.HangerStack" ValueChanged="(v) => {
+                        currFixture.HangerStack = v;
+                        
+                        if (currFixture.LFCapacity != null && !currFixture.LFCapacity.Equals(string.Empty) && !currFixture.HangerStack.Equals(string.Empty)) {
+                            currFixture.UpdateTotalLF();
+                        } else {
+                            currFixture.TotalLF = string.Empty;
+                        }
+                    }" />
+
+            <NumericInput Id="@(id + "-edit-TotalLF")" Label="Total Linear Feet" Placeholder="4"
+                Description="The final calculation of linear feet (LF capacity x hanger stack)" @bind-Value="@currFixture.TotalLF"
+                ReadOnly="true" />
+
+            <div class="img-input">
+                <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
+                                        Id="@("ImageInput-" + currFixture.Name)"/>
+            </div>
+            
+
+
+            
+
+        </BodyContent>
+
+        <FooterContent>
+            <Button class="btn add-btn ms-auto"  OnClickFunction=@(async (e) => {
+                    UpdateFixture(currFixture, new Fixture(currFixture.Name,len,wth,hst,img));
+                    await JS.InvokeVoidAsync("toggleModal","#editFixture-"+id,false);
+                })>
+                Update
+            </Button>
+        </FooterContent>
+    </Modal>
+
+    <Modal Title="Delete Fixture"  Id=@("deleteFixture-" + id)>
+
+        <BodyContent>
+            Are you sure you want top delete "@(currFixture.Name)" ?
+        </BodyContent>
+
+        <FooterContent>
+             <Button class="btn add-btn ms-auto" OnClickFunction=@(async (e)=>{
+                    DeleteFixture(currFixture);
+                    await JS.InvokeVoidAsync("toggleModal","#deleteFixture" + id,false);
+                })>
+                Delete
+            </Button>
+        </FooterContent>
+
+    </Modal>
+
+}
 
 
 <script>
-    function OpenPrintModal() {
-        /* Tristan Calay - 3/17/2025
-        Technique from sales data import modal - find print modal, and open it.*/
-        bootstrap.Modal.getOrCreateInstance('#printModal').show();
-    }
+    @* Get reference to the grid area *@
+    var container = document.getElementById("container");
+    var isAsc = true;
 
-    function HidePrintModal() {
-        /* Danielle Smith - 3/17/2025
-        changed implementation of hiding modal to one that will work */
-        document.getElementById('printModal').classList.remove('show');
-        document.querySelector('.modal-backdrop')?.remove();
-    }
+    @* Dimensions of items *@
+    var width = 50;
+    var height = 50;
+    var rows = 48;
+    var cols = 48;
+    var snap = 50;
+    
 
-    function OpenImportModal() {
-        /* Danielle Smith - 3/16/2025
-        grabs the import excel modal and opens it */
-        bootstrap.Modal.getOrCreateInstance('#importExcelModal').show();
-    }
-</script>
+    container.style.height = (width * rows) + "px";
+    container.style.width = (width * rows) + "px";
 
-@code
-{
-    private bool buildingWallsExpanded = false;
-    private bool allocationsOpen = false;
-
-    private void ToggleBuildingWalls()
-    {
-        buildingWallsExpanded = !buildingWallsExpanded;
-    }
-
-    private void ToggleAllocations()
-    {
-        buildingWallsExpanded = false;
-        allocationsOpen = !allocationsOpen;
-    }
-
-    private double width;
-    private double length;
-
-    /* This function is called when the number is changed */
-    private async Task NumberChanged(string strNumber, Action<double> setValue)
-    {
-        // String will be either a positive number or ""
-        Double.TryParse(strNumber, out double newNumber);
-
-        // Directly modify the referenced variable
-        setValue(newNumber); // Number will be 0 if string is ""
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private void ApplyDimensions()
-    {
-
-    }
-
-    @* private async Task OnDragStart(DragEventArgs e)
-    {
-        // Extract the mouse position from the DragEventArgs
-        var mouseX = e.ClientX;
-        var mouseY = e.ClientY;
-        string size = $"{width}x{length}";  // size should always be in the form of "10x20"
-
-        await JS.InvokeVoidAsync("console.log", size); // This will log to the browser's console.
-
-        // Call JS function with the mouse coordinates and size
-        await JS.InvokeVoidAsync("createDraggable", mouseX, mouseY, size);
+@*     
+    for (var i = 0; i < rows * cols; i++) {
+        var y = Math.floor(i / cols) * height;
+        var x = i * width % (cols * width);
+        $("<div class=\"grid-cell\"></div>").css({ top: y, left: x, position: "absolute" }).prependTo(container);
     } *@
 
-    private IBrowserFile? selectedFile;
+    container.setAttribute("style","display: grid; grid-column-gap: 0px;grid-row-gap: 0px;");
+    container.style.gridTemplateColumns = `repeat(${cols},${width}px)`;
+    container.style.gridTemplateRows = `repeat(${rows},${width}px)`;
 
-    /*
-    Set selectedFile to file placed in FileInput Tool
-    */
-    private void HandleFileSelected(IBrowserFile file)
-    {
-        selectedFile = file;
+    for (var i = 0; i < rows * cols; i++) {
+        $("<div class=\"grid-cell\"></div>").prependTo(container);
     }
 
-    // Replace below with processing from the FloorSet Grid FE task
-    // Processes it
-    private void ProcessExcelFile(IBrowserFile file)
-    {
-        // Processing of excel file
+    function createDraggable(event, size) {
+
+        var sidebar = document.getElementById("FloorsetSlideOut");
+
+        var newBox = document.createElement("div");
+
+        container.appendChild(newBox);
+
+        newBox.className = "box";
+        newBox.style.position = "absolute";
+
+        var boxSize = size.split("x");
+
+
+        newBox.style.height = boxSize[0] * height + "px";
+        newBox.style.width = boxSize[1] * width + "px";
+
+        newBox.style.background = "grey";
+        newBox.style.borderRadius = "8px";
+
+
+        // Get container position relative to viewport
+        var containerRect = container.getBoundingClientRect();
+
+        var mouseX = event.clientX;
+        var mouseY = event.clientY;
+
+        var snappedX = Math.round((mouseX - snap * 2) / snap) * snap;
+        var snappedY = Math.round((mouseY - snap * 2) / snap) * snap;
+
+        newBox.style.left = snappedX + "px";
+        newBox.style.top = snappedY + "px";
+
+
+        var draggable = Draggable.create(newBox, {
+            bounds: container,
+            onDrag: function () {
+                TweenLite.to(newBox, 0.5, {
+                    x: Math.round(this.endX / snap) * snap,
+                    y: Math.round(this.y / snap) * snap,
+                    ease: Back.easeOut.config(2)
+                });
+
+            },
+            onDragEnd: function () {
+                var boxRect = newBox.getBoundingClientRect();
+                var sidebarRect = sidebar.getBoundingClientRect();
+                if (isOverElement(boxRect, sidebarRect)) {
+                    container.removeChild(newBox);
+                } else {
+                    newBox.style.zIndex = 0;
+                }
+
+            }
+        });
+
+        setTimeout(() => {
+            var evt = new MouseEvent("mousedown", {
+                bubbles: true,
+                cancelable: true,
+                clientX: mouseX,
+                clientY: mouseY
+            });
+            newBox.dispatchEvent(evt);
+        }, 10);
+
+
+
     }
 
-    // Runs when import button is pressed inside modal
-    private void HandleExcelFile()
-    {
-        if (selectedFile == null) return;
+    function isOverElement(draggableRect, staticRect) {
+        return (
+            draggableRect.top < staticRect.bottom &&
+            draggableRect.bottom > staticRect.top &&
+            draggableRect.left < staticRect.right &&
+            draggableRect.right > staticRect.left
+        );
+    }
+    
 
-        ProcessExcelFile(selectedFile);
+    function flipOrder() {
+        if (isAsc) {
+            document.querySelector(".fixture-area").style.flexDirection = "column-reverse";
+        } else {
+            document.querySelector(".fixture-area").style.flexDirection = "column";
+        }
+        isAsc = !isAsc;
     }
 
-    /* Danielle Smith - 3/16/2025
-    function that calls a javascript function to open the import file modal */
-    private async Task OpenImportModal()
-    {
-        await JS.InvokeVoidAsync("OpenImportModal");
+    function closeModalEvent(dotNet) {
+        $("#addFixture").on('hidden.bs.modal', function (e) {
+            dotNet.invokeMethodAsync("ClearTempFixtureData");
+        })
     }
 
-    //openPrint Task
-    //Asynchronous task to find and open the print modal on the page.
-    //Called by the "Print Layout" button in the sidebar component.
-    private async Task openPrint()
-    {
-        Console.WriteLine("Showing Print Layout Modal...");
-        await JS.InvokeVoidAsync("OpenPrintModal");
+    function toggleModal(modalId,showModal) {
+        if (document.querySelector(modalId)) 
+        {
+            const test = new bootstrap.Modal(document.querySelector(modalId));
+
+            showModal ? test.show() : test.hide();
+        }
+    }
+        
+
+    function alertUser(msg) {
+        alert(msg);
     }
 
-    //printLayout Task
-    //Asynchronously prints the current grid layout from specified printer and options.
-    //Called by the "Print" button in the print modal.
-    private async Task printLayout()
+</script>
+
+@code {
+    public class Fixture
     {
-        Console.WriteLine("Print Layout Func...");
-        Console.WriteLine("Hiding Print Modal...");
-        await JS.InvokeVoidAsync("HidePrintModal");
+
+        public string Name { get; set; } = string.Empty;
+        public string Length { get; set; } = string.Empty;
+        public string Width { get; set; } = string.Empty;
+        public string? LFCapacity { get; set; } = string.Empty;
+        public string HangerStack { get; set; } = string.Empty;
+        public string? TotalLF { get; set; } = string.Empty;
+        public string FixtureImg { get; set; } = string.Empty;
+
+        
+        public Fixture(string name, string length, string width, string hangerStack, string fixtureImg)
+        {
+            try {
+                this.Name = name;
+                this.Length = length;
+                this.Width = width;
+                this.LFCapacity = Length.Equals(width) && Length.Equals("") ? "" : (int.Parse(Length) * int.Parse(Width)).ToString() + "";;
+                this.HangerStack = hangerStack;
+                this.TotalLF = LFCapacity.Equals(hangerStack) && LFCapacity.Equals("") ? "" : (int.Parse(LFCapacity) * int.Parse(HangerStack)).ToString() + "";
+                this.FixtureImg = fixtureImg;
+            } catch (FormatException e) {
+                Console.WriteLine(e.GetBaseException());
+            }
+        }
+
+
+        public bool HasNullProperties() =>
+        GetType().GetProperties().Any(p => {
+            var pValue = p.GetValue(this);            
+            return pValue == null || pValue.Equals("");            
+        });
+
+        public void UpdateLFCapacity() {
+            try {
+                LFCapacity = (int.Parse(Length) * int.Parse(Width)) + "";
+            } catch (Exception e){
+                Console.WriteLine(e.GetBaseException());
+            }
+        }
+
+        public void UpdateTotalLF() {
+            try {
+                if (LFCapacity != null) 
+                {                
+                    TotalLF = (int.Parse(LFCapacity) * int.Parse(HangerStack)) + "";
+                }
+            } catch (Exception e){
+                Console.WriteLine(e.GetBaseException());
+            }
+        }
+        public override string ToString() {
+            return  Name + ", " +
+                    Length + ", " +
+                    Width + ", " +
+                    LFCapacity + ", " +
+                    HangerStack + ", " +
+                    TotalLF + ", " +
+                    FixtureImg;
+                
+        }
+
+
+
     }
 
-    private void editFixture()
+    string ModalName = "";
+    string ModalLength = "";
+    string ModalWidth = "";
+    string ModalLFCapacity = "";
+    string ModalHangerStack = "";
+    string ModalTotalLF = "";
+    string ModalFixtureImg = "";
+    DotNetObjectReference<FloorsetEditor>? dotNet;
+
+    private SortedDictionary<string, Fixture> fixtures = new()
     {
-        Console.WriteLine("Edit Fixture Function");
-        allocationsOpen = false;
+        ["Single Hung Rack"] = new Fixture("Single Hung Rack", "5", "2", "1", "img/LayoutPhotoExample.png"),
+        ["Double Hung Rack"] = new Fixture("Double Hung Rack", "3", "2", "2", "img/LayoutPhotoExample.png"),
+        ["Shelf"] = new Fixture("Shelf", "2", "1", "1", "img/LayoutPhotoExample.png"),
+
+    };
+
+    private List<string> icons = new List<string> { "fa-regular fa-pen-to-square", "fa-regular fa-trash-can" };
+    private List<string> texts = new List<string> { "Edit", "Delete" };
+
+    
+    public async Task OnAddFixture() {
+        await JS.InvokeVoidAsync("toggleModal","#addFixture", true);
     }
 
-    private void paintCategory()
+    public void AddFixture(Fixture currFixture)
     {
-        Console.WriteLine("Paint Category Function");
+    
+        fixtures.Add(currFixture.Name, currFixture);
+        
+    
     }
 
-    private void eraseCategory()
+    public void UpdateFixture( Fixture currFixture, Fixture newFixture)
     {
-        Console.WriteLine("Erase Category Function");
+        @* Console.WriteLine(currFixture.ToString());
+        currFixture.Name = newFixture.Name;
+        currFixture.Length = newFixture.Length;
+        currFixture.Width = newFixture.Width;
+        currFixture.LFCapacity = newFixture.LFCapacity;
+        currFixture.HangerStack = newFixture.HangerStack;
+        currFixture.TotalLF = newFixture.TotalLF; *@
+
     }
 
-    private void viewFulfillment()
+    public void DeleteFixture(Fixture currFixture) 
     {
-        Console.WriteLine("View Fulfillment Function");
+        fixtures.Remove(currFixture.Name);
     }
 
-    private void editLayout()
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) {
+            dotNet = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("closeModalEvent",dotNet);
+        }
+    }
+    private async Task OnDragStart(DragEventArgs e, string size)
     {
-        Console.WriteLine("Edit Layout Function");
+
+        await JS.InvokeVoidAsync("createDraggable", e, size);
+    }
+
+    
+    private async Task FilterBtn() {
+        await JS.InvokeVoidAsync("flipOrder");
+    }
+
+    [JSInvokable]
+    public void ClearTempFixtureData() {
+        Console.WriteLine("Here");
+        ModalName = "";
+        ModalLength = "";
+        ModalWidth = "";
+        ModalLFCapacity = "";
+        ModalHangerStack = "";
+        ModalTotalLF = "";
+        ModalFixtureImg = "";
+        StateHasChanged();
     }
 }
