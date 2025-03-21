@@ -159,8 +159,8 @@ Author: Andrew Fulton (3/13/2025)  *@
         if so, close the modal to mimic deleting a floorset. clear the text box for next use
         otherwise, alert the user */
         let deleteStr = document.getElementById("deleteModalTextInput").value;
-        if (deleteStr.equals("DELETE")) {
-            document.getElementById("deleteModalTextInput").value = "Delete";
+        if (deleteStr === "DELETE") {
+            document.getElementById("deleteModalTextInput").value = "";
             HideModal("deleteFloorsetModal");
         }
         else {
@@ -177,7 +177,7 @@ Author: Andrew Fulton (3/13/2025)  *@
     public string? storeLocation { get; set; }
 
     //function for deleting a store
-    private async void deleteFloorset()
+    private async Task deleteFloorset()
     {
         Console.WriteLine("DELETE THIS FLOORSET");
         await JS.InvokeVoidAsync("DeleteFloorset");

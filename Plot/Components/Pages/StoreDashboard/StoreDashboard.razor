@@ -213,6 +213,7 @@ Author: Andrew Fulton (3/12/2025)  *@
     // Places a circle with their name and initials
     // NOT IN USE RIGHT NOW
     function addEmployee(name, initials, targetDiv) {
+        console.log("IN the JS FUNCTION");
         // Get the employees div
         const employeesDiv = document.getElementById(targetDiv);
 
@@ -261,8 +262,8 @@ Author: Andrew Fulton (3/12/2025)  *@
         if so, close the modal to mimic deleting a store. clear the text box for next use
         otherwise, alert the user */
         let deleteStr = document.getElementById("deleteModalTextInput").value;
-        if (deleteStr.equals("DELETE")) {
-            document.getElementById("deleteModalTextInput").value = "Delete";
+        if (deleteStr === "DELETE") {
+            document.getElementById("deleteModalTextInput").value = "";
             HideModal("deleteStoreModal");
         }
         else {
@@ -383,9 +384,10 @@ Author: Andrew Fulton (3/12/2025)  *@
         Console.WriteLine("CREATE NEW STORE");
     }
     //function for adding a new employee
-    private void addNewEmployee()
+    private async void addNewEmployee()
     {
         Console.WriteLine("ADD NEW EMPLOYEE");
+        await JS.InvokeVoidAsync("addEmployee", "TEST NAME", "TN", "editStoreModal");
     }
     //function fir updating a store's info
     private void updateStoreInformation()
