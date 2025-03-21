@@ -16,7 +16,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script>
 
 @*Grid Area *@
-<div class="wrapper" width="500px" height="500px">
+@* <div class="wrapper" width="500px" height="500px">
     <div class="main-content">
         <div class="grid">
             @for (int i = 0; i < 50; i++)
@@ -28,7 +28,8 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             }
         </div>
     </div>
-</div>
+</div> *@
+<div id="container"></div>
 
 <SlideOut Id="FloorsetSlideOut" Class="slide-out">
     @if (allocationsOpen)
@@ -78,15 +79,17 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                 </div>
                 <label>Enter the Dimensions (width and length) in feet</label>
 
-                @* uncomment the below when testing draggable*@
-                @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
-                @ondragstart:preventDefault="true"> *@
-                <div class="drag-start-area d-flex flex-row my-3">
-                    <div class="fixture-img disable-select grab-cursor"></div>
-                    <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                <div class="fixture-area p-3 mt-3 d-flex mb-2">
+                    <div class="fixture mb-3 d-flex flex-row"
+                        @ondragstart="@((e) => OnDragStart(e, "1x1", "red"))" draggable="true"
+                        @ondragstart:preventDefault="true">
+                        <div class="drag-start-area d-flex flex-row">
+                            <div class="emp-only"></div>
+                            <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                        </div>
+                    </div>
                 </div>
-                @* </div> *@
-                <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+                <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
                     Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
                     Apply
                 </Button>
@@ -110,12 +113,12 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             Import Excel File
         </Button>
 
-        <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
+        <Button Icon="fa-solid fa-print" Variant="primary" IsDisabled="false" TextAlignment="center"
             OnClickFunction="openPrint">
             Print Layout
         </Button>
 
-        <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
+        <Button Icon="fa-solid fa-floppy-disk" Variant="success" IsDisabled="false" TextAlignment="center">
             Save
         </Button>
     }
@@ -176,7 +179,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     </BodyContent>
 
     <FooterContent>
-        <Button Variant="primary" isDisabled="false" OnClickFunction="printLayout">
+        <Button Variant="primary" IsDisabled="false" OnClickFunction="printLayout">
             Print
         </Button>
     </FooterContent>
@@ -184,6 +187,127 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
 
 <script>
+    //finds the container element
+    var container = document.getElementById("container");
+    @* var box = document.querySelector(".box"); *@
+    var isAsc = true;
+
+
+    var width = 50;
+    var height = 50;
+    var rows = 48;
+    var cols = 48;
+    var snap = 50;
+
+    container.style.height = (width * rows) + "px";
+    container.style.width = (width * rows) + "px";
+
+    for (var i = 0; i < rows * cols; i++) {
+        var y = Math.floor(i / cols) * height;
+        var x = i * width % (cols * width);
+        $("<div class=\"grid-cell\"></div>").css({ top: y, left: x, position: "absolute" }).prependTo(container);
+    }
+    //this method accepts a size, color, and event to create a draggable div to add to the floorset
+    function createDraggable(event, size, color) 
+    {
+        var sidebar = document.getElementById("FloorsetSlideOut");
+        //this is the new div
+        var newBox = document.createElement("div");
+
+        container.appendChild(newBox);
+
+        newBox.className = "box";
+        newBox.style.position = "absolute";
+        //splits the incoming string on the "x" character
+        var boxSize = size.split("x");
+
+        //first part of the array created when splitting is the height
+        newBox.style.height = boxSize[0] * height + "px";
+        //second part of the array created when splitting is the length
+        newBox.style.width = boxSize[1] * width + "px";
+
+        newBox.style.background = color;
+        newBox.style.borderRadius = "8px";
+
+
+        // Get container position relative to viewport
+        var containerRect = container.getBoundingClientRect();
+
+        var mouseX = event.clientX;
+        var mouseY = event.clientY;
+
+        var snappedX = Math.round((mouseX - snap * 2) / snap) * snap;
+        var snappedY = Math.round((mouseY - snap * 2) / snap) * snap;
+
+        newBox.style.left = snappedX + "px";
+        newBox.style.top = snappedY + "px";
+
+        var draggable = Draggable.create(newBox, {
+            bounds: container,
+            onDrag: function () {
+                TweenLite.to(newBox, 0.5, {
+                    x: Math.round(this.endX / snap) * snap,
+                    y: Math.round(this.y / snap) * snap,
+                    ease: Back.easeOut.config(2)
+                });
+
+            },
+            onDragEnd: function () {
+                var boxRect = newBox.getBoundingClientRect();
+                var sidebarRect = sidebar.getBoundingClientRect();
+                if (isOverElement(boxRect, sidebarRect)) {
+                    container.removeChild(newBox);
+                } else {
+                    newBox.style.zIndex = 0;
+                }
+
+            }
+        });
+
+        setTimeout(() => {
+            var evt = new MouseEvent("mousedown", {
+                bubbles: true,
+                cancelable: true,
+                clientX: mouseX,
+                clientY: mouseY
+            });
+            newBox.dispatchEvent(evt);
+        }, 10);
+
+
+
+    }
+
+    function isOverElement(draggableRect, staticRect) {
+        return (
+            draggableRect.top < staticRect.bottom &&
+            draggableRect.bottom > staticRect.top &&
+            draggableRect.left < staticRect.right &&
+            draggableRect.right > staticRect.left
+        );
+    }
+    
+
+    function flipOrder() {
+        if (isAsc) {
+            document.querySelector(".fixture-area").style.flexDirection = "column-reverse";
+        } else {
+            document.querySelector(".fixture-area").style.flexDirection = "column";
+        }
+        isAsc = !isAsc;
+    }
+
+    function closeModalEvent(dotNet) {
+        $("#addFixture").on('hidden.bs.modal', function (e) {
+            dotNet.invokeMethodAsync("ClearTempFixtureData");
+        })
+    }
+        
+
+    function alertUser(msg) {
+        alert(msg);
+    }
+
     function OpenPrintModal() {
         /* Tristan Calay - 3/17/2025
         Technique from sales data import modal - find print modal, and open it.*/
@@ -239,19 +363,12 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     {
 
     }
-
-    @* private async Task OnDragStart(DragEventArgs e)
+    //this function calls the createDraggable js method in the script
+    private async Task OnDragStart(DragEventArgs e, string size, string? color)
     {
-        // Extract the mouse position from the DragEventArgs
-        var mouseX = e.ClientX;
-        var mouseY = e.ClientY;
-        string size = $"{width}x{length}";  // size should always be in the form of "10x20"
 
-        await JS.InvokeVoidAsync("console.log", size); // This will log to the browser's console.
-
-        // Call JS function with the mouse coordinates and size
-        await JS.InvokeVoidAsync("createDraggable", mouseX, mouseY, size);
-    } *@
+        await JS.InvokeVoidAsync("createDraggable", e, size, color);
+    }
 
     private IBrowserFile? selectedFile;
 

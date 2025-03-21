@@ -44,10 +44,6 @@
     display: none;
 }
 
-.button-green {
-    background-color: rgb(27, 176, 27);
-}
-
 /* Slide-out container with padding */
 .slide-out {
     padding: 20px;
@@ -84,11 +80,13 @@
 }
 
 /* Style for the button to ensure spacing */
-.Apply.button-green {
+.button-green {
     margin-top: 15px;
     /* Adds space above the Apply button */
     padding: 10px 20px;
     /* Adds internal padding to the button */
+    background-color: rgb(27, 176, 27);
+
 }
 
 
@@ -108,7 +106,7 @@
     background-color: #f1f1f1;
 }
 
-.fixture-img {
+.emp-only {
     height: 55px;
     width: 55px;
     background-color: red;
@@ -157,4 +155,90 @@
     gap: 16px;
     display: flex;
     padding-top: 0.5rem;
+}
+
+.add-fixture {
+    background: var(--platos-blue);
+    color: white;
+    border: none;
+}
+
+.img-input {
+    justify-self: center;
+    margin-top: 2rem;
+}
+
+
+
+.dimension {
+    width: 45%;
+}
+
+
+.filter-btn {
+    margin-left: .5rem;
+    border: none;
+    border-radius: 4px;
+}
+
+.fixture {
+    border-radius: 4px;
+    align-items: center;
+}
+
+.fixture-area {
+    flex-direction: column;
+    max-height: 30vh;
+    overflow-y: scroll;
+}
+
+.fixture:hover {
+    transition: 25ms;
+    background-color: #f1f1f1;
+}
+
+.fixture-img {
+    height: 55px;
+}
+
+.fixture-text {
+    font-size: x-large;
+}
+
+.fixture-options {
+    background: none;
+    border: none;
+}
+
+
+
+.add-btn {
+    background-color: var(--platos-blue);
+    color: white;
+}
+
+.disable-select {
+    user-select: none;
+}
+
+.grab-cursor {
+    cursor: grab;
+}
+
+#container {
+    position: relative;
+}
+
+.box {
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    background: green;
+    border-radius: 5px;
+}
+
+.grid-cell {
+    border: 1px solid #444;
+    width: 49px;
+    height: 49px;
 }
