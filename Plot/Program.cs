@@ -7,13 +7,15 @@ builder.WebHost.UseUrls("http://0.0.0.0:8080");
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+
 builder.Services.AddScoped(sp =>
 {
     var handler = new HttpClientHandler
     {
         UseCookies = true,
         CookieContainer = new System.Net.CookieContainer(),
-        AllowAutoRedirect = false
+        AllowAutoRedirect = true
     };
     return new HttpClient(handler)
     {

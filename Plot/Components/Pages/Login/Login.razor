@@ -1,9 +1,10 @@
 @* Originally by Luke Wollenweber *@
 
 @page "/login"
-
+@using System.Net.Http.Headers
 @inject NavigationManager Navigation
 @inject HttpClient Client
+@inject IJSRuntime JSRuntime
 
 
 <PageTitle>Login</PageTitle>
@@ -36,48 +37,43 @@
     </div>
 </body>
 
+
 @code
 {
     string email = ""; // Define the username variable
-    string password = "";
+    string password = ""; // Define the username variable
     bool isInvalid = false;
 
     private async void OnLoginSubmit()
     {
-        var loginAPIUri= new Uri(Client.BaseAddress+"/auth/login");
+        //Create uri for api. Dont use Client.BaseAddress, js wont work with backend:8085
+        var loginAPIUri= new Uri("http://localhost:8085/api/auth/login");
+
+        // Call loginUser js function in login.js. This function is used to send and receive
+        // a http request to the backend login endpoint. Js is used because using a normal http client
+        // was not seting cookies in the browser.
+        var result = await JSRuntime.InvokeAsync<bool>("loginUser", loginAPIUri, email, password);
+
+//-------------------------Trying to configure auth---------------
+        // Call getCookie js function in login.js. This function is used to get the Auth cookie 
+        // to use with authentication
+        var token = await JSRuntime.InvokeAsync<string>("getCookie", "Auth");
+
+        Console.WriteLine("Auth Token:");
+        Console.WriteLine(token);
+
+        //Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token); This needs work for auth
+//-------------------------
         
-        var request = new HttpRequestMessage(HttpMethod.Post,
-        loginAPIUri);
-        request.Headers.Add("Accept", "application/json");
-
-        Console.WriteLine("------------------------------------------------------------------------");
-        Console.WriteLine(Client.BaseAddress);
-
-
-        request.Content = JsonContent.Create(new
+        if (result)
         {
-            Email = email,
-            Password = password
-        });
-
-        var response = await Client.SendAsync(request);
-
-        Console.WriteLine(response);
-
-        var redirectUrl = response.Headers.Location?.ToString();
-
-        
-
-        if (!string.IsNullOrEmpty(redirectUrl))
-        {
-            Navigation.NavigateTo(redirectUrl, true);
+            Navigation.NavigateTo("/stores",true);
         }
         else
         {
-            isInvalid = true; // Handle the error case
+            isInvalid = true;
         }
 
-
-      
     }
 }
+<script src="js/login.js"></script>
