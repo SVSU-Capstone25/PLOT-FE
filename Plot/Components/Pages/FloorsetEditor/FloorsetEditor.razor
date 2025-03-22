@@ -46,7 +46,9 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         </div>
         <div class="align-items-center mt-3 d-flex">
             <Button class="btn add-fixture btn-lg w-100" Variant="primary" OnClickFunction=@(async (e) => {
+                    
                     await JS.InvokeVoidAsync("toggleModal","addFixture",true);
+
                 })>
                 <i class="fa-solid fa-plus" style="margin-right: .5rem;" ></i>
                 Add Fixture
@@ -92,7 +94,6 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 @{    
 
 
-    Console.Write(ModalLength);
     <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture">
         <BodyContent>
             <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@ModalName" ValueChanged="@((v)=> ModalName = v)"/>
@@ -191,8 +192,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         <FooterContent>
             <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async (e) => {
                 await AddFixture(new Fixture(ModalName,ModalLength,ModalWidth,ModalHangerStack,ModalFixtureImg));
-                await JS.InvokeVoidAsync("toggleModal","addFixture",false);
-                ClearTempFixtureData();
+                
             })>Add</Button>
         </FooterContent>
     </Modal>
@@ -215,7 +215,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
     <Modal Class="modal-xl fixture-modal" Id="@("editFixture-" + id)" Title="Edit Fixture">
         <BodyContent>
-            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" @bind-Value="@name" />
+            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@name" ValueChanged="@(e=>name=e)" />
             <div class="d-flex flex-row align-items-center justify-content-between">
                 <div class="dimension">
                     <NumericInput Id="@(id + "-edit-length")" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
@@ -340,7 +340,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     container.style.gridTemplateRows = `repeat(${rows},${width}px)`;
 
     for (var i = 0; i < rows * cols; i++) {
-    $("<div class=\"grid-cell\"></div>").prependTo(container);
+        $("<div class=\"grid-cell\"></div>").prependTo(container);
     }
 
     function createDraggable(event, size) {
@@ -378,39 +378,43 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 
 
         var draggable = Draggable.create(newBox, {
-        bounds: container,
-        onDrag: function () {
-        TweenLite.to(newBox, 0.5, {
-        x: Math.round(this.endX / snap) * snap,
-        y: Math.round(this.y / snap) * snap,
-        ease: Back.easeOut.config(2)
-        });
+            bounds: container,
+            onDrag: function () {
+                TweenLite.to(newBox, 0.5, {
+                x: Math.round(this.endX / snap) * snap,
+                y: Math.round(this.y / snap) * snap,
+                ease: Back.easeOut.config(2)
+            });
 
-        },
-        onDragEnd: function () {
-        var boxRect = newBox.getBoundingClientRect();
-        var sidebarRect = sidebar.getBoundingClientRect();
-        if (isOverElement(boxRect, sidebarRect)) {
-        container.removeChild(newBox);
-        } else {
-        newBox.style.zIndex = 0;
-        }
+            },
+            onDragEnd: function () {
+                var boxRect = newBox.getBoundingClientRect();
+                var sidebarRect = sidebar.getBoundingClientRect();
+                if (isOverElement(boxRect, sidebarRect)) {
+                    container.removeChild(newBox);
+                } else {
+                    newBox.style.zIndex = 0;
+                }
 
-        }
+            }
         });
 
         setTimeout(() => {
-        var evt = new MouseEvent("mousedown", {
-        bubbles: true,
-        cancelable: true,
-        clientX: mouseX,
-        clientY: mouseY
-        });
-        newBox.dispatchEvent(evt);
+            var evt = new MouseEvent("mousedown", {
+                bubbles: true,
+                cancelable: true,
+                clientX: mouseX,
+                clientY: mouseY
+            });
+            newBox.dispatchEvent(evt);
         }, 10);
 
 
 
+    } 
+
+    function addFixtureImageListener() {
+        document.query
     }
 
     function isOverElement(draggableRect, staticRect) {
@@ -433,9 +437,15 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     }
 
     
-    $("#addFixture").on('hidden.bs.modal', function (e) {
-        dotNet.invokeMethodAsync("ClearTempFixtureData");
-    })
+    function addFixtureClose(dotNet) {
+        $("#addFixture").on('hidden.bs.modal', function (e) {
+
+            dotNet.invokeMethodAsync("ClearTempFixtureData");
+            document.querySelector('#addFixture .img-input .ImageInput').style.backgroundImage = "";
+            document.querySelector('#addFixture .img-input .ImageInput').classList.add("dashed-border");
+        })
+    }
+
     
 
     function toggleModal(modalId,showModal) {
@@ -445,7 +455,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             console.log(modalId,showModal,test);
             if (showModal) 
             {
-                test.show()
+                test.show();
             }
             else 
             { 
@@ -455,11 +465,16 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         }
     }
 
-
+    function imageEventListener(dotNet) {
+        document.querySelectorAll('.img-input').forEach(i=>i.firstChild.addEventListener('change',(e)=>{
+            console.log(e.target);
+            dotNet.invokeMethodAsync("UpdateImage",e.target.value);
+        }));
+    }
 
 
     function alertUser(msg) {
-    alert(msg);
+        alert(msg);
     }
 
 </script>
@@ -561,6 +576,8 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     {
         try {
             fixtures.Add(currFixture.Name, currFixture);
+            await JS.InvokeVoidAsync("toggleModal","addFixture",false);
+            ClearTempFixtureData();
         } catch (ArgumentException)
         {
             await JS.InvokeVoidAsync("alertUser","A fixture with that name has already been used.  Please choose another name.");
@@ -588,10 +605,11 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         fixtures.Remove(currFixture.Name);
     }
 
-    protected override void OnAfterRender(bool firstRender) {
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (firstRender) {
             dotNet = DotNetObjectReference.Create(this);
-            @* await JS.InvokeVoidAsync("closeModalEvent",dotNet); *@
+            await JS.InvokeVoidAsync("imageEventListener",dotNet);
+            await JS.InvokeVoidAsync("addFixtureClose",dotNet);
             
         }
     }
@@ -617,5 +635,10 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         ModalTotalLF = "";
         ModalFixtureImg = "";
         StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void UpdateImage(string value) {
+        Console.WriteLine(value);
     }
 }
