@@ -11,6 +11,7 @@ and allocate floorsets for Platos Closet.
 Author: Andrew Fulton (3/13/2025)  *@
 
 @* /floorsets/Flint, MI/3192 S Linden Rd, Flint, MI 48507 *@
+
 @page "/floorsets/{storeId}/{storeLocation}"
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
@@ -30,69 +31,20 @@ Author: Andrew Fulton (3/13/2025)  *@
 @* Div to hold the floorset cards *@
 <div id="floorsetCards" class="horizontal-items">
 
-    @* A bunch of hard coded Cards *@
-    <Card Id="Nov24Floorset" Class="Card" CardText="Nov24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <Dropdown Class="Dropdown" Id="Nov24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
-            LabelText="Floorset"
-            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-    </Card>
+    @* Tristan Calay - 3/22/25
+    Dynamically geenrate cards from stored floorsets.
+    Iterate over each name and image in the floorsets.
+    *@
 
-    <Card Id="Aug24Floorset" Class="Card" CardText="Aug24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <Dropdown Class="Dropdown" Id="Aug24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
-            LabelText="Floorset"
-            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-    </Card>
-
-    <Card Id="Apr23Floorset" Class="Card" CardText="Apr23 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <Dropdown Class="Dropdown" Id="Apr23Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
-            LabelText="Floorset"
-            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-    </Card>
-
-    <Card Id="Jan25Floorset" Class="Card" CardText="Jan25 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <Dropdown Class="Dropdown" Id="Jan25Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
-            LabelText="Floorset"
-            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-    </Card>
-
-    <Card Id="Feb24Floorset" Class="Card" CardText="Feb24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <Dropdown Class="Dropdown" Id="Feb24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
-            LabelText="Floorset"
-            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-    </Card>
-
-    <Card Id="Apr24Floorset" Class="Card" CardText="Apr24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <Dropdown Class="Dropdown" Id="Apr24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
-            LabelText="Floorset"
-            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-    </Card>
-
-    <Card Id="Jan24Floorset" Class="Card" CardText="Jan24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <Dropdown Class="Dropdown" Id="Jan24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
-            LabelText="Floorset"
-            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-    </Card>
-
-    <Card Id="Oct24Floorset" Class="Card" CardText="Oct24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <Dropdown Class="Dropdown" Id="Oct24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
-            LabelText="Floorset"
-            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-    </Card>
-
-    <Card Id="Dec24Floorset" Class="Card" CardText="Dec24 Floorset" CardImage="/img/FloorsetPhotoExample.png">
-        <Dropdown Class="Dropdown" Id="Dec24Dropdown" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-            DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "http://localhost:8080/floorset-editor", "#deleteFloorsetModal" })"
-            LabelText="Floorset"
-            DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-    </Card>
+    @foreach (var floorset in storedFloorsets)
+    {
+        <Card Id=@floorset.ID Class="Card" CardText=@floorset.Name CardImage=@floorset.ImagePath>
+            <Dropdown Class="Dropdown" Id="@floorset.dropdownID" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+                DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "javascript:onCopyFloorset()", "#deleteFloorsetModal" })"
+                LabelText="Floorset"
+                DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+        </Card>
+    }
 </div>
 
 @* + Add Floorset button fixed to the bottom right of the screen *@
@@ -136,23 +88,6 @@ Author: Andrew Fulton (3/13/2025)  *@
         document.querySelector('.modal-backdrop')?.remove();
     }
 
-    // script to add a floorset image to the floorsets when hitting copy
-    function addCopiedFloorsetText() {
-        // Get the target div
-        const floorsetCardsDiv = document.getElementById("floorsetCards");
-
-        // Create a new <p> element
-        const newImage = document.createElement("img");
-
-        // Set the text content
-        newImage.src = "/img/FloorsetPhotoExample.png";
-        newImage.width = 300;
-        newImage.height = 250;
-
-        // Append the new <p> to the div
-        floorsetCardsDiv.appendChild(newImage);
-    }
-
     function DeleteFloorset() {
         /* Danielle Smith - 3/18/2025
         function that mimics deleting a floorset. still checks if the text equals delete.
@@ -164,9 +99,14 @@ Author: Andrew Fulton (3/13/2025)  *@
             HideModal("deleteFloorsetModal");
         }
         else {
-            alert("Incorrect input.")
+            alert("Incorrect input.");
         }
     }
+
+    function onCopyFloorset(){
+        DotNet.invokeAsyncMethod('PLOT','CopyFloorsetData');
+    }
+
 </script>
 
 @code {
@@ -175,6 +115,34 @@ Author: Andrew Fulton (3/13/2025)  *@
 
     [Parameter]
     public string? storeLocation { get; set; }
+
+    //Tristan Calay - 3/22/25
+    //Structure to store retreived database information on floorsets for rendering and local updates without page reload.
+    //Stores the database ID, the display name, and the thumbnail image path.
+    private struct storedFloorset
+    {
+        public storedFloorset(string id, string name, string img = "/img/FloorsetPhotoExample.png")
+        {
+            ID = id;
+            Name = name;
+            ImagePath = img;
+        }
+
+        public string dropdownID {
+            get{
+                return "Dropdown" + Name;
+            }
+        }
+
+        public string ID {get;}
+
+        public string Name {get; set;}
+
+        public string ImagePath{get; set;}
+    }   
+
+    //Array of stored floorsets to display. Should be manipulated by copy and delete functions to have local updates.
+    private storedFloorset[] storedFloorsets {get; set;} = [];
 
     //function for deleting a store
     private async void deleteFloorset()
@@ -189,9 +157,39 @@ Author: Andrew Fulton (3/13/2025)  *@
         Navigation.NavigateTo("/floorset-editor", forceLoad: true);
     }
 
-    //Add a copied floorset
-    private async Task copyFloorset()
+
+    //Tristan Calay - 3/22/25
+    //Func to add a new floorset when the copy button is pressed.
+    [JSInvokable]
+    public static void CopyFloorsetData()
     {
-        await JS.InvokeVoidAsync("addCopiedFloorsetText");
+        Console.WriteLine("Copy Floorset Func");
+        //storedFloorsets.Append(new storedFloorset("Copy","Copy Test"));
+    }
+
+    //Retrieve the floorsets on initialization.
+    protected override void OnInitialized()
+    {
+        storedFloorsets = getFloorsets();
+        base.OnInitialized();
+    }
+
+    private storedFloorset[] getFloorsets(){
+        storedFloorset[] floorsets = [
+            new storedFloorset("0","Nov24Floorset"),
+            new storedFloorset("1","Dec24Floorset"),
+            new storedFloorset("2","Jan25Floorset"),
+            new storedFloorset("3","Feb25Floorset"),
+            new storedFloorset("4","Mar25Floorset"),
+            new storedFloorset("5","Apr25Floorset"),
+            new storedFloorset("6","May25Floorset"),
+            new storedFloorset("8","Jun25Floorset"),
+            new storedFloorset("9","Jul25Floorset"),
+            new storedFloorset("10","Aug25Floorset"),
+            new storedFloorset("11","Sep25Floorset"),
+            new storedFloorset("12","Oct25Floorset")
+        ];
+
+        return floorsets;
     }
 }
