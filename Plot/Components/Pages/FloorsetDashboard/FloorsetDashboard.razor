@@ -36,14 +36,16 @@ Author: Andrew Fulton (3/13/2025)  *@
     Iterate over each name and image in the floorsets.
     *@
 
-    @foreach (var floorset in storedFloorsets)
-    {
-        <Card Id=@floorset.ID Class="Card" CardText=@floorset.Name CardImage=@floorset.ImagePath>
-            <Dropdown Class="Dropdown" Id="@floorset.dropdownID" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-                DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "javascript:onCopyFloorset()", "#deleteFloorsetModal" })"
-                LabelText="Floorset"
-                DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
-        </Card>
+    @if(storedFloorsets != null){
+        @foreach (var floorset in storedFloorsets)
+        {
+            <Card Id=@floorset.ID Class="Card" CardText=@floorset.Name CardImage=@floorset.ImagePath>
+                <Dropdown Class="Dropdown" Id="@floorset.dropdownID" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+                    DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "javascript:floorsetDashboardCopyCard('"+@floorset.Name+"')", "#deleteFloorsetModal" })"
+                    LabelText="Floorset"
+                    DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+            </Card>
+        }
     }
 </div>
 
@@ -102,11 +104,6 @@ Author: Andrew Fulton (3/13/2025)  *@
             alert("Incorrect input.");
         }
     }
-
-    function onCopyFloorset(){
-        DotNet.invokeAsyncMethod('PLOT','CopyFloorsetData');
-    }
-
 </script>
 
 @code {
@@ -121,9 +118,8 @@ Author: Andrew Fulton (3/13/2025)  *@
     //Stores the database ID, the display name, and the thumbnail image path.
     private struct storedFloorset
     {
-        public storedFloorset(string id, string name, string img = "/img/FloorsetPhotoExample.png")
+        public storedFloorset(string name, string img = "/img/FloorsetPhotoExample.png")
         {
-            ID = id;
             Name = name;
             ImagePath = img;
         }
@@ -134,7 +130,11 @@ Author: Andrew Fulton (3/13/2025)  *@
             }
         }
 
-        public string ID {get;}
+        public string ID {
+            get{
+                return Name.Replace(" ","");
+            }
+        }
 
         public string Name {get; set;}
 
@@ -142,7 +142,7 @@ Author: Andrew Fulton (3/13/2025)  *@
     }   
 
     //Array of stored floorsets to display. Should be manipulated by copy and delete functions to have local updates.
-    private storedFloorset[] storedFloorsets {get; set;} = [];
+    private List<storedFloorset>? storedFloorsets {get; set;}
 
     //function for deleting a store
     private async void deleteFloorset()
@@ -160,36 +160,57 @@ Author: Andrew Fulton (3/13/2025)  *@
 
     //Tristan Calay - 3/22/25
     //Func to add a new floorset when the copy button is pressed.
-    [JSInvokable]
-    public static void CopyFloorsetData()
+    [JSInvokable("CopyFloorset")]
+    public void CopyFloorset(string originalName)
     {
         Console.WriteLine("Copy Floorset Func");
-        //storedFloorsets.Append(new storedFloorset("Copy","Copy Test"));
+        if (storedFloorsets != null){
+            //Search the list for the index where the name property is the same as the original name.
+            var index = storedFloorsets.FindIndex(p => p.Name == originalName);
+            if (index >= 0)
+            {
+                storedFloorsets.Insert(index+1, new storedFloorset(originalName + " Copy"));
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine("Could not find index for name "+originalName);
+            }
+        }
+        
     }
 
     //Retrieve the floorsets on initialization.
     protected override void OnInitialized()
     {
-        storedFloorsets = getFloorsets();
+        getFloorsets();
+
+        var dotNetReference = DotNetObjectReference.Create(this);
+        JS.InvokeVoidAsync("floorsetDashboardSetDotNet", dotNetReference);
         base.OnInitialized();
     }
 
-    private storedFloorset[] getFloorsets(){
-        storedFloorset[] floorsets = [
-            new storedFloorset("0","Nov24Floorset"),
-            new storedFloorset("1","Dec24Floorset"),
-            new storedFloorset("2","Jan25Floorset"),
-            new storedFloorset("3","Feb25Floorset"),
-            new storedFloorset("4","Mar25Floorset"),
-            new storedFloorset("5","Apr25Floorset"),
-            new storedFloorset("6","May25Floorset"),
-            new storedFloorset("8","Jun25Floorset"),
-            new storedFloorset("9","Jul25Floorset"),
-            new storedFloorset("10","Aug25Floorset"),
-            new storedFloorset("11","Sep25Floorset"),
-            new storedFloorset("12","Oct25Floorset")
-        ];
+    //Function to retrieve floorsets from DB. For now, some hardcoded references.
+    private void getFloorsets(){
+        storedFloorsets = new List<storedFloorset> {};
+        
+        //This array and following foreach is for default testing floorsets.
+        Console.WriteLine("Adding default floorsets to storedFloorsets");
+        var floorsetNames = new String[] {
+            "Nov24 Floorset",
+            "Dec24 Floorset",
+            "Jan25 Floorset",
+            "Feb25 Floorset",
+            "Mar25 Floorset",
+            "Apr25 Floorset",
+            "May25 Floorset",
+            "Jun25 Floorset",
+            "Jul25 Floorset",
+            "Aug25 Floorset",
+        };
 
-        return floorsets;
+        foreach (String name in floorsetNames){
+            storedFloorsets.Add(new storedFloorset(name));
+        }
     }
 }
