@@ -33,14 +33,3 @@ window.reinitializeDropdownById = (dropdownId) => {
         newDropdown.toggle();
     });
 };
-
-// Prevent the default behavior when an image is dropped anywhere on the document
-// Stops image URLs from opening in new tabs when the image lands outside the drop
-// area
-document.addEventListener("dragover", (event) => {
-    event.preventDefault();
-});
-
-document.addEventListener("drop", (event) => {
-    event.preventDefault();
-});

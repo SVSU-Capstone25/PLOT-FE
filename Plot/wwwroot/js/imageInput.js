@@ -8,9 +8,6 @@
    This prevents a false "Please upload an image file"
    alert if you click on "Cancel" in File Explorer. 
    
-   Added line to make display of upload image header none
-   after uploading image so the label doesn't go over the image.
-
 */
 window.initializeImageInput = (id) => {
     // get the drag/drop area as well as the file input
@@ -52,10 +49,6 @@ window.initializeImageInput = (id) => {
 function onImageSelected(event, id) {
     const file = event.target.files[0];
 
-    // Represents image header. Keep argument in agreement with
-    // the same from the ImageInput custom component
-    let uploadImageHeader = document.getElementById(`${id}-header`);
-
     if(!file){  // cancel button in file explorer returns an empty file object
         return;
     }
@@ -70,8 +63,6 @@ function onImageSelected(event, id) {
         dropArea.style.backgroundPosition = "center";
         dropArea.classList.remove("dashed-border");
 
-        // Place upload image header behind image
-        uploadImageHeader.style.display = "none";
         };
         
         reader.readAsDataURL(file);
