@@ -66,8 +66,9 @@ Author: Andrew Fulton (3/12/2025)  *@
             @* Employees section: EMPLOYEES HARD CODED *@
             <h5>Employees</h5>
             <div id="employeesEdit" class="horizontal-items">
-                <div class="circle-container">
-                    <button class="circle btn-style" @onclick="addNewEmployee"><i class="fa-solid fa-plus"></i></button>
+                <div id="editStoreAddUserDiv" class="circle-container">
+                    <button class="circle btn-style" @onclick="ShowAddUserEditStoreModal"><i
+                            class="fa-solid fa-plus"></i></button>
                     <p class="name">Add Employee</p>
                 </div>
 
@@ -192,9 +193,10 @@ Author: Andrew Fulton (3/12/2025)  *@
         </div>
         @* Employees section*@
         <h5>Employees</h5>
-        <div id="employees" class="horizontal-items">
-            <div class="circle-container">
-                <button class="circle btn-style" @onclick="addNewEmployee"><i class="fa-solid fa-plus"></i></button>
+        <div id="employeesAdd" class="horizontal-items">
+            <div id="addStoreAddUserDiv" class="circle-container">
+                <button class="circle btn-style" @onclick="ShowAddUserAddStoreModal"><i
+                        class="fa-solid fa-plus"></i></button>
                 <p class="name">Add Employee</p>
             </div>
         </div>
@@ -208,41 +210,132 @@ Author: Andrew Fulton (3/12/2025)  *@
     </FooterContent>
 </Modal>
 
+
+@* Add User modal for when an employee is being added to a store being created. This is trigged when the + Add Employee button is
+    clicked in the Edit or Add Store modal *@
+<Modal Title="Add User" id="AddUserModalAddStore" Class="modal-dialog">
+    <BodyContent>
+        <h3>Select a user to add</h3>
+        @* This will be populated with the list of users from the DB
+            Text is just their name for now, while value could be something like "TUID,FIRST_NAME,LAST_NAME" *@
+
+        @* Created my own dropdown. I don't thnk there is a current way to get the selected value from the OptionInput compononet *@
+        <select id="AddStoreUserDropdown" class="col-md-11">
+            @* Options are added from the populateDropdown JS function *@
+        </select>
+
+    </BodyContent>
+
+    <FooterContent>
+        <p style="margin-left: auto;"></p>
+        <Button Class="Test Button" TextAlignment="center" Variant="primary"
+            OnClickFunction="AddStoreAddNewEmployee">Add
+            User</Button>
+    </FooterContent>
+
+</Modal>
+
+@* add new user to an existing store. This is when editing a store *@
+<Modal Title="Add User" id="AddUserModalEditStore" Class="modal-dialog">
+    <BodyContent>
+        <h3>Select a user to add</h3>
+        @* This will be populated with the list of users from the DB
+            Text is just their name for now, while value could be something like "TUID,FIRST_NAME,LAST_NAME" *@
+
+        @* Created my own dropdown. I don't thnk there is a current way to get the selected value from the OptionInput compononet *@
+        <select id="EditStoreUserDropdown" class="col-md-11">
+            @* Options are added from the populateDropdown JS function *@
+        </select>
+
+    </BodyContent>
+
+    <FooterContent>
+        <p style="margin-left: auto;"></p>
+        <Button Class="Test Button" TextAlignment="center" Variant="primary"
+            OnClickFunction="EditStoreAddNewEmployee">Add
+            User</Button>
+    </FooterContent>
+
+</Modal>
+
+
+
+
 <script>
     // function for adding an employee to whatever modal needs to see employees. 
     // Places a circle with their name and initials
-    // NOT IN USE RIGHT NOW
+    // Currently adding the Class's CSS wihtin the method because the JS isn't recognizing the razor.css file
     function addEmployee(name, initials, targetDiv) {
-        // Get the employees div
+        //Get the employees div
         const employeesDiv = document.getElementById(targetDiv);
 
-        // Create the main container div
+        //Create the main container div for the user  
         const circleContainer = document.createElement("div");
-        circleContainer.classList.add("circle-container");
+        //circleContainer.classList.add("circle-container");
 
-        // Create the circle div
+        // Apply styles directly to the circle container
+        circleContainer.style.display = "flex";
+        circleContainer.style.flexDirection = "column";
+        circleContainer.style.alignItems = "center";
+        circleContainer.style.textAlign = "center";
+
+
+        //Create the circle div
         const circle = document.createElement("div");
-        circle.classList.add("circle");
+        //circle.classList.add("circle");
 
-        // Create the initials span
+        //apply styles directly to the circle div
+        circle.style.width = "40px";
+        circle.style.height = "40px";
+        circle.style.borderRadius = "50%";
+        circle.style.backgroundColor = "#d8d8d8";
+        circle.style.display = "flex";
+        circle.style.justifyContent = "center";
+        circle.style.alignItems = "center";
+        circle.style.color = "black";
+        circle.style.fontSize = "18px";
+
+        //Create the initials span
         const initialsSpan = document.createElement("span");
         initialsSpan.classList.add("initials");
-        initialsSpan.textContent = initials; // Set initials text
+        initialsSpan.textContent = initials;
 
-        // Create the name paragraph
+        //Create the name paragraph
         const nameParagraph = document.createElement("p");
-        nameParagraph.classList.add("name");
-        nameParagraph.textContent = name; // Set name text
+        //nameParagraph.classList.add("name");
+        nameParagraph.style.marginTop = "8px";
+        nameParagraph.style.fontSize = "14px";
+        nameParagraph.textContent = name;
 
-        // Append initials span to the circle
+        //Append initials span to the circle
         circle.appendChild(initialsSpan);
-        // Append circle and name to the main container
+        //Append circle and name to the main container
         circleContainer.appendChild(circle);
         circleContainer.appendChild(nameParagraph);
 
-        // Append the circle container to the employees div
+        //Append the circle container to the employees div
         employeesDiv.appendChild(circleContainer);
     }
+
+    @* helper function to get the value from the Option input component in the 
+        addEmployee modal when trying to add an employee to a store *@
+        function GetEmployeeBeingAddedToStore(targetDiv, targetDropdownID) {
+            const employeeOptionInput = document.getElementById(targetDropdownID);
+            const strUserValues = employeeOptionInput.value;
+
+            @* split the value of the option on commas (That's how I have them stored at the moment) *@
+            const arrSplitStrUserValues = strUserValues.split(",");
+            @* Get the first and last name *@
+            const strFirstName = arrSplitStrUserValues[1];
+            const strLastName = arrSplitStrUserValues[2];
+            const strName = strFirstName + " " + strLastName;
+            @* get the initials fro the names *@
+            const strInitials = strFirstName.charAt(0) + strLastName.charAt(0);
+            @* create the employee fro the name and initials *@
+                addEmployee(strName, strInitials, targetDiv)
+        }
+
+
 
     function HideModal(modalId) {
         console.log(modalId);
@@ -281,7 +374,44 @@ Author: Andrew Fulton (3/12/2025)  *@
     // in the demo for the program
     function updateInputText(inputId, newValue) {
         document.getElementById(inputId).value = newValue;
-    } 
+    }
+
+    @* function to populate dropdown with the list of users. This is currently used for 
+        adding users to a store when creatingor editing a store *@
+        function populateDropdown(dropdownId) {
+            @* hard coded values while DB is not linked *@
+        const options = [
+                { value: "1,Homer,Simpson", text: "Homer Simpson" },
+                { value: "2,Marge,Simpson", text: "Marge Simpson" },
+                { value: "3,Bart,Simpson", text: "Bart Simpson" },
+                { value: "4,Sideshow,Bob", text: "Sideshow Bob" }
+            ];
+
+            const dropdown = document.getElementById(dropdownId);
+            @* clear the dropdown of ay elements *@
+                dropdown.innerHTML = "";
+            @* create the options *@
+                options.forEach(option => {
+                    const opt = document.createElement("option");
+                    opt.value = option.value;
+                    opt.textContent = option.text;
+                    dropdown.appendChild(opt);
+                });
+        }
+
+    @* function to remove all of the elements from a div except for a specific one
+        This is being used to clear out the Users in the Add Store modal. The Add Users button
+        should stay though. *@
+        function clearDivExceptById(divId, exceptionId) {
+            const div = document.getElementById(divId);
+
+            @* Lopp through the div children and remove all but the element specified *@
+        for (let i = div.children.length - 1; i >= 0; i--) {
+                if (div.children[i].id !== exceptionId) {
+                    div.children[i].remove();
+                }
+            }
+        }
 </script>
 
 @code {
@@ -318,6 +448,18 @@ Author: Andrew Fulton (3/12/2025)  *@
     private async Task ShowDeleteStoreModal()
     {
         await JS.InvokeVoidAsync("showModal", "deleteStoreModal");
+    }
+    //Add User modal for when craeting a new store
+    private async Task ShowAddUserAddStoreModal()
+    {
+        await JS.InvokeVoidAsync("showModal", "AddUserModalAddStore");
+        await JS.InvokeVoidAsync("populateDropdown", "AddStoreUserDropdown");
+    }
+    //Add User modal for when editing a store
+    private async Task ShowAddUserEditStoreModal()
+    {
+        await JS.InvokeVoidAsync("showModal", "AddUserModalEditStore");
+        await JS.InvokeVoidAsync("populateDropdown", "EditStoreUserDropdown");
     }
 
     // Basic button fucntions
@@ -378,14 +520,30 @@ Author: Andrew Fulton (3/12/2025)  *@
         await JS.InvokeVoidAsync("DeleteStore");
     }
     //function for creating a store
-    private void createNewStore()
+    private async void createNewStore()
     {
         Console.WriteLine("CREATE NEW STORE");
+        //clear out the added users for the new store
+        await JS.InvokeVoidAsync("clearDivExceptById", "employeesAdd", "addStoreAddUserDiv");
+        //close the modal
+        await JS.InvokeVoidAsync("HideModal", "addStoreModal");
     }
-    //function for adding a new employee
-    private void addNewEmployee()
+    //function for adding a new employee when editing a store
+    private async void EditStoreAddNewEmployee()
     {
         Console.WriteLine("ADD NEW EMPLOYEE");
+        //addEmployee(name, initials, targetDiv)
+        await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", "EditStoreUserDropdown");
+        //await JS.InvokeVoidAsync("addEmployee", "Test Emp", "TE", "employeesEdit");
+
+    }
+    //function for adding a new employee when editing a store
+    private async void AddStoreAddNewEmployee()
+    {
+        Console.WriteLine("ADD NEW EMPLOYEE");
+        //addEmployee(name, initials, targetDiv)
+        await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesAdd", "AddStoreUserDropdown");
+
     }
     //function fir updating a store's info
     private void updateStoreInformation()

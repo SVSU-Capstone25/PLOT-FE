@@ -94,17 +94,17 @@ Author: Andrew Fulton (3/12/2025) */
 }
 
 .circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 40px !important;
+    height: 40px !important;
     /* Make the div a circle */
-    background-color: #d8d8d8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: black;
-    font-size: 18px;
-    /* initials size*/
+    border-radius: 50% !important;
+    background-color: #d8d8d8 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    /* font color and size */
+    color: black !important;
+    font-size: 18px !important;
 }
 
 /* CSS for name under circle */
