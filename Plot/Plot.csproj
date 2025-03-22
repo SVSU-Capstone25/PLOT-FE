@@ -7,4 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Toolbelt.Blazor.FileDropZone" Version="3.0.1" />
   </ItemGroup>
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
 </Project>

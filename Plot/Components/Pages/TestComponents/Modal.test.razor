@@ -33,8 +33,8 @@ any buttons in the final application will be using the button component made by 
 </button>
 
 
-<!-- Stanard Modal -->
-<Modal Title="Test Modal" Id="standardModal" Class="modal-dialog">
+<!-- Standard Modal -->
+<Modal Title="Test Modal" Id="standardModal" Class="modal-dialog" OnCancelFunction="HandleModalCancel">
     <BodyContent>
         <h4>Modal content 1</h4>
         <img src="/img/platos_closet_logo.png">
@@ -46,7 +46,8 @@ any buttons in the final application will be using the button component made by 
 </Modal>
 
 <!-- Danger Modal -->
-<Modal Title="Test Danger Modal" Id="dangerModal" Variant="danger" Icon="fa-solid fa-x" Class="modal-dialog">
+<Modal Title="Test Danger Modal" Id="dangerModal" Variant="danger" Icon="fa-solid fa-x" Class="modal-dialog"
+OnCancelFunction="HandleModalCancel">
     <BodyContent>
         <h4>Modal content 2</h4>
         <img src="/img/platos_closet_logo.png">
@@ -58,7 +59,7 @@ any buttons in the final application will be using the button component made by 
 
 <!-- Warning Modal -->
 <Modal Title="Test Warning Modal" Id="warningModal" Variant="warning" Icon="fa-solid fa-triangle-exclamation"
-    Class="modal-dialog">
+    Class="modal-dialog" OnCancelFunction="HandleModalCancel">
     <BodyContent>
         <h4>Modal content 3</h4>
         <img src="/img/platos_closet_logo.png">
@@ -69,6 +70,7 @@ any buttons in the final application will be using the button component made by 
 </Modal>
 
 <!-- Success Modal -->
+<!-- OnCancelFunction purposefully left out for testing purposes-->
 <Modal Title="Test Success Modal" Id="successModal" Variant="success" Icon="fa-solid fa-check" Class="modal-dialog">
     <BodyContent>
         <h4>Modal content 4</h4>
@@ -78,3 +80,10 @@ any buttons in the final application will be using the button component made by 
     <FooterContent>
     </FooterContent>
 </Modal>
+
+@code {
+    private void HandleModalCancel(){
+        // Should show for all but the Success modal
+        Console.WriteLine("Cancel button pressed");
+    }
+}
