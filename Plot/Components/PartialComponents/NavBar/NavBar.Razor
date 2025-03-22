@@ -8,13 +8,14 @@ Program Purpose:
 The purpose of PLOT is to allow users to easily create, manage, 
 and allocate floorsets for Platos Closet. 
 
-Author: Luke Wollenweber (3/13/2025)-->
+Author: Luke Wollenweber (3/13/2025)
+Updated: Luke Wollenweber (3/22/2025)-->
 <div class="NavBar @Class" id="@Id">
     <nav class="nav flex-row">
         @if (ShowStores)
         {
             <div class="nav-item px-3">
-                <a class="nav-link" onclick="window.location.href='/stores'">
+                <a class="nav-link" href="/store-dashboard">
                     Stores <i class="fa-solid fa-bag-shopping"></i>
                 </a>
             </div>
@@ -23,7 +24,7 @@ Author: Luke Wollenweber (3/13/2025)-->
         @if (ShowUsers)
         {
             <div class="nav-item px-3">
-                <a class="nav-link" onclick="window.location.href='/users'" >
+                <a class="nav-link" href="/user-dashboard" >
                     Users <i class="fa-solid fa-shirt"></i>
                 </a>
             </div>
@@ -31,25 +32,25 @@ Author: Luke Wollenweber (3/13/2025)-->
 
         @if (ShowHelp)
         {
-            @* <div class="nav-item px-3">
-                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#helpModal">
+            <div class="nav-item px-3">
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#standardModal">
                     Help <i class="fa-solid fa-question"></i>
                 </a>
-            </div> *@
+            </div>
         }
 
         @if (ShowLogout)
         {
-            @* <div class="nav-item px-3 ml-auto">
-                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                    Logout
+            <div class="nav-item px-3 ml-auto">
+                <a class="nav-link" href="/logout" >
+                    Logout 
                 </a>
-            </div> *@
+            </div>
         }
     </nav>
 </div>
 
-@* <ModalDialog Title="Help Page" ModalID="helpModal" ModalLabel="helpModalLabel" ModalSize="">
+<Modal Title="Help Page" ID="standardModal" Class="modal-dialog">
     <BodyContent>
         <h4>HELP</h4>
         <p>loreum ipsum</p>
@@ -58,18 +59,7 @@ Author: Luke Wollenweber (3/13/2025)-->
     <FooterContent>
         <button id="help" type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
     </FooterContent>
-</ModalDialog>
-
-<ModalDialog Title="Confirm Logout" ModalID="logoutModal" ModalLabel="logoutModalLabel" ModalSize="">
-    <BodyContent>
-        
-    </BodyContent>
-
-    <FooterContent>
-        <button id="close" type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
-        <button id="logout" type="button" class="btn platos-blue text-white" onclick="window.location.href='/'">Yes, Logout</button>
-    </FooterContent>
-</ModalDialog> *@
+</Modal>
 
 @code {
     [Parameter]
