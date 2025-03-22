@@ -1,6 +1,11 @@
 // Danielle Smith - 3/10/2025
 // When a dropdown is loaded, call a global JS function 
 // to initialize it properly with Bootstrap
+
+// Andrew Miller - 3/22/2025
+// Added listeners to document to prevent drop
+// and dragover events from going to image URLs.
+
 window.reinitializeDropdownById = (dropdownId) => {
     // get the element by it's ID
     let el = document.getElementById(dropdownId);
@@ -28,3 +33,14 @@ window.reinitializeDropdownById = (dropdownId) => {
         newDropdown.toggle();
     });
 };
+
+// Prevent the default behavior when an image is dropped anywhere on the document
+// Stops image URLs from opening in new tabs when the image lands outside the drop
+// area
+document.addEventListener("dragover", (event) => {
+    event.preventDefault();
+});
+
+document.addEventListener("drop", (event) => {
+    event.preventDefault();
+});

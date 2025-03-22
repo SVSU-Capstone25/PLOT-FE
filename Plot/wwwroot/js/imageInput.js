@@ -10,9 +10,6 @@
    
    Added line to make display of upload image header none
    after uploading image so the label doesn't go over the image.
-   
-   Added event listeners for dragover and drop to document
-   to prevent image url from opening in new tab.
 
 */
 window.initializeImageInput = (id) => {
@@ -48,17 +45,6 @@ window.initializeImageInput = (id) => {
         }
     });
 
-    // Prevent the default behavior when an image is dropped anywhere on the document
-    // Stops image URLs from opening in new tabs when the image lands outside the drop
-    // area
-    document.addEventListener("dragover", (event) => {
-        event.preventDefault();
-    });
-
-    document.addEventListener("drop", (event) => {
-        event.preventDefault();
-    });
-    
 }
 
 // if a valid image file was selected, change the background 
