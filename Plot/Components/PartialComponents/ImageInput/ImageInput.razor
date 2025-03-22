@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Components.Web
+@rendermode InteractiveServer
 @inject IJSRuntime JS
 
 @* Filename: ImageInput.razor
@@ -13,13 +14,20 @@ Program Purpose:
 The purpose of PLOT is to allow users to easily create, manage, 
 and allocate floorsets for Platos Closet. 
 
-Author: Danielle Smith (2/10/2025)  *@
+Author: Danielle Smith (2/10/2025)  
 
-<div class="ImageInput drag-drop-box dashed-border" id="@Id" style="width: @Width; height: @Height">
-    <h5 class="text-decoration-underline my-auto text-center">
+Author: Andrew Miller (3/22/2025) - Placed Class parameter in class attribute, set defaults for Width
+and Height, added aria to input box.
+
+Added id to upload image header in order to enable turning the display off (in imageInput.js)
+so it doesn't obscure images.
+*@
+
+<div class="ImageInput drag-drop-box dashed-border" id="@Id" style="width: @(Width ?? "100%"); height: @(Height ?? "100%")">
+    <h5 id="@($"{Id}-header")" class="text-decoration-underline my-auto text-center">
         <i class="fa-solid fa-image"></i> @Label
     </h5>
-    <input type="file" id="@($"{Id}-fileInput")" class="d-none" onchange="onImageSelected(event, '@Id')">
+    <input type="file" id="@($"{Id}-fileInput")" class="d-none @Class" onchange="onImageSelected(event, '@Id')" aria-label="@Label">
 </div>
 
 @code {

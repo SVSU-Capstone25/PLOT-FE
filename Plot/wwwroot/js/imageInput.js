@@ -1,3 +1,20 @@
+/* File Purpose: Global JS file for ImageInput custom component
+   which serves the purpose of enabling image uploads.
+
+   Author: Andrew Miller (3/22/2025)
+   File already written but no previous author given. 
+   
+   Added check for empty file to OnImageSelected function.
+   This prevents a false "Please upload an image file"
+   alert if you click on "Cancel" in File Explorer. 
+   
+   Added line to make display of upload image header none
+   after uploading image so the label doesn't go over the image.
+   
+   Added event listeners for dragover and drop to document
+   to prevent image url from opening in new tab.
+
+*/
 window.initializeImageInput = (id) => {
     // get the drag/drop area as well as the file input
     const dropArea = document.getElementById(`${id}`);
@@ -30,6 +47,18 @@ window.initializeImageInput = (id) => {
             fileInput.dispatchEvent(new Event("change"));
         }
     });
+
+    // Prevent the default behavior when an image is dropped anywhere on the document
+    // Stops image URLs from opening in new tabs when the image lands outside the drop
+    // area
+    document.addEventListener("dragover", (event) => {
+        event.preventDefault();
+    });
+
+    document.addEventListener("drop", (event) => {
+        event.preventDefault();
+    });
+    
 }
 
 // if a valid image file was selected, change the background 
@@ -37,16 +66,28 @@ window.initializeImageInput = (id) => {
 function onImageSelected(event, id) {
     const file = event.target.files[0];
 
+    // Represents image header. Keep argument in agreement with
+    // the same from the ImageInput custom component
+    let uploadImageHeader = document.getElementById(`${id}-header`);
+
+    if(!file){  // cancel button in file explorer returns an empty file object
+        return;
+    }
+
     if (file && file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            let dropArea = document.getElementById(`${id}`);
+        let dropArea = document.getElementById(`${id}`);
 
-            dropArea.style.backgroundImage = `url(${e.target.result})`;
-            dropArea.style.backgroundSize = "cover";
-            dropArea.style.backgroundPosition = "center";
-            dropArea.classList.remove("dashed-border");
+        dropArea.style.backgroundImage = `url(${e.target.result})`;
+        dropArea.style.backgroundSize = "cover";
+        dropArea.style.backgroundPosition = "center";
+        dropArea.classList.remove("dashed-border");
+
+        // Place upload image header behind image
+        uploadImageHeader.style.display = "none";
         };
+        
         reader.readAsDataURL(file);
     } else {
         alert("Please upload a valid image file.");
