@@ -52,8 +52,14 @@
 
 /* Expanded container inside SlideOut */
 .expanded {
-    padding: 20px;
-    /* Adds padding inside the expanded container */
+    padding: 1.5rem;
+}
+
+.walls-container {
+    background-color: #f0f0f0;
+    padding: .5rem;
+    border-radius: .5rem;
+    height: 84vh;
 }
 
 /* Expanded container inside SlideOut */
@@ -189,7 +195,6 @@
 .fixture-area {
     flex-direction: column;
     max-height: 30vh;
-    overflow-y: scroll;
 }
 
 .fixture:hover {

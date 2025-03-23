@@ -64,35 +64,35 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         @if (buildingWallsExpanded)
         {
             <div class="expanded">
-                <h3 class="header pt-3" @onclick="ToggleBuildingWalls">
-                    <i class="fas fa-edit"></i> Edit Building Walls
-                </h3>
-                <hr style="opacity:1">
-                <label>Dimensions</label>
-                <div class="horizantal-inputs">
-                    <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
-                        ValueChanged="@(str => NumberChanged(str, value => width = value))" />
-                    @* The X to separate the two inputs *@
-                    <span class="dimension-separator">X</span>
-                    <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
-                        ValueChanged="@(str => NumberChanged(str, value => length = value))" />
-                </div>
-                <label>Enter the Dimensions (width and length) in feet</label>
+                <div class="walls-container">
+                    <h3 style="font-weight: bold;" @onclick="ToggleBuildingWalls"><i class="fas fa-edit"></i> Edit Building Walls</h3>
+                    <hr style="opacity: 1.0; color:black;">
+                    <label>Dimensions</label>
+                    <div class="horizantal-inputs">
+                        <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
+                            ValueChanged="@(str => NumberChanged(str, value => width = value))" />
+                        @* The X to separate the two inputs *@
+                        <span class="dimension-separator">X</span>
+                        <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
+                            ValueChanged="@(str => NumberChanged(str, value => length = value))" />
+                    </div>
+                    <label>Enter the Dimensions (width and length) in feet</label>
 
-                <div class="fixture-area p-3 mt-3 d-flex mb-2">
-                    <div class="fixture mb-3 d-flex flex-row"
-                        @ondragstart="@((e) => OnDragStart(e, "1x1", "red"))" draggable="true"
-                        @ondragstart:preventDefault="true">
-                        <div class="drag-start-area d-flex flex-row">
-                            <div class="emp-only"></div>
-                            <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                    <div class="fixture-area p-3 mt-3 d-flex mb-2">
+                        <div class="fixture mb-3 d-flex flex-row"
+                            @ondragstart="@((e) => OnDragStart(e, "1x1", "red"))" draggable="true"
+                            @ondragstart:preventDefault="true">
+                            <div class="drag-start-area d-flex flex-row">
+                                <div class="emp-only"></div>
+                                <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                            </div>
                         </div>
                     </div>
+                    <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+                        Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
+                        Apply
+                    </Button>
                 </div>
-                <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
-                    Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
-                    Apply
-                </Button>
             </div>
         }
         else
