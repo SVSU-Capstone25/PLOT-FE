@@ -10,6 +10,9 @@ and allocate floorsets for Platos Closet.
 
 Author: Luke Wollenweber (3/13/2025)
 Updated: Luke Wollenweber (3/22/2025)-->
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
 <div class="NavBar @Class" id="@Id">
     <nav class="nav flex-row">
         @if (ShowStores)
@@ -33,7 +36,7 @@ Updated: Luke Wollenweber (3/22/2025)-->
         @if (ShowHelp)
         {
             <div class="nav-item px-3">
-                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#standardModal">
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#helpModal" @onclick="RemoveBackground">
                     Help <i class="fa-solid fa-question"></i>
                 </a>
             </div>
@@ -50,16 +53,22 @@ Updated: Luke Wollenweber (3/22/2025)-->
     </nav>
 </div>
 
-<Modal Title="Help Page" ID="standardModal" Class="modal-dialog">
+<Modal Title="Help Page" ID="helpModal" Class="modal-dialog">
     <BodyContent>
         <h4>HELP</h4>
         <p>loreum ipsum</p>
     </BodyContent>
 
     <FooterContent>
-        <button id="help" type="button" class="btn cancel-red text-white" data-bs-dismiss="modal">Close</button>
     </FooterContent>
 </Modal>
+
+<script>
+    function hideBackground() 
+    {
+        document.querySelectorAll('.modal-backdrop')?.forEach(m=>m.remove());  
+    }
+</script>
 
 @code {
     [Parameter]
@@ -80,4 +89,9 @@ Updated: Luke Wollenweber (3/22/2025)-->
 
     [Parameter]
     public bool ShowLogout { get; set; } = true;
+
+    private async Task RemoveBackground()
+    {
+        await JS.InvokeVoidAsync("hideBackground");
+    }
 }
