@@ -18,7 +18,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 @*Grid Area *@
 <div class="wrapper" width="500px" height="500px">
     <div class="main-content">
-        <div class="grid">
+        <div class="grid" id="grid-container">
             @for (int i = 0; i < 50; i++)
             {
                 @for (int j = 0; j < 50; j++)
@@ -202,6 +202,27 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         grabs the import excel modal and opens it */
         bootstrap.Modal.getOrCreateInstance('#importExcelModal').show();
     }
+
+    function UpdateGridDimensions(length, width) {
+        /* Luke Wollenweber - 3/22/2025
+        js function to re-add cells based on new Dimensions */
+        const gridContainer = document.getElementById('grid-container');
+    
+        gridContainer.innerHTML = '';
+
+        gridContainer.style.display = 'grid';
+        gridContainer.style.gridTemplateColumns = `repeat(${width}, 1fr)`; 
+        gridContainer.style.gridTemplateRows = `repeat(${length}, 1fr)`;
+        for (let i = 0; i < width; i++) {
+            for (let j = 0; j < length; j++) {
+                const cell = document.createElement('div');
+                cell.classList.add('grid-cell');
+                cell.id = `cell-${i}-${j}`;
+
+                gridContainer.appendChild(cell);
+            }
+        }
+    }
 </script>
 
 @code
@@ -235,23 +256,10 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         await InvokeAsync(StateHasChanged);
     }
 
-    private void ApplyDimensions()
+    private async Task ApplyDimensions()
     {
-
+        await JS.InvokeVoidAsync("UpdateGridDimensions", length, width);
     }
-
-    @* private async Task OnDragStart(DragEventArgs e)
-    {
-        // Extract the mouse position from the DragEventArgs
-        var mouseX = e.ClientX;
-        var mouseY = e.ClientY;
-        string size = $"{width}x{length}";  // size should always be in the form of "10x20"
-
-        await JS.InvokeVoidAsync("console.log", size); // This will log to the browser's console.
-
-        // Call JS function with the mouse coordinates and size
-        await JS.InvokeVoidAsync("createDraggable", mouseX, mouseY, size);
-    } *@
 
     private IBrowserFile? selectedFile;
 
