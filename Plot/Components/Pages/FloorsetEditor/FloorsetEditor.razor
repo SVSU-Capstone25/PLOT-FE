@@ -70,12 +70,12 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                 <label>Dimensions</label>
                 <div class="horizantal-inputs">
                     <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
-                        ValueChanged="@(str => NumberChanged(str, value => width = value))" Value="@width" />
+                        value="@width.ToString()" ValueChanged="@(str => NumberChanged(str, value => width = value))" />
                     @* The X to separate the two inputs *@
                     @* Making X clickable to swap dimensions (Width -> Length; Length -> Width) -- Zach Ventimiglia *@
-                    <span class="dimension-separator" @onclick="ToggleDimensionSwap">X</span>
+                    <span class="dimension-separator" @onclick="ToggleDimensionSwap" style="cursor: pointer;">X</span>
                     <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
-                        ValueChanged="@(str => NumberChanged(str, value => length = value))" Value="@length" />
+                        value="@length.ToString()" ValueChanged="@(str => NumberChanged(str, value => length = value))" />
                 </div>
                 <label>Enter the Dimensions (width and length) in feet</label>
 
@@ -221,14 +221,17 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         allocationsOpen = !allocationsOpen;
     }
 
-    private double width { get; set; };
-    private double length { get; set; };
+    private double width { get; set; }
+    private double length { get; set; }
 
     /* This function will be initialized when the 'X' is selected */
     /* Zach Ventimiglia */
-    private void ToggleDimensionSwap()
+    private async void ToggleDimensionSwap()
     {
-        (width, length) = (length, width); // Svaps width and length
+        (width, length) = (length, width); // Swaps width and length
+        
+        // Forces UI Update
+        await InvokeAsync(StateHasChanged);
     }
 
     /* This function is called when the number is changed */
@@ -243,9 +246,9 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         await InvokeAsync(StateHasChanged);
     }
 
-    private void ApplyDimensions()
+    private  void ApplyDimensions()
     {
-
+        
     }
 
     @* private async Task OnDragStart(DragEventArgs e)
