@@ -28,9 +28,25 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script>
 
+<<<<<<< HEAD
+@*Grid Area *@
+<div class="wrapper" width="500px" height="500px">
+    <div class="main-content">
+        <div class="grid" id="grid-container">
+            @for (int i = 0; i < 50; i++)
+            {
+                @for (int j = 0; j < 50; j++)
+                {
+                    <div class="grid-cell" id="cell-@i-@j"></div>
+                }
+            }
+        </div>
+    </div>
+=======
 
 <!-- Grid Area -->
 <div id="container">
+>>>>>>> f0d1fe496272c2af3dad52e0b33195a2d2f5b8cc
 </div>
 
 
@@ -357,6 +373,82 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         $("<div class=\"grid-cell\"></div>").prependTo(container);
     }
 
+<<<<<<< HEAD
+    function HidePrintModal() {
+        /* Danielle Smith - 3/17/2025
+        changed implementation of hiding modal to one that will work */
+        document.getElementById('printModal').classList.remove('show');
+        document.querySelector('.modal-backdrop')?.remove();
+    }
+
+    function OpenImportModal() {
+        /* Danielle Smith - 3/16/2025
+        grabs the import excel modal and opens it */
+        bootstrap.Modal.getOrCreateInstance('#importExcelModal').show();
+    }
+
+    function UpdateGridDimensions(length, width) {
+        /* Luke Wollenweber - 3/22/2025
+        js function to re-add cells based on new Dimensions */
+        const gridContainer = document.getElementById('grid-container');
+    
+        gridContainer.innerHTML = '';
+
+        gridContainer.style.display = 'grid';
+        gridContainer.style.gridTemplateColumns = `repeat(${width}, 1fr)`; 
+        gridContainer.style.gridTemplateRows = `repeat(${length}, 1fr)`;
+        for (let i = 0; i < width; i++) {
+            for (let j = 0; j < length; j++) {
+                const cell = document.createElement('div');
+                cell.classList.add('grid-cell');
+                cell.id = `cell-${i}-${j}`;
+
+                gridContainer.appendChild(cell);
+            }
+        }
+    }
+</script>
+
+@code
+{
+    private bool buildingWallsExpanded = false;
+    private bool allocationsOpen = false;
+
+    private void ToggleBuildingWalls()
+    {
+        buildingWallsExpanded = !buildingWallsExpanded;
+    }
+
+    private void ToggleAllocations()
+    {
+        buildingWallsExpanded = false;
+        allocationsOpen = !allocationsOpen;
+    }
+
+    private double width;
+    private double length;
+
+    /* This function is called when the number is changed */
+    private async Task NumberChanged(string strNumber, Action<double> setValue)
+    {
+        // String will be either a positive number or ""
+        Double.TryParse(strNumber, out double newNumber);
+
+        // Directly modify the referenced variable
+        setValue(newNumber); // Number will be 0 if string is ""
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ApplyDimensions()
+    {
+        await JS.InvokeVoidAsync("UpdateGridDimensions", length, width);
+    }
+
+    private IBrowserFile? selectedFile;
+
+=======
+>>>>>>> f0d1fe496272c2af3dad52e0b33195a2d2f5b8cc
     /*
         The createDraggable function creates a draggable fixture to add to the grid.
     */
