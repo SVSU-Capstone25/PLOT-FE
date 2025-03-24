@@ -1,106 +1,40 @@
-/* Ensures that the container aligns the numeric inputs horizontally */
-.horizantal-inputs {
-    display: flex;
-    /* Align children horizontally */
-    align-items: center;
-    /* Ensure inputs align to the center vertically */
-    gap: 10px;
-    /* Adds space between the inputs and separator */
-    flex-wrap: nowrap;
+::deep .add-fixture>button {
+    background: var(--platos-blue);
+    color: white;
+    border: none;
+    padding: 1rem;
 }
 
-/* Error message styles */
-.numeric-input .error {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    color: var(--cancel);
-    display: none;
-    /* Initially hidden */
-}
-
-/* If there's an error, we show the error message */
-.numeric-input.has-error .error {
-    display: block;
-}
-
-/* Separator X */
-.dimension-separator {
-    font-size: 24px;
-    font-weight: bold;
-    align-self: center;
-    /* Centers the separator in the middle of the inputs */
-}
-
-/* Ensures the numeric input container has consistent height */
-.numeric-input.has-error {
-    min-height: 160px;
-    /* Increase height to accommodate the error message */
-}
-
-/* To remove the error message if no error */
-.numeric-input:not(.has-error) .error {
-    display: none;
-}
-
-.button-green {
-    background-color: rgb(27, 176, 27);
-}
-
-/* Slide-out container with padding */
-.slide-out {
-    padding: 20px;
-    /* Adds padding around the entire container */
-}
-
-/* Expanded container inside SlideOut */
-.expanded {
-    padding: 20px;
-    /* Adds padding inside the expanded container */
-}
-
-/* Expanded container inside SlideOut */
-.button-with-spacing {
-    padding: 20px;
-    /* Adds padding inside the expanded container */
+.img-input {
+    justify-self: center;
+    margin-top: 2rem;
 }
 
 
 
-/* Ensure horizontal inputs are spaced out as well */
-.horizantal-inputs {
-    display: flex;
-    gap: 10px;
-    /* Adds space between the inputs */
-    align-items: center;
-    /* Aligns the inputs vertically in the center */
+.dimension {
+    width: 45%;
 }
 
-/* Add padding to header text */
-.header {
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* Style for the button to ensure spacing */
-.Apply.button-green {
-    margin-top: 15px;
-    /* Adds space above the Apply button */
-    padding: 10px 20px;
-    /* Adds internal padding to the button */
-}
-
-
-.filter-btn {
+.search-text {
     margin-left: .5rem;
+}
+
+::deep .Button.filter-btn {
+
     border: none;
     border-radius: 4px;
 }
 
 .fixture {
     border-radius: 4px;
+    align-items: center;
+}
 
+.fixture-area {
+    flex-direction: column;
+    max-height: 30vh;
+    overflow-y: scroll;
 }
 
 .fixture:hover {
@@ -110,10 +44,6 @@
 
 .fixture-img {
     height: 55px;
-    width: 55px;
-    background-color: red;
-    border-radius: 8px;
-    /* Rounded corners */
 }
 
 .fixture-text {
@@ -123,6 +53,14 @@
 .fixture-options {
     background: none;
     border: none;
+}
+
+
+
+
+
+::deep .add-btn {
+    color: white;
 }
 
 .disable-select {
@@ -149,12 +87,4 @@
     border: 1px solid #444;
     width: 49px;
     height: 49px;
-}
-
-
-.toolbar-buttons {
-    justify-content: center;
-    gap: 16px;
-    display: flex;
-    padding-top: 0.5rem;
 }

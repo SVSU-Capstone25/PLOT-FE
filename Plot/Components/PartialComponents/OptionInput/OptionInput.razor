@@ -1,7 +1,15 @@
 @* Originally written by Tristan Calay  *@
 
 @* Danielle Smith - 3/17/2025
-i changed how it handles the alignment when there is not an icon  *@
+I changed how it handles the alignment when there is not an icon  *@
+
+@* Andrew Miller - 3/19/2025
+Created OnSelectFunction parameter to determine a method that fires 
+when an option is selected. Adapted OnSelectFunc method to check
+if a method is specified and handle asynchronous methods
+with InvokeAsync. Passes value in option as argument string 
+to specified method.
+*@
 <div class="OptionInput @Class" id="@ID">
     <h5 class="row">
         @if(iconString != null)
@@ -16,8 +24,8 @@ i changed how it handles the alignment when there is not an icon  *@
         @if(iconString != null)
         {
             @((MarkupString)_blankIcon)
-        }
-        <select class="col-md-11">
+        } @* "(e) => OnSelectFunction.InvokeAsync(e.Value?.ToString())" *@
+        <select class="col-md-11" @onchange="OnSelectFunc">
             @for (var i = 0; i < optionsValues.Count; i++)
             {
                 <option value=@optionsValues[i]>@optionsText[i]</option>
@@ -55,6 +63,10 @@ i changed how it handles the alignment when there is not an icon  *@
     [Parameter, EditorRequired]
     public required List<String> optionsText {get; set;}
 
+    [Parameter]
+    // Specifies method ran when selecting an option
+    public EventCallback<string> OnSelectFunction {get; set;}
+
     //Validate that the option list has valid arguments: more than 0 entries, and matching number of display and value entries.
     protected override async Task OnParametersSetAsync(){
         await base.OnParametersSetAsync();
@@ -77,4 +89,20 @@ i changed how it handles the alignment when there is not an icon  *@
         }
         
     }
+
+    //When option is selected this
+    //task is called which then calls
+    //the method invoked in the parent component
+    //passing the value of the change event argument
+    //as a string to the method
+    
+    private async Task OnSelectFunc(ChangeEventArgs e)
+    {
+        if (OnSelectFunction.HasDelegate) // Checks if method given by OnSelectFunction exists
+        {
+            // Enables handling asynchronous methods
+            await OnSelectFunction.InvokeAsync(e.Value?.ToString());
+        }
+    }
+    
 }
