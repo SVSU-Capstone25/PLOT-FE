@@ -30,10 +30,30 @@
     IsDisabled=true TextAlignment="center" />
 </section>
 
+<!-- To test that the icon changes appropriately when button is disabled or enabled -->
+<!-- Button that can be toggled from enabled to disabled and vice versa -->
+<Button Class="Test Button" Id="buttonIconTest" Variant="warning" OnClickFunction="TestFunction" Icon="fa-solid fa-copy"
+IsDisabled=isIconBtnDisabled TextAlignment="center">
+    Icon Test Button
+</Button>
+
+<!-- Toggles Icon Test Button between enabled and disabled -->
+<Button Class="Test Button" Id="buttonIconTestToggle" Variant="warning" OnClickFunction="ToggleIconTestButton" Icon="fa-solid fa-copy"
+IsDisabled=false TextAlignment="center">
+    Toggle Icon Test Button
+</Button>
+
 @code
 {
+    private static bool isIconBtnDisabled = false;
+
     private void TestFunction()
     {
         Console.WriteLine("Function is Working");
+    }
+
+    // Toggles Icon Test Button
+    private void ToggleIconTestButton(){
+        isIconBtnDisabled = !isIconBtnDisabled;
     }
 }
