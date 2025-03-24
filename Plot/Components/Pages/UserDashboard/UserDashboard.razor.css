@@ -43,6 +43,7 @@ For Error Message on validation*/
 /* Behind role lable in table*/
 .role-box {
     background-color: lightgray;
+    border-radius: 5px;
 }
 
 /*  Andrew Miller: Taken from StoreDashboard.razor.css (3/22/2025)
