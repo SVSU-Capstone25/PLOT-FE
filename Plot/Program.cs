@@ -1,3 +1,4 @@
+using System.Net.Http;
 using Plot.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,9 +21,11 @@ builder.Services.AddScoped(sp =>
     return new HttpClient(handler)
     {
         BaseAddress = new Uri(builder.Configuration["BACKEND_URL"] ?? "http://backend:8085/api")
-        
     };
 });
+
+builder.Services.AddScoped<AuthHttpClient>();
+
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
 {
     options.DetailedErrors = true;

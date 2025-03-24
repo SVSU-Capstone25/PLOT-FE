@@ -3,7 +3,6 @@
 @page "/login"
 @using System.Net.Http.Headers
 @inject NavigationManager Navigation
-@inject HttpClient Client
 @inject IJSRuntime JSRuntime
 
 
@@ -40,9 +39,9 @@
 
 @code
 {
-    string email = ""; // Define the username variable
-    string password = ""; // Define the username variable
-    bool isInvalid = false;
+    string email = ""; // Var to bind user email input
+    string password = ""; // Var to bind user password input
+    bool isInvalid = false; // Flag to show user if login details were bad
 
     private async void OnLoginSubmit()
     {
@@ -53,27 +52,15 @@
         // a http request to the backend login endpoint. Js is used because using a normal http client
         // was not seting cookies in the browser.
         var result = await JSRuntime.InvokeAsync<bool>("loginUser", loginAPIUri, email, password);
-
-//-------------------------Trying to configure auth---------------
-        // Call getCookie js function in login.js. This function is used to get the Auth cookie 
-        // to use with authentication
-        var token = await JSRuntime.InvokeAsync<string>("getCookie", "Auth");
-
-        Console.WriteLine("Auth Token:");
-        Console.WriteLine(token);
-
-        //Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token); This needs work for auth
-//-------------------------
-        
+         
+        // True if user Authentication is good
         if (result)
-        {
-            Navigation.NavigateTo("/stores",true);
+        {   //Good Auth, navigate to the dashbard, use forceload or the next pages elements will be off.
+            Navigation.NavigateTo("/test-auth",forceLoad:true);
         }
-        else
-        {
+        else // False user Authentication is bad, set flag to true, this displays to the user that
+        {    // the email or password was bad.
             isInvalid = true;
         }
-
     }
 }
-<script src="js/login.js"></script>
