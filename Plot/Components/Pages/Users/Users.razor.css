@@ -1,0 +1,63 @@
+/* Filename: PlotButton.razor.css
+Part of Project: PLOT
+
+File Purpose:
+This is CSS that works specifically with the Users page. 
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+Author: Josh Rodack (2/10/2025) */
+
+/* For the original button <button></button> component*/
+.btn-primary {
+    background-color: var(--platos-blue) !important;
+    border: none;
+
+}
+
+/* Andrew  Miller - (3/19/2025) - 
+For Error Message on validation*/
+.error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+/* Andrew  Miller - (3/22/2025) */
+
+/* Table columns */
+.name_column {
+    width: 20%;
+}
+
+.id_column {
+    width: 20%;
+}
+
+.role_column {
+    width: 60%;
+}
+
+/* Behind role lable in table*/
+.role-box {
+    background-color: lightgray;
+}
+
+/*  Andrew Miller: Taken from StoreDashboard.razor.css (3/22/2025)
+    Original Author: Andrew Fulton */
+/* CSS used to fix the button in the bottom right */
+.fixed-bottom-right {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 150px;
+    height: 60px;
+    background-color: transparent;
+    border: none;
+    text-align: center;
+    z-index: 1000;
+    /* Ensure it's on top */
+}
+
