@@ -48,7 +48,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     <div class="p-3 mb-2 border-bottom">
         <div class="d-flex align-items-center m-2">
             <div class="w-100 search-text">
-                <TextInput class="form-control p-2 " Label="" Type="search" placeholder="Search" />
+                <TextInput class="form-control p-2 " Id="search" Label="" Type="search" placeholder="Search" />
             </div>
             <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
 
@@ -73,7 +73,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         @foreach (Fixture currFixture in fixtures.Values)
         {
 
-            <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name"
+            <div class="fixture mb-3 " data-value="@currFixture.Name"
             @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width))" draggable="true"
             @ondragstart:preventDefault="true">
                 <div class="drag-start-area d-flex flex-row">
@@ -483,6 +483,32 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         })
     }
 
+    /*
+        The searchInputChange function adds an event listener to the fixture search bar.
+    */
+    function searchInputChange() {
+        document.getElementById('search').addEventListener("keyup",function(e) {
+            // Get the text from the search field
+            var searchText = this.value;
+            
+            // Loop through each fixture tile 
+            Array.from(document.getElementsByClassName('fixture')).forEach(function(fixture){
+                // Get the name of the fixture
+                var nameElement = fixture.firstChild.getElementsByTagName('p')[0];
+                
+                // If any fixture's name contains the search string, display the tile
+                if (nameElement && nameElement.innerText.toLowerCase()
+                                    .indexOf(searchText.toLowerCase()) > -1) {
+                    fixture.style.display = 'flex';
+                } else {
+                    // Otherwise, do not display the tile
+                    fixture.style.display = 'none';
+                }
+            })
+        });
+    }
+
+
     
     /*
         The toggleModal function toggles the visibility of a given modal.
@@ -709,6 +735,8 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             dotNet = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("imageEventListener",dotNet);
             await JS.InvokeVoidAsync("addFixtureClose",dotNet);
+            await JS.InvokeVoidAsync("searchInputChange");
+            
             
         }
     }
