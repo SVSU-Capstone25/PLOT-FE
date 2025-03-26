@@ -48,7 +48,7 @@
         //Create uri for api. Dont use Client.BaseAddress, js wont work with backend:8085
         var loginAPIUri= new Uri("http://localhost:8085/api/auth/login");
 
-        // Call loginUser js function in login.js. This function is used to send and receive
+        // Call loginUser js function in PLOT-FE\Plot\wwwroot\js\authHelper.js. This function is used to send and receive
         // a http request to the backend login endpoint. Js is used because using a normal http client
         // was not seting cookies in the browser.
         var result = await JSRuntime.InvokeAsync<bool>("loginUser", loginAPIUri, email, password);
