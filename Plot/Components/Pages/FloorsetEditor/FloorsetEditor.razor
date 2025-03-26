@@ -24,6 +24,7 @@
 @using Plot.Components.PartialComponents.OptionInput
 @using Plot.Components.PartialComponents.TextInput
 @using Plot.Components.PartialComponents.Modal
+@using Plot.Components.PartialComponents.ImageInput
 @using Plot.Components.PartialComponents.FileInput
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -746,6 +747,7 @@
             return pValue == null || pValue.Equals("");            
         });
 
+
         /*
             The UpdateLFCapacity function updates the linear feet capacity of the fixture.
         */
@@ -755,6 +757,29 @@
             } catch (Exception e){
                 Console.WriteLine(e.GetBaseException());
             }
+        }
+
+        /*
+            this method was added by Luke Wollenweber to update the flag when adding a fixture
+            to return which properties are null
+        */
+        public string FindNullProperties()
+        {
+            //this gets all the properties of the object
+            var nullProperties = GetType()
+                .GetProperties()
+                .Where(p => 
+                {
+                    var pValue = p.GetValue(this); 
+                    return pValue == null || pValue.Equals("");
+                })
+                .Select(p => p.Name)
+                .ToList();
+
+            //this is the string with the property names that will be returned
+            return nullProperties.Any() 
+                ? string.Join(", ", nullProperties) 
+                : "No null or empty properties";
         }
 
         /*
@@ -828,8 +853,9 @@
                 await JS.InvokeVoidAsync("toggleModal","addFixture",false);
                 ClearTempFixtureData();
             } else {
+                string nullProperties = currFixture.FindNullProperties();
                 // If not, tell the user to fill out all fields.
-                await JS.InvokeVoidAsync("alertUser","Please fill out all fields.");
+                await JS.InvokeVoidAsync("alertUser","Please fill out all fields. " + nullProperties + " are blank.");
             }
             
         } catch (ArgumentException)
@@ -854,8 +880,9 @@
             fixtures.Remove(currFixture.Name);
             fixtures.Add(newFixture.Name,newFixture);
         } else {
+            string nullProperties = currFixture.FindNullProperties();
             // If not, tell the user to fill out all fields.
-            await JS.InvokeVoidAsync("alertUser","Please fill out all fields.");
+            await JS.InvokeVoidAsync("alertUser","Please fill out all fields. " + nullProperties + " are blank.");
         }        
 
     }
