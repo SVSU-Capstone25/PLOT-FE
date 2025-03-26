@@ -675,18 +675,15 @@
 
      /* Luke Wollenweber - 3/22/2025
         js function to re-add cells based on new Dimensions */
-    function UpdateGridDimensions(length, width) {
+    function UpdateGridDimensions(passedLength, passedWidth) {
        
         const gridContainer = document.getElementById('container');
         gridContainer.innerHTML = '';
         var isAsc = true;
 
         // Dimensions of items
-        var width = width +2;
-        var height = length + 2;
-        var rows = width;
-        var cols = length;
-        var snap = width;
+        var rows = passedWidth;
+        var cols = passedLength;
 
         // Set the styles of the container based on the given dimensions
         container.style.height = (width * rows) + "px";
