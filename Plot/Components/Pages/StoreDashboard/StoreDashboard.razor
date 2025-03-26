@@ -8,7 +8,9 @@ Program Purpose:
 The purpose of PLOT is to allow users to easily create, manage, 
 and allocate floorsets for Platos Closet. 
 
-Author: Andrew Fulton (3/12/2025)  *@
+Author: Andrew Fulton (3/12/2025)
+
+*@
 
 @page "/store-dashboard"
 @inject IJSRuntime JS
@@ -60,7 +62,7 @@ Author: Andrew Fulton (3/12/2025)  *@
                 </div>
                 @* upload image for store component *@
                 <div class="modal-split-right-side">
-                    <ImageInput Label="Upload Image" Id="ExampleImageInput" width="330px" height="300px" />
+                    <ImageInput Label="Upload Image" Id="ExampleImageInputEdit" Width="330px" Height="300px" />
                 </div>
             </div>
             @* Employees section: EMPLOYEES HARD CODED *@
@@ -69,77 +71,77 @@ Author: Andrew Fulton (3/12/2025)  *@
                 <div id="editStoreAddUserDiv" class="circle-container">
                     <button class="circle btn-style" @onclick="ShowAddUserEditStoreModal"><i
                             class="fa-solid fa-plus"></i></button>
-                    <p class="name">Add Employee</p>
+                    <p class="circle-name">Add Employee</p>
                 </div>
 
                 <div class="circle-container">
                     <div class="circle">
                         <span class="initials">JS</span>
                     </div>
-                    <p class="name">James Smith</p>
+                    <p class="circle-name">James Smith</p>
                 </div>
 
                 <div class="circle-container">
                     <div class="circle">
                         <span class="initials">EM</span>
                     </div>
-                    <p class="name">Emma Miller</p>
+                    <p class="circle-name">Emma Miller</p>
                 </div>
 
                 <div class="circle-container">
                     <div class="circle">
                         <span class="initials">OL</span>
                     </div>
-                    <p class="name">Oliver Lewis</p>
+                    <p class="circle-name">Oliver Lewis</p>
                 </div>
 
                 <div class="circle-container">
                     <div class="circle">
                         <span class="initials">SC</span>
                     </div>
-                    <p class="name">Sophia Carter</p>
+                    <p class="circle-name">Sophia Carter</p>
                 </div>
 
                 <div class="circle-container">
                     <div class="circle">
                         <span class="initials">WL</span>
                     </div>
-                    <p class="name">William Lee</p>
+                    <p class="circle-name">William Lee</p>
                 </div>
 
                 <div class="circle-container">
                     <div class="circle">
                         <span class="initials">AV</span>
                     </div>
-                    <p class="name">Ava Vasquez</p>
+                    <p class="circle-name">Ava Vasquez</p>
                 </div>
 
                 <div class="circle-container">
                     <div class="circle">
                         <span class="initials">BD</span>
                     </div>
-                    <p class="name">Benjamin Davis</p>
+                    <p class="circle-name">Benjamin Davis</p>
                 </div>
 
                 <div class="circle-container">
                     <div class="circle">
                         <span class="initials">CL</span>
                     </div>
-                    <p class="name">Charlotte Lopez</p>
+                    <p class="circle-name">Charlotte Lopez</p>
                 </div>
 
                 <div class="circle-container">
                     <div class="circle">
                         <span class="initials">EL</span>
                     </div>
-                    <p class="name">Ethan Long</p>
+                    <p class="circle-name">Ethan Long</p>
                 </div>
 
                 <div class="circle-container">
                     <div class="circle">
                         <span class="initials">GM</span>
                     </div>
-                    <p class="name">Grace Mitchell</p>
+                    <p class="circle-name">Grace Mitchell</p>
                 </div>
             </div>
         </BodyContent>
@@ -188,7 +190,7 @@ Author: Andrew Fulton (3/12/2025)  *@
             </div>
             @* upload image for store component *@
             <div class="modal-split-right-side">
-                <ImageInput Label="Upload Image" Id="ExampleImageInput" width="330px" height="300px" />
+                <ImageInput Label="Upload Image" Id="ExampleImageInputAdd" Width="330px" Height="300px" />
             </div>
         </div>
         @* Employees section*@
@@ -197,7 +199,7 @@ Author: Andrew Fulton (3/12/2025)  *@
             <div id="addStoreAddUserDiv" class="circle-container">
                 <button class="circle btn-style" @onclick="ShowAddUserAddStoreModal"><i
                         class="fa-solid fa-plus"></i></button>
-                <p class="name">Add Employee</p>
+                <p class="circle-name">Add Employee</p>
             </div>
         </div>
     </BodyContent>
@@ -263,26 +265,30 @@ Author: Andrew Fulton (3/12/2025)  *@
 
     @* event listeners that load when the page loads  *@
         document.addEventListener("DOMContentLoaded", function () {
+            @* Logic to remove the faded background when clicking off of layered modals *@
+                document.addEventListener("click", function (event) {
+                    @* if the clicked item is a modal with the "fade class, then change the Z-index of the modals being returned to " *@
+                if (event.target.matches(".fade")) {
+                        ChangeZIndexOfComponent("addStoreModal", 1050);
+                        ChangeZIndexOfComponent("editStoreModal", 1050);
+                    }
+                });
+            @* Logic to remove the faded background when hitting "Escape" when closing layered modals and change the Z-index of the modals being returned to*@
+                document.addEventListener("keydown", function () {
+                    if (event.key === "Escape") {
+                        ChangeZIndexOfComponent("addStoreModal", 1050);
+                        @* put the modal being returned to back in focus (closing with escape doesn't return the focus) *@
+                        const addStoreModal = document.getElementById("addStoreModal");
+                        addStoreModal.focus();
 
-            console.log("hello JS");
-            @* Add store z-index fix for when layering modals *@
-        var addStoreAddUserModal = document.getElementById("AddUserModalAddStore");
-            addStoreAddUserModal.addEventListener("hidden.bs.modal", function (event) {
-                console.log("In the hidden function");
-                //function call to turn z-index back to normal(1050 is default)
-                ChangeZIndexOfComponent("addStoreModal", 1050);
-            })
+                        ChangeZIndexOfComponent("editStoreModal", 1050);
+                        @* put the modal being returned to back in focus (closing with escape doesn't return the focus) *@
+                        const editStoreModal = document.getElementById("editStoreModal");
+                        editStoreModal.focus();
+                    }
+                })
 
-            @* Edit store Z-index fix for when layering modals *@
-                @* need to grab AddUserModalEditStore by ID *@
-                @* need to change the z-index of editStoreModal and pass in 1050 *@
-
-
-    });
-
-
-
-
+        });
 
 
     // function for adding an employee to whatever modal needs to see employees. 
@@ -306,7 +312,7 @@ Author: Andrew Fulton (3/12/2025)  *@
 
         //Create the name paragraph
         const nameParagraph = document.createElement("p");
-        nameParagraph.classList.add("name");
+        nameParagraph.classList.add("circle-name");
         nameParagraph.textContent = name;
 
         //Append initials span to the circle

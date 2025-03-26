@@ -108,7 +108,7 @@ Author: Andrew Fulton (3/12/2025) */
 }
 
 /* CSS for name under circle */
-.name {
+.circle-name {
     margin-top: 8px;
     font-size: 14px;
 }
