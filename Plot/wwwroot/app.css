@@ -58,3 +58,133 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/* For User Dashboard (Andrew Miller - 3/23/2025 */
+/*  rem used for consistency across browsers, calc(px/16 * 1rem); used since
+    1 rem is typically 16 px. This approach makes using inspect element
+    easier to debug and adjust styles. */
+
+/* Take up available space for TextInputs */
+#FirstNameAdd, #FirstNameEdit {
+   flex: 1;
+}
+
+#LastNameAdd, #LastNameEdit {
+    flex: 1;
+}
+
+#EmailAdd, #EmailEdit {
+    flex: 1;
+}
+
+#AddUserModal .text-input-container,
+#AddUserModal .OptionInput,
+#EditUserModal .text-input-container,
+#EditUserModal .OptionInput {
+    display: flex;
+    align-items: center;
+}
+
+/*  Classes of divs holding TextInput or OptionInput in
+    Users Dashboard
+*/
+.holds-first-name {
+    margin-bottom: calc(25/16 * 1rem) !important;
+}
+
+.holds-last-name {
+    margin-bottom: calc(25/16 * 1rem) !important;
+}
+
+.holds-email {
+    margin-bottom: calc(25/16 * 1rem) !important;
+}
+
+#RoleAdd, #RoleEdit {
+    margin-bottom: calc(25/16 * 1rem) !important;
+}
+
+#StoreAdd, #StoreEdit {
+    margin-bottom: calc(25/16 * 1rem) !important;
+}
+
+/*  Handling labels within components 
+    Note: TextInput uses the label
+    element and OptionInput uses h5
+    with a p element inside it*/
+.holds-last-name label {
+    margin-right: calc(12/16 * 1rem) !important;
+}
+
+.holds-email label {
+    margin-right:calc(50/16 * 1rem) !important;
+}
+
+/* Handles select boxes in OptionInput component */
+#AddUserModal .OptionInput select,
+#EditUserModal .OptionInput select {
+    margin:0px;
+    padding:0px;
+    border: 1px solid lightgray !important;
+    opacity:100% !important;
+}
+
+/* Role div containing select */
+#AddUserModal #RoleAdd div,
+#EditUserModal #RoleEdit div {
+    margin-right:calc(14/16 * 1rem);
+    flex:1;
+}
+
+#AddUserModal #RoleAdd select,
+#EditUserModal #RoleEdit select {
+    width: calc(1020/16 * 1rem);
+}
+
+#AddUserModal #StoreAdd select,
+#EditUserModal #StoreEdit select {
+    width: calc(1020/16 * 1rem);
+}
+
+#AddUserModal .OptionInput div,
+#EditUserModal .OptionInput div {
+    width:100%;
+}
+
+#AddUserModal #RoleAdd h5, #EditUserModal #RoleEdit h5 {
+    margin-right: calc(57/16 * 1rem);
+}
+
+#AddUserModal #StoreAdd h5, #EditUserModal #StoreEdit h5 {
+    margin-right: calc(52/16 * 1rem);
+}
+
+/* Store div contains select */
+#AddUserModal #StoreAdd div, #EditUserModal #StoreEdit div {
+    margin-right: calc(10/16 * 1rem);
+    flex:1;
+}
+
+/* Div that contains select box */
+#AddUserModal .OptionInput div,
+#EditUserModal .OptionInput div {
+    padding-right:0px;
+    margin-right:0px;
+    width:100%;
+}
+
+/*  Consistent font between labels
+    for text box and select elements */
+#AddUserModal .text-input-container label,
+#AddUserModal .OptionInput h5,
+#EditUserModal .text-input-container label,
+#EditUserModal .OptionInput h5 {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+#AddUserModal .modal-body,
+#EditUserModal .modal-body {
+    /* Pad modal body to footer */
+    padding-bottom: calc(330/16 * 1rem);
+}

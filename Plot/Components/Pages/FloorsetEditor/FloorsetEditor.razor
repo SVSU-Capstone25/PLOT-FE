@@ -104,7 +104,11 @@
                     {
 
                         <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name"
+<<<<<<< HEAD
                         @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width, "green"))" draggable="true"
+=======
+                        @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width))" draggable="true"
+>>>>>>> b079540476fa31891ab41c9674903c0a7e86d753
                         @ondragstart:preventDefault="true">
                             <div class="drag-start-area d-flex flex-row">
                                 <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="">
@@ -136,6 +140,7 @@
         @if (buildingWallsExpanded)
         {
             <div class="expanded">
+<<<<<<< HEAD
                 <div class="walls-container">
                     <h3 style="font-weight: bold;" @onclick="ToggleBuildingWalls"><i class="fas fa-edit"></i> Edit Building Walls</h3>
                     <hr style="opacity: 1.0; color:black;">
@@ -165,6 +170,35 @@
                         Apply
                     </Button>
                 </div>
+=======
+                <h3 class="header pt-3" @onclick="ToggleBuildingWalls">
+                    <i class="fas fa-edit"></i> Edit Building Walls
+                </h3>
+                <hr style="opacity:1">
+                <label>Dimensions</label>
+                <div class="horizantal-inputs">
+                    <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
+                        ValueChanged="@(str => NumberChanged(str, value => width = value))" />
+                    @* The X to separate the two inputs *@
+                    <span class="dimension-separator">X</span>
+                    <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
+                        ValueChanged="@(str => NumberChanged(str, value => length = value))" />
+                </div>
+                <label>Enter the Dimensions (width and length) in feet</label>
+
+                @* uncomment the below when testing draggable*@
+                @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
+                @ondragstart:preventDefault="true"> *@
+                <div class="drag-start-area d-flex flex-row my-3">
+                    <div class="fixture-img disable-select grab-cursor"></div>
+                    <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                </div>
+                @* </div> *@
+                <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+                    Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
+                    Apply
+                </Button>
+>>>>>>> b079540476fa31891ab41c9674903c0a7e86d753
             </div>
         }
         else
@@ -675,6 +709,7 @@
 
      /* Luke Wollenweber - 3/22/2025
         js function to re-add cells based on new Dimensions */
+<<<<<<< HEAD
     function UpdateGridDimensions(length, width) {
        
         const gridContainer = document.getElementById('container');
@@ -701,6 +736,27 @@
             $("<div class=\"grid-cell\"></div>").prependTo(container);
         }
     } 
+=======
+    /* function UpdateGridDimensions(length, width) {
+       
+        const gridContainer = document.getElementById('grid-container');
+    
+        gridContainer.innerHTML = '';
+
+        gridContainer.style.display = 'grid';
+        gridContainer.style.gridTemplateColumns = `repeat(${width}, 1fr)`; 
+        gridContainer.style.gridTemplateRows = `repeat(${length}, 1fr)`;
+        for (let i = 0; i < width; i++) {
+            for (let j = 0; j < length; j++) {
+                const cell = document.createElement('div');
+                cell.classList.add('grid-cell');
+                cell.id = `cell-${i}-${j}`;
+
+                gridContainer.appendChild(cell);
+            }
+        }
+    } */
+>>>>>>> b079540476fa31891ab41c9674903c0a7e86d753
 </script>
 
 @code {

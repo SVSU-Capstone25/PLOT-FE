@@ -13,8 +13,9 @@ and allocate floorsets for Platos Closet.
 
 Author: Danielle Smith (2/9/2025) 
 
-Author: Andrew Miller (3/19/2025) - Added OnCancel parameter to
-specify a method to run when the cancel button is clicked.
+Author: Andrew Miller (3/19/2025) - Added OnCancelFunction 
+parameter to specify a method to run when the cancel button is clicked.
+- (3/24/2025): Added OnCancelFunction parameter ot "x" button
 -->
 
 <div class="modal fade" id="@Id" tabindex="-1" aria-labelledby="@Id + 'Label'">
@@ -22,7 +23,8 @@ specify a method to run when the cancel button is clicked.
         <div class="modal-content border-0">
             <div class="modal-header @Variant">
                 <h5 class="modal-title" id="@Id + 'Label'"><i class="@Icon"></i> @Title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                @onclick="OnCancelFunc"></button>
             </div>
             <div class="modal-body">
                 @BodyContent
@@ -56,7 +58,8 @@ specify a method to run when the cancel button is clicked.
     public string? Class { get; set; } // classes for the modal (nullable)
 
     [Parameter]
-    public EventCallback OnCancelFunction { get; set; } // Method that runs when clicking cancel
+    // Method that runs when clicking cancel or clicking the x button in the upper right corner
+    public EventCallback OnCancelFunction { get; set; }
 
     [Parameter, EditorRequired]
     public required RenderFragment BodyContent { get; set; } // body content of the modal
