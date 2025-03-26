@@ -66,6 +66,7 @@
 }
 a {
     cursor: pointer;
+    color: white;
 }
 
 /* Reset styles for nav-scrollable to ensure no background or border */
@@ -79,17 +80,8 @@ a {
     border: none;
 }
 
-/* Ensure navbar-toggler is properly styled
-.navbar-toggler {
-    background: none;
-    border: none;
-    cursor: pointer;
-    width: 3.5rem;
-    height: 2.5rem;
-    color: #1EA6A1;
-    top: 50%;
-    display: flex;
-    transform: translateY(-50%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-} */
-
+.nav-link:focus,
+.nav-link:active {
+    color: white; /* Ensure text remains white even when clicked or focused */
+    outline: none; /* Optional: Remove the outline for better styling */
+}
