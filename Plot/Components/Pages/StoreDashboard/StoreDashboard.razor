@@ -265,23 +265,26 @@ Author: Andrew Fulton (3/12/2025)
 
     @* event listeners that load when the page loads  *@
         document.addEventListener("DOMContentLoaded", function () {
+            @* Not sure where to add constants, so I am placing it here for now.
+                This is used for setting modals z-index back to their default value*@
+            const DEFAULT_MODAL_Z_INDEX_VALUE = 1050;
             @* Logic to remove the faded background when clicking off of layered modals *@
                 document.addEventListener("click", function (event) {
                     @* if the clicked item is a modal with the "fade class, then change the Z-index of the modals being returned to " *@
                 if (event.target.matches(".fade")) {
-                        ChangeZIndexOfComponent("addStoreModal", 1050);
-                        ChangeZIndexOfComponent("editStoreModal", 1050);
+                        ChangeZIndexOfComponent("addStoreModal", DEFAULT_MODAL_Z_INDEX_VALUE);
+                        ChangeZIndexOfComponent("editStoreModal", DEFAULT_MODAL_Z_INDEX_VALUE);
                     }
                 });
             @* Logic to remove the faded background when hitting "Escape" when closing layered modals and change the Z-index of the modals being returned to*@
                 document.addEventListener("keydown", function () {
                     if (event.key === "Escape") {
-                        ChangeZIndexOfComponent("addStoreModal", 1050);
+                        ChangeZIndexOfComponent("addStoreModal", DEFAULT_MODAL_Z_INDEX_VALUE);
                         @* put the modal being returned to back in focus (closing with escape doesn't return the focus) *@
                         const addStoreModal = document.getElementById("addStoreModal");
                         addStoreModal.focus();
 
-                        ChangeZIndexOfComponent("editStoreModal", 1050);
+                        ChangeZIndexOfComponent("editStoreModal", DEFAULT_MODAL_Z_INDEX_VALUE);
                         @* put the modal being returned to back in focus (closing with escape doesn't return the focus) *@
                         const editStoreModal = document.getElementById("editStoreModal");
                         editStoreModal.focus();
