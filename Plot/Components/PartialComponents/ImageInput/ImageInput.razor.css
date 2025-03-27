@@ -18,6 +18,10 @@ Author: Danielle Smith (2/10/2025) */
     cursor: pointer;
     transition: background-color 0.2s ease;
     min-height: 200px;
+
+    
+    
+
 }
 
 .dashed-border {
@@ -43,3 +47,5 @@ h5 {
     top: 45%;
     /* vertical align */
 }
+
+

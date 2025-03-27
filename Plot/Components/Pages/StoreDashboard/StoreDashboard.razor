@@ -54,14 +54,14 @@ Author: Andrew Fulton (3/12/2025)
             <h5>Edit Store</h5>
             <p>Edit this store's information</p>
             @* Name and location *@
-            <div class="modal-split-container">
-                <div class="modal-split-left-side">
+            <div class="row">
+                <div class="col-lg-6">
                     <TextInput LabelOnTop="false" Id="editModalStoreName" Label="Name" Placeholder="Store Name" />
                     <TextInput LabelOnTop="false" Id="editModalStoreLocation" Label="Location"
                         Placeholder="Store Address" />
                 </div>
                 @* upload image for store component *@
-                <div class="modal-split-right-side">
+                <div class="col-lg-6">
                     <ImageInput Label="Upload Image" Id="ExampleImageInputEdit" Width="330px" Height="300px" />
                 </div>
             </div>
@@ -182,13 +182,13 @@ Author: Andrew Fulton (3/12/2025)
         <h5>Add Store</h5>
         <p>Add a new store with it's own unique store blueprint.</p>
         @* Name and location (labels and input boxes)*@
-        <div class="modal-split-container">
-            <div class="modal-split-left-side">
+        <div class="row">
+            <div class="col-lg-6">
                 <TextInput LabelOnTop="false" Id="addModalStoreName" Label="Name" Placeholder="Store Name" />
                 <TextInput LabelOnTop="false" Id="addModalStoreLocation" Label="Location" Placeholder="Store Address" />
             </div>
             @* upload image for store component *@
-            <div class="modal-split-right-side">
+            <div class="col-lg-6">
                 <ImageInput Label="Upload Image" Id="ExampleImageInputAdd" Width="330px" Height="300px" />
             </div>
         </div>
