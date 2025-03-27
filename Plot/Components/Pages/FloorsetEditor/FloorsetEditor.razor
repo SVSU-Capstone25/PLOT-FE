@@ -507,19 +507,19 @@
     //Added ID tracking to created fixtures!
     //Added paint mode detection
     var fixture_IDs = [];
-    var paint_mode_color = "transparent";
-    var paint_mode_enabled = false;
+    var paintModeColor = "transparent";
+    var paintModeEnabled = false;
 
     //The set paint color function sets the paint_mode_color, which will be used in the onmouseenter event of the fixture div.
     function setPaintColor(newColor)
     {
-        paint_mode_color = newColor;
+        paintModeColor = newColor;
     }
 
     //The set paint enabled function enables or disables the paint mode - the listener for onmouseenter will abort early if disabled.
     function setPaintEnabled(isEnabled)
     {
-        paint_mode_enabled = isEnabled;
+        paintModeEnabled = isEnabled;
     }
 
 
@@ -562,19 +562,32 @@
 
         //Tristan Calay -- 3/27/25
         //Add in listeners for mouse over for category painting.
-        newBox.onmouseenter = function()
+        newBox.addEventListener("mouseenter",onPaintColor);
+        newBox.addEventListener("mousedown",onPaintColor);
+        function onPaintColor(event)
         {
             //console.log("Fixture mouse over detected!!! ID: " + newBox.id);
-            if(!paint_mode_enabled)
+            if(!paintModeEnabled)
             {
                 return;
             }
-            newBox.style.background = paint_mode_color;
+            //Check if mouse buttons contains the number 1, representing primary button.
+            console.log("Buttons equals " + event.buttons)
+            if(event.buttons % 2 === 1)
+            {
+                //Tristan Calay
+                //paintModeColor contains the overall category "Men's, Women's, Accessories", 
+                //The specific item "Pants, Shorts, etc..."
+                //And the color code, split by the character '|'.
+                var colorString = paintModeColor.split("|")[2];
+                newBox.style.background = colorString;
+            }
             /*In the future, add in some way to call back to the database that fixture 
             with ID "newBox.id" has been changed to a certain category.
             We should probably store the actual category string when a category list item is clicked!
             */
         }
+        
 
 
         // Get container position relative to viewport
@@ -593,6 +606,11 @@
         var draggable = Draggable.create(newBox, {
             bounds: container,
             onDrag: function () {
+                 @* //Tristan Calay -- Don't drag if paint mode is enabled!
+                if(paintModeEnabled)
+                {
+                    return;
+                } *@
                 // Using TweenLite, snap the box to a given snap distance,
                 // and make the animation smooth
                 TweenLite.to(newBox, 0.5, {
@@ -603,11 +621,19 @@
 
             },
             onDragEnd: function () {
+                @* //Tristan Calay -- Don't drag if paint mode is enabled!
+                if(paintModeEnabled)
+                {
+                    return;
+                } *@
+
                 // If the box is over the sidebar when dropped, remove it from view,
                 // otherwise set the z-index low so it is under the sidebar.
                 var boxRect = newBox.getBoundingClientRect();
                 var sidebarRect = sidebar.getBoundingClientRect();
                 if (isOverElement(boxRect, sidebarRect)) {
+                    //Tristan Calay - Splice out the fixture id of the removed element.
+                    fixture_IDs.splice(fixture_IDs.indexOf(newBox.id),1);
                     container.removeChild(newBox);
                 } else {
                     newBox.style.zIndex = 0;
@@ -1081,14 +1107,15 @@
     //It passes that information to the javascript.
     private async Task paintCategory()
     {
-        Console.WriteLine("Paint Category Function");
+        Console.WriteLine("Paint Category Function - set paint mode "+!paintModeEnabled);
         paintModeEnabled = !paintModeEnabled;
         await JS.InvokeVoidAsync("setPaintEnabled",paintModeEnabled);
     }
 
-    private void eraseCategory()
+    private async Task eraseCategory()
     {
         Console.WriteLine("Erase Category Function");
+        await JS.InvokeVoidAsync("setPaintColor","transparent");
     }
 
     private void viewFulfillment()
