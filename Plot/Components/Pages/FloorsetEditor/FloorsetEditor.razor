@@ -503,10 +503,35 @@
         $("<div class=\"grid-cell\"></div>").prependTo(container);
     }
 
+    //Tristan Calay - 3/27/25
+    //Added ID tracking to created fixtures!
+    //Added paint mode detection
+    var fixture_IDs = [];
+    var paint_mode_color = "transparent";
+
+    //The set paint color function sets the paint_mode_color, which will be used in the onmouseenter event of the fixture div.
+    function setPaintColor(newColor)
+    {
+        paint_mode_color = newColor;
+    }
+
     /*
         The createDraggable function creates a draggable fixture to add to the grid.
     */
     function createDraggable(event, size) {
+        //Tristan Calay
+        //Create a new ID for the new fixture - last index in array + 1, or 0 if no fixtures exist.
+        //In the future, when checking DB, populate the fixture ID array!
+        var new_id = 0;
+        if (fixture_IDs.length === 0)
+        {
+            fixture_IDs.push(new_id);
+        }
+        else
+        {
+            new_id = fixture_IDs[fixture_IDs.length - 1] + 1;
+            fixture_IDs.push(new_id)
+        }
 
         // Get references to the sidebar and create a soon-to-be draggable fixture
         var sidebar = document.getElementById("FloorsetSlideOut");
@@ -525,6 +550,15 @@
         newBox.style.background = "transparent";
         newBox.style.border = "3px solid black";
         newBox.style.borderRadius = "8px";
+        newBox.id = new_id;
+
+        //Tristan Calay -- 3/27/25
+        //Add in listeners for mouse over for category painting.
+        newBox.onmouseenter = function()
+        {
+            console.log("Fixture mouse over detected!!! ID: " + newBox.id);
+            newBox.style.background = paint_mode_color;
+        }
 
 
         // Get container position relative to viewport
@@ -1022,9 +1056,10 @@
         allocationsOpen = false;
     }
 
-    private void paintCategory()
+    private async Task paintCategory()
     {
         Console.WriteLine("Paint Category Function");
+        await JS.InvokeVoidAsync("setPaintColor","red");
     }
 
     private void eraseCategory()

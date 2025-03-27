@@ -41,41 +41,45 @@ Author: Tristan Calay (3/15/2025)-->
                 added classes for margins on these progressbars
                 added more categories to fill this out for demo purpopses & sorted them alphabetically *@
 
-                @* Men's *@
-                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Men's" barColor="#AAD9FF" barMax=480
-                    barValue=290 barLabel="290/480 LF" />
-                <ProgressBar mainLabel="Jeans" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Jackets" barColor="#AAD9FF" barMax=100 barValue=120 barLabel="120/100 LF" />
-                <ProgressBar mainLabel="Pants" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Shirts" barColor="#AAD9FF" barMax=100 barValue=30 barLabel="30/100 LF" />
-                <ProgressBar mainLabel="Shoes" barColor="#AAD9FF" barMax=100 barValue=60 barLabel="60/100 LF" />
-                <ProgressBar mainLabel="Shorts" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Sports" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Suits" barColor="#AAD9FF" barMax=100 barValue=100 barLabel="100/100 LF" />
+                @* Tristan Calay 3/27/25
+                Added UL / LI with onclick to set the painting color. *@
+                <ul>
+                    @* Men's *@
+                    <li onclick="setPaintColor('#AAD9FF')"><ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Men's" barColor="#AAD9FF" barMax=480
+                        barValue=290 barLabel="290/480 LF" /></li>
+                    <li onclick="setPaintColor('#AAD9FF')"><ProgressBar mainLabel="Jeans" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" /></li>
+                    <li onclick="setPaintColor('#AAD9FF')"><ProgressBar mainLabel="Jackets" barColor="#AAD9FF" barMax=100 barValue=120 barLabel="120/100 LF" /></li>
+                    <li onclick="setPaintColor('#AAD9FF')"><ProgressBar mainLabel="Pants" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" /></li>
+                    <li onclick="setPaintColor('#AAD9FF')"><ProgressBar mainLabel="Shirts" barColor="#AAD9FF" barMax=100 barValue=30 barLabel="30/100 LF" /></li>
+                    <li onclick="setPaintColor('#AAD9FF')"><ProgressBar mainLabel="Shoes" barColor="#AAD9FF" barMax=100 barValue=60 barLabel="60/100 LF" /></li>
+                    <li onclick="setPaintColor('#AAD9FF')"><ProgressBar mainLabel="Shorts" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" /></li>
+                    <li onclick="setPaintColor('#AAD9FF')"><ProgressBar mainLabel="Sports" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" /></li>
+                    <li onclick="setPaintColor('#AAD9FF')"><ProgressBar mainLabel="Suits" barColor="#AAD9FF" barMax=100 barValue=100 barLabel="100/100 LF" /></li>
 
-                @* Women's *@
-                <hr class="category-separator">
-                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Women's" barColor="#FFAAD6" barMax=40
-                    barValue=20 barLabel="20/40 LF" />
-                <ProgressBar mainLabel="Dresses" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" />
-                <ProgressBar mainLabel="Jackets" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" />
-                <ProgressBar mainLabel="Jeans" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Pants" barColor="#FFAAD6" barMax=40 barValue=20 barLabel="20/40 LF" />
-                <ProgressBar mainLabel="Shirts" barColor="#FFAAD6" barMax=100 barValue=30 barLabel="30/100 LF" />
-                <ProgressBar mainLabel="Shoes" barColor="#FFAAD6" barMax=100 barValue=60 barLabel="60/100 LF" />
-                <ProgressBar mainLabel="Shorts" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Skirts" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" />
-                <ProgressBar mainLabel="Sports" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Suits" barColor="#FFAAD6" barMax=100 barValue=100 barLabel="100/100 LF" />
+                    @* Women's *@
+                    <hr class="category-separator">
+                    <li onclick="setPaintColor('#FFAAD6')"><ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Women's" barColor="#FFAAD6" barMax=40
+                        barValue=20 barLabel="20/40 LF" /></li>
+                    <li onclick="setPaintColor('#FFAAD6')"><ProgressBar mainLabel="Dresses" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" /></li>
+                    <li onclick="setPaintColor('#FFAAD6')"><ProgressBar mainLabel="Jackets" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" /></li>
+                    <li onclick="setPaintColor('#FFAAD6')"><ProgressBar mainLabel="Jeans" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" /></li>
+                    <li onclick="setPaintColor('#FFAAD6')"><ProgressBar mainLabel="Pants" barColor="#FFAAD6" barMax=40 barValue=20 barLabel="20/40 LF" /></li>
+                    <li onclick="setPaintColor('#FFAAD6')"><ProgressBar mainLabel="Shirts" barColor="#FFAAD6" barMax=100 barValue=30 barLabel="30/100 LF" /></li>
+                    <li onclick="setPaintColor('#FFAAD6')"><ProgressBar mainLabel="Shoes" barColor="#FFAAD6" barMax=100 barValue=60 barLabel="60/100 LF" /></li>
+                    <li onclick="setPaintColor('#FFAAD6')"><ProgressBar mainLabel="Shorts" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" /></li>
+                    <li onclick="setPaintColor('#FFAAD6')"><ProgressBar mainLabel="Skirts" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" /></li>
+                    <li onclick="setPaintColor('#FFAAD6')"><ProgressBar mainLabel="Sports" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" /></li>
+                    <li onclick="setPaintColor('#FFAAD6')"><ProgressBar mainLabel="Suits" barColor="#FFAAD6" barMax=100 barValue=100 barLabel="100/100 LF" /></li>
 
-                @* Accessories *@
-                <hr class="category-separator">
-                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Accessories" barColor="#5FBD6A" barMax=10
-                    barValue=20 barLabel="20/10 LF" />
-                <ProgressBar mainLabel="Belts" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
-                <ProgressBar mainLabel="Hats" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
-                <ProgressBar mainLabel="Jewelry" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
-                <ProgressBar mainLabel="Purses" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
+                    @* Accessories *@
+                    <hr class="category-separator">
+                    <li onclick="setPaintColor('#5FBD6A')"><ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Accessories" barColor="#5FBD6A" barMax=10
+                        barValue=20 barLabel="20/10 LF" /></li>
+                    <li onclick="setPaintColor('#5FBD6A')"><ProgressBar mainLabel="Belts" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" /></li>
+                    <li onclick="setPaintColor('#5FBD6A')"><ProgressBar mainLabel="Hats" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" /></li>
+                    <li onclick="setPaintColor('#5FBD6A')"><ProgressBar mainLabel="Jewelry" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" /></li>
+                    <li onclick="setPaintColor('#5FBD6A')"><ProgressBar mainLabel="Purses" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" /></li>
+                </ul>
 
             </div>
         </div>
