@@ -148,7 +148,7 @@
                         <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
                             ValueChanged="@(str => NumberChanged(str, value => length = value))" />
                     </div>
-                    <label>Enter the Dimensions (width and length) in feet</label>
+                    <label>Enter the Dimensions (length and width) in feet</label>
 
                     <div class="fixture-area p-3 mt-3 d-flex mb-2">
                         <div class="fixture mb-3 d-flex flex-row"
@@ -493,13 +493,13 @@
     var snap = 50;
 
     // Set the styles of the container based on the given dimensions
-    container.style.height = (width * rows) + "px";
-    container.style.width = (width * rows) + "px";
+    container.style.height = (height * rows) + "px";
+    container.style.width = (width * cols) + "px";
 
     // Set the grid area with a grid layout, and fill it with divs
     container.setAttribute("style","display: grid; grid-column-gap: 0px;grid-row-gap: 0px;");
     container.style.gridTemplateColumns = `repeat(${cols},${width}px)`;
-    container.style.gridTemplateRows = `repeat(${rows},${width}px)`;
+    container.style.gridTemplateRows = `repeat(${rows},${height}px)`;
 
     for (var i = 0; i < rows * cols; i++) {
         $("<div class=\"grid-cell\"></div>").prependTo(container);
@@ -559,9 +559,14 @@
                 // otherwise set the z-index low so it is under the sidebar.
                 var boxRect = newBox.getBoundingClientRect();
                 var sidebarRect = sidebar.getBoundingClientRect();
+                var containerRect = container.getBoundingClientRect();
                 if (isOverElement(boxRect, sidebarRect)) {
                     container.removeChild(newBox);
-                } else {
+                } 
+                else if (!isOverElement(boxRect, containerRect)) {
+                    container.removeChild(newBox);
+                }  
+                else {
                     newBox.style.zIndex = 0;
                 }
 
@@ -674,30 +679,52 @@
 
 
      /* Luke Wollenweber - 3/22/2025
-        js function to re-add cells based on new Dimensions */
+        js function to re-add cells based on new Dimensions 
+        updated 3/27 by Luke Wollenweber */
     function UpdateGridDimensions(passedLength, passedWidth) {
-       
-        const gridContainer = document.getElementById('container');
-        gridContainer.innerHTML = '';
-        var isAsc = true;
+        var positionMap = {}; 
 
-        // Dimensions of items
-        var rows = passedWidth;
-        var cols = passedLength;
+        Array.from(container.children).forEach(child => {
+            if (child.className === "box") {
+                var childRect = child.getBoundingClientRect();
 
-        // Set the styles of the container based on the given dimensions
-        container.style.height = (width * rows) + "px";
-        container.style.width = (width * rows) + "px";
+                positionMap[child] = { item: child, loc: childRect };
+            }
+        });
 
-        // Set the grid area with a grid layout, and fill it with divs
-        container.setAttribute("style","display: grid; grid-column-gap: 0px;grid-row-gap: 0px;");
-        container.style.gridTemplateColumns = `repeat(${cols},${width}px)`;
-        container.style.gridTemplateRows = `repeat(${rows},${width}px)`;
+        container.innerHTML = '';
+
+        var rows = passedWidth;  
+        var cols = passedLength; 
+
+        container.style.height = (height * rows) + "px";  
+        container.style.width = (width * cols) + "px";    
+
+        container.setAttribute("style", "display: grid; grid-column-gap: 0px; grid-row-gap: 0px;");
+        container.style.gridTemplateColumns = `repeat(${cols}, ${width}px)`;  // Use width for columns
+        container.style.gridTemplateRows = `repeat(${rows}, ${height}px)`;   // Use height for rows
 
         for (var i = 0; i < rows * cols; i++) {
-            $("<div class=\"grid-cell\"></div>").prependTo(container);
+            const gridCell = document.createElement('div');
+            gridCell.className = "grid-cell";
+            container.appendChild(gridCell);
         }
-    } 
+
+        var containerRect = container.getBoundingClientRect();
+
+        Object.values(positionMap).forEach(({ item, loc }) => {
+
+            if (loc.top < containerRect.bottom &&
+            loc.bottom > containerRect.top &&
+            loc.left < containerRect.right &&
+            loc.right > containerRect.left) {
+
+                container.appendChild(item);
+            }
+        });
+    }
+
+
 </script>
 
 @code {
