@@ -513,6 +513,7 @@
         // Get references to the sidebar and create a soon-to-be draggable fixture
         var sidebar = document.getElementById("FloorsetSlideOut");
         var newBox = document.createElement("div");
+        newBox.setAttribute("id", new Date().getTime());
 
         // Make the box a child of the container (grid)
         container.appendChild(newBox);
@@ -561,7 +562,13 @@
                 var sidebarRect = sidebar.getBoundingClientRect();
                 if (isOverElement(boxRect, sidebarRect)) {
                     container.removeChild(newBox);
-                } else {
+                } 
+                else if (isOverlapping(newBox, container))
+                {
+                    container.removeChild(newBox);
+                    displayAlert("Cannot place an element over an existing element.");
+                }
+                else {
                     newBox.style.zIndex = 0;
                 }
 
@@ -578,6 +585,26 @@
             newBox.dispatchEvent(evt);
         }, 10);
     } 
+    //added body Luke Wollenweber 3/26 to checks whether any element in the container is in the same place as the draggable element
+    //it takes two elements as parameters, the element being dragged and the container element
+    function isOverlapping(draggableRect, containerElement)
+    {
+        var overlapFound = false;
+        var children = containerElement.children;
+        var draggableArea = draggableRect.getBoundingClientRect();
+        //this loops through each element in the container to see whether the draggable div is over it
+        Array.from(children).forEach(function(child, index) {
+            if (child.className == "box" && child !== draggableRect) {
+                var area = child.getBoundingClientRect();
+                // Check for overlap based on positions
+                if (draggableArea.top < area.bottom && draggableArea.bottom > area.top &&
+                    draggableArea.left < area.right && draggableArea.right > area.left) {
+                    overlapFound = true;
+                }
+            }
+        });
+        return overlapFound;
+    }
 
     /*
         The isOverElement function checks if an element is over another.
@@ -666,7 +693,7 @@
     /*
         The alertUser function sends an alert to the user with a given message.
     */
-    function alertUser(msg) {
+    function displayAlert(msg) {
         alert(msg);
     }
 
@@ -826,13 +853,13 @@
                 ClearTempFixtureData();
             } else {
                 // If not, tell the user to fill out all fields.
-                await JS.InvokeVoidAsync("alertUser","Please fill out all fields.");
+                await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
             }
             
         } catch (ArgumentException)
         {
             // If the name matches an existing fixture, tell the user to choose another name.
-            await JS.InvokeVoidAsync("alertUser",
+            await JS.InvokeVoidAsync("displayAlert",
                 "A fixture with that name has already been used.  Please choose another name.");
         }
 
@@ -852,7 +879,7 @@
             fixtures.Add(newFixture.Name,newFixture);
         } else {
             // If not, tell the user to fill out all fields.
-            await JS.InvokeVoidAsync("alertUser","Please fill out all fields.");
+            await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
         }        
 
     }
