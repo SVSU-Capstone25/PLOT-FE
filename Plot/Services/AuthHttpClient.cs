@@ -17,13 +17,13 @@
 using System.Net.Http.Headers;
 using Microsoft.JSInterop;
 
-public class AuthHttpClient 
+public class AuthHttpClient
 {
     // VARIABLES -- VARIABLES -- VARIABLES -- VARIABLES -- VARIABLES ------
 
     //Dependency injection of httpClient, this is used to send HTTP requests
-    private readonly  HttpClient _httpClient;
-   
+    private readonly HttpClient _httpClient;
+
     //Dependency injection to run JavaScript scripts
     private readonly IJSRuntime _jsRuntime;
 
@@ -49,9 +49,9 @@ public class AuthHttpClient
     {
         _httpClient = httpClient;
         _jsRuntime = jsRuntime;
-        httpMethod=HttpMethod.Post;
-        endPointStr="";
-        jsonBody=JsonContent.Create("");
+        httpMethod = HttpMethod.Post;
+        endPointStr = "";
+        jsonBody = JsonContent.Create("");
     }
 
 
@@ -62,18 +62,34 @@ public class AuthHttpClient
     /// <returns>Response from the HttpRequest</returns>
     public async Task<HttpResponseMessage> SendAsyncWithAuth(HttpRequestMessage request)
     {
-        // Use Javascript function to get the Jwt Auth token from a cookie stored in the browser.
-        var token = await _jsRuntime.InvokeAsync<string>("getCookie", "Auth");
-
-        // Test if the Auth token exists
-        if (!string.IsNullOrEmpty(token))
+        try
         {
-            //Set Authentication Header Bearer token with token from browser
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
+            // Use Javascript function to get the Jwt Auth token from a cookie stored in the browser.
+            var token = await _jsRuntime.InvokeAsync<string>("getCookie", "Auth");
 
-        //Return response
-        return await _httpClient.SendAsync(request);
+            // Test if the Auth token exists
+            if (!string.IsNullOrEmpty(token))
+            {
+                //Set Authentication Header Bearer token with token from browser
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            //Return response
+            return await _httpClient.SendAsync(request);
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine($"Exception Message: {exception.Message}");
+            Console.WriteLine("----------------------------------------------------------------------");
+            Console.WriteLine($"Exception StackTrace: {exception.StackTrace}");
+            Console.WriteLine("----------------------------------------------------------------------");
+            Console.WriteLine($"Exception StackTrace: {exception.Source}");
+            var fallbackResponse = new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+            {
+                Content = new StringContent("An error occurred while processing the request.")
+            };
+            return fallbackResponse;
+        }
     }
 
 
@@ -84,8 +100,8 @@ public class AuthHttpClient
     public async Task<HttpResponseMessage> SendAsyncWithAuth()
     {
         //Set the full Uri of the targeted api endpoint
-        var fullEndPointUri=new Uri(_httpClient.BaseAddress! + endPointStr);
-        
+        var fullEndPointUri = new Uri(_httpClient.BaseAddress! + endPointStr);
+
         //Make a new http message with inputted http method
         var request = new HttpRequestMessage(httpMethod,
                 fullEndPointUri);
@@ -94,8 +110,8 @@ public class AuthHttpClient
         request.Headers.Add("Accept", "application/json");
 
         // Add jsonBody to the request
-        request.Content=jsonBody;
-        
+        request.Content = jsonBody;
+
         // Use Javascript function to get the Jwt Auth token from a cookie stored in the browser.
         var token = await _jsRuntime.InvokeAsync<string>("getCookie", "Auth");
 
@@ -117,7 +133,7 @@ public class AuthHttpClient
     /// <param name="baseAddress">Base uri for httpRequests</param>
     public void SetBaseAddress(Uri baseAddress)
     {
-        _httpClient.BaseAddress=baseAddress;
+        _httpClient.BaseAddress = baseAddress;
     }
 
 
