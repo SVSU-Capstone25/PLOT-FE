@@ -24,6 +24,7 @@
 @using Plot.Components.PartialComponents.OptionInput
 @using Plot.Components.PartialComponents.TextInput
 @using Plot.Components.PartialComponents.Modal
+@using Plot.Components.PartialComponents.ImageInput
 @using Plot.Components.PartialComponents.FileInput
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -104,7 +105,7 @@
                     {
 
                         <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name"
-                        @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width))" draggable="true"
+                        @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width, "green"))" draggable="true"
                         @ondragstart:preventDefault="true">
                             <div class="drag-start-area d-flex flex-row">
                                 <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="">
@@ -136,33 +137,35 @@
         @if (buildingWallsExpanded)
         {
             <div class="expanded">
-                <h3 class="header pt-3" @onclick="ToggleBuildingWalls">
-                    <i class="fas fa-edit"></i> Edit Building Walls
-                </h3>
-                <hr style="opacity:1">
-                <label>Dimensions</label>
-                <div class="horizantal-inputs">
-                    <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
-                        ValueChanged="@(str => NumberChanged(str, value => width = value))" />
-                    @* The X to separate the two inputs *@
-                    <span class="dimension-separator">X</span>
-                    <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
-                        ValueChanged="@(str => NumberChanged(str, value => length = value))" />
-                </div>
-                <label>Enter the Dimensions (width and length) in feet</label>
+                <div class="walls-container">
+                    <h3 style="font-weight: bold;" @onclick="ToggleBuildingWalls"><i class="fas fa-edit"></i> Edit Building Walls</h3>
+                    <hr style="opacity: 1.0; color:black;">
+                    <label>Dimensions</label>
+                    <div class="horizantal-inputs">
+                        <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
+                            ValueChanged="@(str => NumberChanged(str, value => width = value))" />
+                        @* The X to separate the two inputs *@
+                        <span class="dimension-separator">X</span>
+                        <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
+                            ValueChanged="@(str => NumberChanged(str, value => length = value))" />
+                    </div>
+                    <label>Enter the Dimensions (width and length) in feet</label>
 
-                @* uncomment the below when testing draggable*@
-                @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
-                @ondragstart:preventDefault="true"> *@
-                <div class="drag-start-area d-flex flex-row my-3">
-                    <div class="fixture-img disable-select grab-cursor"></div>
-                    <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                    <div class="fixture-area p-3 mt-3 d-flex mb-2">
+                        <div class="fixture mb-3 d-flex flex-row"
+                            @ondragstart="@((e) => OnDragStart(e, "1x1", "red"))" draggable="true"
+                            @ondragstart:preventDefault="true">
+                            <div class="drag-start-area d-flex flex-row">
+                                <div class="emp-only"></div>
+                                <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                            </div>
+                        </div>
+                    </div>
+                    <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+                        Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
+                        Apply
+                    </Button>
                 </div>
-                @* </div> *@
-                <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
-                    Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
-                    Apply
-                </Button>
             </div>
         }
         else
@@ -506,7 +509,7 @@
     /*
         The createDraggable function creates a draggable fixture to add to the grid.
     */
-    function createDraggable(event, size) {
+    function createDraggable(event, size, color) {
 
         // Get references to the sidebar and create a soon-to-be draggable fixture
         var sidebar = document.getElementById("FloorsetSlideOut");
@@ -522,7 +525,7 @@
         newBox.style.height = boxSize[0] * height + "px";
         newBox.style.width = boxSize[1] * width + "px";
 
-        newBox.style.background = "transparent";
+        newBox.style.background = color;
         newBox.style.border = "3px solid black";
         newBox.style.borderRadius = "8px";
 
@@ -673,25 +676,32 @@
 
      /* Luke Wollenweber - 3/22/2025
         js function to re-add cells based on new Dimensions */
-    /* function UpdateGridDimensions(length, width) {
+    function UpdateGridDimensions(length, width) {
        
-        const gridContainer = document.getElementById('grid-container');
+        const gridContainer = document.getElementById('container');
     
-        gridContainer.innerHTML = '';
+        var isAsc = true;
 
-        gridContainer.style.display = 'grid';
-        gridContainer.style.gridTemplateColumns = `repeat(${width}, 1fr)`; 
-        gridContainer.style.gridTemplateRows = `repeat(${length}, 1fr)`;
-        for (let i = 0; i < width; i++) {
-            for (let j = 0; j < length; j++) {
-                const cell = document.createElement('div');
-                cell.classList.add('grid-cell');
-                cell.id = `cell-${i}-${j}`;
+        // Dimensions of items
+        var width = width +2;
+        var height = length + 2;
+        var rows = width;
+        var cols = length;
+        var snap = width;
 
-                gridContainer.appendChild(cell);
-            }
+        // Set the styles of the container based on the given dimensions
+        container.style.height = (width * rows) + "px";
+        container.style.width = (width * rows) + "px";
+
+        // Set the grid area with a grid layout, and fill it with divs
+        container.setAttribute("style","display: grid; grid-column-gap: 0px;grid-row-gap: 0px;");
+        container.style.gridTemplateColumns = `repeat(${cols},${width}px)`;
+        container.style.gridTemplateRows = `repeat(${rows},${width}px)`;
+
+        for (var i = 0; i < rows * cols; i++) {
+            $("<div class=\"grid-cell\"></div>").prependTo(container);
         }
-    } */
+    } 
 </script>
 
 @code {
@@ -737,6 +747,7 @@
             return pValue == null || pValue.Equals("");            
         });
 
+
         /*
             The UpdateLFCapacity function updates the linear feet capacity of the fixture.
         */
@@ -746,6 +757,29 @@
             } catch (Exception e){
                 Console.WriteLine(e.GetBaseException());
             }
+        }
+
+        /*
+            this method was added by Luke Wollenweber to update the flag when adding a fixture
+            to return which properties are null
+        */
+        public string FindNullProperties()
+        {
+            //this gets all the properties of the object
+            var nullProperties = GetType()
+                .GetProperties()
+                .Where(p => 
+                {
+                    var pValue = p.GetValue(this); 
+                    return pValue == null || pValue.Equals("");
+                })
+                .Select(p => p.Name)
+                .ToList();
+
+            //this is the string with the property names that will be returned
+            return nullProperties.Any() 
+                ? string.Join(", ", nullProperties) 
+                : "No null or empty properties";
         }
 
         /*
@@ -819,8 +853,9 @@
                 await JS.InvokeVoidAsync("toggleModal","addFixture",false);
                 ClearTempFixtureData();
             } else {
+                string nullProperties = currFixture.FindNullProperties();
                 // If not, tell the user to fill out all fields.
-                await JS.InvokeVoidAsync("alertUser","Please fill out all fields.");
+                await JS.InvokeVoidAsync("alertUser","Please fill out all fields. " + nullProperties + " are blank.");
             }
             
         } catch (ArgumentException)
@@ -845,8 +880,9 @@
             fixtures.Remove(currFixture.Name);
             fixtures.Add(newFixture.Name,newFixture);
         } else {
+            string nullProperties = currFixture.FindNullProperties();
             // If not, tell the user to fill out all fields.
-            await JS.InvokeVoidAsync("alertUser","Please fill out all fields.");
+            await JS.InvokeVoidAsync("alertUser","Please fill out all fields. " + nullProperties + " are blank.");
         }        
 
     }
@@ -876,9 +912,9 @@
     /*
         The OnDragStart function calls a JS function to create a draggable fixture.
     */
-    private async Task OnDragStart(DragEventArgs e, string size)
+    private async Task OnDragStart(DragEventArgs e, string size, string color)
     {
-        await JS.InvokeVoidAsync("createDraggable", e, size);
+        await JS.InvokeVoidAsync("createDraggable", e, size, color);
     }
 
     /*
