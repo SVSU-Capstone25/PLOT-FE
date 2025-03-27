@@ -513,6 +513,7 @@
         // Get references to the sidebar and create a soon-to-be draggable fixture
         var sidebar = document.getElementById("FloorsetSlideOut");
         var newBox = document.createElement("div");
+        newBox.id = new Date().getTime();
 
         // Make the box a child of the container (grid)
         container.appendChild(newBox);
@@ -559,7 +560,7 @@
                 // otherwise set the z-index low so it is under the sidebar.
                 var boxRect = newBox.getBoundingClientRect();
                 var sidebarRect = sidebar.getBoundingClientRect();
-                var containerRect = container.getBoundingClientRect();
+                containerRect = container.getBoundingClientRect();
                 if (isOverElement(boxRect, sidebarRect)) {
                     container.removeChild(newBox);
                 } 
@@ -671,7 +672,7 @@
     /*
         The alertUser function sends an alert to the user with a given message.
     */
-    function alertUser(msg) {
+    function displayAlert(msg) {
         alert(msg);
     }
 
@@ -688,7 +689,7 @@
             if (child.className === "box") {
                 var childRect = child.getBoundingClientRect();
 
-                positionMap[child] = { item: child, loc: childRect };
+                positionMap[child.id] = { item: child, loc: childRect };
             }
         });
 
@@ -701,8 +702,8 @@
         container.style.width = (width * cols) + "px";    
 
         container.setAttribute("style", "display: grid; grid-column-gap: 0px; grid-row-gap: 0px;");
-        container.style.gridTemplateColumns = `repeat(${cols}, ${width}px)`;  // Use width for columns
-        container.style.gridTemplateRows = `repeat(${rows}, ${height}px)`;   // Use height for rows
+        container.style.gridTemplateColumns = `repeat(${cols}, ${width}px)`; 
+        container.style.gridTemplateRows = `repeat(${rows}, ${height}px)`; 
 
         for (var i = 0; i < rows * cols; i++) {
             const gridCell = document.createElement('div');
@@ -710,18 +711,32 @@
             container.appendChild(gridCell);
         }
 
-        var containerRect = container.getBoundingClientRect();
+        var containerDimensions = container.getBoundingClientRect();
+        var fixturesRemoved = false;
 
         Object.values(positionMap).forEach(({ item, loc }) => {
-
-            if (loc.top < containerRect.bottom &&
-            loc.bottom > containerRect.top &&
-            loc.left < containerRect.right &&
-            loc.right > containerRect.left) {
-
+            if (loc.top >= containerDimensions.bottom || loc.bottom > containerDimensions.bottom + 1)
+            {
+                fixturesRemoved = true;
+            }
+            else if (loc.bottom <= containerDimensions.top || loc.top < containerDimensions.top)
+            {
+                fixturesRemoved = true;
+            }
+            else if (loc.right > containerDimensions.right || loc.left >= containerDimensions.right)
+            {
+                fixturesRemoved = true;            }
+            else if (loc.right <= containerDimensions.left || loc.left < containerDimensions.left)
+            {
+                fixturesRemoved = true;
+            }
+            else {
                 container.appendChild(item);
             }
         });
+        if (fixturesRemoved == true) {
+            displayAlert("Please be aware that there area fixtures that are outside of the new grid area and they will be removed.");
+        }
     }
 
 
@@ -853,13 +868,13 @@
                 ClearTempFixtureData();
             } else {
                 // If not, tell the user to fill out all fields.
-                await JS.InvokeVoidAsync("alertUser","Please fill out all fields.");
+                await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
             }
             
         } catch (ArgumentException)
         {
             // If the name matches an existing fixture, tell the user to choose another name.
-            await JS.InvokeVoidAsync("alertUser",
+            await JS.InvokeVoidAsync("displayAlert",
                 "A fixture with that name has already been used.  Please choose another name.");
         }
 
@@ -879,7 +894,7 @@
             fixtures.Add(newFixture.Name,newFixture);
         } else {
             // If not, tell the user to fill out all fields.
-            await JS.InvokeVoidAsync("alertUser","Please fill out all fields.");
+            await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
         }        
 
     }
@@ -984,17 +999,22 @@
     /* This function is called when the number is changed */
     private async Task NumberChanged(string strNumber, Action<double> setValue)
     {
-        // String will be either a positive number or ""
         Double.TryParse(strNumber, out double newNumber);
 
-        // Directly modify the referenced variable
-        setValue(newNumber); // Number will be 0 if string is ""
+        setValue(newNumber);
 
         await InvokeAsync(StateHasChanged);
     }
-
+    //this method is called when teh apply button in the edit floor layout panel is clicked
     private async Task ApplyDimensions()
     {
+        //if either length and width are null
+        if (length <= 0 || width <= 0)
+        {
+            //alerts the user that the data entered is invalid
+            await JS.InvokeVoidAsync("alert", "Please enter valid dimensions greater than 0.");
+            return;
+        }
         await JS.InvokeVoidAsync("UpdateGridDimensions", length, width);
     }
 
