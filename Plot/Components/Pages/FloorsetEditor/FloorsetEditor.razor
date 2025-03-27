@@ -508,12 +508,20 @@
     //Added paint mode detection
     var fixture_IDs = [];
     var paint_mode_color = "transparent";
+    var paint_mode_enabled = false;
 
     //The set paint color function sets the paint_mode_color, which will be used in the onmouseenter event of the fixture div.
     function setPaintColor(newColor)
     {
         paint_mode_color = newColor;
     }
+
+    //The set paint enabled function enables or disables the paint mode - the listener for onmouseenter will abort early if disabled.
+    function setPaintEnabled(isEnabled)
+    {
+        paint_mode_enabled = isEnabled;
+    }
+
 
     /*
         The createDraggable function creates a draggable fixture to add to the grid.
@@ -556,8 +564,16 @@
         //Add in listeners for mouse over for category painting.
         newBox.onmouseenter = function()
         {
-            console.log("Fixture mouse over detected!!! ID: " + newBox.id);
+            //console.log("Fixture mouse over detected!!! ID: " + newBox.id);
+            if(!paint_mode_enabled)
+            {
+                return;
+            }
             newBox.style.background = paint_mode_color;
+            /*In the future, add in some way to call back to the database that fixture 
+            with ID "newBox.id" has been changed to a certain category.
+            We should probably store the actual category string when a category list item is clicked!
+            */
         }
 
 
@@ -729,6 +745,11 @@
 </script>
 
 @code {
+    @* Tristan Calay 3/27/25
+    The paint mode toggle here represents the proper state of the paint mode.
+    It is passed to the javascript code on paint mode button clicked.
+     *@
+    private bool paintModeEnabled = false;
 
     /*
         The Fixture class stores data for a fixture.
@@ -1056,10 +1077,13 @@
         allocationsOpen = false;
     }
 
+    //The paintCategory button toggles the paint mode of the floorset editor.
+    //It passes that information to the javascript.
     private async Task paintCategory()
     {
         Console.WriteLine("Paint Category Function");
-        await JS.InvokeVoidAsync("setPaintColor","red");
+        paintModeEnabled = !paintModeEnabled;
+        await JS.InvokeVoidAsync("setPaintEnabled",paintModeEnabled);
     }
 
     private void eraseCategory()
