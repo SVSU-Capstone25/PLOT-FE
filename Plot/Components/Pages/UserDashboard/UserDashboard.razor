@@ -90,6 +90,7 @@ No author was given.
 
 @* Add User Modal *@
 
+
 <Modal Title="Add User" Id="AddUserModal" Variant="standard" Class="modal-dialog modal-xl user-info-modal"
     OnCancelFunction="CleanUpAdd">
     <BodyContent>
@@ -130,11 +131,13 @@ No author was given.
             @* Role Select Option *@
 
             <OptionInput ID="RoleAdd" label="Role" optionsValues=addUserRoles optionsText=addUserRoles
+
                 OnSelectFunction="setAddedRole" Class="user-option-input user-option-role" />
 
             @* Store Select Option *@
 
             <OptionInput ID="StoreAdd" label="Store" optionsValues=addUserStores optionsText=addUserStores
+
                 OnSelectFunction="setAddedStore" Class="user-option-input user-option-store" />
         </form>
 
@@ -191,12 +194,14 @@ No author was given.
             @* Role Select Option *@
 
             <OptionInput ID="RoleEdit" label="Role" optionsValues=editUserRoles optionsText=editUserRoles
+
                 OnSelectFunction="setEditedRole" Class="user-option-input user-option-role">
             </OptionInput>
 
             @* Store Select Option *@
 
             <OptionInput ID="StoreEdit" label="Store" optionsValues=editUserStores optionsText=editUserStores
+
                 OnSelectFunction="setEditedStore" Class="user-option-input user-option-store">
             </OptionInput>
         </form>

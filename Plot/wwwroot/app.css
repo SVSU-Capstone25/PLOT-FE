@@ -64,6 +64,7 @@ h1:focus {
     1 rem is typically 16 px. This approach makes using inspect element
     easier to debug and adjust styles. */
 
+
 .user-info-modal .text-input-container,
 .user-info-modal .OptionInput {
     display: flex;
@@ -101,6 +102,7 @@ h1:focus {
     Note: TextInput uses the label
     element and OptionInput uses h5
     with a p element inside it*/
+
 .user-info-modal .holds-last-name label {
     margin-right: calc(12/16 * 1rem) !important;
 }
@@ -119,6 +121,7 @@ h1:focus {
     padding:0px;
     border: 1px solid lightgray !important;
     opacity:100% !important;
+
     flex:1;
     box-sizing: border-box;
 }
@@ -132,6 +135,7 @@ h1:focus {
 }
 
 /* Store div contains select */
+
 .user-info-modal .user-option-role div{
     display:flex;
     flex:1;
@@ -142,6 +146,7 @@ h1:focus {
 }
 
 /* Div that contains select box */
+
 .user-info-modal .OptionInput div,
 .user-info-modal .OptionInput select {
     box-sizing:border-box;
@@ -157,6 +162,7 @@ h1:focus {
   font-size: 1rem;
   font-weight: bold;
 }
+
 
 .user-info-modal  .modal-body {
     /* Pad modal body to footer */
