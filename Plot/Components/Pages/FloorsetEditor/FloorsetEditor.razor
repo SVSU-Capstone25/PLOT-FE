@@ -565,6 +565,11 @@
                 if (isOverElement(boxRect, sidebarRect)) {
                     container.removeChild(newBox);
                 } 
+                else if (isOverlapping(newBox, container))
+                {
+                    container.removeChild(newBox);
+                    displayAlert("Cannot place an element over an existing element.");
+                } 
                 else {
                     newBox.style.zIndex = 0;
                 }
@@ -582,132 +587,19 @@
             newBox.dispatchEvent(evt);
         }, 10);
     } 
-    @* function createDraggableEmployee(event, size, color) {
-
-        // Get references to the sidebar and create a soon-to-be draggable fixture
-        var sidebar = document.getElementById("FloorsetSlideOut");
-        var newBox = document.createElement("div");
-        newBox.id = new Date().getTime();
-
-        // Make the box a child of the container (grid)
-        container.appendChild(newBox);
-        // Style the box according to the dimensions above
-        newBox.className = "box";
-        newBox.style.position = "absolute";
-        var boxSize = size.split("x");
-        newBox.style.height = boxSize[0] * height + "px";
-        newBox.style.width = boxSize[1] * width + "px";
-
-        newBox.style.background = color;
-        newBox.style.border = "3px solid black";
-        newBox.style.borderRadius = "8px";
-
-
-        // Get container position relative to viewport
-        var containerRect = container.getBoundingClientRect();
-
-        // Set the snapping dimensions for the box as it is dragged
-        var mouseX = event.clientX;
-        var mouseY = event.clientY;
-        var snappedX = Math.round((mouseX - snap * 2) / snap) * snap;
-        var snappedY = Math.round((mouseY - snap * 2) / snap) * snap;
-
-        newBox.style.left = snappedX + "px";
-        newBox.style.top = snappedY + "px";
-
-        // Create the draggable box 
-        var draggable = Draggable.create(newBox, {
-            bounds: container,
-            onDrag: function () 
-            {
-                let isMouseDown = false; // Flag to track whether the mouse is pressed
-                let startX, startY; // Starting position of the mouse
-                let offsetX, offsetY; // The offset between the mouse position and the element's top-left corner
-                let draggableElement = newBox; // The element you want to drag
-
-                // Mouse down event to start dragging
-                draggableElement.addEventListener("mousedown", function(event) {
-                    isMouseDown = true; // Mouse is down
-                    startX = event.clientX; // Get initial mouse X position
-                    startY = event.clientY; // Get initial mouse Y position
-
-                    // Calculate the offset between mouse and element's position
-                    offsetX = event.clientX - draggableElement.offsetLeft;
-                    offsetY = event.clientY - draggableElement.offsetTop;
-
-                    // Prevent text selection or other unwanted actions while dragging
-                    event.preventDefault();
-                });
-
-                // Mouse move event to move the element while the mouse is down
-                document.addEventListener("mousemove", function(event) {
-                    if (isMouseDown) {
-                        // Calculate new position of the element while dragging
-                        let mouseX = event.clientX;
-                        let mouseY = event.clientY;
-
-                        // Update the position of the element based on mouse movement
-                        draggableElement.style.left = (mouseX - offsetX) + "px";
-                        draggableElement.style.top = (mouseY - offsetY) + "px";
-
-                        // You can also add additional logic here that you want to happen while dragging
-                        // For example, logging mouse coordinates or doing animations
-                        console.log("Dragging:", mouseX, mouseY);
-                    }
-                });
-
-                // Mouse up event to stop dragging
-                document.addEventListener("mouseup", function() {
-                    isMouseDown = false; // Mouse is no longer down
-                    console.log("Mouse is released, dragging stopped.");
-                });
-                // Using TweenLite, snap the box to a given snap distance,
-                // and make the animation smooth
-                TweenLite.to(newBox, 0.5, {
-                    x: Math.round(this.endX / snap) * snap,
-                    y: Math.round(this.y / snap) * snap,
-                    ease: Back.easeOut.config(2)
-                    });
-            },
-            onDragEnd: function () {
-                // If the box is over the sidebar when dropped, remove it from view,
-                // otherwise set the z-index low so it is under the sidebar.
-                var boxRect = newBox.getBoundingClientRect();
-                var sidebarRect = sidebar.getBoundingClientRect();
-                containerRect = container.getBoundingClientRect();
-                if (isOverElement(boxRect, sidebarRect)) {
-                    container.removeChild(newBox);
-                } 
-                else {
-                    createDraggableEmployee(event,size,color);
-                    newBox.style.zIndex = 0;
-                }
-
-            }
-        });
-        // Wait for 10ms, then dispatch a mousedown event to simulate a drag on the box.
-        setTimeout(() => {
-            var evt = new MouseEvent("mousedown", {
-                bubbles: true,
-                cancelable: true,
-                clientX: mouseX,
-                clientY: mouseY
-            });
-            newBox.dispatchEvent(evt);
-        }, 10);
-    }  *@
+    //this boolean controls painting so that once the user is done, it prevents "painting" from happening unless 
+    //they make a new div from the sidebar
     var isPaintingEnabled = false;
 
+//this function is specific to the employee only area as it uses "painting" for the div it creates
  function createDraggableEmployee(event, size, color) {
+    //flag set to true
     isPaintingEnabled = true;
     var sidebar = document.getElementById("FloorsetSlideOut");
     var newBox = document.createElement("div");
     newBox.id = new Date().getTime(); // Unique ID
-
-    // Make the box a child of the container (grid)
     container.appendChild(newBox);
 
-    // Style the box according to the dimensions above
     newBox.className = "box";
     newBox.style.position = "absolute";
     var boxSize = size.split("x");
@@ -717,47 +609,51 @@
     newBox.style.border = "3px solid black";
     newBox.style.borderRadius = "8px";
 
-    // Get container position relative to viewport
+    //returns the boundaries of the container, set to containerRect variable
     var containerRect = container.getBoundingClientRect();
 
-    // Set the snapping dimensions for the box as it is dragged
     var mouseX = event.clientX;
     var mouseY = event.clientY;
     var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
     var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
 
-    // Prevent the box from going outside the container boundaries
+    //this prevents the box from going outside the container boundaries
     snappedX = Math.max(0, Math.min(snappedX, containerRect.width - newBox.offsetWidth));
     snappedY = Math.max(0, Math.min(snappedY, containerRect.height - newBox.offsetHeight));
 
     newBox.style.left = snappedX + "px";
     newBox.style.top = snappedY + "px";
-
-    // Create the draggable box
     var draggable = Draggable.create(newBox, {
-        bounds: container,
-        onDrag: function () {
-            // Using TweenLite, snap the box to a given snap distance,
-            // and make the animation smooth
-            TweenLite.to(newBox, 0.5, {
-                x: Math.round(this.endX / snap) * snap,
-                y: Math.round(this.y / snap) * snap,
-                ease: Back.easeOut.config(2)
-            });
-        },
-        onDragEnd: function () {
-            var boxRect = newBox.getBoundingClientRect();
-            var sidebarRect = sidebar.getBoundingClientRect();
-            containerRect = container.getBoundingClientRect();
-            if (isOverElement(boxRect, sidebarRect)) {
-                container.removeChild(newBox);
-            } else {
-                newBox.style.zIndex = 0;
-            }
-        }
-    });
+            bounds: container,
+            onDrag: function () {
+                //snap to grid while adding
+                TweenLite.to(newBox, 0.5, {
+                    x: Math.round(this.endX / snap) * snap,
+                    y: Math.round(this.y / snap) * snap,
+                    ease: Back.easeOut.config(2)
+                });
+            },
+            onDragEnd: function () {
+                var boxRect = newBox.getBoundingClientRect();
+                var sidebarRect = sidebar.getBoundingClientRect();
+                containerRect = container.getBoundingClientRect();
 
-    // Wait for 10ms, then dispatch a mousedown event to simulate a drag on the box.
+                //if there is an overlap with the sidebar or the containers children then the element will be removed
+                if (isOverElement(boxRect, sidebarRect)) {
+                    container.removeChild(newBox);
+                } else if (isOverlapping(newBox, container)) {
+                    container.removeChild(newBox);
+                    displayAlert("Cannot place an element over an existing element.");
+                } else {
+                    newBox.style.zIndex = 0;
+                }
+            }
+        });
+    //if there is an overlap then removes the box
+    if (isOverlapping(newBox, container)) {
+        container.removeChild(newBox);
+    }
+
     setTimeout(() => {
         var evt = new MouseEvent("mousedown", {
             bubbles: true,
@@ -768,13 +664,12 @@
         newBox.dispatchEvent(evt);
     }, 10);
 
-    let isMouseDown = false; // Track whether mouse is pressed
+    //this method paints the boxes and handles adding and creating new elements
     function paintEmployeeBoxes(event, size, color) {
-        // Create a new div element (employee box)
         var newBox = document.createElement("div");
         newBox.id = new Date().getTime(); // Unique ID based on timestamp
+        container.appendChild(newBox);
 
-        // Style the box according to the dimensions
         newBox.className = "box";
         newBox.style.position = "absolute";
         var boxSize = size.split("x");
@@ -784,29 +679,52 @@
         newBox.style.border = "3px solid black";
         newBox.style.borderRadius = "8px";
 
-        // Get mouse position and apply snapping
         var mouseX = event.clientX;
         var mouseY = event.clientY;
 
-        // Snap calculation adjusted based on container's position
         var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
         var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
 
-        // Prevent the box from going outside the container boundaries
+        //this prevents the box from going outside the container boundaries
         snappedX = Math.max(0, Math.min(snappedX, containerRect.width - newBox.offsetWidth));
         snappedY = Math.max(0, Math.min(snappedY, containerRect.height - newBox.offsetHeight));
 
         newBox.style.left = snappedX + "px";
         newBox.style.top = snappedY + "px";
-
-        // Add the new box to the container (grid)
-        container.appendChild(newBox);
+        var draggable = Draggable.create(newBox, {
+                bounds: container,
+                onDrag: function () {
+                    //this snaps the box to a given distnace
+                    TweenLite.to(newBox, 0.5, {
+                        x: Math.round(this.endX / snap) * snap,
+                        y: Math.round(this.y / snap) * snap,
+                        ease: Back.easeOut.config(2)
+                    });
+                },
+                onDragEnd: function () {
+                    var boxRect = newBox.getBoundingClientRect();
+                    var sidebarRect = sidebar.getBoundingClientRect();
+                    containerRect = container.getBoundingClientRect();
+                    if (isOverElement(boxRect, sidebarRect)) {
+                        container.removeChild(newBox);
+                    } else if (isOverlapping(newBox, container)) {
+                        container.removeChild(newBox);
+                        displayAlert("Cannot place an element over an existing element.");
+                    } else {
+                        newBox.style.zIndex = 0;
+                    }
+                }
+            });
+        //if there is an overlap then it removes the box
+        if (isOverlapping(newBox, container)) {
+            container.removeChild(newBox);
+        }
     }
-    // Listen for mouse down to start painting new boxes
+
+    //this event listener handles the click event
     document.addEventListener("mousedown", function (event) {
         if (isPaintingEnabled) {
-            paintEmployeeBoxes(event, size, color); // Paint the first box
-            // Start painting boxes while dragging
+            paintEmployeeBoxes(event, size, color);
             document.addEventListener("mousemove", function (event) {
                 if (isPaintingEnabled) {
                     paintEmployeeBoxes(event, size, color);
@@ -815,15 +733,32 @@
         }
     });
 
-    // Stop painting when the mouse is released
+    //on the mouse up, set the flag to false to stop painting
     document.addEventListener("mouseup", function () {
         isPaintingEnabled = false;
-        document.removeEventListener("mousemove", paintEmployeeBoxes);
-        document.removeEventListener("mousedown", paintEmployeeBoxes);
     });
 }
 
-// Function to check if the box is over the sidebar
+//this method checks whether or not there is an overlap between the passed element and any child element in the container
+function isOverlapping(draggableRect, containerElement) {
+    var overlapFound = false;
+    var children = containerElement.children;
+    var draggableArea = draggableRect.getBoundingClientRect();
+
+    Array.from(children).forEach(function(child) {
+        if (child.className === "box" && child !== draggableRect) {
+            var area = child.getBoundingClientRect();
+            if (draggableArea.top < area.bottom && draggableArea.bottom > area.top &&
+                draggableArea.left < area.right && draggableArea.right > area.left) {
+                overlapFound = true;
+            }
+        }
+    });
+    return overlapFound;
+}
+
+
+//this function is to check if the box is over the sidebar
 function isOverElement(boxRect, sidebarRect) {
     return (
         boxRect.top < sidebarRect.bottom &&
