@@ -683,7 +683,7 @@
         js function to re-add cells based on new Dimensions 
         updated 3/27 by Luke Wollenweber */
     function UpdateGridDimensions(passedLength, passedWidth) {
-        var positionMap = {}; 
+        var positionMap = {};
 
         Array.from(container.children).forEach(child => {
             if (child.className === "box") {
@@ -692,11 +692,15 @@
                 positionMap[child.id] = { item: child, loc: childRect };
             }
         });
+        var previousDimensions = container.innerHTML;
+        var previousRows = rows;
+        var previousCols = cols;
+
 
         container.innerHTML = '';
 
-        var rows = passedWidth;  
-        var cols = passedLength; 
+        rows = passedWidth;  
+        cols = passedLength; 
 
         container.style.height = (height * rows) + "px";  
         container.style.width = (width * cols) + "px";    
@@ -706,7 +710,7 @@
         container.style.gridTemplateRows = `repeat(${rows}, ${height}px)`; 
 
         for (var i = 0; i < rows * cols; i++) {
-            const gridCell = document.createElement('div');
+            var gridCell = document.createElement('div');
             gridCell.className = "grid-cell";
             container.appendChild(gridCell);
         }
@@ -735,11 +739,30 @@
             }
         });
         if (fixturesRemoved == true) {
-            displayAlert("Please be aware that there area fixtures that are outside of the new grid area and they will be removed.");
+            var confirmUpdate = confirm("Please be aware that there are fixtures that are outside of the new grid area and they will be removed. Do you want to proceed?");
+            if (!confirmUpdate) {
+                Array.from(container.querySelectorAll('.grid-cell')).forEach(cell => cell.remove());
+                container.style.height = (height * previousRows) + "px";  
+                container.style.width = (width * previousCols) + "px";    
+
+                container.setAttribute("style", "display: grid; grid-column-gap: 0px; grid-row-gap: 0px;");
+                container.style.gridTemplateColumns = `repeat(${previousCols}, ${width}px)`; 
+                container.style.gridTemplateRows = `repeat(${previousRows}, ${height}px)`; 
+
+                for (var i = 0; i < previousRows * previousCols; i++) {
+                    var oldCell = document.createElement('div');
+                    oldCell.className = "grid-cell";
+                    container.appendChild(oldCell);
+                }
+                
+                // Re-adding any positioned items from positionMap
+                Object.values(positionMap).forEach(({ item, loc }) => {
+                    container.appendChild(item);
+                });
+            }
         }
     }
-
-
+    
 </script>
 
 @code {
