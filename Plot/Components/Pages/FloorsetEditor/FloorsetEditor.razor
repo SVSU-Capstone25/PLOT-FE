@@ -564,9 +564,6 @@
                 if (isOverElement(boxRect, sidebarRect)) {
                     container.removeChild(newBox);
                 } 
-                else if (!isOverElement(boxRect, containerRect)) {
-                    container.removeChild(newBox);
-                }  
                 else {
                     newBox.style.zIndex = 0;
                 }
