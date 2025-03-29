@@ -142,11 +142,11 @@
                     <label>Dimensions</label>
                     <div class="horizantal-inputs">
                         <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
-                            ValueChanged="@(str => NumberChanged(str, value => width = value))" />
+                            value="@width.ToString()" ValueChanged="@(str => NumberChanged(str, value => width = value))" />
                         @* The X to separate the two inputs *@
-                        <span class="dimension-separator">X</span>
+                        <span class="dimension-separator" @onclick="ToggleDimensionSwap" style="cursor: pointer;">X</span>
                         <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
-                            ValueChanged="@(str => NumberChanged(str, value => length = value))" />
+                            value="@length.ToString()" ValueChanged="@(str => NumberChanged(str, value => length = value))" />
                     </div>
                     <label>Enter the Dimensions (length and width) in feet</label>
 
@@ -1197,8 +1197,26 @@ function isOverElement(boxRect, sidebarRect) {
         allocationsOpen = !allocationsOpen;
     }
 
-    private double width;
-    private double length;
+    private double width { get; set; }
+    private double length { get; set; }
+
+    /* This function will be initialized when the 'X' is selected */
+    /* For either the Building Walls, or Fixture Sizing */
+    /* Zach Ventimiglia */
+    private async void ToggleDimensionSwap()
+    {
+        // ModalLength/ModalWidth are the dimensions for fixtures
+        if(!ModalLength.Equals(string.Empty) && !ModalWidth.Equals(string.Empty))
+        {
+            (ModalLength, ModalWidth) = (ModalWidth, ModalLength);
+        }
+        else{
+            (width, length) = (length, width); // Swaps width and length of the building
+        }
+        
+        // Forces UI Update
+        await InvokeAsync(StateHasChanged);
+    }
 
     /* This function is called when the number is changed */
     private async Task NumberChanged(string strNumber, Action<double> setValue)
