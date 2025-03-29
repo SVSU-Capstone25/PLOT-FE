@@ -26,28 +26,25 @@ Updated: Luke Wollenweber (3/22/2025)-->
                 Users <i class="fa-solid fa-shirt"></i>
             </a>
         </div>
-        <div class="nav-item px-3">
-            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#helpModal" @onclick="RemoveBackground">
-                Help <i class="fa-solid fa-question"></i>
-            </a>
-        </div>
+        @* Danielle Smith - 3/29/2025
+        Make it so help modal only shows on the floorset editor *@
+        @if (Navigation.Uri.Contains("/floorset-editor"))
+        {
+            <div class="nav-item px-3">
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#helpModal">
+                    Help <i class="fa-solid fa-question"></i>
+                </a>
+            </div>
+        }
+        @* Danielle Smith - 3/29/2025
+        Make it so logout goes back to login *@
         <div class="nav-item px-3 ml-auto">
-            <a class="nav-link" href="/logout" >
+            <a class="nav-link" href="/login" >
                 Logout 
             </a>
         </div>
     </nav>
 </div>
-
-<Modal Title="Help Page" Id="helpModal" Class="modal-dialog">
-    <BodyContent>
-        <h4>HELP</h4>
-        <p>loreum ipsum</p>
-    </BodyContent>
-
-    <FooterContent>
-    </FooterContent>
-</Modal>
 
 <script>
     function hideBackground() 
