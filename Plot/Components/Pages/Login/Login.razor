@@ -4,6 +4,7 @@
 @using System.Net.Http.Headers
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject CustomAuthStateProvider CustomAuthStateProvider
 
 
 <PageTitle>Login</PageTitle>
@@ -52,6 +53,8 @@
         // a http request to the backend login endpoint. Js is used because using a normal http client
         // was not seting cookies in the browser.
         var result = await JSRuntime.InvokeAsync<bool>("loginUser", loginAPIUri, email, password);
+            
+        CustomAuthStateProvider.LoginAsync();
          
         // True if user Authentication is good
         if (result)
