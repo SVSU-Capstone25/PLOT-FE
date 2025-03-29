@@ -104,7 +104,7 @@
                     {
 
                         <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name"
-                        @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width))" draggable="true"
+                        @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width, "green"))" draggable="true"
                         @ondragstart:preventDefault="true">
                             <div class="drag-start-area d-flex flex-row">
                                 <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="">
@@ -136,34 +136,35 @@
         @if (buildingWallsExpanded)
         {
             <div class="expanded">
-                <h3 class="header pt-3" @onclick="ToggleBuildingWalls">
-                    <i class="fas fa-edit"></i> Edit Building Walls
-                </h3>
-                <hr style="opacity:1">
-                <label>Dimensions</label>
-                <div class="horizantal-inputs">
-                    <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
-                        value="@width.ToString()" ValueChanged="@(str => NumberChanged(str, value => width = value))" />
-                    @* The X to separate the two inputs *@
-                    @* Making X clickable to swap dimensions (Width -> Length; Length -> Width) -- Zach Ventimiglia *@
-                    <span class="dimension-separator" @onclick="ToggleDimensionSwap" style="cursor: pointer;">X</span>
-                    <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
-                        value="@length.ToString()" ValueChanged="@(str => NumberChanged(str, value => length = value))" />
-                </div>
-                <label>Enter the Dimensions (width and length) in feet</label>
+                <div class="walls-container">
+                    <h3 style="font-weight: bold;" @onclick="ToggleBuildingWalls"><i class="fas fa-edit"></i> Edit Building Walls</h3>
+                    <hr style="opacity: 1.0; color:black;">
+                    <label>Dimensions</label>
+                    <div class="horizantal-inputs">
+                        <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
+                            ValueChanged="@(str => NumberChanged(str, value => width = value))" />
+                        @* The X to separate the two inputs *@
+                        <span class="dimension-separator">X</span>
+                        <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
+                            ValueChanged="@(str => NumberChanged(str, value => length = value))" />
+                    </div>
+                    <label>Enter the Dimensions (length and width) in feet</label>
 
-                @* uncomment the below when testing draggable*@
-                @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
-                @ondragstart:preventDefault="true"> *@
-                <div class="drag-start-area d-flex flex-row my-3">
-                    <div class="fixture-img disable-select grab-cursor"></div>
-                    <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                    <div class="fixture-area p-3 mt-3 d-flex mb-2">
+                        <div class="fixture mb-3 d-flex flex-row"
+                            @ondragstart="@((e) => OnDragStartEmployee(e, "1x1", "red"))" draggable="true"
+                            @ondragstart:preventDefault="true">
+                            <div class="drag-start-area d-flex flex-row">
+                                <div class="emp-only"></div>
+                                <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                            </div>
+                        </div>
+                    </div>
+                    <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+                        Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
+                        Apply
+                    </Button>
                 </div>
-                @* </div> *@
-                <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
-                    Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
-                    Apply
-                </Button>
             </div>
         }
         else
@@ -495,13 +496,13 @@
     var snap = 50;
 
     // Set the styles of the container based on the given dimensions
-    container.style.height = (width * rows) + "px";
-    container.style.width = (width * rows) + "px";
+    container.style.height = (height * rows) + "px";
+    container.style.width = (width * cols) + "px";
 
     // Set the grid area with a grid layout, and fill it with divs
     container.setAttribute("style","display: grid; grid-column-gap: 0px;grid-row-gap: 0px;");
     container.style.gridTemplateColumns = `repeat(${cols},${width}px)`;
-    container.style.gridTemplateRows = `repeat(${rows},${width}px)`;
+    container.style.gridTemplateRows = `repeat(${rows},${height}px)`;
 
     for (var i = 0; i < rows * cols; i++) {
         $("<div class=\"grid-cell\"></div>").prependTo(container);
@@ -510,11 +511,12 @@
     /*
         The createDraggable function creates a draggable fixture to add to the grid.
     */
-    function createDraggable(event, size) {
+    function createDraggable(event, size, color) {
 
         // Get references to the sidebar and create a soon-to-be draggable fixture
         var sidebar = document.getElementById("FloorsetSlideOut");
         var newBox = document.createElement("div");
+        newBox.id = new Date().getTime();
 
         // Make the box a child of the container (grid)
         container.appendChild(newBox);
@@ -526,7 +528,7 @@
         newBox.style.height = boxSize[0] * height + "px";
         newBox.style.width = boxSize[1] * width + "px";
 
-        newBox.style.background = "transparent";
+        newBox.style.background = color;
         newBox.style.border = "3px solid black";
         newBox.style.borderRadius = "8px";
 
@@ -546,24 +548,32 @@
         // Create the draggable box 
         var draggable = Draggable.create(newBox, {
             bounds: container,
-            onDrag: function () {
+            onDrag: function () 
+            {
+
                 // Using TweenLite, snap the box to a given snap distance,
                 // and make the animation smooth
                 TweenLite.to(newBox, 0.5, {
-                x: Math.round(this.endX / snap) * snap,
-                y: Math.round(this.y / snap) * snap,
-                ease: Back.easeOut.config(2)
-            });
-
+                    x: Math.round(this.endX / snap) * snap,
+                    y: Math.round(this.y / snap) * snap,
+                    ease: Back.easeOut.config(2)
+                });
             },
             onDragEnd: function () {
                 // If the box is over the sidebar when dropped, remove it from view,
                 // otherwise set the z-index low so it is under the sidebar.
                 var boxRect = newBox.getBoundingClientRect();
                 var sidebarRect = sidebar.getBoundingClientRect();
+                containerRect = container.getBoundingClientRect();
                 if (isOverElement(boxRect, sidebarRect)) {
                     container.removeChild(newBox);
-                } else {
+                } 
+                else if (isOverlapping(newBox, container))
+                {
+                    container.removeChild(newBox);
+                    displayAlert("Cannot place an element over an existing element.");
+                } 
+                else {
                     newBox.style.zIndex = 0;
                 }
 
@@ -580,18 +590,188 @@
             newBox.dispatchEvent(evt);
         }, 10);
     } 
+    //this boolean controls painting so that once the user is done, it prevents "painting" from happening unless 
+    //they make a new div from the sidebar
+    var isPaintingEnabled = false;
 
-    /*
-        The isOverElement function checks if an element is over another.
-    */
-    function isOverElement(draggableRect, staticRect) {
-        return (
-            draggableRect.top < staticRect.bottom &&
-            draggableRect.bottom > staticRect.top &&
-            draggableRect.left < staticRect.right &&
-            draggableRect.right > staticRect.left
-        );
+//this function is specific to the employee only area as it uses "painting" for the div it creates
+ function createDraggableEmployee(event, size, color) {
+    //flag set to true
+    isPaintingEnabled = true;
+    var sidebar = document.getElementById("FloorsetSlideOut");
+    var newBox = document.createElement("div");
+    newBox.id = new Date().getTime(); // Unique ID
+    container.appendChild(newBox);
+
+    newBox.className = "box";
+    newBox.style.position = "absolute";
+    var boxSize = size.split("x");
+    newBox.style.height = boxSize[0] * height + "px";
+    newBox.style.width = boxSize[1] * width + "px";
+    newBox.style.background = color;
+    newBox.style.border = "3px solid black";
+    newBox.style.borderRadius = "8px";
+
+    //returns the boundaries of the container, set to containerRect variable
+    var containerRect = container.getBoundingClientRect();
+
+    var mouseX = event.clientX;
+    var mouseY = event.clientY;
+    var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
+    var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
+
+    //this prevents the box from going outside the container boundaries
+    snappedX = Math.max(0, Math.min(snappedX, containerRect.width - newBox.offsetWidth));
+    snappedY = Math.max(0, Math.min(snappedY, containerRect.height - newBox.offsetHeight));
+
+    newBox.style.left = snappedX + "px";
+    newBox.style.top = snappedY + "px";
+    var draggable = Draggable.create(newBox, {
+            bounds: container,
+            onDrag: function () {
+                //snap to grid while adding
+                TweenLite.to(newBox, 0.5, {
+                    x: Math.round(this.endX / snap) * snap,
+                    y: Math.round(this.y / snap) * snap,
+                    ease: Back.easeOut.config(2)
+                });
+            },
+            onDragEnd: function () {
+                var boxRect = newBox.getBoundingClientRect();
+                var sidebarRect = sidebar.getBoundingClientRect();
+                containerRect = container.getBoundingClientRect();
+
+                //if there is an overlap with the sidebar or the containers children then the element will be removed
+                if (isOverElement(boxRect, sidebarRect)) {
+                    container.removeChild(newBox);
+                } else if (isOverlapping(newBox, container)) {
+                    container.removeChild(newBox);
+                    displayAlert("Cannot place an element over an existing element.");
+                } else {
+                    newBox.style.zIndex = 0;
+                }
+            }
+        });
+    //if there is an overlap then removes the box
+    if (isOverlapping(newBox, container)) {
+        container.removeChild(newBox);
     }
+
+    setTimeout(() => {
+        var evt = new MouseEvent("mousedown", {
+            bubbles: true,
+            cancelable: true,
+            clientX: mouseX,
+            clientY: mouseY
+        });
+        newBox.dispatchEvent(evt);
+    }, 10);
+
+    //this method paints the boxes and handles adding and creating new elements
+    function paintEmployeeBoxes(event, size, color) {
+        var newBox = document.createElement("div");
+        newBox.id = new Date().getTime(); // Unique ID based on timestamp
+        container.appendChild(newBox);
+
+        newBox.className = "box";
+        newBox.style.position = "absolute";
+        var boxSize = size.split("x");
+        newBox.style.height = boxSize[0] * height + "px";
+        newBox.style.width = boxSize[1] * width + "px";
+        newBox.style.background = color;
+        newBox.style.border = "3px solid black";
+        newBox.style.borderRadius = "8px";
+
+        var mouseX = event.clientX;
+        var mouseY = event.clientY;
+
+        var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
+        var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
+
+        //this prevents the box from going outside the container boundaries
+        snappedX = Math.max(0, Math.min(snappedX, containerRect.width - newBox.offsetWidth));
+        snappedY = Math.max(0, Math.min(snappedY, containerRect.height - newBox.offsetHeight));
+
+        newBox.style.left = snappedX + "px";
+        newBox.style.top = snappedY + "px";
+        var draggable = Draggable.create(newBox, {
+                bounds: container,
+                onDrag: function () {
+                    //this snaps the box to a given distnace
+                    TweenLite.to(newBox, 0.5, {
+                        x: Math.round(this.endX / snap) * snap,
+                        y: Math.round(this.y / snap) * snap,
+                        ease: Back.easeOut.config(2)
+                    });
+                },
+                onDragEnd: function () {
+                    var boxRect = newBox.getBoundingClientRect();
+                    var sidebarRect = sidebar.getBoundingClientRect();
+                    containerRect = container.getBoundingClientRect();
+                    if (isOverElement(boxRect, sidebarRect)) {
+                        container.removeChild(newBox);
+                    } else if (isOverlapping(newBox, container)) {
+                        container.removeChild(newBox);
+                        displayAlert("Cannot place an element over an existing element.");
+                    } else {
+                        newBox.style.zIndex = 0;
+                    }
+                }
+            });
+        //if there is an overlap then it removes the box
+        if (isOverlapping(newBox, container)) {
+            container.removeChild(newBox);
+        }
+    }
+
+    //this event listener handles the click event
+    document.addEventListener("mousedown", function (event) {
+        if (isPaintingEnabled) {
+            paintEmployeeBoxes(event, size, color);
+            document.addEventListener("mousemove", function (event) {
+                if (isPaintingEnabled) {
+                    paintEmployeeBoxes(event, size, color);
+                }
+            });
+        }
+    });
+
+    //on the mouse up, set the flag to false to stop painting
+    document.addEventListener("mouseup", function () {
+        isPaintingEnabled = false;
+    });
+}
+
+//this method checks whether or not there is an overlap between the passed element and any child element in the container
+function isOverlapping(draggableRect, containerElement) {
+    var overlapFound = false;
+    var children = containerElement.children;
+    var draggableArea = draggableRect.getBoundingClientRect();
+
+    Array.from(children).forEach(function(child) {
+        if (child.className === "box" && child !== draggableRect) {
+            var area = child.getBoundingClientRect();
+            if (draggableArea.top < area.bottom && draggableArea.bottom > area.top &&
+                draggableArea.left < area.right && draggableArea.right > area.left) {
+                overlapFound = true;
+            }
+        }
+    });
+    return overlapFound;
+}
+
+
+//this function is to check if the box is over the sidebar
+function isOverElement(boxRect, sidebarRect) {
+    return (
+        boxRect.top < sidebarRect.bottom &&
+        boxRect.bottom > sidebarRect.top &&
+        boxRect.left < sidebarRect.right &&
+        boxRect.right > sidebarRect.left
+    );
+}
+
+
 
     /*
         The flipOrder function changes the flex column direction when the button is selected.
@@ -668,7 +848,7 @@
     /*
         The alertUser function sends an alert to the user with a given message.
     */
-    function alertUser(msg) {
+    function displayAlert(msg) {
         alert(msg);
     }
 
@@ -676,26 +856,89 @@
 
 
      /* Luke Wollenweber - 3/22/2025
-        js function to re-add cells based on new Dimensions */
-    /* function UpdateGridDimensions(length, width) {
-       
-        const gridContainer = document.getElementById('grid-container');
-    
-        gridContainer.innerHTML = '';
+        js function to re-add cells based on new Dimensions 
+        updated 3/27 by Luke Wollenweber */
+    function UpdateGridDimensions(passedLength, passedWidth) {
+        var positionMap = {};
 
-        gridContainer.style.display = 'grid';
-        gridContainer.style.gridTemplateColumns = `repeat(${width}, 1fr)`; 
-        gridContainer.style.gridTemplateRows = `repeat(${length}, 1fr)`;
-        for (let i = 0; i < width; i++) {
-            for (let j = 0; j < length; j++) {
-                const cell = document.createElement('div');
-                cell.classList.add('grid-cell');
-                cell.id = `cell-${i}-${j}`;
+        Array.from(container.children).forEach(child => {
+            if (child.className === "box") {
+                var childRect = child.getBoundingClientRect();
 
-                gridContainer.appendChild(cell);
+                positionMap[child.id] = { item: child, loc: childRect };
+            }
+        });
+        var previousDimensions = container.innerHTML;
+        var previousRows = rows;
+        var previousCols = cols;
+
+
+        container.innerHTML = '';
+
+        rows = passedWidth;  
+        cols = passedLength; 
+
+        container.style.height = (height * rows) + "px";  
+        container.style.width = (width * cols) + "px";    
+
+        container.setAttribute("style", "display: grid; grid-column-gap: 0px; grid-row-gap: 0px;");
+        container.style.gridTemplateColumns = `repeat(${cols}, ${width}px)`; 
+        container.style.gridTemplateRows = `repeat(${rows}, ${height}px)`; 
+
+        for (var i = 0; i < rows * cols; i++) {
+            var gridCell = document.createElement('div');
+            gridCell.className = "grid-cell";
+            container.appendChild(gridCell);
+        }
+
+        var containerDimensions = container.getBoundingClientRect();
+        var fixturesRemoved = false;
+
+        Object.values(positionMap).forEach(({ item, loc }) => {
+            if (loc.top >= containerDimensions.bottom || loc.bottom > containerDimensions.bottom + 1)
+            {
+                fixturesRemoved = true;
+            }
+            else if (loc.bottom <= containerDimensions.top || loc.top < containerDimensions.top)
+            {
+                fixturesRemoved = true;
+            }
+            else if (loc.right > containerDimensions.right || loc.left >= containerDimensions.right)
+            {
+                fixturesRemoved = true;            }
+            else if (loc.right <= containerDimensions.left || loc.left < containerDimensions.left)
+            {
+                fixturesRemoved = true;
+            }
+            else {
+                container.appendChild(item);
+            }
+        });
+        if (fixturesRemoved == true) {
+            var confirmUpdate = confirm("Please be aware that there are fixtures that are outside of the new grid area and they will be removed. Do you want to proceed?");
+            if (!confirmUpdate) {
+                Array.from(container.querySelectorAll('.grid-cell')).forEach(cell => cell.remove());
+                container.style.height = (height * previousRows) + "px";  
+                container.style.width = (width * previousCols) + "px";    
+
+                container.setAttribute("style", "display: grid; grid-column-gap: 0px; grid-row-gap: 0px;");
+                container.style.gridTemplateColumns = `repeat(${previousCols}, ${width}px)`; 
+                container.style.gridTemplateRows = `repeat(${previousRows}, ${height}px)`; 
+
+                for (var i = 0; i < previousRows * previousCols; i++) {
+                    var oldCell = document.createElement('div');
+                    oldCell.className = "grid-cell";
+                    container.appendChild(oldCell);
+                }
+                
+                // Re-adding any positioned items from positionMap
+                Object.values(positionMap).forEach(({ item, loc }) => {
+                    container.appendChild(item);
+                });
             }
         }
-    } */
+    }
+    
 </script>
 
 @code {
@@ -824,13 +1067,13 @@
                 ClearTempFixtureData();
             } else {
                 // If not, tell the user to fill out all fields.
-                await JS.InvokeVoidAsync("alertUser","Please fill out all fields.");
+                await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
             }
             
         } catch (ArgumentException)
         {
             // If the name matches an existing fixture, tell the user to choose another name.
-            await JS.InvokeVoidAsync("alertUser",
+            await JS.InvokeVoidAsync("displayAlert",
                 "A fixture with that name has already been used.  Please choose another name.");
         }
 
@@ -850,7 +1093,7 @@
             fixtures.Add(newFixture.Name,newFixture);
         } else {
             // If not, tell the user to fill out all fields.
-            await JS.InvokeVoidAsync("alertUser","Please fill out all fields.");
+            await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
         }        
 
     }
@@ -880,9 +1123,14 @@
     /*
         The OnDragStart function calls a JS function to create a draggable fixture.
     */
-    private async Task OnDragStart(DragEventArgs e, string size)
+    private async Task OnDragStart(DragEventArgs e, string size, string color)
     {
-        await JS.InvokeVoidAsync("createDraggable", e, size);
+        await JS.InvokeVoidAsync("createDraggable", e, size, color);
+    }
+
+    private async Task OnDragStartEmployee(DragEventArgs e, string size, string color)
+    {
+        await JS.InvokeVoidAsync("createDraggableEmployee", e, size, color);
     }
 
     /*
@@ -949,41 +1197,28 @@
         allocationsOpen = !allocationsOpen;
     }
 
-    private double width { get; set; }
-    private double length { get; set; }
-
-    /* This function will be initialized when the 'X' is selected */
-    /* For either the Building Walls, or Fixture Sizing */
-    /* Zach Ventimiglia */
-    private async void ToggleDimensionSwap()
-    {
-        // ModalLength/ModalWidth are the dimensions for fixtures
-        if(!ModalLength.Equals(string.Empty) && !ModalWidth.Equals(string.Empty))
-        {
-            (ModalLength, ModalWidth) = (ModalWidth, ModalLength);
-        }
-        else{
-            (width, length) = (length, width); // Swaps width and length of the building
-        }
-        
-        // Forces UI Update
-        await InvokeAsync(StateHasChanged);
-    }
+    private double width;
+    private double length;
 
     /* This function is called when the number is changed */
     private async Task NumberChanged(string strNumber, Action<double> setValue)
     {
-        // String will be either a positive number or ""
         Double.TryParse(strNumber, out double newNumber);
 
-        // Directly modify the referenced variable
-        setValue(newNumber); // Number will be 0 if string is ""
+        setValue(newNumber);
 
         await InvokeAsync(StateHasChanged);
     }
-
+    //this method is called when teh apply button in the edit floor layout panel is clicked
     private async Task ApplyDimensions()
     {
+        //if either length and width are null
+        if (length <= 0 || width <= 0)
+        {
+            //alerts the user that the data entered is invalid
+            await JS.InvokeVoidAsync("alert", "Please enter valid dimensions greater than 0.");
+            return;
+        }
         await JS.InvokeVoidAsync("UpdateGridDimensions", length, width);
     }
 
