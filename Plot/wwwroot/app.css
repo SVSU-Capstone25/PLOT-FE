@@ -1,8 +1,10 @@
-html, body {
+html,
+body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-a, .btn-link {
+a,
+.btn-link {
     color: #006bb7;
 }
 
@@ -12,8 +14,12 @@ a, .btn-link {
     border-color: #1861ac;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -42,20 +48,22 @@ h1:focus {
     color: white;
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred."
-    }
+.blazor-error-boundary::after {
+    content: "An error has occurred."
+}
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+.form-floating>.form-control-plaintext::placeholder,
+.form-floating>.form-control::placeholder {
     color: var(--bs-secondary-color);
     text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+.form-floating>.form-control-plaintext:focus::placeholder,
+.form-floating>.form-control:focus::placeholder {
     text-align: start;
 }
 
@@ -65,15 +73,18 @@ h1:focus {
     easier to debug and adjust styles. */
 
 /* Take up available space for TextInputs */
-#FirstNameAdd, #FirstNameEdit {
-   flex: 1;
-}
-
-#LastNameAdd, #LastNameEdit {
+#FirstNameAdd,
+#FirstNameEdit {
     flex: 1;
 }
 
-#EmailAdd, #EmailEdit {
+#LastNameAdd,
+#LastNameEdit {
+    flex: 1;
+}
+
+#EmailAdd,
+#EmailEdit {
     flex: 1;
 }
 
@@ -86,8 +97,8 @@ h1:focus {
 }
 
 /*  Classes of divs holding TextInput or OptionInput in
-    Users Dashboard
-*/
+     Users Dashboard
+ */
 .holds-first-name {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
@@ -100,40 +111,42 @@ h1:focus {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
 
-#RoleAdd, #RoleEdit {
+#RoleAdd,
+#RoleEdit {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
 
-#StoreAdd, #StoreEdit {
+#StoreAdd,
+#StoreEdit {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
 
 /*  Handling labels within components 
-    Note: TextInput uses the label
-    element and OptionInput uses h5
-    with a p element inside it*/
+     Note: TextInput uses the label
+     element and OptionInput uses h5
+     with a p element inside it*/
 .holds-last-name label {
     margin-right: calc(12/16 * 1rem) !important;
 }
 
 .holds-email label {
-    margin-right:calc(50/16 * 1rem) !important;
+    margin-right: calc(50/16 * 1rem) !important;
 }
 
 /* Handles select boxes in OptionInput component */
 #AddUserModal .OptionInput select,
 #EditUserModal .OptionInput select {
-    margin:0px;
-    padding:0px;
+    margin: 0px;
+    padding: 0px;
     border: 1px solid lightgray !important;
-    opacity:100% !important;
+    opacity: 100% !important;
 }
 
 /* Role div containing select */
 #AddUserModal #RoleAdd div,
 #EditUserModal #RoleEdit div {
-    margin-right:calc(14/16 * 1rem);
-    flex:1;
+    margin-right: calc(14/16 * 1rem);
+    flex: 1;
 }
 
 #AddUserModal #RoleAdd select,
@@ -148,43 +161,85 @@ h1:focus {
 
 #AddUserModal .OptionInput div,
 #EditUserModal .OptionInput div {
-    width:100%;
+    width: 100%;
 }
 
-#AddUserModal #RoleAdd h5, #EditUserModal #RoleEdit h5 {
+#AddUserModal #RoleAdd h5,
+#EditUserModal #RoleEdit h5 {
     margin-right: calc(57/16 * 1rem);
 }
 
-#AddUserModal #StoreAdd h5, #EditUserModal #StoreEdit h5 {
+#AddUserModal #StoreAdd h5,
+#EditUserModal #StoreEdit h5 {
     margin-right: calc(52/16 * 1rem);
 }
 
 /* Store div contains select */
-#AddUserModal #StoreAdd div, #EditUserModal #StoreEdit div {
+#AddUserModal #StoreAdd div,
+#EditUserModal #StoreEdit div {
     margin-right: calc(10/16 * 1rem);
-    flex:1;
+    flex: 1;
 }
 
 /* Div that contains select box */
 #AddUserModal .OptionInput div,
 #EditUserModal .OptionInput div {
-    padding-right:0px;
-    margin-right:0px;
-    width:100%;
+    padding-right: 0px;
+    margin-right: 0px;
+    width: 100%;
 }
 
 /*  Consistent font between labels
-    for text box and select elements */
+     for text box and select elements */
 #AddUserModal .text-input-container label,
 #AddUserModal .OptionInput h5,
 #EditUserModal .text-input-container label,
 #EditUserModal .OptionInput h5 {
-  font-size: 1rem;
-  font-weight: bold;
+    font-size: 1rem;
+    font-weight: bold;
 }
 
 #AddUserModal .modal-body,
 #EditUserModal .modal-body {
     /* Pad modal body to footer */
     padding-bottom: calc(330/16 * 1rem);
+}
+
+
+
+
+/* Written by: Andrew Fulton */
+/* Used in the store-dashboard page */
+/* CSS used for showing employees in modals */
+.circle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* CSS used to actually create the circle for each employee */
+.circle {
+    width: 40px;
+    height: 40px;
+    /* Make the div a circle */
+    border-radius: 50%;
+    background-color: #d8d8d8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* font color and size */
+    color: black;
+    font-size: 18px;
+}
+
+/* CSS for name under circle */
+.circle-name {
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+/* CSS for smaller textInput Boxes */
+.small-textInput {
+    width: 100px;
 }
