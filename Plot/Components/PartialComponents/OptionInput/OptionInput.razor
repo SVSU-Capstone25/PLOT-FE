@@ -25,7 +25,7 @@ to specified method.
         {
             @((MarkupString)_blankIcon)
         } @* "(e) => OnSelectFunction.InvokeAsync(e.Value?.ToString())" *@
-        <select class="col-md-11" @onchange="OnSelectFunc">
+        <select class="col-md-11" @onchange="OnSelectFunc" multiple="@Multiple">
             @for (var i = 0; i < optionsValues.Count; i++)
             {
                 <option value=@optionsValues[i]>@optionsText[i]</option>
@@ -67,6 +67,14 @@ to specified method.
     // Specifies method ran when selecting an option
     public EventCallback<string> OnSelectFunction {get; set;}
 
+    [Parameter]
+    // Allow empty boolean
+    public bool AllowEmpty {get; set;} = false;
+
+    [Parameter]
+    // Is this Multiple?
+    public bool Multiple {get; set;} = false;
+
     //Validate that the option list has valid arguments: more than 0 entries, and matching number of display and value entries.
     protected override async Task OnParametersSetAsync(){
         await base.OnParametersSetAsync();
@@ -79,7 +87,7 @@ to specified method.
         {
             throw new ArgumentNullException("Options text list was not initialized: Did you add entries?");
         }
-        if(optionsValues.Count == 0 || optionsText.Count == 0)
+        if( (optionsValues.Count == 0 || optionsText.Count == 0) & !AllowEmpty)
         {
             throw new ArgumentException(String.Format("Cannot have zero entries in values (length {0}) or text (length {1}) lists.",optionsValues.Count, optionsText.Count));
         }
