@@ -255,6 +255,7 @@
 .fixture-area {
     flex-direction: column;
     max-height: 30vh;
+    overflow: hidden; 
 }
 
 .fixture:hover {
