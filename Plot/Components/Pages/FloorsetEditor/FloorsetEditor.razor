@@ -647,7 +647,6 @@
                     container.removeChild(newBox);
                 } else if (isOverlapping(newBox, container)) {
                     container.removeChild(newBox);
-                    displayAlert("Cannot place an element over an existing element.");
                 } else {
                     newBox.style.zIndex = 0;
                 }
@@ -713,7 +712,6 @@
                         container.removeChild(newBox);
                     } else if (isOverlapping(newBox, container)) {
                         container.removeChild(newBox);
-                        displayAlert("Cannot place an element over an existing element.");
                     } else {
                         newBox.style.zIndex = 0;
                     }
