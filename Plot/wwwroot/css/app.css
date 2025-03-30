@@ -1,4 +1,5 @@
-a, .btn-link {
+a,
+.btn-link {
     color: #006bb7;
 }
 
@@ -8,8 +9,12 @@ a, .btn-link {
     border-color: #1861ac;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -46,12 +51,14 @@ h1:focus {
     border-color: #929292;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+.form-floating>.form-control-plaintext::placeholder,
+.form-floating>.form-control::placeholder {
     color: var(--bs-secondary-color);
     text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+.form-floating>.form-control-plaintext:focus::placeholder,
+.form-floating>.form-control:focus::placeholder {
     text-align: start;
 }
 
@@ -105,7 +112,7 @@ h1:focus {
 }
 
 .user-info-modal .holds-email label {
-    margin-right:calc(50/16 * 1rem) !important;
+    margin-right: calc(50/16 * 1rem) !important;
 }
 
 .user-info-modal .holds-last-name label {
@@ -113,13 +120,13 @@ h1:focus {
 }
 
 /* Handles select boxes in OptionInput component */
-.user-info-modal .OptionInput select{
-    margin:0px;
-    padding:0px;
+.user-info-modal .OptionInput select {
+    margin: 0px;
+    padding: 0px;
     border: 1px solid lightgray !important;
-    opacity:100% !important;
+    opacity: 100% !important;
 
-    flex:1;
+    flex: 1;
     box-sizing: border-box;
 }
 
@@ -133,35 +140,35 @@ h1:focus {
 
 /* Store div contains select */
 
-.user-info-modal .user-option-role div{
-    display:flex;
-    flex:1;
+.user-info-modal .user-option-role div {
+    display: flex;
+    flex: 1;
 }
 
-.user-info-modal .user-option-store div{
-    flex:1;
+.user-info-modal .user-option-store div {
+    flex: 1;
 }
 
 /* Div that contains select box */
 
 .user-info-modal .OptionInput div,
 .user-info-modal .OptionInput select {
-    box-sizing:border-box;
-    padding-right:0px;
-    margin-right:0px;
-    width:100% !important;
+    box-sizing: border-box;
+    padding-right: 0px;
+    margin-right: 0px;
+    width: 100% !important;
 }
 
 /*  Consistent font between labels
     for text box and select elements */
 .user-info-modal .text-input-container label,
 .user-info-modal .OptionInput h5 {
-  font-size: 1rem;
-  font-weight: bold;
+    font-size: 1rem;
+    font-weight: bold;
 }
 
 
-.user-info-modal  .modal-body {
+.user-info-modal .modal-body {
     /* Pad modal body to footer */
     padding-bottom: calc(330/16 * 1rem);
 }
