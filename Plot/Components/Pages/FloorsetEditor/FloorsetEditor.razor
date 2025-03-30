@@ -9,69 +9,100 @@
     The purpose of PLOT is to allow users to easily create, manage,
     and allocate floorsets for Plato's Closet.
 
-    Author: Andrew Kennedy (3/19/2025)
+    Authors: 
+    - Andrew Kennedy (Add fixture & fixture grid) (3/19/2025)
+    - Tristan Calay (Print) (3/17/2025)
+    - Andrew Miller (Import)
+    - Luke Wollenweber (Edit Building Walls) (3/22/2025)
 *@
 
+@rendermode InteractiveServer
+@inject IJSRuntime JS
 @page "/floorset-editor"
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
-@rendermode InteractiveServer
-@inject IJSRuntime JS
-
-@* 
-https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js
-https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js
-https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
- *@
+@using Plot.Components.PartialComponents.OptionInput
+@using Plot.Components.PartialComponents.TextInput
+@using Plot.Components.PartialComponents.Modal
+@using Plot.Components.PartialComponents.FileInput
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script>
 
-
-<!-- Grid Area -->
-<div id="container">
-</div>
+@* Grid Area *@
+<div id="container"></div>
 
 
-<!-- Sidebar -->
+@* Sidebar *@
 <SlideOut Id="FloorsetSlideOut">
-    <!-- Header -->
-    <div class="sidebar-header p-3">
-        <div class="d-flex align-items-center justify-content-between">
-            <h5 class="mb-0"> Add Fixture </h5>
+    @if (allocationsOpen)
+    {
+        <AllocationsSidebar />
 
+        <div class="toolbar-buttons">
+            @*Edit Fixture Button *@
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="editFixture"
+                TextAlignment="center" />
+
+            @*Paint Category Button *@
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="paintCategory"
+                TextAlignment="center" />
+
+            @*Erase Category Button *@
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategory"
+                TextAlignment="center" />
+
+
+            @*View Fullfillment Button *@
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eye" OnClickFunction="viewFulfillment"
+                TextAlignment="center" />
+
+            @*Edit Layout Button *@
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-wrench" OnClickFunction="editLayout"
+                TextAlignment="center" />
         </div>
-    </div>
-
-    <!-- Search Bar -->
-    <div class="p-3 mb-2 border-bottom">
-        <div class="d-flex align-items-center m-2">
-            <div class="w-100 search-text">
-                <TextInput class="form-control p-2 " Id="search" Label="" Type="search" placeholder="Search" />
-            </div>
-            <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
-
-        </div>
-        <div class="align-items-center mt-3 d-flex">
-            <Button class="btn add-fixture btn-lg w-100" Variant="primary" OnClickFunction=@(async (e) => {
-                    
-                    await JS.InvokeVoidAsync("toggleModal","addFixture",true);
-
-                })>
-                <i class="fa-solid fa-plus" style="margin-right: .5rem;" ></i>
-                Add Fixture
-            </Button>
-        </div>
-
-    </div>
-
-
-    <!-- Fixture Area -->
-    <div class="fixture-area p-3 mt-3 d-flex mb-2">
-        @* Create fixture tile for each fixture in dictionary *@
-        @foreach (Fixture currFixture in fixtures.Values)
+    }
+    else
+    {
+        @if (addFixtureExpanded)
         {
+            
+            <div class="expanded">
+                @* Header *@
+                <div class="sidebar-header p-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0"> Add Fixture </h5>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="p-3 mb-2 border-bottom">
+                    <div class="d-flex align-items-center m-2">
+                        <div class="w-100 search-text">
+                            <TextInput class="form-control p-2 " Id="search" Label="" Type="search" placeholder="Search" />
+                        </div>
+                        <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
+
+                    </div>
+                    <div class="align-items-center mt-3 d-flex">
+                        <Button class="btn add-fixture btn-lg w-100" Variant="primary" OnClickFunction=@(async (e) => {
+                                
+                                await JS.InvokeVoidAsync("toggleModal","addFixture",true);
+
+                            })>
+                            <i class="fa-solid fa-plus" style="margin-right: .5rem;" ></i>
+                            Add Fixture
+                        </Button>
+                    </div>
+                </div>
+
+
+                @* Fixture Area *@
+                <div class="fixture-area p-3 mt-3 d-flex mb-2">
+                    @* Create fixture tile for each fixture in dictionary *@
+                    @foreach (Fixture currFixture in fixtures.Values)
+                    {
 
             <div class="fixture mb-3 " data-value="@currFixture.Name"
             @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width))" draggable="true"
@@ -85,25 +116,148 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                     string id = currFixture.Name.Replace(" ", "");
                     List<string> links = new List<string> { "#editFixture-" + id, "#deleteFixture-" + id };
 
-                }
-                <Dropdown DropdownLinks="@links" DropdownIcons="@icons" DropdownText="@texts"
-                class="fixture-options ms-auto disable-select" id="@("fixture-options" + currFixture.Name)"
-                LabelText="Fixture">
-                </Dropdown>
+                            }
+                            <Dropdown DropdownLinks="@links" DropdownIcons="@icons" DropdownText="@texts"
+                            class="fixture-options ms-auto disable-select" id="@("fixture-options" + currFixture.Name)"
+                            LabelText="Fixture">
+                            </Dropdown>
+                        </div>
+                    }
+                </div>
             </div>
-
-
-
+        }
+        else 
+        {
+            <Button Class="Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
+                OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+                Add Fixture
+            </Button>
         }
 
-    </div>
+        @if (buildingWallsExpanded)
+        {
+            <div class="expanded">
+                <h3 class="header pt-3" @onclick="ToggleBuildingWalls">
+                    <i class="fas fa-edit"></i> Edit Building Walls
+                </h3>
+                <hr style="opacity:1">
+                <label>Dimensions</label>
+                <div class="horizantal-inputs">
+                    <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description=""
+                        ValueChanged="@(str => NumberChanged(str, value => width = value))" />
+                    @* The X to separate the two inputs *@
+                    <span class="dimension-separator">X</span>
+                    <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
+                        ValueChanged="@(str => NumberChanged(str, value => length = value))" />
+                </div>
+                <label>Enter the Dimensions (width and length) in feet</label>
 
+                @* uncomment the below when testing draggable*@
+                @* <div id="container" class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStart(e))" draggable="true"
+                @ondragstart:preventDefault="true"> *@
+                <div class="drag-start-area d-flex flex-row my-3">
+                    <div class="fixture-img disable-select grab-cursor"></div>
+                    <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+                </div>
+                @* </div> *@
+                <Button Class="Apply button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+                    Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
+                    Apply
+                </Button>
+            </div>
+        }
+        else
+        {
+            <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
+                OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+                Edit Building Walls
+            </Button>
+        }
+
+        <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="ToggleAllocations"
+            Icon="fa-solid fa-eye" IsDisabled=false TextAlignment="center">
+            View Allocations
+        </Button>
+
+        <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="OpenImportModal"
+            Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
+            Import Excel File
+        </Button>
+
+        <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
+            OnClickFunction="openPrint">
+            Print Layout
+        </Button>
+
+        <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
+            Save
+        </Button>
+    }
 </SlideOut>
+
+@*Import Excel File Modal Andrew Miller *@
+<Modal Title="Import Excel File" Id="importExcelModal" Class="modal-dialog">
+
+    @*Body content includes file to upload*@
+    <BodyContent>
+        <p>Import an Excel File</p>
+        <FileInput Id="ImportFile" OnFileSelected="HandleFileSelected"></FileInput>
+    </BodyContent>
+
+    <FooterContent>
+        @*To fix: Cancel button is included in PartialComponents/Modal/Modal.razor
+         but appropriate alignment still needs to be handled 
+         *@
+
+        @*Import button
+        Replace HandleExcelFile with the name of the function used in final FloorsetEditor file to allocate data
+
+        To fix: File persists when cancel button is pressed.
+        *@
+        <Button Class="Button" Id="buttonConfirmImport" Variant="primary" OnClickFunction="HandleExcelFile"
+            IsDisabled=false TextAlignment="center">
+            Import
+        </Button>
+    </FooterContent>
+</Modal>
+
+@*Print Modal *@
+@*Tristan Calay *@
+<Modal Title="Print Layout" Id="printModal" Class="modal-dialog">
+    <BodyContent>
+        <h6 style="opacity: 0.5;">Select print options for how you would like your printed document to be formatted.
+        </h6>
+        <img class="w-100" src="/img/printpreviewexample.png">
+
+        @* Danielle Smith - 3/17/2025
+        changed to use bootstrap classes and added some margin *@
+        <div class="row">
+            <div class="col-md-6">
+                <OptionInput ID="printerInput" Class="optionInput my-3" label="Select a Printer"
+                    optionsText="@(new List<String> { "Printer 1", "Printer 2" })"
+                    optionsValues="@(new List<String> { "Printer 1", "Printer 2" })" />
+            </div>
+
+            <div class="col-md-6">
+                <OptionInput ID="pageInput" Class="optionInput my-3" label="Page Size"
+                    optionsText="@(new List<String> { "8.5x11", "A4" })"
+                    optionsValues="@(new List<String> { "standard", "a4" })" />
+            </div>
+        </div>
+
+        <Checkbox id="checkWithAllocations" Text="With Allocations" />
+        <Checkbox id="checkWithNotes" Text="With Notes" />
+    </BodyContent>
+
+    <FooterContent>
+        <Button Variant="primary" isDisabled="false" OnClickFunction="printLayout">
+            Print
+        </Button>
+    </FooterContent>
+</Modal>
 
 @* Add Fixture Modal *@
 @{    
-
-
     <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture">
         <BodyContent>
             <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@ModalName" ValueChanged="@((v)=> ModalName = v)"/>
@@ -295,11 +449,6 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                 <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
                 Id="@("ImageInput-" + currFixture.Name)"/>
             </div>
-
-
-
-
-
         </BodyContent>
 
         <FooterContent>
@@ -326,29 +475,27 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                 Delete
             </Button>
         </FooterContent>
-
     </Modal>
-
 }
 
-
+@* Floorset editor/fixture script - Andrew Kennedy  *@
 <script>
-    @* Get reference to the grid area *@
+    // Get reference to the grid area
     var container = document.getElementById("container");
     var isAsc = true;
 
-    @* Dimensions of items *@
+    // Dimensions of items
     var width = 50;
     var height = 50;
     var rows = 48;
     var cols = 48;
     var snap = 50;
 
-    @* Set the styles of the container based on the given dimensions *@
+    // Set the styles of the container based on the given dimensions
     container.style.height = (width * rows) + "px";
     container.style.width = (width * rows) + "px";
 
-    @* Set the grid area with a grid layout, and fill it with divs *@
+    // Set the grid area with a grid layout, and fill it with divs
     container.setAttribute("style","display: grid; grid-column-gap: 0px;grid-row-gap: 0px;");
     container.style.gridTemplateColumns = `repeat(${cols},${width}px)`;
     container.style.gridTemplateRows = `repeat(${rows},${width}px)`;
@@ -429,14 +576,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             });
             newBox.dispatchEvent(evt);
         }, 10);
-
-
-
     } 
-
-    @* function addFixtureImageListener() {
-        // document.query
-    } *@
 
     /*
         The isOverElement function checks if an element is over another.
@@ -487,25 +627,27 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         The searchInputChange function adds an event listener to the fixture search bar.
     */
     function searchInputChange() {
-        document.getElementById('search').addEventListener("keyup",function(e) {
-            // Get the text from the search field
-            var searchText = this.value;
-            
-            // Loop through each fixture tile 
-            Array.from(document.getElementsByClassName('fixture')).forEach(function(fixture){
-                // Get the name of the fixture
-                var nameElement = fixture.firstChild.getElementsByTagName('p')[0];
-                
-                // If any fixture's name contains the search string, display the tile
-                if (nameElement && nameElement.innerText.toLowerCase()
-                                    .indexOf(searchText.toLowerCase()) > -1) {
-                    fixture.style.display = 'flex';
-                } else {
-                    // Otherwise, do not display the tile
-                    fixture.style.display = 'none';
-                }
+        setTimeout(() => {
+            document.getElementById('search').addEventListener("keyup",function(e) {
+                // Get the text from the search field
+                var searchText = this.value;
+                                
+                // Loop through each fixture tile 
+                Array.from(document.getElementsByClassName('fixture')).forEach(function(fixture){
+                    // Get the name of the fixture
+                    var nameElement = fixture.firstChild.getElementsByTagName('p')[0];
+                    
+                    // If any fixture's name contains the search string, display the tile
+                    if (nameElement && nameElement.innerText.toLowerCase()
+                                        .indexOf(searchText.toLowerCase()) > -1) {
+                        fixture.style.display = 'flex';
+                    } else {
+                        // Otherwise, do not display the tile
+                        fixture.style.display = 'none';
+                    }
+                })
             })
-        });
+        },10);
     }
 
 
@@ -517,22 +659,23 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         // If the modal exists
         if (document.getElementById(modalId)) 
         {            
-            let test = bootstrap.Modal.getOrCreateInstance(`#${modalId}`);            
+            let modal = bootstrap.Modal.getOrCreateInstance(`#${modalId}`);            
             // Show the modal when showModal is true
             if (showModal) 
             {
-                test.show();
+                modal.show();
             }
             else 
             { 
-                // Otherwise, remove all residuals of the modal
-                document.body.style.removeProperty("overflow");
-                document.body.style.removeProperty("padding-right");
-                document.body.classList.remove("modal-open");
-                document.getElementById(modalId).classList.remove('show');
-                document.getElementById(modalId).style.display = "none";
-                document.querySelectorAll('.modal-backdrop')?.forEach(m=>m.remove());
-                
+                if (document.getElementById(modalId) != undefined) {
+                    // Otherwise, remove all residuals of the modal
+                    document.body.style.removeProperty("overflow");
+                    document.body.style.removeProperty("padding-right");
+                    document.body.classList.remove("modal-open");
+                    document.getElementById(modalId).classList.remove('show');
+                    document.getElementById(modalId).style.display = "none";
+                    document.querySelectorAll('.modal-backdrop')?.forEach(m=>m.remove());
+                }
             }
         }
     }
@@ -554,6 +697,30 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
         alert(msg);
     }
 
+    /* END FLOORSET SCRIPTS */
+
+
+     /* Luke Wollenweber - 3/22/2025
+        js function to re-add cells based on new Dimensions */
+    /* function UpdateGridDimensions(length, width) {
+       
+        const gridContainer = document.getElementById('grid-container');
+    
+        gridContainer.innerHTML = '';
+
+        gridContainer.style.display = 'grid';
+        gridContainer.style.gridTemplateColumns = `repeat(${width}, 1fr)`; 
+        gridContainer.style.gridTemplateRows = `repeat(${length}, 1fr)`;
+        for (let i = 0; i < width; i++) {
+            for (let j = 0; j < length; j++) {
+                const cell = document.createElement('div');
+                cell.classList.add('grid-cell');
+                cell.id = `cell-${i}-${j}`;
+
+                gridContainer.appendChild(cell);
+            }
+        }
+    } */
 </script>
 
 @code {
@@ -636,11 +803,7 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
                     HangerStack + ", " +
                     TotalLF + ", " +
                     FixtureImg;
-
         }
-
-
-
     }
 
     // Temporary fields for the Add Fixture modal.
@@ -651,6 +814,8 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     string ModalHangerStack = "";
     string ModalTotalLF = "";
     string ModalFixtureImg = "";
+
+    bool hasExpandedBefore = false;
     DotNetObjectReference<FloorsetEditor>? dotNet; // Reference to .NET functions in JS
 
     // SortedDictionary for holding all fixtures in alphabetical order.
@@ -735,11 +900,23 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
             dotNet = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("imageEventListener",dotNet);
             await JS.InvokeVoidAsync("addFixtureClose",dotNet);
-            await JS.InvokeVoidAsync("searchInputChange");
+            
             
             
         }
     }
+
+    /*
+        The SetSearchEvent function calls a JS function to create a search input event listener.
+    */
+    public async Task SetSearchEvent() {
+
+        if (!hasExpandedBefore) {
+            hasExpandedBefore = true;
+            await JS.InvokeVoidAsync("searchInputChange");
+        }
+    }
+
 
     /*
         The OnDragStart function calls a JS function to create a draggable fixture.
@@ -777,5 +954,137 @@ https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js
     [JSInvokable]
     public void UpdateImage(string value) {
         Console.WriteLine(value);
+    }
+
+    /* END FIXTURE CODE */
+
+
+
+    private bool buildingWallsExpanded = false;
+    private bool allocationsOpen = false;
+    private bool addFixtureExpanded = false;
+
+    private void ToggleBuildingWalls()
+    {
+        buildingWallsExpanded = !buildingWallsExpanded;
+        if (buildingWallsExpanded == true)
+        {
+            addFixtureExpanded = false;
+        }
+    }
+
+    /* Danielle Smith - 3/24/2025
+    added back add fixture stuff & also made it so expansions work properly with it */
+    private async Task ToggleAddFixture()
+    {
+        addFixtureExpanded = !addFixtureExpanded;
+        if (addFixtureExpanded == true)
+        {
+            await SetSearchEvent();
+            buildingWallsExpanded = false;
+        }
+    }
+
+    private void ToggleAllocations()
+    {
+        buildingWallsExpanded = false;
+        allocationsOpen = !allocationsOpen;
+    }
+
+    private double width;
+    private double length;
+
+    /* This function is called when the number is changed */
+    private async Task NumberChanged(string strNumber, Action<double> setValue)
+    {
+        // String will be either a positive number or ""
+        Double.TryParse(strNumber, out double newNumber);
+
+        // Directly modify the referenced variable
+        setValue(newNumber); // Number will be 0 if string is ""
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ApplyDimensions()
+    {
+        await JS.InvokeVoidAsync("UpdateGridDimensions", length, width);
+    }
+
+    private IBrowserFile? selectedFile;
+
+    /*
+    Set selectedFile to file placed in FileInput Tool
+    */
+    private void HandleFileSelected(IBrowserFile file)
+    {
+        selectedFile = file;
+    }
+
+    // Replace below with processing from the FloorSet Grid FE task
+    // Processes it
+    private void ProcessExcelFile(IBrowserFile file)
+    {
+        // Processing of excel file
+    }
+
+    // Runs when import button is pressed inside modal
+    private void HandleExcelFile()
+    {
+        if (selectedFile == null) return;
+
+        ProcessExcelFile(selectedFile);
+    }
+
+    /* Danielle Smith - 3/16/2025
+    function that calls a javascript function to open the import file modal */
+    private async Task OpenImportModal()
+    {
+        await JS.InvokeVoidAsync("toggleModal","importExcelModal", true);
+    }
+
+    //openPrint Task
+    //Asynchronous task to find and open the print modal on the page.
+    //Called by the "Print Layout" button in the sidebar component.
+    private async Task openPrint()
+    {
+        Console.WriteLine("Showing Print Layout Modal...");
+        await JS.InvokeVoidAsync("toggleModal","printModal", true);
+    }
+
+    //printLayout Task
+    //Asynchronously prints the current grid layout from specified printer and options.
+    //Called by the "Print" button in the print modal.
+    private async Task printLayout()
+    {
+        Console.WriteLine("Print Layout Func...");
+        Console.WriteLine("Hiding Print Modal...");
+        await JS.InvokeVoidAsync("toggleModal","printModal", false);
+    }
+
+    private void editFixture()
+    {
+        Console.WriteLine("Edit Fixture Function");
+        allocationsOpen = false;
+    }
+
+    private void paintCategory()
+    {
+        Console.WriteLine("Paint Category Function");
+    }
+
+    private void eraseCategory()
+    {
+        Console.WriteLine("Erase Category Function");
+    }
+
+    private void viewFulfillment()
+    {
+        Console.WriteLine("View Fulfillment Function");
+    }
+
+    private void editLayout()
+    {
+        Console.WriteLine("Edit Layout Function");
     }
 }

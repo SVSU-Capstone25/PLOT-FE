@@ -8,7 +8,9 @@ Program Purpose:
 The purpose of PLOT is to allow users to easily create, manage, 
 and allocate floorsets for Platos Closet. 
 
-Author: Andrew Fulton (3/12/2025)  *@
+Author: Andrew Fulton (3/12/2025)
+
+*@
 
 @page "/store-dashboard"
 @inject IJSRuntime JS
@@ -52,15 +54,15 @@ Author: Andrew Fulton (3/12/2025)  *@
             <h5>Edit Store</h5>
             <p>Edit this store's information</p>
             @* Name and location *@
-            <div class="modal-split-container">
-                <div class="modal-split-left-side">
+            <div class="row">
+                <div class="col-lg-6">
                     <TextInput LabelOnTop="false" Id="editModalStoreName" Label="Name" Placeholder="Store Name" />
                     <TextInput LabelOnTop="false" Id="editModalStoreLocation" Label="Location"
                         Placeholder="Store Address" />
                 </div>
                 @* upload image for store component *@
-                <div class="modal-split-right-side">
-                    <ImageInput Label="Upload Image" Id="ExampleImageInput" width="330px" height="300px" />
+                <div class="col-lg-6">
+                    <ImageInput Label="Upload Image" Id="ExampleImageInputEdit" Width="330px" Height="300px" />
                 </div>
             </div>
             @* Employees section: EMPLOYEES HARD CODED *@
@@ -180,14 +182,14 @@ Author: Andrew Fulton (3/12/2025)  *@
         <h5>Add Store</h5>
         <p>Add a new store with it's own unique store blueprint.</p>
         @* Name and location (labels and input boxes)*@
-        <div class="modal-split-container">
-            <div class="modal-split-left-side">
+        <div class="row">
+            <div class="col-lg-6">
                 <TextInput LabelOnTop="false" Id="addModalStoreName" Label="Name" Placeholder="Store Name" />
                 <TextInput LabelOnTop="false" Id="addModalStoreLocation" Label="Location" Placeholder="Store Address" />
             </div>
             @* upload image for store component *@
-            <div class="modal-split-right-side">
-                <ImageInput Label="Upload Image" Id="ExampleImageInput" width="330px" height="300px" />
+            <div class="col-lg-6">
+                <ImageInput Label="Upload Image" Id="ExampleImageInputAdd" Width="330px" Height="300px" />
             </div>
         </div>
         @* Employees section*@
