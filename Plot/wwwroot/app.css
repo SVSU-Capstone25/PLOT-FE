@@ -64,6 +64,24 @@ h1:focus {
     1 rem is typically 16 px. This approach makes using inspect element
     easier to debug and adjust styles. */
 
+.user-info-modal .user-option-store-half .OptionInput select {
+    height:calc(200 / 16 * 1rem) !important;
+    overflow:scroll;
+}
+
+.user-info-modal .user-option-store-half .Button {
+    width: calc(50/16 * 1rem) !important;
+}
+
+.user-info-modal .user-option-store-left{
+    margin-right: calc(57/16 * 1rem);
+}
+
+.user-info-modal .user-option-store-right{
+    margin-left: calc(57/16 * 1rem);
+}
+
+/*old (except one) */
 
 .user-info-modal .text-input-container,
 .user-info-modal .OptionInput {
