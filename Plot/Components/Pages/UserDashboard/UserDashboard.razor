@@ -100,6 +100,7 @@ No author was given.
             <h3>@userModalDetails.Header</h3>
             <p>@userModalDetails.Description</p>
 
+            <div>
             @* First Name *@
             <div class="holds-first-name">
                 <TextInput Id="UserFirstNameUser" Label="First Name" Type="Text" LabelOnTop=false
@@ -136,17 +137,27 @@ No author was given.
 
             @* Store Selection *@
 
+            <p id="StoreSelectHeader">Store Selection</p>
+
+            <p>To select multiple stores use Ctrl-click</p>
+
             @* Available Stores *@
             <div id="UserStores" class="d-flex flex-row user-option-store">
                 
                 <div class="user-option-store-half user-option-store-left">
+
                 <OptionInput ID="UserAvailStores" label="Available Stores" optionsValues="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()" 
                 optionsText="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()" 
                 Class="user-option-input user-option-store" AllowEmpty Multiple />
 
+                <div class="btn-container">
                 <Button Class="Button" Id="buttonPickFromAvail" Variant="primary" TextAlignment="center"
                     OnClickFunction="PickFromAvail" IsDisabled="@isPickFromAvailDisabled"
-                    Icon="fa-solid fa-arrow-right"/>
+                    Icon="fa-solid fa-arrow-right">
+                    Select Store
+                    </Button>
+                </div>
+
                 </div>
 
                 <div class="user-option-store-half user-option-store-right">
@@ -154,10 +165,15 @@ No author was given.
                 <OptionInput ID="UserSelStores" label="Selected Stores" optionsValues=@inEditUser.Stores optionsText=@inEditUser.Stores
                     Class="user-option-input user-option-store" AllowEmpty Multiple />
                 
+                <div class="btn-container">
                 <Button Class="Button" Id="buttonUnpickFromSel" Variant="primary" TextAlignment="center"
                     OnClickFunction="UnpickFromSel" IsDisabled="@isUnpickFromSelDisabled"
-                    Icon="fa-solid fa-arrow-left"/>
+                    Icon="fa-solid fa-arrow-left">
+                    Remove Store
+                    </Button>
                 </div>
+                </div>
+            </div>
             </div>
         </form>
 
@@ -237,24 +253,25 @@ No author was given.
         element = optionInput.getElementsByTagName("select")[0];
         element.value = option_value;
     }
-/*
-    function SelectFirst(id){
-        /* Select first option in list *//*
-        let optionInput = document.getElementyById(id);
-        let select = optionInput.getElementsByTagName("select")[0];
-        let options = select.getElementsByTagName("option");
 
-        select.value = options[0].value;
+    function SelectFirst(id){
+        /* Select first option in list */
+        if(!IsEmptySelect(id)){
+            let optionInput = document.getElementById(id);
+            let select = optionInput.getElementsByTagName("select")[0];
+            let options = select.getElementsByTagName("option");
+
+            select.value = options[0].value;
+        }
     }
-*/
-/*
+
     function IsEmptySelect(id){
-        /* Is the select option box empty? *//*
+        /* Is the select option box empty? */
         let optionInput = document.getElementById(id);
         let select = optionInput.getElementsByTagName("select");
-        return (select.length == 0);
+        return (select[0].options.length == 0);
     }
-*/
+
     function GetSelectedOptions(id){
         /* Get all options selected from select-option */
         let optionInput = document.getElementById(id);
@@ -270,6 +287,17 @@ No author was given.
         }
 
         return selected_options;
+    }
+
+    function UnhighlightStores(){
+        /* Unhighlight and unselect stores from OptionInputs for stores*/
+
+        let ids = ["UserAvailStores", "UserSelStores"];
+        for (let id of ids){
+            let optionInput = document.getElementById(id);
+            let select = optionInput.getElementsByTagName("select")[0];
+            select.selectedIndex = -1; /* Unselects store */
+        }
     }
 
 </script>
@@ -410,7 +438,6 @@ No author was given.
 
         // Set selections back to header
         await JS.InvokeVoidAsync("SelectOption", "UserRole", optionHeader);
-        // await JS.InvokeVoidAsync("SelectOption", "UserStore", optionHeader);
 
         // Reset validity flags to false (start as empty)
         isFirstValid = false;
@@ -423,6 +450,9 @@ No author was given.
 
         isUpdateUserDisabled = true; // Add User modal starts unfilled so it will be disabled
 
+        // Selection in Available stores defaults to first store
+        await JS.InvokeVoidAsync("SelectFirst", "UserAvailStores");
+
         SetStoreBtnDisabled();
 
         userModalDetails = new ModalDetails(){
@@ -433,7 +463,6 @@ No author was given.
             ButtonText = "Add User"
         };
 
-        Console.WriteLine("End before await...");
         // Open add user modal
         await JS.InvokeVoidAsync("OpenModal", "#UpdateUserModal");
     }
@@ -479,9 +508,12 @@ No author was given.
 
         isUpdateUserDisabled = false; // Initially not disabled
         
-        // Select the edited user's role and store
+        // Select the edited user's role
         await JS.InvokeVoidAsync("SelectOption", "UserRole", inEditUser.Role);
-        //await JS.InvokeVoidAsync("SelectOptionMulti", "UserStore", inEditUser.Stores);
+
+        // Select first entry for available and selected store OptionInputs
+        await JS.InvokeVoidAsync("SelectFirst", "UserAvailStores");
+        await JS.InvokeVoidAsync("SelectFirst", "UserSelStores");
 
         StateHasChanged();
     }
@@ -502,7 +534,7 @@ No author was given.
         await JS.InvokeVoidAsync("HideModal", "UpdateUserModal");
 
         // Clean up Update User Modal
-        CleanUpUpdateUser();
+        await CleanUpUpdateUser();
 
         StateHasChanged();
     }
@@ -596,7 +628,6 @@ No author was given.
     }
 
     private void SetStoreBtnDisabled(){
-        Console.WriteLine("Setting store button disabled");
         isPickFromAvailDisabled = (stores.Count == inEditUser.Stores.Count);
         isUnpickFromSelDisabled = (inEditUser.Stores.Count == 0);
         isStoreValid = !isUnpickFromSelDisabled; // Some stores selected
@@ -605,13 +636,18 @@ No author was given.
     // Set store for user being edited
     private async Task PickFromAvail()
     {
-        Console.WriteLine("Picking");
         List<string> stores_to_pick = await JS.InvokeAsync<List<string>>("GetSelectedOptions", "UserAvailStores");
 
         inEditUser.Stores.AddRange(stores_to_pick);
         inEditUser.Stores.Sort();
 
         SetStoreBtnDisabled();
+
+        StateHasChanged();
+
+        // Select first entry for available and selected store OptionInputs
+        await JS.InvokeVoidAsync("SelectFirst", "UserAvailStores");
+        await JS.InvokeVoidAsync("SelectFirst", "UserSelStores");
 
         // Set add button enabled or disabled
         SetUpdateUserDisabled();
@@ -628,6 +664,12 @@ No author was given.
         inEditUser.Stores.Sort();
 
         SetStoreBtnDisabled();
+
+        StateHasChanged();
+
+        // Select first entry for available and selected store OptionInputs
+        await JS.InvokeVoidAsync("SelectFirst", "UserAvailStores");
+        await JS.InvokeVoidAsync("SelectFirst", "UserSelStores");
 
         // Set add button enabled or disabled
         SetUpdateUserDisabled();
@@ -655,7 +697,7 @@ No author was given.
     /* Modal Clean up methods */
 
     /* For Add User */
-    private void CleanUpUpdateUser()
+    private async Task CleanUpUpdateUser()
     {
         inEditUser = new User(); // Clear in edit User object
 
@@ -666,6 +708,9 @@ No author was given.
         firstNameError = "";
         lastNameError = "";
         emailError = "";
+
+        // Unhighlight stores
+        await JS.InvokeVoidAsync("UnhighlightStores");
 
         StateHasChanged();
     }
