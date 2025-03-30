@@ -46,13 +46,12 @@
                 TextAlignment="center" />
 
             @*Paint Category Button *@
-            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="paintCategory"
-                TextAlignment="center" />
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" class="toolbar-button-toggled" OnClickFunction="togglePaintClicked"
+                TextAlignment="center"/>
 
             @*Erase Category Button *@
-            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategory"
-                TextAlignment="center" />
-
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategoryClicked"
+                TextAlignment="center"/>
 
             @*View Fullfillment Button *@
             <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eye" OnClickFunction="viewFulfillment"
@@ -507,13 +506,20 @@
     //Added ID tracking to created fixtures!
     //Added paint mode detection
     var fixture_IDs = []; //Tracking of fixture box div IDs
-    var paintModeColor = "null|null|transparent";
+    var eraseColor = "null|null|transparent";
+    var paintModeColor = eraseColor;
     var paintModeEnabled = false;
+    var eraseModeEnabled = false;
 
     //The set paint color function sets the paint_mode_color, which will be used in the onmouseenter event of the fixture div.
     function setPaintColor(newColor)
     {
         paintModeColor = newColor;
+    }
+
+    function clearPaintColor()
+    {
+        paintModeColor = eraseColor;
     }
 
     //The set paint enabled function enables or disables the paint mode - the listener for onmouseenter will abort early if disabled.
@@ -771,17 +777,25 @@
 </script>
 
 @code {
-    @* Tristan Calay 3/27/25
-    The paint mode toggle here represents the proper state of the paint mode.
-    It is passed to the javascript code on paint mode button clicked.
-     *@
-    private bool paintModeEnabled = false;
-
     @* Tristan Calay 3/28/25
     The allocations sidebar reference allows methods to be called from here to the sidebar.
     It should be set by @ref in the page layout above.
      *@
     private AllocationsSidebar? allocationsSidebar;
+
+    @* Tristan Calay 3/30/25
+    The paint mode button adds the return of getPaintClass() to its class when clicked.
+    Track paint mode here.*@
+
+    private bool paintModeEnabled = false;
+    private String getPaintClass()
+    {
+        if (paintModeEnabled)
+        {
+            return "toolbar-button-toggled";
+        }
+        return "";
+    }
 
     /*
         The Fixture class stores data for a fixture.
@@ -1111,17 +1125,18 @@
 
     //The paintCategory button toggles the paint mode of the floorset editor.
     //It passes that information to the javascript.
-    private async Task paintCategory()
+    private async Task togglePaintClicked()
     {
-        Console.WriteLine("Paint Category Function - set paint mode "+!paintModeEnabled);
         paintModeEnabled = !paintModeEnabled;
+        Console.WriteLine("Paint Category Function - set paint mode to "+paintModeEnabled);
         await JS.InvokeVoidAsync("setPaintEnabled",paintModeEnabled);
+        StateHasChanged();
     }
 
-    private async Task eraseCategory()
+    private async Task eraseCategoryClicked()
     {
         Console.WriteLine("Erase Category Function");
-        await JS.InvokeVoidAsync("setPaintColor","null|null|transparent");
+        await JS.InvokeVoidAsync("clearPaintColor");
 
         //Call the func in AllocationsSidebar to remove the styling of the selected category.
         if (allocationsSidebar != null)
