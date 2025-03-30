@@ -9,79 +9,63 @@ and allocate floorsets for Platos Closet.
 
 Author: Tristan Calay (3/15/2025)-->
 
-<div class="AllocationsSidebar @Class" id="@ID">
-    <div class="inner-container">
-        <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
-        <hr style="opacity: 1.0; color:black;">
+using System.Diagnostics.Eventing.Reader;
+#line default
+#line hidden
 
-        <div class="categories-div">
-            @* Danielle Smith 3/17/2025
-            changed how these are being displayed to use bootstrap classes
-            added params to help text input take up proper width *@
-            <div class="row">
-                <div class="col-md-8">
-                    <TextInput Id="category-search" Label="" Type="search" Placeholder="Category Search..."
-                        Value="@categorySearch" ValueChanged="@(e => categorySearch = e)" LabelOnTop="false"
-                        Class="w-100" />
-                </div>
+<div class="inner-container">
+    <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
+    <hr style="opacity: 1.0; color:black;">
 
-                <div class="col-md-2">
-                    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-arrow-up-short-wide"
-                        OnClickFunction="sortCategory" Class="search-button" TextAlignment="center" />
-                </div>
-
-                <div class="col-md-2">
-                    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-filter"
-                        OnClickFunction="filterCategory" Class="search-button" TextAlignment="center" />
-                </div>
+    <div class="categories-div">
+        @* Danielle Smith 3/17/2025
+        changed how these are being displayed to use bootstrap classes
+        added params to help text input take up proper width *@
+        <div class="row">
+            <div class="col-md-8">
+                <TextInput Id="category-search" Label="" Type="search" Placeholder="Category Search..."
+                    Value="@categorySearch" ValueChanged="@(e => categorySearchChanged(e))" LabelOnTop="false"
+                    Class="w-100" />
             </div>
 
-            <div class="progress-area">
-                @* Danielle Smith 3/17/2025
-                added classes for margins on these progressbars
-                added more categories to fill this out for demo purpopses & sorted them alphabetically *@
+            <div class="col-md-2">
+                <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-arrow-up-short-wide"
+                    OnClickFunction="sortCategory" Class="search-button" TextAlignment="center" />
+            </div>
 
-                @* Men's *@
-                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Men's" barColor="#AAD9FF" barMax=480
-                    barValue=290 barLabel="290/480 LF" />
-                <ProgressBar mainLabel="Jeans" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Jackets" barColor="#AAD9FF" barMax=100 barValue=120 barLabel="120/100 LF" />
-                <ProgressBar mainLabel="Pants" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Shirts" barColor="#AAD9FF" barMax=100 barValue=30 barLabel="30/100 LF" />
-                <ProgressBar mainLabel="Shoes" barColor="#AAD9FF" barMax=100 barValue=60 barLabel="60/100 LF" />
-                <ProgressBar mainLabel="Shorts" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Sports" barColor="#AAD9FF" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Suits" barColor="#AAD9FF" barMax=100 barValue=100 barLabel="100/100 LF" />
-
-                @* Women's *@
-                <hr class="category-separator">
-                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Women's" barColor="#FFAAD6" barMax=40
-                    barValue=20 barLabel="20/40 LF" />
-                <ProgressBar mainLabel="Dresses" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" />
-                <ProgressBar mainLabel="Jackets" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" />
-                <ProgressBar mainLabel="Jeans" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Pants" barColor="#FFAAD6" barMax=40 barValue=20 barLabel="20/40 LF" />
-                <ProgressBar mainLabel="Shirts" barColor="#FFAAD6" barMax=100 barValue=30 barLabel="30/100 LF" />
-                <ProgressBar mainLabel="Shoes" barColor="#FFAAD6" barMax=100 barValue=60 barLabel="60/100 LF" />
-                <ProgressBar mainLabel="Shorts" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Skirts" barColor="#FFAAD6" barMax=100 barValue=120 barLabel="120/100 LF" />
-                <ProgressBar mainLabel="Sports" barColor="#FFAAD6" barMax=100 barValue=20 barLabel="20/100 LF" />
-                <ProgressBar mainLabel="Suits" barColor="#FFAAD6" barMax=100 barValue=100 barLabel="100/100 LF" />
-
-                @* Accessories *@
-                <hr class="category-separator">
-                <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel="Accessories" barColor="#5FBD6A" barMax=10
-                    barValue=20 barLabel="20/10 LF" />
-                <ProgressBar mainLabel="Belts" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
-                <ProgressBar mainLabel="Hats" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
-                <ProgressBar mainLabel="Jewelry" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
-                <ProgressBar mainLabel="Purses" barColor="#5FBD6A" barMax=10 barValue=20 barLabel="20/10 LF" />
-
+            <div class="col-md-2">
+                <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-filter"
+                    OnClickFunction="filterCategory" Class="search-button" TextAlignment="center" />
             </div>
         </div>
 
+        <div class="progress-area">
+            @* Danielle Smith 3/17/2025
+            added classes for margins on these progressbars
+            added more categories to fill this out for demo purpopses & sorted them alphabetically 
+            
+            Tristan Calay 3/29/25
+            Created a foreach loop to iterate over cached category data and display it.*@
+
+            @foreach(var bar in progressCategories)
+            {
+                @if (bar.isHeader)
+                {
+                    <hr class="category-separator">
+                    <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
+                        barValue=@bar.currentValue barLabel=@bar.getLinearFeet() />
+                }
+                @else 
+                {
+                    <ProgressBar mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
+                        barValue=@bar.currentValue barLabel=@bar.getLinearFeet() />
+                }
+            }
+        </div>
     </div>
 </div>
+
+
 
 @code
 {
@@ -92,6 +76,83 @@ Author: Tristan Calay (3/15/2025)-->
     public String? ID { get; set; }
 
     private String categorySearch = ""; //Default storage of the category search textbox.
+
+    //Tristan Calay 3/29/25
+    //Create progress bar category data and store here.
+    private struct categoryData
+    {
+        public bool isHeader {get;set} = false;
+        public String text {get;set;} = "";
+        public String color {get;set;} = "red";
+        public int maxValue {get;set;} = 100;
+        public int currentValue {get;set;} = 0;
+
+        public categoryData(String _text, String _color, int _maxValue, int _currentValue, bool _header = false)
+        {
+            text = _text;
+            color = _color;
+            maxValue = _maxValue;
+            currentValue = _currentValue;
+            isHeader = _header;
+        }
+
+        public String getLinearFeet()
+        {
+            return currentValue + "/" + maxValue + " LF";
+        }
+    }
+
+    private categoryData[] progressCategories;
+
+    //When the component is initialized, retrieve info from database about categories.
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        //For now, hardcoded categories.
+        progressCategories = [];
+        @* Men's *@
+        var currentColor = "#AAD9FF";
+        progressCategories.Append(new categoryData("Men's",currentColor,480,290,true));
+        progressCategories.Append(new categoryData("Jeans",currentColor,100,20,false));
+        progressCategories.Append(new categoryData("Jackets",currentColor,100,120,false));
+        progressCategories.Append(new categoryData("Pants",currentColor,100,20,false));
+        progressCategories.Append(new categoryData("Shirts",currentColor,100,30,false));
+        progressCategories.Append(new categoryData("Shoes",currentColor,100,60,false));
+        progressCategories.Append(new categoryData("Shorts",currentColor,100,20,false));
+        progressCategories.Append(new categoryData("Sports",currentColor,100,20,false));
+        progressCategories.Append(new categoryData("Suits",currentColor,100,10,false));
+
+        @* Women's *@
+        currentColor = "#FFAAD6";
+        progressCategories.Append(new CategoryData("Women's",currentColor,800,300,true));
+        progressCategories.Append(new CategoryData("Dresses",currentColor,100,120,false));
+        progressCategories.Append(new CategoryData("Jackets",currentColor,100,120,false));
+        progressCategories.Append(new CategoryData("Jeans",currentColor,100,20,false));
+        progressCategories.Append(new CategoryData("Pants",currentColor,40,20,false));
+        progressCategories.Append(new CategoryData("Shirts",currentColor,100,30,false));
+        progressCategories.Append(new CategoryData("Shoes",currentColor,100,60,false));
+        progressCategories.Append(new CategoryData("Shorts",currentColor,100,20,false));
+        progressCategories.Append(new CategoryData("Skirts",currentColor,100,120,false));
+        progressCategories.Append(new CategoryData("Sports",currentColor,100,20,false));
+        progressCategories.Append(new CategoryData("Suits",currentColor,100,100,false));
+        
+        @* Accessories *@
+        currentColor = "#5FBD6A";
+        progressCategories.Append(new CategoryData("Accessories",currentColor,40,80,true));
+        progressCategories.Append(new CategoryData("Belts",currentColor,10,20,false));
+        progressCategories.Append(new CategoryData("Hats",currentColor,10,20,false));
+        progressCategories.Append(new CategoryData("Jewelry",currentColor,10,20,false));
+        progressCategories.Append(new CategoryData("Purses",currentColor,10,20,false));
+        
+    } 
+    
+
+    //Tristan Calay 3/29/25
+    //Hide categories that do not contain the string "newSearch"
+    private void categorySearchChanged(newSearch)
+    {
+
+    }
 
     private void filterCategory()
     {
