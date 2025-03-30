@@ -161,6 +161,16 @@
                             </div>
                         </div>
                     </div>
+                    <div class="fixture-area p-3 mt-3 d-flex mb-2">
+                        <div class="fixture mb-3 d-flex flex-row"
+                            @ondragstart="@((e) => OnDragStartErase(e, "1x1", "#F0F0F0"))" draggable="true"
+                            @ondragstart:preventDefault="true">
+                            <div class="drag-start-area d-flex flex-row">
+                                <div class="erase"></div>
+                                <p class="fixture-text m-2 disable-select grab-cursor">Erase Employee Only Area</p>
+                            </div>
+                        </div>
+                    </div>
                     <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
                         Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
                         Apply
@@ -594,6 +604,7 @@
     //this boolean controls painting so that once the user is done, it prevents "painting" from happening unless 
     //they make a new div from the sidebar
     var isPaintingEnabled = false;
+    var isErasingEnabled = false;
 
 //this function is specific to the employee only area as it uses "painting" for the div it creates
  function createDraggableEmployee(event, size, color) {
@@ -734,8 +745,106 @@
     //on the mouse up, set the flag to false to stop painting
     document.addEventListener("mouseup", function () {
         isPaintingEnabled = false;
+        document.removeEventListener("mousedown", paintEmployeeBoxes);
+        document.removeEventListener("mousemove", paintEmployeeBoxes);
     });
 }
+
+    //this method paints the boxes and handles adding and creating new elements
+    function eraseEmployeeBoxes(event, size, color) {
+        var containerRect = container.getBoundingClientRect();
+        var newBox = document.createElement("div");
+        newBox.id = new Date().getTime(); // Unique ID based on timestamp
+        container.appendChild(newBox);
+
+        newBox.className = "box";
+        newBox.style.position = "absolute";
+        var boxSize = size.split("x");
+        newBox.style.height = boxSize[0] * height + "px";
+        newBox.style.width = boxSize[1] * width + "px";
+        newBox.style.background = color;
+
+        var mouseX = event.clientX;
+        var mouseY = event.clientY;
+
+        var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
+        var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
+
+        // Prevent the box from going outside the container boundaries
+        snappedX = Math.max(0, Math.min(snappedX, containerRect.width - newBox.offsetWidth));
+        snappedY = Math.max(0, Math.min(snappedY, containerRect.height - newBox.offsetHeight));
+
+        newBox.style.left = snappedX + "px";
+        newBox.style.top = snappedY + "px";
+
+        var draggable = Draggable.create(newBox, {
+            bounds: container,
+            onDrag: function () {
+                // Snap the box to the grid
+                TweenLite.to(newBox, 0.5, {
+                    x: Math.round(this.endX / snap) * snap,
+                    y: Math.round(this.y / snap) * snap,
+                    ease: Back.easeOut.config(2)
+                });
+
+                // While dragging, if the box overlaps another, remove that box
+                Array.from(container.children).forEach(function (child) {
+                    if (child.className === "box" && child !== newBox) {
+                        var childRect = child.getBoundingClientRect();
+                        var eraserRect = newBox.getBoundingClientRect();
+                        if (checkErase(eraserRect, childRect)) {
+                            container.removeChild(child); // Remove the overlapping box
+                        }
+                    }
+                });
+            },
+            onDragEnd: function () {
+                // After drag ends, remove the "eraser" box itself
+                container.removeChild(newBox);
+            }
+        });
+
+        setTimeout(() => {
+            var evt = new MouseEvent("mousedown", {
+                bubbles: true,
+                cancelable: true,
+                clientX: mouseX,
+                clientY: mouseY
+            });
+            newBox.dispatchEvent(evt);
+        }, 10);
+
+
+
+        @* // This event listener handles the click event
+        document.addEventListener("mousedown", function (event) {
+            if (isErasingEnabled) {
+                eraseEmployeeBoxes(event, size, color);
+                document.addEventListener("mousemove", function (event) {
+                    if (isErasingEnabled) {
+                        eraseEmployeeBoxes(event, size, color);
+                    }
+                });
+            }
+        }); *@
+
+        // On mouse up, set the flag to false to stop erasing
+        document.addEventListener("mouseup", function () {
+            isErasingEnabled = false;
+            document.removeEventListener("mousedown", eraseEmployeeBoxes);
+            document.removeEventListener("mousemove", eraseEmployeeBoxes);
+        });
+
+        // This method checks whether or not there is an overlap between two elements
+        function checkErase(eraserRect, boxRect) {
+            console.log("eraser: " + eraserRect);
+            console.log("rect: " + boxRect);
+            return (eraserRect.top < boxRect.bottom &&
+                eraserRect.bottom > boxRect.top &&
+                eraserRect.left < boxRect.right &&
+                eraserRect.right > boxRect.left);
+        }
+    }
 
 //this method checks whether or not there is an overlap between the passed element and any child element in the container
 function isOverlapping(draggableRect, containerElement) {
@@ -1170,6 +1279,11 @@ function isOverElement(boxRect, sidebarRect) {
     private async Task OnDragStartEmployee(DragEventArgs e, string size, string color)
     {
         await JS.InvokeVoidAsync("createDraggableEmployee", e, size, color);
+    }
+
+    private async Task OnDragStartErase(DragEventArgs e, string size, string color)
+    {
+        await JS.InvokeVoidAsync("eraseEmployeeBoxes", e, size, color);
     }
 
     /*
