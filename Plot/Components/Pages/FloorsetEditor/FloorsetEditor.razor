@@ -46,7 +46,7 @@
                 TextAlignment="center" />
 
             @*Paint Category Button *@
-            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" class="toolbar-button-toggled" OnClickFunction="togglePaintClicked"
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="togglePaintClicked"
                 TextAlignment="center"/>
 
             @*Erase Category Button *@
@@ -1068,7 +1068,8 @@ function isOverElement(boxRect, sidebarRect) {
     {
         if (paintModeEnabled)
         {
-            return "toolbar-button-toggled";
+            //TODO - Somehow, apply styling to the buttons when they get clicked! Adding a class here does not work.
+            return "";
         }
         return "";
     }
