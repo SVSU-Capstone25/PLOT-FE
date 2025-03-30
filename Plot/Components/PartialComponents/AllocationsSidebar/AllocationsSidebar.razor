@@ -9,10 +9,6 @@ and allocate floorsets for Platos Closet.
 
 Author: Tristan Calay (3/15/2025)-->
 
-using System.Diagnostics.Eventing.Reader;
-#line default
-#line hidden
-
 <div class="inner-container">
     <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
     <hr style="opacity: 1.0; color:black;">
@@ -49,13 +45,22 @@ using System.Diagnostics.Eventing.Reader;
 
             @foreach(var bar in progressCategories)
             {
+                //Continue to next category if the search filter is active
+                //  and the search filter is not in the bar text.
+                @if (categorySearch != "")
+                {
+                    @if (!bar.isInSearch(categorySearch))
+                    {
+                        continue;
+                    }
+                }
                 @if (bar.isHeader)
                 {
                     <hr class="category-separator">
                     <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
                         barValue=@bar.currentValue barLabel=@bar.getLinearFeet() />
                 }
-                @else 
+                else 
                 {
                     <ProgressBar mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
                         barValue=@bar.currentValue barLabel=@bar.getLinearFeet() />
@@ -81,14 +86,16 @@ using System.Diagnostics.Eventing.Reader;
     //Create progress bar category data and store here.
     private struct categoryData
     {
-        public bool isHeader {get;set} = false;
+        public bool isHeader {get;set;} = false;
+        public String headerCategory = "";
         public String text {get;set;} = "";
         public String color {get;set;} = "red";
         public int maxValue {get;set;} = 100;
         public int currentValue {get;set;} = 0;
 
-        public categoryData(String _text, String _color, int _maxValue, int _currentValue, bool _header = false)
+        public categoryData(String _headerCategory, String _text, String _color, int _maxValue, int _currentValue, bool _header = false)
         {
+            headerCategory = _headerCategory;
             text = _text;
             color = _color;
             maxValue = _maxValue;
@@ -100,58 +107,68 @@ using System.Diagnostics.Eventing.Reader;
         {
             return currentValue + "/" + maxValue + " LF";
         }
+
+        public bool isInSearch(String searchText)
+        {
+            return (headerCategory + " " + text).ToLower().StartsWith(searchText.ToLower());
+        }
     }
 
-    private categoryData[] progressCategories;
+    private List<categoryData> progressCategories = [];
 
     //When the component is initialized, retrieve info from database about categories.
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await base.OnInitializedAsync();
+        base.OnInitialized();
         //For now, hardcoded categories.
         progressCategories = [];
         @* Men's *@
         var currentColor = "#AAD9FF";
-        progressCategories.Append(new categoryData("Men's",currentColor,480,290,true));
-        progressCategories.Append(new categoryData("Jeans",currentColor,100,20,false));
-        progressCategories.Append(new categoryData("Jackets",currentColor,100,120,false));
-        progressCategories.Append(new categoryData("Pants",currentColor,100,20,false));
-        progressCategories.Append(new categoryData("Shirts",currentColor,100,30,false));
-        progressCategories.Append(new categoryData("Shoes",currentColor,100,60,false));
-        progressCategories.Append(new categoryData("Shorts",currentColor,100,20,false));
-        progressCategories.Append(new categoryData("Sports",currentColor,100,20,false));
-        progressCategories.Append(new categoryData("Suits",currentColor,100,10,false));
+        var currentCategory = "Men's";
+        progressCategories.Add(new categoryData(currentCategory,currentCategory,currentColor,480,290,true));
+        progressCategories.Add(new categoryData(currentCategory,"Jeans",currentColor,100,20,false));
+        progressCategories.Add(new categoryData(currentCategory,"Jackets",currentColor,100,120,false));
+        progressCategories.Add(new categoryData(currentCategory,"Pants",currentColor,100,20,false));
+        progressCategories.Add(new categoryData(currentCategory,"Shirts",currentColor,100,30,false));
+        progressCategories.Add(new categoryData(currentCategory,"Shoes",currentColor,100,60,false));
+        progressCategories.Add(new categoryData(currentCategory,"Shorts",currentColor,100,20,false));
+        progressCategories.Add(new categoryData(currentCategory,"Sports",currentColor,100,20,false));
+        progressCategories.Add(new categoryData(currentCategory,"Suits",currentColor,100,10,false));
 
         @* Women's *@
         currentColor = "#FFAAD6";
-        progressCategories.Append(new CategoryData("Women's",currentColor,800,300,true));
-        progressCategories.Append(new CategoryData("Dresses",currentColor,100,120,false));
-        progressCategories.Append(new CategoryData("Jackets",currentColor,100,120,false));
-        progressCategories.Append(new CategoryData("Jeans",currentColor,100,20,false));
-        progressCategories.Append(new CategoryData("Pants",currentColor,40,20,false));
-        progressCategories.Append(new CategoryData("Shirts",currentColor,100,30,false));
-        progressCategories.Append(new CategoryData("Shoes",currentColor,100,60,false));
-        progressCategories.Append(new CategoryData("Shorts",currentColor,100,20,false));
-        progressCategories.Append(new CategoryData("Skirts",currentColor,100,120,false));
-        progressCategories.Append(new CategoryData("Sports",currentColor,100,20,false));
-        progressCategories.Append(new CategoryData("Suits",currentColor,100,100,false));
+        currentCategory = "Women's";
+        progressCategories.Add(new categoryData(currentCategory,currentCategory,currentColor,800,300,true));
+        progressCategories.Add(new categoryData(currentCategory,"Dresses",currentColor,100,120,false));
+        progressCategories.Add(new categoryData(currentCategory,"Jackets",currentColor,100,120,false));
+        progressCategories.Add(new categoryData(currentCategory,"Jeans",currentColor,100,20,false));
+        progressCategories.Add(new categoryData(currentCategory,"Pants",currentColor,40,20,false));
+        progressCategories.Add(new categoryData(currentCategory,"Shirts",currentColor,100,30,false));
+        progressCategories.Add(new categoryData(currentCategory,"Shoes",currentColor,100,60,false));
+        progressCategories.Add(new categoryData(currentCategory,"Shorts",currentColor,100,20,false));
+        progressCategories.Add(new categoryData(currentCategory,"Skirts",currentColor,100,120,false));
+        progressCategories.Add(new categoryData(currentCategory,"Sports",currentColor,100,20,false));
+        progressCategories.Add(new categoryData(currentCategory,"Suits",currentColor,100,100,false));
         
         @* Accessories *@
         currentColor = "#5FBD6A";
-        progressCategories.Append(new CategoryData("Accessories",currentColor,40,80,true));
-        progressCategories.Append(new CategoryData("Belts",currentColor,10,20,false));
-        progressCategories.Append(new CategoryData("Hats",currentColor,10,20,false));
-        progressCategories.Append(new CategoryData("Jewelry",currentColor,10,20,false));
-        progressCategories.Append(new CategoryData("Purses",currentColor,10,20,false));
+        currentCategory = "Accessories";
+        progressCategories.Add(new categoryData(currentCategory,currentCategory,currentColor,40,80,true));
+        progressCategories.Add(new categoryData(currentCategory,"Belts",currentColor,10,20,false));
+        progressCategories.Add(new categoryData(currentCategory,"Hats",currentColor,10,20,false));
+        progressCategories.Add(new categoryData(currentCategory,"Jewelry",currentColor,10,20,false));
+        progressCategories.Add(new categoryData(currentCategory,"Purses",currentColor,10,20,false));
         
+        Console.WriteLine("Successfully Added "+progressCategories.Count()+" Categories!");
     } 
     
 
     //Tristan Calay 3/29/25
     //Hide categories that do not contain the string "newSearch"
-    private void categorySearchChanged(newSearch)
+    private void categorySearchChanged(String newSearch)
     {
-
+        categorySearch = newSearch;
+        StateHasChanged();
     }
 
     private void filterCategory()
