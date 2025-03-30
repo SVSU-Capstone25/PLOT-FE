@@ -506,7 +506,7 @@
     //Tristan Calay - 3/27/25
     //Added ID tracking to created fixtures!
     //Added paint mode detection
-    var fixture_IDs = [];
+    var fixture_IDs = []; //Tracking of fixture box div IDs
     var paintModeColor = "null|null|transparent";
     var paintModeEnabled = false;
 
@@ -520,6 +520,17 @@
     function setPaintEnabled(isEnabled)
     {
         paintModeEnabled = isEnabled;
+        fixture_IDs.forEach((element) => {
+            if (isEnabled)
+            {
+                Draggable.get('#' + element).disable();
+            }
+            else
+            {
+                Draggable.get('#' + element).enable();
+            }
+            
+        })
     }
 
 
@@ -606,11 +617,6 @@
         var draggable = Draggable.create(newBox, {
             bounds: container,
             onDrag: function () {
-                 @* //Tristan Calay -- Don't drag if paint mode is enabled!
-                if(paintModeEnabled)
-                {
-                    return;
-                } *@
                 // Using TweenLite, snap the box to a given snap distance,
                 // and make the animation smooth
                 TweenLite.to(newBox, 0.5, {
@@ -621,12 +627,6 @@
 
             },
             onDragEnd: function () {
-                @* //Tristan Calay -- Don't drag if paint mode is enabled!
-                if(paintModeEnabled)
-                {
-                    return;
-                } *@
-
                 // If the box is over the sidebar when dropped, remove it from view,
                 // otherwise set the z-index low so it is under the sidebar.
                 var boxRect = newBox.getBoundingClientRect();
@@ -639,7 +639,7 @@
                     newBox.style.zIndex = 0;
                 }
 
-            }
+            },
         });
         // Wait for 10ms, then dispatch a mousedown event to simulate a drag on the box.
         setTimeout(() => {
