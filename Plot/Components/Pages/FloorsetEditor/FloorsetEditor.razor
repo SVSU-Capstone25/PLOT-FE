@@ -67,6 +67,7 @@
     {
         @if (addFixtureExpanded)
         {
+            
             <div class="expanded">
                 @* Header *@
                 <div class="sidebar-header p-3">
@@ -75,11 +76,11 @@
                     </div>
                 </div>
 
-                @* Search Bar *@
+                <!-- Search Bar -->
                 <div class="p-3 mb-2 border-bottom">
                     <div class="d-flex align-items-center m-2">
                         <div class="w-100 search-text">
-                            <TextInput class="form-control p-2 " Label="" Type="search" placeholder="Search" />
+                            <TextInput class="form-control p-2 " Id="search" Label="" Type="search" placeholder="Search" />
                         </div>
                         <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
 
@@ -103,7 +104,7 @@
                     @foreach (Fixture currFixture in fixtures.Values)
                     {
 
-                        <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name"
+                     <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name"
                         @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width, "green"))" draggable="true"
                         @ondragstart:preventDefault="true">
                             <div class="drag-start-area d-flex flex-row">
@@ -806,6 +807,34 @@ function isOverElement(boxRect, sidebarRect) {
         })
     }
 
+    /*
+        The searchInputChange function adds an event listener to the fixture search bar.
+    */
+    function searchInputChange() {
+        setTimeout(() => {
+            document.getElementById('search').addEventListener("keyup",function(e) {
+                // Get the text from the search field
+                var searchText = this.value;
+                                
+                // Loop through each fixture tile 
+                Array.from(document.getElementsByClassName('fixture')).forEach(function(fixture){
+                    // Get the name of the fixture
+                    var nameElement = fixture.firstChild.getElementsByTagName('p')[0];
+                    
+                    // If any fixture's name contains the search string, display the tile
+                    if (nameElement && nameElement.innerText.toLowerCase()
+                                        .indexOf(searchText.toLowerCase()) > -1) {
+                        fixture.style.display = 'flex';
+                    } else {
+                        // Otherwise, do not display the tile
+                        fixture.style.display = 'none';
+                    }
+                })
+            })
+        },10);
+    }
+
+
     
     /*
         The toggleModal function toggles the visibility of a given modal.
@@ -1032,6 +1061,8 @@ function isOverElement(boxRect, sidebarRect) {
     string ModalHangerStack = "";
     string ModalTotalLF = "";
     string ModalFixtureImg = "";
+
+    bool hasExpandedBefore = false;
     DotNetObjectReference<FloorsetEditor>? dotNet; // Reference to .NET functions in JS
 
     // SortedDictionary for holding all fixtures in alphabetical order.
@@ -1117,8 +1148,22 @@ function isOverElement(boxRect, sidebarRect) {
             await JS.InvokeVoidAsync("imageEventListener",dotNet);
             await JS.InvokeVoidAsync("addFixtureClose",dotNet);
             
+            
+            
         }
     }
+
+    /*
+        The SetSearchEvent function calls a JS function to create a search input event listener.
+    */
+    public async Task SetSearchEvent() {
+
+        if (!hasExpandedBefore) {
+            hasExpandedBefore = true;
+            await JS.InvokeVoidAsync("searchInputChange");
+        }
+    }
+
 
     /*
         The OnDragStart function calls a JS function to create a draggable fixture.
@@ -1182,11 +1227,12 @@ function isOverElement(boxRect, sidebarRect) {
 
     /* Danielle Smith - 3/24/2025
     added back add fixture stuff & also made it so expansions work properly with it */
-    private void ToggleAddFixture()
+    private async Task ToggleAddFixture()
     {
         addFixtureExpanded = !addFixtureExpanded;
         if (addFixtureExpanded == true)
         {
+            await SetSearchEvent();
             buildingWallsExpanded = false;
         }
     }
