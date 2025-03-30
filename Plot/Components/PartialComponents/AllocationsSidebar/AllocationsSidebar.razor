@@ -43,7 +43,7 @@ Author: Tristan Calay (3/15/2025)-->
             Tristan Calay 3/29/25
             Created a foreach loop to iterate over cached category data and display it.*@
 
-            @foreach(var bar in progressCategories)
+            @foreach(var bar in getAllCategories())
             {
                 //Continue to next category if the search filter is active
                 //  and the search filter is not in the bar text.
@@ -101,6 +101,8 @@ Author: Tristan Calay (3/15/2025)-->
             maxValue = _maxValue;
             currentValue = _currentValue;
             isHeader = _header;
+
+            Console.WriteLine("Header is " + isHeader.ToString());
         }
 
         public String getLinearFeet()
@@ -112,56 +114,79 @@ Author: Tristan Calay (3/15/2025)-->
         {
             return (headerCategory + " " + text).ToLower().StartsWith(searchText.ToLower());
         }
+
+        public Double getPercent()
+        {
+            return Convert.ToDouble(currentValue) / Convert.ToDouble(maxValue);
+        }
     }
 
-    private List<categoryData> progressCategories = [];
+    //Add one list for each super category
+    private List<categoryData> progressCategoriesMen = [];
+    private List<categoryData> progressCategoriesWomen = [];
+    private List<categoryData> progressCategoriesAccessories = [];
 
     //When the component is initialized, retrieve info from database about categories.
     protected override void OnInitialized()
     {
         base.OnInitialized();
         //For now, hardcoded categories.
-        progressCategories = [];
+        //One exists for each super category, for ease of sorting. This can be changed.
+        progressCategoriesMen = [];
+        progressCategoriesWomen = [];
+        progressCategoriesAccessories = [];
         @* Men's *@
         var currentColor = "#AAD9FF";
         var currentCategory = "Men's";
-        progressCategories.Add(new categoryData(currentCategory,currentCategory,currentColor,480,290,true));
-        progressCategories.Add(new categoryData(currentCategory,"Jeans",currentColor,100,20,false));
-        progressCategories.Add(new categoryData(currentCategory,"Jackets",currentColor,100,120,false));
-        progressCategories.Add(new categoryData(currentCategory,"Pants",currentColor,100,20,false));
-        progressCategories.Add(new categoryData(currentCategory,"Shirts",currentColor,100,30,false));
-        progressCategories.Add(new categoryData(currentCategory,"Shoes",currentColor,100,60,false));
-        progressCategories.Add(new categoryData(currentCategory,"Shorts",currentColor,100,20,false));
-        progressCategories.Add(new categoryData(currentCategory,"Sports",currentColor,100,20,false));
-        progressCategories.Add(new categoryData(currentCategory,"Suits",currentColor,100,10,false));
+        progressCategoriesMen.Add(new categoryData(currentCategory,currentCategory,currentColor,480,290,true));
+        progressCategoriesMen.Add(new categoryData(currentCategory,"Pants",currentColor,100,20,false));
+        progressCategoriesMen.Add(new categoryData(currentCategory,"Shirts",currentColor,100,30,false));
+        progressCategoriesMen.Add(new categoryData(currentCategory,"Shoes",currentColor,100,60,false));
+        progressCategoriesMen.Add(new categoryData(currentCategory,"Jeans",currentColor,100,20,false));
+        progressCategoriesMen.Add(new categoryData(currentCategory,"Jackets",currentColor,100,120,false));
+        progressCategoriesMen.Add(new categoryData(currentCategory,"Shorts",currentColor,100,20,false));
+        progressCategoriesMen.Add(new categoryData(currentCategory,"Sports",currentColor,100,20,false));
+        progressCategoriesMen.Add(new categoryData(currentCategory,"Suits",currentColor,100,10,false));
 
         @* Women's *@
         currentColor = "#FFAAD6";
         currentCategory = "Women's";
-        progressCategories.Add(new categoryData(currentCategory,currentCategory,currentColor,800,300,true));
-        progressCategories.Add(new categoryData(currentCategory,"Dresses",currentColor,100,120,false));
-        progressCategories.Add(new categoryData(currentCategory,"Jackets",currentColor,100,120,false));
-        progressCategories.Add(new categoryData(currentCategory,"Jeans",currentColor,100,20,false));
-        progressCategories.Add(new categoryData(currentCategory,"Pants",currentColor,40,20,false));
-        progressCategories.Add(new categoryData(currentCategory,"Shirts",currentColor,100,30,false));
-        progressCategories.Add(new categoryData(currentCategory,"Shoes",currentColor,100,60,false));
-        progressCategories.Add(new categoryData(currentCategory,"Shorts",currentColor,100,20,false));
-        progressCategories.Add(new categoryData(currentCategory,"Skirts",currentColor,100,120,false));
-        progressCategories.Add(new categoryData(currentCategory,"Sports",currentColor,100,20,false));
-        progressCategories.Add(new categoryData(currentCategory,"Suits",currentColor,100,100,false));
+        progressCategoriesWomen.Add(new categoryData(currentCategory,currentCategory,currentColor,800,300,true));
+        progressCategoriesWomen.Add(new categoryData(currentCategory,"Dresses",currentColor,100,120,false));
+        progressCategoriesWomen.Add(new categoryData(currentCategory,"Skirts",currentColor,100,120,false));
+        progressCategoriesWomen.Add(new categoryData(currentCategory,"Sports",currentColor,100,20,false));
+        progressCategoriesWomen.Add(new categoryData(currentCategory,"Suits",currentColor,100,100,false));
+        progressCategoriesWomen.Add(new categoryData(currentCategory,"Jackets",currentColor,100,120,false));
+        progressCategoriesWomen.Add(new categoryData(currentCategory,"Jeans",currentColor,100,20,false));
+        progressCategoriesWomen.Add(new categoryData(currentCategory,"Pants",currentColor,40,20,false));
+        progressCategoriesWomen.Add(new categoryData(currentCategory,"Shirts",currentColor,100,30,false));
+        progressCategoriesWomen.Add(new categoryData(currentCategory,"Shoes",currentColor,100,60,false));
+        progressCategoriesWomen.Add(new categoryData(currentCategory,"Shorts",currentColor,100,20,false));
         
         @* Accessories *@
         currentColor = "#5FBD6A";
         currentCategory = "Accessories";
-        progressCategories.Add(new categoryData(currentCategory,currentCategory,currentColor,40,80,true));
-        progressCategories.Add(new categoryData(currentCategory,"Belts",currentColor,10,20,false));
-        progressCategories.Add(new categoryData(currentCategory,"Hats",currentColor,10,20,false));
-        progressCategories.Add(new categoryData(currentCategory,"Jewelry",currentColor,10,20,false));
-        progressCategories.Add(new categoryData(currentCategory,"Purses",currentColor,10,20,false));
+        progressCategoriesAccessories.Add(new categoryData(currentCategory,currentCategory,currentColor,40,80,true));
+        progressCategoriesAccessories.Add(new categoryData(currentCategory,"Belts",currentColor,10,20,false));
+        progressCategoriesAccessories.Add(new categoryData(currentCategory,"Hats",currentColor,10,20,false));
+        progressCategoriesAccessories.Add(new categoryData(currentCategory,"Purses",currentColor,10,20,false));
+        progressCategoriesAccessories.Add(new categoryData(currentCategory,"Jewelry",currentColor,10,20,false));
         
-        Console.WriteLine("Successfully Added "+progressCategories.Count()+" Categories!");
     } 
     
+    //Tristan Calay 3/29/25
+    //Return a joined list of all the super categories.
+    //The super categories can be sorted individually before they are retrieved.
+    private List<categoryData> getAllCategories()
+    {
+        var joinedList = new List<categoryData>();
+        joinedList = [];
+        joinedList.AddRange(progressCategoriesMen);
+        joinedList.AddRange(progressCategoriesWomen);
+        joinedList.AddRange(progressCategoriesAccessories);
+
+        return joinedList;
+    }
 
     //Tristan Calay 3/29/25
     //Hide categories that do not contain the string "newSearch"
@@ -176,8 +201,56 @@ Author: Tristan Calay (3/15/2025)-->
         Console.WriteLine("Filter Category Search Function");
     }
 
+    //Tristan Calay 3/29/25
+    //Generic sort - Sort by alphabetical with headers first.
     private void sortCategory()
     {
-        Console.WriteLine("Sort Categories Function");
+        Console.WriteLine("Sort Category Search Function");
+        progressCategoriesMen.Sort((a,b) => compareCategories(a,b));
+        progressCategoriesWomen.Sort((a,b) => compareCategories(a,b));
+        progressCategoriesAccessories.Sort((a,b) => compareCategories(a,b));
+
+        StateHasChanged();
+    }
+
+    //Sorting function for category data.
+    private int compareCategories(categoryData a, categoryData b)
+    {
+        //Both are null, return equivalent
+        if (a.Equals(null) && b.Equals(null))
+        {
+            //Console.WriteLine("Both are null!");
+            return 0;
+        }
+
+        //Neither null, return header first, else sort by fullfillment percentage.
+        if (!a.Equals(null) && !b.Equals(null))
+        {
+            if (a.isHeader)
+            {
+                //Console.WriteLine("A is header! Keep A first.");
+                return -1;
+            }
+            if (b.isHeader)
+            {
+                //Console.WriteLine("B is header! Should swap.");
+                return 1;
+            }
+            //Console.WriteLine("Standard Sort!");
+            //Sort here by percent complete. To do different sort methods, add them here.
+            return (a.getPercent()).CompareTo(b.getPercent());
+        }
+
+        //First not null, return first
+        if (!a.Equals(null))
+        {
+            //Console.WriteLine("First is only non null item!");
+            return -1;
+        }
+
+        //Return second.
+        //Console.WriteLine("Default to second : only non null item!");
+        return 1;
+    
     }
 }
