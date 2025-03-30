@@ -9,6 +9,12 @@ when an option is selected. Adapted OnSelectFunc method to check
 if a method is specified and handle asynchronous methods
 with InvokeAsync. Passes value in option as argument string 
 to specified method.
+
+3/29/2025
+Added Multiple and AllowEmpty parameters.
+
+Added error handling to prevent OnSelectFunction usage
+with Multiple parameter as true
 *@
 <div class="OptionInput @Class" id="@ID">
     <h5 class="row">
@@ -65,17 +71,20 @@ to specified method.
 
     [Parameter]
     // Specifies method ran when selecting an option
+    // Returns e.Value as a string
+    // Only works for SINGLE-value selection
     public EventCallback<string> OnSelectFunction {get; set;}
 
     [Parameter]
-    // Allow empty boolean
+    // Allow empty select option - False by default
     public bool AllowEmpty {get; set;} = false;
 
     [Parameter]
-    // Is this Multiple?
+    // Is this Multiple? False (Single) by default
     public bool Multiple {get; set;} = false;
 
-    //Validate that the option list has valid arguments: more than 0 entries, and matching number of display and value entries.
+    //Validate that the option list has valid arguments: more than 0 entries(unless AllowEmpty is true), 
+    // and matching number of display and value entries.
     protected override async Task OnParametersSetAsync(){
         await base.OnParametersSetAsync();
 
@@ -95,7 +104,9 @@ to specified method.
         {
             throw new ArgumentException(String.Format("Option values count, {0}, does not match options text count, {1}.",optionsValues.Count, optionsText.Count));
         }
-        
+        if(Multiple & OnSelectFunction.HasDelegate){
+            throw new ArgumentException(String.Format("The OnSelectFunction parameter may not used in conjunction with the Multiple parameter set to true"));
+        }
     }
 
     //When option is selected this
@@ -112,5 +123,4 @@ to specified method.
             await OnSelectFunction.InvokeAsync(e.Value?.ToString());
         }
     }
-    
 }

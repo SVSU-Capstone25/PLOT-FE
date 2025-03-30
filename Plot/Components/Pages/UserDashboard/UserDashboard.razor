@@ -21,6 +21,8 @@ No author was given.
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
+@using System;
+@using System.Collections.Generic;
 
 <div class="mb-4">
     @* Users Table *@
@@ -69,12 +71,12 @@ No author was given.
                                 DropdownLinks="@(new List<string> { "#UpdateUserModal",
                                         "#DeleteUserModal" })" LabelText="Role"
                             DropdownIcons="@(new List<string>
-                                                                                                                                                                                                                                { "fa-solid fa-pen-to-square",
-                                                                                                                                                                                                                                "fa-regular fa-trash-can" })" />
+                                                { "fa-solid fa-pen-to-square",
+                                            "fa-regular fa-trash-can" })" />
                     </div>
                 </td>
             </tr>
-                        }
+            }
         </tbody>
     </table>
 
@@ -135,11 +137,11 @@ No author was given.
             @* Store Selection *@
 
             @* Available Stores *@
-            <div class="flex-container">
+            <div class="d-flex flex-row">
                 <div>
-                <OptionInput ID="UserAvailStores" label="Available Stores" optionsValues="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToArray()" 
-                optionsText="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToArray()" 
-                Class="user-option-input user-option-store" AllowEmpty=true, Multiple=true />
+                <OptionInput ID="UserAvailStores" label="Available Stores" optionsValues="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()" 
+                optionsText="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()" 
+                Class="user-option-input user-option-store" AllowEmpty Multiple />
 
                 <Button Class="Button" Id="buttonPickFromAvail" Variant="primary" TextAlignment="center"
                     OnClickFunction="PickFromAvail" IsDisabled="@isPickFromAvailDisabled"></Button>
@@ -148,7 +150,7 @@ No author was given.
                 <div>
                 @* Selected Stores *@
                 <OptionInput ID="UserSelStores" label="Selected Stores" optionsValues=@inEditUser.Stores optionsText=@inEditUser.Stores
-                    Class="user-option-input user-option-store", AllowEmpty=true, Multiple=true />
+                    Class="user-option-input user-option-store" AllowEmpty Multiple />
                 
                 <Button Class="Button" Id="buttonUnpickFromSel" Variant="primary" TextAlignment="center"
                     OnClickFunction="UnpickFromSel" IsDisabled="@isUnpickFromSelDisabled"></Button>
@@ -233,6 +235,23 @@ No author was given.
         element.value = option_value;
     }
 
+    function GetSelectedOptions(id){
+        /* Get all options selected from select-option */
+        let optionInput = document.getElementById(id);
+        let select = optionInput.getElementsByTagName("select")[0];
+        let options = select.getElementsByTagName("option");
+
+        let selected_options = [];
+
+        for (let option of options) {
+            if(option.selected){
+                selected_options.push(option.value);
+            }
+        }
+
+        return selected_options;
+    }
+
 </script>
 
 @code {
@@ -304,6 +323,9 @@ No author was given.
     // Id of next user if another is added initialized at 1
     private int nextUserId = 1;
 
+    private bool isPickFromAvailDisabled = false;
+    private bool isUnpickFromSelDisabled = false;
+
     /* Program runs on initialization */
     protected override void OnInitialized()
     {
@@ -321,7 +343,7 @@ No author was given.
                 LastName = "Cook",
                 Email = "clayton@company.com",
                 Role = "Owner",
-                Stores = new List<string> { "Store 1", "Store 2", "Store 3" };
+                Stores = new List<string> { "Store 1", "Store 2", "Store 3" }
 
             },
             new User {
@@ -330,7 +352,7 @@ No author was given.
                 LastName = "Miller",
                 Email = "andrew@company.com",
                 Role = "Manager",
-                Stores = new List<string> { "Store 4", "Store 5", "Store 6"};
+                Stores = new List<string> { "Store 4", "Store 5", "Store 6"}
             },
             new User {
                 Id = nextUserId++, // Id increments for the next user
@@ -338,7 +360,7 @@ No author was given.
                 LastName = "Smith",
                 Email = "jane@company.com",
                 Role = "Employee",
-                Stores = new List<string> { "Store 7", "Store 8", "Store 9"};
+                Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
             }
         };
 
@@ -367,7 +389,7 @@ No author was given.
 
         // Set selections back to header
         await JS.InvokeVoidAsync("SelectOption", "UserRole", optionHeader);
-        await JS.InvokeVoidAsync("SelectOption", "UserStore", optionHeader);
+        // await JS.InvokeVoidAsync("SelectOption", "UserStore", optionHeader);
 
         // Reset validity flags to false (start as empty)
         isFirstValid = false;
@@ -410,16 +432,6 @@ No author was given.
             ButtonText="Update User"
         };
 
-        // Set validity flags for editing
-        // Reset validity flags to true
-        isFirstValid = true;
-        isLastValid = true;
-        isEmailValid = true;
-        isRoleValid = true;
-        isStoreValid = true;
-
-        isUpdateUserDisabled = false; // Initially not disabled
-
         // Copy user info for editing in case "Edit" is clicked
         inEditUser = new User
         {
@@ -431,9 +443,21 @@ No author was given.
             Stores = selectedUser.Stores
         };
 
+        // Set validity flags for editing
+        // Reset validity flags to true
+        isFirstValid = true;
+        isLastValid = true;
+        isEmailValid = true;
+        isRoleValid = true;
+        isStoreValid = true;
+
+        SetStoreBtnDisabled(); // Set picking and unpicking buttons to enabled or disabled as appropriate
+
+        isUpdateUserDisabled = false; // Initially not disabled
+
         // Select the edited user's role and store
         await JS.InvokeVoidAsync("SelectOption", "UserRole", inEditUser.Role);
-        await JS.InvokeVoidAsync("SelectOption", "UserStore", inEditUser.Stores);
+        //await JS.InvokeVoidAsync("SelectOptionMulti", "UserStore", inEditUser.Stores);
 
         StateHasChanged();
     }
@@ -453,7 +477,7 @@ No author was given.
         // Hide add user modal
         await JS.InvokeVoidAsync("HideModal", "UpdateUserModal");
 
-        // Clean up Add User Modal
+        // Clean up Update User Modal
         CleanUpUpdateUser();
 
         StateHasChanged();
@@ -540,37 +564,50 @@ No author was given.
     // Set update user button to disabled
     private void SetUpdateUserDisabled()
     {
-        // These have to be filled for it to update
-        if (isFirstValid & isLastValid & isEmailValid
-        & isRoleValid & isStoreValid)
-        {
-            isUpdateUserDisabled = false;
-        }
-        else
-        {
-            isUpdateUserDisabled = true;
-        }
+        Console.WriteLine("Checking if button should be disabled");
+        Console.WriteLine("Store:" + isStoreValid);
+        isUpdateUserDisabled = !(isFirstValid & isLastValid & isEmailValid & isRoleValid & isStoreValid);
 
         StateHasChanged();
+    }
+
+    private void SetStoreBtnDisabled(){
+        isPickFromAvailDisabled = (stores.Count == inEditUser.Stores.Count);
+        isUnpickFromSelDisabled = (inEditUser.Stores.Count == 0);
+        isStoreValid = !isUnpickFromSelDisabled; // Some stores selected
     }
 
     // Set store for user being edited
     private async Task PickFromAvail()
     {
-        await stores_to_pick = getStoresToPick();
+        Console.WriteLine("Picking");
+        List<string> stores_to_pick = await JS.InvokeAsync<List<string>>("GetSelectedOptions", "UserAvailStores");
 
         inEditUser.Stores.AddRange(stores_to_pick);
+        inEditUser.Stores.Sort();
+
+        SetStoreBtnDisabled();
 
         // Set add button enabled or disabled
         SetUpdateUserDisabled();
+
+        StateHasChanged();
     }
 
-    private async Task UnPickFromSel(){
-        await stores_to_remove = getStoresToRemove();
-        inEditUser.Stores.Remove(stores_to_remove);
+    private async Task UnpickFromSel()
+    {
+        Console.WriteLine("unpicking");
+        List<string> stores_to_remove = await JS.InvokeAsync<List<string>>("GetSelectedOptions", "UserSelStores");
+
+        inEditUser.Stores.RemoveAll(store => stores_to_remove.Contains(store));
+        inEditUser.Stores.Sort();
+
+        SetStoreBtnDisabled();
 
         // Set add button enabled or disabled
         SetUpdateUserDisabled();
+
+        StateHasChanged();
     }
 
     // Set role for user being edited
@@ -773,7 +810,10 @@ No author was given.
         {
             Console.WriteLine("ID: " + user.Id + "Name: " +
             user.FirstName + " " + user.LastName + " Email: " +
-            user.Email + " Role: " + user.Role + " Store: " + user.Store);
+            user.Email + " Role: " + user.Role + " Stores:");
+            foreach (var store in user.Stores){
+                Console.WriteLine(store);
+            }
         }
     }
 }
