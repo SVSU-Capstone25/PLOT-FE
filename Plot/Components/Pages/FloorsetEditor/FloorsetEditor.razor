@@ -1063,7 +1063,6 @@ function isOverElement(boxRect, sidebarRect) {
     string ModalTotalLF = "";
     string ModalFixtureImg = "";
 
-    bool hasExpandedBefore = false;
     DotNetObjectReference<FloorsetEditor>? dotNet; // Reference to .NET functions in JS
 
     // SortedDictionary for holding all fixtures in alphabetical order.
@@ -1158,11 +1157,7 @@ function isOverElement(boxRect, sidebarRect) {
         The SetSearchEvent function calls a JS function to create a search input event listener.
     */
     public async Task SetSearchEvent() {
-
-        if (!hasExpandedBefore) {
-            hasExpandedBefore = true;
-            await JS.InvokeVoidAsync("searchInputChange");
-        }
+        await JS.InvokeVoidAsync("searchInputChange");
     }
 
 
