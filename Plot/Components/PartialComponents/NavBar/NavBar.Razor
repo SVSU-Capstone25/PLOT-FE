@@ -46,22 +46,10 @@ Updated: Luke Wollenweber (3/22/2025)-->
     </nav>
 </div>
 
-<script>
-    function hideBackground() 
-    {
-        document.querySelectorAll('.modal-backdrop')?.forEach(m=>m.remove());  
-    }
-</script>
-
 @code {
     [Parameter]
     public string? Id { get; set; }
 
     [Parameter]
     public string? Class { get; set; }
-
-    private async Task RemoveBackground()
-    {
-        await JS.InvokeVoidAsync("hideBackground");
-    }
 }
