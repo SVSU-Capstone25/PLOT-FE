@@ -16,6 +16,8 @@ Author: Andrew Fulton (3/12/2025)
 @inject IJSRuntime JS
 @using Plot.Components.PartialComponents.NumericInput
 @inject NavigationManager Navigation
+@using System.Drawing;
+@using System.IO;
 
 <PageTitle>Store Dashboard</PageTitle>
 
@@ -27,7 +29,7 @@ Author: Andrew Fulton (3/12/2025)
     {
         <div @onclick="(() => SetSelectedStore(store))">
             <Card CardText="@($"{store.City},{store.State}")" CardImage="@($"{store.Blueprint_Image}")">
-                <Dropdown Class="Test Dropdown" Id="@($"{store.Name}Dropdown")"
+                <Dropdown Class="Test Dropdown" Id="@($"{store.Name}{store.Id}Dropdown")"
                     DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
                     DropdownLinks="@(new List<string> { $"http://localhost:8080/floorsets/{store.City},{store.State}/{store.Address},{store.City},{store.State} {store.Zip}", "#editStoreModal", "#deleteStoreModal" })"
                     LabelText="Store"
@@ -479,14 +481,62 @@ Author: Andrew Fulton (3/12/2025)
             component.style.zIndex = intZValue;
         }
 
-    function FocusOnElement(elementId) {
+    @* function to try an focs on a specific element *@
+        function FocusOnElement(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                console.log(element +"focused on");
+                element.focus();
+            } else {
+                console.warn(`Element with ID '${elementId}' not found.`);
+            }
+        }
+
+    @* function to get the URL of the image from the elemebts style tag *@
+        function getBackgroundImageUrl(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                const style = window.getComputedStyle(element);
+                const backgroundImage = style.backgroundImage;
+                // Extract the URL from the backgroundImage string in the style tag
+                const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+                //return urlMatch[1], which is the data URL string
+                return urlMatch && urlMatch[1] ? urlMatch[1] : null;
+            }
+            return null;
+        }
+
+    @* function used to clear the imageInput background *@
+        function ClearBackgroundImage(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.style.backgroundImage = "none";
+                element.classList.add("dashed-border");
+            }
+        }
+
+    function SetBackgroundImage(elementId, strUrl) {
         const element = document.getElementById(elementId);
         if (element) {
-            element.focus();
-        } else {
-            console.warn(`Element with ID '${elementId}' not found.`);
+            element.style.backgroundImage = strUrl;
+            element.classList.remove("dashed-border");
         }
     }
+
+    @*  *@
+    function ForceCloseModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = "none"; 
+            modal.setAttribute("aria-hidden", "true"); 
+            //modal.classList.remove("show"); 
+            //document.body.classList.remove("modal-open"); 
+            document.activeElement?.blur(); 
+            document.querySelector('.modal-backdrop')?.remove();
+            document.querySelector('.modal-backdrop')?.remove();
+        }
+}
+
 
 </script>
 
@@ -553,7 +603,7 @@ Author: Andrew Fulton (3/12/2025)
     private bool isZipValidEdit = true;
     private bool isWidthValidEdit = true;
     private bool isHeightValidEdit = true;
-    //private bool isBlueprintValidEdit = true;
+    private bool isBlueprintValidEdit = true;
 
 
 
@@ -758,12 +808,12 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     }
 
     // Set selected user to user in row clicked upon
-    private void SetSelectedStore(Store store)
+    private async Task SetSelectedStore(Store store)
     {
-        // User of row clicked is selected user
+        // Store of blocl clicked is selected store
         selectedStore = store;
 
-        // Copy user info for editing in case "Edit" is clicked
+        // Copy store info for editing in case "Edit" is clicked
         editedStoreInfo = new Store
         {
             Id = selectedStore.Id,
@@ -774,8 +824,11 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
             Zip = selectedStore.Zip,
             Width = selectedStore.Width,
             Height = selectedStore.Height,
-            Blueprint_Image = "img/LayoutPhotoExample.png"
+            Blueprint_Image = selectedStore.Blueprint_Image
         };
+
+        //SetBackgroundImage(elementId, strUrl)
+        await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.Blueprint_Image);
 
         StateHasChanged();
     }
@@ -786,11 +839,13 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     {
         var index = stores.FindIndex(s => s.Id == selectedStore.Id);
         stores[index] = editedStoreInfo;
+        //get the image for the store
+        stores[index].Blueprint_Image = await getImageUrlEdit();
 
         // Hide edit user modal
-        await JS.InvokeVoidAsync("HideModal", "editStoreModal");
+        //await JS.InvokeVoidAsync("HideModal", "editStoreModal");
 
-        CleanUpEdit(); // Clear information in Edit User Modal
+        await CleanUpEdit(); // Clear information in Edit User Modal
 
         StateHasChanged(); // Table is updated to reflect changes
     }
@@ -798,7 +853,6 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
 
     private async Task AddStore()
     {
-
         stores.Add
         (
         new Store
@@ -811,21 +865,17 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
             Zip = storeToAdd.Zip,
             Width = storeToAdd.Width,
             Height = storeToAdd.Height,
-            Blueprint_Image = "img/LayoutPhotoExample.png"
+            Blueprint_Image = await getImageUrlAdd()
+            //Blueprint_Image = "img/LayoutPhotoExample.png"
         }
         );
 
         //reset storeToAdd
         storeToAdd = new Store();
 
-        // Hide add user modal and clear the users being added
-        await JS.InvokeVoidAsync("HideModal", "addStoreModal");
 
-        //clear the add store modal fields
+        //clear the add store modal fields and close it
         await CleanUpAdd();
-
-        //set focus on the main page after the add store modal closed
-        await JS.InvokeVoidAsync("FocusOnElement", "MainStoresDiv");
 
         StateHasChanged();
 
@@ -851,7 +901,7 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     private void SetEditDisabled()
     {
         if (isNameValidEdit & isAddressValidEdit & isCityValidEdit
-        & isStateValidEdit & isZipValidEdit & isHeightValidEdit & isWidthValidEdit)
+        & isStateValidEdit & isZipValidEdit & isHeightValidEdit & isWidthValidEdit & isBlueprintValidEdit)
         {
             isEditDisabled = false;
         }
@@ -932,12 +982,16 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
 
         //clear out the added users for the new store
         await JS.InvokeVoidAsync("clearDivExceptById", "employeesAdd", "addStoreAddUserDiv");
+        //clear the image from the store BP imageInput coponent
+        await JS.InvokeVoidAsync("ClearBackgroundImage", "addModalStoreBlueprint");
+        //close the modal 
+        await JS.InvokeVoidAsync("ForceCloseModal", "addStoreModal");
 
         StateHasChanged();
     }
 
     /* For Edit Store */
-    private void CleanUpEdit()
+    private async Task CleanUpEdit()
     {
         // Selected Store no longer selected
         selectedStore = new Store();
@@ -953,16 +1007,22 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         blueprintErrorEdit = "";
 
         // Reset validity flags to true
-        isNameValidEdit = false;
-        isAddressValidEdit = false;
-        isCityValidEdit = false;
-        isStateValidEdit = false;
-        isZipValidEdit = false;
-        isWidthValidEdit = false;
-        isHeightValidEdit = false;
+        isNameValidEdit = true;
+        isAddressValidEdit = true;
+        isCityValidEdit = true;
+        isStateValidEdit = true;
+        isZipValidEdit = true;
+        isWidthValidEdit = true;
+        isHeightValidEdit = true;
+        isBlueprintValidEdit = true;
 
         // Set Save Changes Button to enabled
         isEditDisabled = false;
+
+        //clear the image from the store BP imageInput coponent
+        await JS.InvokeVoidAsync("ClearBackgroundImage", "editModalStoreBlueprint");
+        //close the modal
+        await JS.InvokeVoidAsync("ForceCloseModal", "editStoreModal");
 
         StateHasChanged();
     }
@@ -1392,5 +1452,28 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         isHeightValidEdit = IsTextPresent(text);
         SetEditDisabled();
     }
+
+    @* function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
+    private async Task<string> getImageUrlAdd()
+    {
+        string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "addModalStoreBlueprint");
+
+        // Check if the string is null or empty, return default image if true
+        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
+    }
+
+    @* function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
+    private async Task<string> getImageUrlEdit()
+    {
+        string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "editModalStoreBlueprint");
+        //Console.WriteLine(strImageUrl);
+        //check if a picture has been chosen
+        isBlueprintValidEdit = true;
+        //SetEditDisabled();
+        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
+    }
+
+
+
 
 }
