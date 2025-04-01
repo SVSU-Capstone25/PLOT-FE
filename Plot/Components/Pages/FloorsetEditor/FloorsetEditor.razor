@@ -615,7 +615,7 @@
     newBox.id = new Date().getTime(); // Unique ID
     container.appendChild(newBox);
 
-    newBox.className = "box";
+    newBox.className = "employee";
     newBox.style.position = "absolute";
     var boxSize = size.split("x");
     newBox.style.height = boxSize[0] * height + "px";
@@ -682,7 +682,7 @@
         newBox.id = new Date().getTime(); // Unique ID based on timestamp
         container.appendChild(newBox);
 
-        newBox.className = "box";
+        newBox.className = "employee";
         newBox.style.position = "absolute";
         var boxSize = size.split("x");
         newBox.style.height = boxSize[0] * height + "px";
@@ -789,11 +789,13 @@
 
                 // While dragging, if the box overlaps another, remove that box
                 Array.from(container.children).forEach(function (child) {
-                    if (child.className === "box" && child !== newBox) {
+                    if (child.className === "employee" && child !== newBox) {
                         var childRect = child.getBoundingClientRect();
                         var eraserRect = newBox.getBoundingClientRect();
-                        if (checkErase(eraserRect, childRect)) {
-                            container.removeChild(child); // Remove the overlapping box
+                        if (checkEraseOverlap(eraserRect, childRect)) {
+                            if (checkErase(eraserRect, childRect)) {
+                                container.removeChild(child); // Remove the overlapping box
+                            }
                         }
                     }
                 });
@@ -814,37 +816,29 @@
             newBox.dispatchEvent(evt);
         }, 10);
 
-
-
-        @* // This event listener handles the click event
-        document.addEventListener("mousedown", function (event) {
-            if (isErasingEnabled) {
-                eraseEmployeeBoxes(event, size, color);
-                document.addEventListener("mousemove", function (event) {
-                    if (isErasingEnabled) {
-                        eraseEmployeeBoxes(event, size, color);
-                    }
-                });
-            }
-        }); *@
-
         // On mouse up, set the flag to false to stop erasing
         document.addEventListener("mouseup", function () {
             isErasingEnabled = false;
-            document.removeEventListener("mousedown", eraseEmployeeBoxes);
-            document.removeEventListener("mousemove", eraseEmployeeBoxes);
         });
 
         // This method checks whether or not there is an overlap between two elements
         function checkErase(eraserRect, boxRect) {
-            console.log("eraser: " + eraserRect);
-            console.log("rect: " + boxRect);
             return (eraserRect.top < boxRect.bottom &&
                 eraserRect.bottom > boxRect.top &&
                 eraserRect.left < boxRect.right &&
                 eraserRect.right > boxRect.left);
         }
     }
+//this method checks whether the eraser is directly over a cell
+function checkEraseOverlap(draggableEraser, rectToErase) {
+    var eraseFound = false;
+    if (draggableEraser.top > rectToErase.top - 2 && draggableEraser.bottom > rectToErase.bottom - 2 &&
+        draggableEraser.left > rectToErase.left - 2 && draggableEraser.right > rectToErase.right - 2) {
+        eraseFound = true;
+    }
+    return eraseFound;
+}
+
 
 //this method checks whether or not there is an overlap between the passed element and any child element in the container
 function isOverlapping(draggableRect, containerElement) {
@@ -853,7 +847,7 @@ function isOverlapping(draggableRect, containerElement) {
     var draggableArea = draggableRect.getBoundingClientRect();
 
     Array.from(children).forEach(function(child) {
-        if (child.className === "box" && child !== draggableRect) {
+        if ((child.className === "box" || child.className === "employee") && child !== draggableRect) {
             var area = child.getBoundingClientRect();
             if (draggableArea.top < area.bottom && draggableArea.bottom > area.top &&
                 draggableArea.left < area.right && draggableArea.right > area.left) {
