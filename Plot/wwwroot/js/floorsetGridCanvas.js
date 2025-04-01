@@ -1,4 +1,3 @@
-// PLOT-FE/Plot/wwwroot/js/floorsetGridCanvas.js
 const floorsetGrid = (function () {
     let sketchInstance = null;
 
@@ -23,17 +22,18 @@ const floorsetGrid = (function () {
     class Grid {
         constructor(sketch) {
             this.sketch = sketch;
-            this.x = 15;
-            this.y = 15;
+            this.x = 100;
+            this.y = 100;
             this.size = 30;
             this.racks = [];
+            this.scale = 1;
             this.resize();
         }
 
         toGridCoordinates(x, y) {
             return {
-                x: Math.floor((x - this.translate.x) / this.size),
-                y: Math.floor((y - this.translate.y) / this.size),
+                x: Math.floor((x - this.translate.x) / (this.size * this.scale)),
+                y: Math.floor((y - this.translate.y) / (this.size * this.scale)),
             };
         }
 
@@ -55,8 +55,8 @@ const floorsetGrid = (function () {
 
         resize() {
             this.translate = {
-                x: this.sketch.width / 2 - (this.size * this.x) / 2,
-                y: this.sketch.height / 2 - (this.size * this.y) / 2
+                x: this.sketch.width / 2 - (this.size * this.x * this.scale) / 2,
+                y: this.sketch.height / 2 - (this.size * this.y * this.scale) / 2,
             };
         }
 
@@ -65,6 +65,7 @@ const floorsetGrid = (function () {
             this.sketch.stroke(0, 100);
             this.sketch.strokeWeight(1);
             this.sketch.translate(this.translate.x, this.translate.y);
+            this.sketch.scale(this.scale);
             for (let y = 0; y < this.y; y++) {
                 for (let x = 0; x < this.x; x++) {
                     const x1 = x * this.size,
@@ -93,30 +94,34 @@ const floorsetGrid = (function () {
                     canvas.style("position", "absolute");
                     canvas.style("top", "0px");
                     canvas.style("left", "0px");
-                    // sketch.pixelDensity(6);
 
                     grid = new Grid(sketch);
                     paint = sketch.color(255, 0, 0);
-
-                    // // Attach drag handlers to Blazor-rendered elements
-                    // document.querySelectorAll('[draggable="true"]').forEach(item => {
-                    //     item.ondragstart = (e) => {
-                    //         const width = Number(e.target.getAttribute("data-width"));
-                    //         const height = Number(e.target.getAttribute("data-height"));
-                    //         dataTransfer = { width, height };
-                    //     };
-                    // });
                 };
 
                 sketch.draw = () => {
                     sketch.background(220);
+                    sketch.push();
                     grid.draw();
                     mouseRack?.draw(grid.size);
+                    sketch.pop();
                 };
 
                 sketch.windowResized = () => {
                     sketch.resizeCanvas(sketch.windowWidth, sketch.windowHeight);
                     grid.resize();
+                }
+
+                sketch.mouseWheel = (event) => {
+                    if (event.delta > 0) {
+                        grid.scale += 0.1;
+                    } else {
+                        grid.scale -= 0.1;
+                    }
+
+                    grid.scale = Math.max(0.1, grid.scale);
+                    grid.resize();
+                    return false;
                 }
 
                 sketch.mousePressed = () => {
@@ -153,10 +158,11 @@ const floorsetGrid = (function () {
                 };
 
                 sketch.mouseReleased = () => {
-                    if (mouseRack) {
-                        grid.racks.push(mouseRack);
-                        mouseRack = undefined;
-                    }
+                    if (!mouseRack) return;
+
+                    grid.racks.push(mouseRack);
+                    mouseRack = undefined;
+                    window.draggedRack = undefined;
                 };
             }, document.querySelector("div#grid-area"));
         }
