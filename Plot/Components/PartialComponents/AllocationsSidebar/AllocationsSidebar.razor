@@ -9,6 +9,8 @@ and allocate floorsets for Platos Closet.
 
 Author: Tristan Calay (3/15/2025)-->
 
+@inject IJSRuntime JS
+
 <div class="inner-container">
     <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
     <hr style="opacity: 1.0; color:black;">
@@ -24,9 +26,17 @@ Author: Tristan Calay (3/15/2025)-->
                     Class="w-100" />
             </div>
 
-            <div class="col-md-2">
+            @* id of sorting button follows the style "sortButton" + num, from 0 to n, where n is num sort buttons - 1.
+                Call JS.swapSortButtons(num) in the OnClickFunction to cycle to the next sort button in JS. *@
+            <div class="col-md-2" id="sortButton0">
                 <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-arrow-up-short-wide"
-                    OnClickFunction="sortCategory" Class="search-button" TextAlignment="center" />
+                    OnClickFunction="sortAscending" Class="search-button" TextAlignment="center" />
+            </div>
+
+            @* Hide the buttons not currently active via display : none *@
+            <div class="col-md-2" id="sortButton1" style="display: none;">
+                <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-arrow-down-wide-short"
+                    OnClickFunction="sortDescending" Class="search-button" TextAlignment="center" />
             </div>
 
             <div class="col-md-2">
@@ -47,13 +57,7 @@ Author: Tristan Calay (3/15/2025)-->
             {
                 //Continue to next category if the search filter is active
                 //  and the search filter is not in the bar text.
-                @if (categorySearch != "")
-                {
-                    @if (!bar.isInSearch(categorySearch))
-                    {
-                        continue;
-                    }
-                }
+                //  Exclude headers from being skipped.
                 @if (bar.isHeader)
                 {
                     <hr class="category-separator">
@@ -61,16 +65,28 @@ Author: Tristan Calay (3/15/2025)-->
                         barValue=@bar.currentValue barLabel=@bar.getLinearFeet() />
                 }
                 else 
-                {
-                    <ProgressBar mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
-                        barValue=@bar.currentValue barLabel=@bar.getLinearFeet() />
+                { 
+                    @if (bar.isInSearch(categorySearch))
+                    {
+                        <ProgressBar mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
+                            barValue=@bar.currentValue barLabel=@bar.getLinearFeet() />       
+                    }
                 }
             }
         </div>
     </div>
 </div>
 
-
+<script>
+    //NumSortButtons needs to be equal to the number of sorting buttons defined in the html above.
+    var numSortButtons = 2;
+    function swapSortButtons(sortButtonNum)
+    {
+        var nextButtonNum = (sortButtonNum + 1) % numSortButtons;
+        document.getElementById("sortButton" + sortButtonNum).style.display = "none";
+        document.getElementById("sortButton" + nextButtonNum).style.display = "";
+    }
+</script>
 
 @code
 {
@@ -112,7 +128,10 @@ Author: Tristan Calay (3/15/2025)-->
 
         public bool isInSearch(String searchText)
         {
-            return (headerCategory + " " + text).ToLower().StartsWith(searchText.ToLower());
+            if (searchText == ""){
+                return true;
+            }
+            return (headerCategory + " " + text).ToLower().Contains(searchText.ToLower());
         }
 
         public Double getPercent()
@@ -203,18 +222,36 @@ Author: Tristan Calay (3/15/2025)-->
 
     //Tristan Calay 3/29/25
     //Generic sort - Sort by alphabetical with headers first.
-    private void sortCategory()
+
+    enum SORTTYPE {ASCENDING, DESCENDING};
+
+    @* Create functions for sorting in different ways here. 
+        They should invoke swapSortButtons with the 
+        corresponding ID of the button that called the sort func.*@
+    private void sortAscending()
+    {
+        sortCategory(SORTTYPE.ASCENDING);
+        JS.InvokeVoidAsync("swapSortButtons",0);
+    }
+    private void sortDescending()
+    {
+        sortCategory(SORTTYPE.DESCENDING);
+        JS.InvokeVoidAsync("swapSortButtons",1);
+    }
+
+    @* Sort each sub category of items by the sorttype value. *@
+    private void sortCategory(SORTTYPE sort)
     {
         Console.WriteLine("Sort Category Search Function");
-        progressCategoriesMen.Sort((a,b) => compareCategories(a,b));
-        progressCategoriesWomen.Sort((a,b) => compareCategories(a,b));
-        progressCategoriesAccessories.Sort((a,b) => compareCategories(a,b));
+        progressCategoriesMen.Sort((a,b) => compareCategories(a,b,sort));
+        progressCategoriesWomen.Sort((a,b) => compareCategories(a,b,sort));
+        progressCategoriesAccessories.Sort((a,b) => compareCategories(a,b,sort));
 
         StateHasChanged();
     }
 
     //Sorting function for category data.
-    private int compareCategories(categoryData a, categoryData b)
+    private int compareCategories(categoryData a, categoryData b, SORTTYPE sort)
     {
         //Both are null, return equivalent
         if (a.Equals(null) && b.Equals(null))
@@ -238,7 +275,14 @@ Author: Tristan Calay (3/15/2025)-->
             }
             //Console.WriteLine("Standard Sort!");
             //Sort here by percent complete. To do different sort methods, add them here.
-            return (a.getPercent()).CompareTo(b.getPercent());
+            switch(sort)
+            {
+                case SORTTYPE.ASCENDING:
+                    return (a.getPercent()).CompareTo(b.getPercent());
+                case SORTTYPE.DESCENDING:
+                    return (b.getPercent()).CompareTo(a.getPercent());
+            }
+            
         }
 
         //First not null, return first
