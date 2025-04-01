@@ -19,12 +19,15 @@
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 @page "/floorset-editor"
+@using Microsoft.AspNetCore.SignalR
+@using Microsoft.Extensions.Options
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
 @using Plot.Components.PartialComponents.OptionInput
 @using Plot.Components.PartialComponents.TextInput
 @using Plot.Components.PartialComponents.Modal
 @using Plot.Components.PartialComponents.FileInput
+@using System.Text
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
@@ -104,11 +107,11 @@
                     @foreach (Fixture currFixture in fixtures.Values)
                     {
 
-                     <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name"
+                     <div class="fixture mb-3" data-value="@currFixture.Name"
                         @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width, "green"))" draggable="true"
                         @ondragstart:preventDefault="true">
                             <div class="drag-start-area d-flex flex-row">
-                                <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="">
+                                <img class="fixture-img disable-select grab-cursor" src=@(currFixture.FixtureImg) alt="">
                                 <p class="fixture-text m-2 disable-select grab-cursor">@currFixture.Name</p>
                             </div>
                             @{
@@ -337,7 +340,6 @@
             <NumericInput Id="add-hanger-stack" Label="Hanger Stack" Placeholder="2" Description="Enter the number of vertically stacked racks"
             Value="@ModalHangerStack" ValueChanged="@(v => {
                         ModalHangerStack = v; 
-                        ModalFixtureImg = v;
                         
                         // If the LF capacity and the hanger stack have values, calculate total LF
                         if (ModalLFCapacity.Equals("") || ModalHangerStack.Equals("")) {
@@ -389,7 +391,7 @@
     List<string> links = new List<string> { "#editFixture-" + id, "#deleteFixture-" + id };
 
 
-    <Modal Class="modal-xl fixture-modal" Id="@("editFixture-" + id)" Title="Edit Fixture">
+    <Modal Class="modal-xl editFixture fixture-modal" Id="@("editFixture-" + id)" Title="Edit Fixture">
         <BodyContent>
             <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@name" ValueChanged="@(e=>name=e)" />
             <div class="d-flex flex-row align-items-center justify-content-between">
@@ -792,10 +794,10 @@ function isOverElement(boxRect, sidebarRect) {
         The addFixtureClose function adds an event listener to the add button in the Add Fixture modal.
     */
     function addFixtureClose(dotNet) {
-        $("#addFixture").on('hidden.bs.modal', function (e) {
+        $(".modal").on('hidden.bs.modal', function (e) {
             // Call the C# function to clear the data from the Add Fixture modal
             dotNet.invokeMethodAsync("ClearTempFixtureData");
-            
+        
             // Clear the data from the image input
             var imgInput = document.querySelector('#addFixture .img-input .ImageInput');
             imgInput.style.backgroundImage = "";
@@ -803,6 +805,8 @@ function isOverElement(boxRect, sidebarRect) {
 
             // Remove the modal-backdrop on close
             document.querySelectorAll('.modal-backdrop')?.forEach(m=>m.remove());
+        
+            
             
         })
     }
@@ -851,7 +855,7 @@ function isOverElement(boxRect, sidebarRect) {
             }
             else 
             { 
-                if (document.getElementById(modalId) != undefined) {
+                if (document.getElementById(modalId) !== null) {
                     // Otherwise, remove all residuals of the modal
                     document.body.style.removeProperty("overflow");
                     document.body.style.removeProperty("padding-right");
@@ -868,10 +872,25 @@ function isOverElement(boxRect, sidebarRect) {
         The imageEventListener function creates an event listener for the image inputs on the modals.
     */
     function imageEventListener(dotNet) {
-        document.querySelectorAll('.img-input').forEach(i=>i.firstChild.addEventListener('change',(e)=>{
-            console.log(e.target);
-            dotNet.invokeMethodAsync("UpdateImage",e.target.value);
-        }));
+        setTimeout(()=>{
+            Array.from(document.querySelectorAll('.ImageInput')).forEach(i=>i.getElementsByTagName("input")[0].addEventListener('change',(e)=>{
+                setTimeout(()=>{                    
+                    console.log(i.style.backgroundImage.substring(5,i.style.backgroundImage.length-3));
+                    dotNet.invokeMethodAsync("UpdateImage", i.style.backgroundImage.substring(5,i.style.backgroundImage.length-3)); 
+                },50);
+            }));
+        },25);
+    }
+
+    function exportImageAndGetBase64Length(id) {
+        return document.getElementById(id).style.backgroundImage.length;        
+    }
+
+    //get part of the generated string
+    function getChunk(imgDivID,startIndex, endIndex) {
+        var imgDiv = document.getElementById(imgDivID);
+        var imgSrc = imgDiv.style.backgroundImage.substring(5,imgDiv.style.backgroundImage.length-3)
+        return imgSrc.substring(startIndex, endIndex);
     }
 
     /*
@@ -1064,6 +1083,7 @@ function isOverElement(boxRect, sidebarRect) {
 
     bool hasExpandedBefore = false;
     DotNetObjectReference<FloorsetEditor>? dotNet; // Reference to .NET functions in JS
+    private Dictionary<string, ElementReference> imgDivElements = new Dictionary<string, ElementReference>();
 
     // SortedDictionary for holding all fixtures in alphabetical order.
     private SortedDictionary<string, Fixture> fixtures = new()
@@ -1148,6 +1168,8 @@ function isOverElement(boxRect, sidebarRect) {
             await JS.InvokeVoidAsync("imageEventListener",dotNet);
             await JS.InvokeVoidAsync("addFixtureClose",dotNet);
             
+
+            
             
             
         }
@@ -1205,8 +1227,32 @@ function isOverElement(boxRect, sidebarRect) {
     */
     [JSInvokable]
     public void UpdateImage(string value) {
-        Console.WriteLine(value);
+        ModalFixtureImg = value;
+        Console.WriteLine(value.Length);
     }
+
+
+    @* public async Task<StringBuilder> GetLongStringFromJS(string id) {
+        int fileLength = await JS.InvokeAsync<int>("exportImageAndGetBase64Length", id);
+
+        HubOptions a = new HubOptions();
+        int maximumSingnalRMessageSize = (a.MaximumReceiveMessageSize == null || a.MaximumReceiveMessageSize > 32768) ? 32768 : (int)a.MaximumReceiveMessageSize;
+
+        int chunkLength = (int)maximumSingnalRMessageSize / sizeof(char);
+
+        StringBuilder sb = new StringBuilder();
+        for (int startIndex = 0, endIndex = chunkLength; startIndex <= fileLength; startIndex += chunkLength, endIndex += chunkLength) {
+            if (endIndex > fileLength + 1)
+                endIndex = fileLength + 1;
+            
+            string chunk = await JS.InvokeAsync<string>("getChunk",id, startIndex, endIndex);
+            sb.Append(chunk);
+        }
+
+        this.StateHasChanged();
+        return sb; //do somthing with your string
+        
+    } *@
 
     /* END FIXTURE CODE */
 
@@ -1215,6 +1261,7 @@ function isOverElement(boxRect, sidebarRect) {
     private bool buildingWallsExpanded = false;
     private bool allocationsOpen = false;
     private bool addFixtureExpanded = false;
+    
 
     private void ToggleBuildingWalls()
     {
@@ -1234,6 +1281,7 @@ function isOverElement(boxRect, sidebarRect) {
         {
             await SetSearchEvent();
             buildingWallsExpanded = false;
+
         }
     }
 
@@ -1285,6 +1333,8 @@ function isOverElement(boxRect, sidebarRect) {
         }
         await JS.InvokeVoidAsync("UpdateGridDimensions", length, width);
     }
+
+   
 
     private IBrowserFile? selectedFile;
 

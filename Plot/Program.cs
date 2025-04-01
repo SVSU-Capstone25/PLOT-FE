@@ -11,6 +11,10 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
 {
     options.DetailedErrors = true;
 });
+builder.Services.AddServerSideBlazor().AddHubOptions(x =>
+{
+    x.MaximumReceiveMessageSize = 10000000;
+});
 
 
 var app = builder.Build();
