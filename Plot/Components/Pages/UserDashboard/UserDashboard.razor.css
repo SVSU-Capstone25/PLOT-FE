@@ -17,17 +17,40 @@ Author: Josh Rodack (2/10/2025) */
 
 }
 
-/* Andrew  Miller - (3/19/2025) - 
-For Error Message on validation*/
-.error {
-    color: red;
-    font-size: 0.9rem;
-    margin-top: 0.25rem;
-}
-
 /* Andrew  Miller - (3/22/2025) */
 
+/* User dashboard */
+
 /* Table columns */
+
+.user-dashboard{
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    box-sizing: border-box;
+}
+
+.table-set{
+    flex-grow:1;
+    height: 95%;
+    overflow:auto;
+}
+
+.add-btn-container{
+    align-self: flex-end;
+    display: flex;
+    margin:0px;
+    height:10%;
+}
+
+.add-btn {
+    align-self: flex-end;
+    width: calc(50/16 * 1rem);
+    margin:0px;
+    padding:0px;
+    width:100%;
+}
+
 .name_column {
     width: 20%;
 }
