@@ -27,6 +27,8 @@
 }
 
 .fixture {
+    display: flex;
+    flex-direction: row;
     border-radius: 4px;
     align-items: center;
 }
