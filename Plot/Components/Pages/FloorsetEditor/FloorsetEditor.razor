@@ -667,7 +667,7 @@
     /*
         The alertUser function sends an alert to the user with a given message.
     */
-    function alertUser(msg) {
+    function displayAlert(msg) {
         alert(msg);
     }
 
@@ -855,13 +855,13 @@
             } else {
                 string nullProperties = currFixture.FindNullProperties();
                 // If not, tell the user to fill out all fields.
-                await JS.InvokeVoidAsync("alertUser","Please fill out all fields. " + nullProperties + " are blank.");
+                await JS.InvokeVoidAsync("displayAlert","Please fill out all fields. " + nullProperties + " are blank.");
             }
             
         } catch (ArgumentException)
         {
             // If the name matches an existing fixture, tell the user to choose another name.
-            await JS.InvokeVoidAsync("alertUser",
+            await JS.InvokeVoidAsync("displayAlert",
                 "A fixture with that name has already been used.  Please choose another name.");
         }
 
@@ -882,7 +882,7 @@
         } else {
             string nullProperties = currFixture.FindNullProperties();
             // If not, tell the user to fill out all fields.
-            await JS.InvokeVoidAsync("alertUser","Please fill out all fields. " + nullProperties + " are blank.");
+            await JS.InvokeVoidAsync("displayAlert","Please fill out all fields. " + nullProperties + " are blank.");
         }        
 
     }
