@@ -38,7 +38,7 @@
 <SlideOut Id="FloorsetSlideOut">
     @if (allocationsOpen)
     {
-        <AllocationsSidebar />
+        <AllocationsSidebar @ref="allocationsSidebar"/>
 
         <div class="toolbar-buttons">
             @*Edit Fixture Button *@
@@ -46,13 +46,12 @@
                 TextAlignment="center" />
 
             @*Paint Category Button *@
-            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="paintCategory"
-                TextAlignment="center" />
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="togglePaintClicked"
+                TextAlignment="center"/>
 
             @*Erase Category Button *@
-            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategory"
-                TextAlignment="center" />
-
+            <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategoryClicked"
+                TextAlignment="center"/>
 
             @*View Fullfillment Button *@
             <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eye" OnClickFunction="viewFulfillment"
@@ -492,6 +491,26 @@
 <script src="js/floorsetEditor.js"></script>
 
 @code {
+    @* Tristan Calay 3/28/25
+    The allocations sidebar reference allows methods to be called from here to the sidebar.
+    It should be set by @ref in the page layout above.
+     *@
+    private AllocationsSidebar? allocationsSidebar;
+
+    @* Tristan Calay 3/30/25
+    The paint mode button adds the return of getPaintClass() to its class when clicked.
+    Track paint mode here.*@
+
+    private bool paintModeEnabled = false;
+    private String getPaintClass()
+    {
+        if (paintModeEnabled)
+        {
+            //TODO - Somehow, apply styling to the buttons when they get clicked! Adding a class here does not work.
+            return "";
+        }
+        return "";
+    }
 
     /*
         The Fixture class stores data for a fixture.
@@ -848,14 +867,26 @@
         allocationsOpen = false;
     }
 
-    private void paintCategory()
+    //The paintCategory button toggles the paint mode of the floorset editor.
+    //It passes that information to the javascript.
+    private async Task togglePaintClicked()
     {
-        Console.WriteLine("Paint Category Function");
+        paintModeEnabled = !paintModeEnabled;
+        Console.WriteLine("Paint Category Function - set paint mode to "+paintModeEnabled);
+        await JS.InvokeVoidAsync("setPaintEnabled",paintModeEnabled);
+        StateHasChanged();
     }
 
-    private void eraseCategory()
+    private async Task eraseCategoryClicked()
     {
         Console.WriteLine("Erase Category Function");
+        await JS.InvokeVoidAsync("clearPaintColor");
+
+        //Call the func in AllocationsSidebar to remove the styling of the selected category.
+        if (allocationsSidebar != null)
+        {
+            await allocationsSidebar.clearSelectedCategory();
+        }
     }
 
     private void viewFulfillment()
