@@ -1,8 +1,3 @@
-html,
-body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-
 a,
 .btn-link {
     color: #006bb7;
@@ -72,141 +67,190 @@ h1:focus {
     1 rem is typically 16 px. This approach makes using inspect element
     easier to debug and adjust styles. */
 
-/* Take up available space for TextInputs */
-#FirstNameAdd,
-#FirstNameEdit {
-    flex: 1;
+/* Todo: Flex-box user info modal into columns and then put labels up top */
+
+.user-info-modal .modal-body {
+    height: fit-content;
+    overflow-y: auto;
+    /* Scrolls if window height is too small*/
 }
 
-#LastNameAdd,
-#LastNameEdit {
-    flex: 1;
+.user-info-modal .user-option-store {
+    display: flex;
+    flex-direction: column;
+    /* Stack the label in store OptionInput on top of Select */
 }
 
-#EmailAdd,
-#EmailEdit {
-    flex: 1;
+.user-info-modal .user-option-store-half {
+    box-sizing: border-box;
 }
 
-#AddUserModal .text-input-container,
-#AddUserModal .OptionInput,
-#EditUserModal .text-input-container,
-#EditUserModal .OptionInput {
+.user-info-modal .user-option-store-half h5 {
+    width: 100%;
+    margin-left: calc(25/16 * 1rem);
+    box-sizing: border-box;
+}
+
+.user-info-modal .user-option-store-half .OptionInput select {
+    margin: 0px;
+    padding: 0px;
+    height: calc(155/16 * 1rem);
+    /* Height of select elements for stores*/
+    overflow: auto;
+    /* Scroll as necessary */
+}
+
+.user-info-modal .user-option-store-half .Button {
+    width: calc(150/16 * 1rem) !important;
+}
+
+.user-info-modal .user-option-store-left {
+    margin-right: calc(57/16 * 1rem);
+}
+
+.user-info-modal .user-option-store-left .btn-container {
+    margin-left: 0px;
+    margin-right: calc(5/16 * 1rem);
+    padding: 0px;
+    float: right;
+}
+
+.user-info-modal .user-option-store-left .OptionInput select {
+    margin-left: calc(4/ 16*1rem);
+}
+
+.user-info-modal .user-option-store-right .OptionInput select {
+    margin-right: calc(4/ 16*1rem);
+}
+
+.user-info-modal .user-option-store-right {
+    margin-left: calc(57/16 * 1rem);
+}
+
+.user-info-modal .user-option-store-right div {
+    margin-left: 0px;
+}
+
+.user-info-modal .user-option-store.right .OptionInput h5 p {
+    padding-left: calc(14/16*1rem);
+}
+
+.user-info-modal .user-option-store-right .btn-container {
+    margin: 0px;
+    padding: 0px;
+    float: left;
+}
+
+.user-info-modal .text-input-container,
+.user-info-modal .OptionInput {
     display: flex;
     align-items: center;
 }
 
+.user-info-modal .text-input-container .TextInput {
+    flex: 1;
+}
+
+.user-info-modal .OptionInput select {
+    flex: 1;
+}
+
 /*  Classes of divs holding TextInput or OptionInput in
-     Users Dashboard
- */
-.holds-first-name {
+    Users Dashboard
+*/
+.user-info-modal .holds-first-name {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
 
-.holds-last-name {
+.user-info-modal .holds-last-name {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
 
-.holds-email {
+.user-info-modal .holds-email {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
 
-#RoleAdd,
-#RoleEdit {
-    margin-bottom: calc(25/16 * 1rem) !important;
-}
-
-#StoreAdd,
-#StoreEdit {
+.user-info-modal .OptionInput {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
 
 /*  Handling labels within components 
-     Note: TextInput uses the label
-     element and OptionInput uses h5
-     with a p element inside it*/
-.holds-last-name label {
+    Note: TextInput uses the label
+    element and OptionInput uses h5
+    with a p element inside it*/
+
+.user-info-modal .holds-last-name label {
     margin-right: calc(12/16 * 1rem) !important;
 }
 
-.holds-email label {
+.user-info-modal .holds-email label {
     margin-right: calc(50/16 * 1rem) !important;
 }
 
 /* Handles select boxes in OptionInput component */
-#AddUserModal .OptionInput select,
-#EditUserModal .OptionInput select {
-    margin: 0px;
-    padding: 0px;
+.user-info-modal .OptionInput select {
     border: 1px solid lightgray !important;
     opacity: 100% !important;
-}
 
-/* Role div containing select */
-#AddUserModal #RoleAdd div,
-#EditUserModal #RoleEdit div {
-    margin-right: calc(14/16 * 1rem);
     flex: 1;
+    box-sizing: border-box;
 }
 
-#AddUserModal #RoleAdd select,
-#EditUserModal #RoleEdit select {
-    width: calc(1020/16 * 1rem);
+.user-info-modal #UserRole select {
+    margin-left: 0px !important;
+    padding-left: 0px !important;
 }
 
-#AddUserModal #StoreAdd select,
-#EditUserModal #StoreEdit select {
-    width: calc(1020/16 * 1rem);
-}
-
-#AddUserModal .OptionInput div,
-#EditUserModal .OptionInput div {
-    width: 100%;
-}
-
-#AddUserModal #RoleAdd h5,
-#EditUserModal #RoleEdit h5 {
+.user-info-modal .user-option-role h5 {
     margin-right: calc(57/16 * 1rem);
 }
 
-#AddUserModal #StoreAdd h5,
-#EditUserModal #StoreEdit h5 {
+.user-info-modal .user-option-store h5 {
     margin-right: calc(52/16 * 1rem);
 }
 
 /* Store div contains select */
-#AddUserModal #StoreAdd div,
-#EditUserModal #StoreEdit div {
-    margin-right: calc(10/16 * 1rem);
+
+.user-info-modal .user-option-role div {
+    display: flex;
+    flex: 1;
+}
+
+.user-info-modal .user-option-store div {
     flex: 1;
 }
 
 /* Div that contains select box */
-#AddUserModal .OptionInput div,
-#EditUserModal .OptionInput div {
+.user-info-modal .OptionInput div,
+.user-info-modal .OptionInput select {
+    box-sizing: border-box;
     padding-right: 0px;
     margin-right: 0px;
-    width: 100%;
+    width: 100% !important;
+}
+
+.user-info-modal .OptionInput #UserRole h5 p {
+    margin: 0px;
+    padding: 0px;
+}
+
+.user-info-modal .OptionInput #UserRole select {
+    margin: 0px;
+    padding: 0px;
 }
 
 /*  Consistent font between labels
-     for text box and select elements */
-#AddUserModal .text-input-container label,
-#AddUserModal .OptionInput h5,
-#EditUserModal .text-input-container label,
-#EditUserModal .OptionInput h5 {
+    for text box and select elements */
+.user-info-modal .text-input-container label,
+.user-info-modal .OptionInput h5 {
     font-size: 1rem;
     font-weight: bold;
 }
 
-#AddUserModal .modal-body,
-#EditUserModal .modal-body {
-    /* Pad modal body to footer */
-    padding-bottom: calc(330/16 * 1rem);
+.user-info-modal #StoreSelectHeader {
+    font-size: 1rem;
+    font-weight: bold;
 }
-
-
-
 
 /* Written by: Andrew Fulton */
 /* Used in the store-dashboard page */
