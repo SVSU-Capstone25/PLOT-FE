@@ -27,18 +27,13 @@ for (var i = 0; i < rows * cols; i++) {
 //Added ID tracking to created fixtures!
 //Added paint mode detection
 var fixture_IDs = []; //Tracking of fixture box div IDs
-var eraseColor = "null|null|transparent";
-var paintModeColor = eraseColor;
+var paintModeColor = "null|null|transparent";
 var paintModeEnabled = false;
-var eraseModeEnabled = false;
 
 //The set paint color function sets the paint_mode_color, which will be used in the onmouseenter event of the fixture div.
 function setPaintColor(newColor) {
+    console.log("Paint color recieved: "+newColor)
     paintModeColor = newColor;
-}
-
-function clearPaintColor() {
-    paintModeColor = eraseColor;
 }
 
 //The set paint enabled function enables or disables the paint mode - the listener for onmouseenter will abort early if disabled.
