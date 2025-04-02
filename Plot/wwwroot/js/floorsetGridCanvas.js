@@ -22,12 +22,18 @@ const floorsetGrid = (function () {
     class Grid {
         constructor(sketch) {
             this.sketch = sketch;
-            this.x = 100;
-            this.y = 100;
             this.size = 30;
             this.racks = [];
             this.scale = 1;
             this.resize();
+        }
+
+        get x() {
+            return window.gridWidth ?? 10;
+        }
+
+        get y() {
+            return window.gridHeight ?? 10;
         }
 
         toGridCoordinates(x, y) {

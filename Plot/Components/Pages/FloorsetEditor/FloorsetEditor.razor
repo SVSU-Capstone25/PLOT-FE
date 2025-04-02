@@ -27,11 +27,11 @@
 @using Plot.Components.PartialComponents.FileInput
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script> -->
 
 @* Grid Area *@
-<div id="grid-area">
-    <!-- <canvas id="floorset-grid"></canvas> -->
-</div>
+<div id="grid-area"></div>
 
 
 @* Sidebar *@
@@ -103,7 +103,7 @@
                     @foreach (Fixture currFixture in fixtures.Values)
                     {
 
-                     <div class="fixture mb-3 d-flex flex-row" data-width="@currFixture.Width" data-height="@currFixture.Length" data-value="@currFixture.Name" ondragstart="createDraggable(event)" draggable="true" @ondragstart:preventDefault="true">
+                     <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name" draggable="true" data-width="@currFixture.Width" data-height="@currFixture.Length" ondragstart="createDraggable(event)" @ondragstart:preventDefault="true">
                             <div class="drag-start-area d-flex flex-row">
                                 <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="">
                                 <p class="fixture-text m-2 disable-select grab-cursor">@currFixture.Name</p>
@@ -150,9 +150,7 @@
                     <label>Enter the Dimensions (length and width) in feet</label>
 
                     <div class="fixture-area p-3 mt-3 d-flex mb-2">
-                        <div class="fixture mb-3 d-flex flex-row"
-                            @ondragstart="@((e) => OnDragStartEmployee(e, "1x1", "red"))" draggable="true"
-                            @ondragstart:preventDefault="true">
+                        <div class="fixture mb-3 d-flex flex-row" draggable="true" @ondragstart:preventDefault="true">
                             <div class="drag-start-area d-flex flex-row">
                                 <div class="emp-only"></div>
                                 <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
@@ -615,19 +613,7 @@
     // Lists for holding icons and texts for the Dropdown component
     private List<string> icons = new List<string> { "fa-regular fa-pen-to-square", "fa-regular fa-trash-can" };
     private List<string> texts = new List<string> { "Edit", "Delete" };
-
-    /*
-        The OnAfterRenderAsync function is called after the page is rendered.
-        This creates event listeners for the image input and the add button in the Add Fixture modal.
-    */
-    protected override async Task OnAfterRenderAsync(bool firstRender) {
-        if (firstRender) {
-            dotNet = DotNetObjectReference.Create(this);
-
-            await JS.InvokeVoidAsync("eval", "floorsetGrid.init()");         
-        }
-    }
-
+    
     /*
         The OnAddFixture function calls a JS function to show the AddFixture modal.
     */
@@ -689,6 +675,19 @@
     }
 
     /*
+        The OnAfterRenderAsync function is called after the page is rendered.
+        This creates event listeners for the image input and the add button in the Add Fixture modal.
+    */
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) {
+            dotNet = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("imageEventListener",dotNet);
+            await JS.InvokeVoidAsync("addFixtureClose",dotNet);
+            await JS.InvokeVoidAsync("eval", "floorsetGrid.init()");
+        }
+    }
+
+    /*
         The SetSearchEvent function calls a JS function to create a search input event listener.
     */
     public async Task SetSearchEvent() {
@@ -697,11 +696,6 @@
             hasExpandedBefore = true;
             await JS.InvokeVoidAsync("searchInputChange");
         }
-    }
-
-    private async Task OnDragStartEmployee(DragEventArgs e, string size, string color)
-    {
-        await JS.InvokeVoidAsync("createDraggableEmployee", e, size, color);
     }
 
     /*
