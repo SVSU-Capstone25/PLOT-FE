@@ -7,14 +7,10 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-<<<<<<< HEAD
 // Get environment settings
 EnvironmentSettings envSettings = new();
 
 // Add service to the container to get env settings in the app.
-=======
-EnvironmentSettings envSettings = new();
->>>>>>> 2c3806c68c9d36dedf60fe3ad6c84d40964d5aaf
 builder.Services.AddScoped<EnvironmentSettings>();
 
 builder.WebHost.UseUrls("http://0.0.0.0:8080");
@@ -95,18 +91,10 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("Owner", policy => policy.RequireClaim("Role", "1"));
     
 builder.Services.AddCascadingAuthenticationState();
-<<<<<<< HEAD
 
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddHttpContextAccessor();
-=======
-//builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-
-
-
-builder.Services.AddAuthorizationCore();
->>>>>>> 2c3806c68c9d36dedf60fe3ad6c84d40964d5aaf
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
 {
     options.DetailedErrors = true;
@@ -127,15 +115,10 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
-<<<<<<< HEAD
 // Setup authentication and authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
-=======
-// Registers IAuthenticationService
-app.UseAuthorization();
->>>>>>> 2c3806c68c9d36dedf60fe3ad6c84d40964d5aaf
 app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
