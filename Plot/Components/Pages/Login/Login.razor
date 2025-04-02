@@ -49,8 +49,20 @@
     // Function to handle the login submit event
     private async Task OnLoginSubmit()
     {
+<<<<<<< HEAD
         // Call the AuthService to login the user with the email and password provided
         var result = await AuthService.LoginAsync(email, password);
+=======
+        //Create uri for api. Dont use Client.BaseAddress, js wont work with backend:8085
+        var loginAPIUri= new Uri("http://localhost:8085/api/auth/login");
+
+        // Call loginUser js function in PLOT-FE\Plot\wwwroot\js\authHelper.js. This function is used to send and receive
+        // a http request to the backend login endpoint. Js is used because using a normal http client
+        // was not seting cookies in the browser.
+        var result = await JSRuntime.InvokeAsync<bool>("loginUser", loginAPIUri, email, password);
+            
+        CustomAuthStateProvider.LoginAsync();
+>>>>>>> 2c3806c68c9d36dedf60fe3ad6c84d40964d5aaf
          
         // True if user Authentication is good
         if (result)
