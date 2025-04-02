@@ -23,10 +23,54 @@ for (var i = 0; i < rows * cols; i++) {
     $("<div class=\"grid-cell\"></div>").prependTo(container);
 }
 
+//Tristan Calay - 3/27/25
+//Added ID tracking to created fixtures!
+//Added paint mode detection
+var fixture_IDs = []; //Tracking of fixture box div IDs
+var eraseColor = "null|null|transparent";
+var paintModeColor = eraseColor;
+var paintModeEnabled = false;
+var eraseModeEnabled = false;
+
+//The set paint color function sets the paint_mode_color, which will be used in the onmouseenter event of the fixture div.
+function setPaintColor(newColor) {
+    paintModeColor = newColor;
+}
+
+function clearPaintColor() {
+    paintModeColor = eraseColor;
+}
+
+//The set paint enabled function enables or disables the paint mode - the listener for onmouseenter will abort early if disabled.
+function setPaintEnabled(isEnabled) {
+    paintModeEnabled = isEnabled;
+    fixture_IDs.forEach((element) => {
+        if (isEnabled) {
+            Draggable.get('#' + element).disable();
+        }
+        else {
+            Draggable.get('#' + element).enable();
+        }
+
+    })
+}
+
+
 /*
     The createDraggable function creates a draggable fixture to add to the grid.
 */
 function createDraggable(event, size, color) {
+    //Tristan Calay
+    //Create a new ID for the new fixture - last index in array + 1, or 0 if no fixtures exist.
+    //In the future, when checking DB, populate the fixture ID array!
+    var new_id = 0;
+    if (fixture_IDs.length === 0) {
+        fixture_IDs.push(new_id);
+    }
+    else {
+        new_id = fixture_IDs[fixture_IDs.length - 1] + 1;
+        fixture_IDs.push(new_id)
+    }
 
     // Get references to the sidebar and create a soon-to-be draggable fixture
     var sidebar = document.getElementById("FloorsetSlideOut");
@@ -46,6 +90,33 @@ function createDraggable(event, size, color) {
     newBox.style.background = color;
     newBox.style.border = "3px solid black";
     newBox.style.borderRadius = "8px";
+    newBox.id = new_id;
+
+    //Tristan Calay -- 3/27/25
+    //Add in listeners for mouse over for category painting.
+    newBox.addEventListener("mouseenter", onPaintColor);
+    newBox.addEventListener("mousedown", onPaintColor);
+    function onPaintColor(event) {
+        //console.log("Fixture mouse over detected!!! ID: " + newBox.id);
+        if (!paintModeEnabled) {
+            return;
+        }
+        //Check if mouse buttons contains the number 1, representing primary button.
+        console.log("Buttons equals " + event.buttons)
+        if (event.buttons % 2 === 1) {
+            //Tristan Calay
+            //paintModeColor contains the overall category "Men's, Women's, Accessories", 
+            //The specific item "Pants, Shorts, etc..."
+            //And the color code, split by the character '|'.
+            var colorString = paintModeColor.split("|")[2];
+            newBox.style.background = colorString;
+        }
+        /*In the future, add in some way to call back to the database that fixture 
+        with ID "newBox.id" has been changed to a certain category.
+        We should probably store the actual category string when a category list item is clicked!
+        */
+    }
+
 
 
     // Get container position relative to viewport
@@ -80,6 +151,8 @@ function createDraggable(event, size, color) {
             var sidebarRect = sidebar.getBoundingClientRect();
             containerRect = container.getBoundingClientRect();
             if (isOverElement(boxRect, sidebarRect)) {
+                //Tristan Calay - Splice out the fixture id of the removed element.
+                fixture_IDs.splice(fixture_IDs.indexOf(newBox.id), 1);
                 container.removeChild(newBox);
             }
             /* commented out temporarily -danielle smith 4/1/2025
@@ -91,7 +164,7 @@ function createDraggable(event, size, color) {
                 newBox.style.zIndex = 0;
             }
 
-        }
+        },
     });
     // Wait for 10ms, then dispatch a mousedown event to simulate a drag on the box.
     setTimeout(() => {
@@ -104,7 +177,6 @@ function createDraggable(event, size, color) {
         newBox.dispatchEvent(evt);
     }, 10);
 }
-
 //this boolean controls painting so that once the user is done, it prevents "painting" from happening unless 
 //they make a new div from the sidebar
 var isPaintingEnabled = false;
@@ -159,22 +231,22 @@ function createDraggableEmployee(event, size, color) {
             //if there is an overlap with the sidebar or the containers children then the element will be removed
             if (isOverElement(boxRect, sidebarRect)) {
                 container.removeChild(newBox);
-            }
-            /* 
-                commented out temporarily -danielle smith 4/1/2025
-                 else if (isOverlapping(newBox, container)) {
-                    container.removeChild(newBox);
-                    displayAlert("Cannot place an element over an existing element.");
-            } */
+            } 
+            // Tristan Calay 4/1/2025 - Commenting out alerts for isoverlapping.
+            // else if (isOverlapping(newBox, container)) {
+            //     container.removeChild(newBox);
+            //     displayAlert("Cannot place an element over an existing element.");
+            // } 
             else {
                 newBox.style.zIndex = 0;
             }
         }
     });
+    //Temporarily comment this collision detection out.
     //if there is an overlap then removes the box
-    if (isOverlapping(newBox, container)) {
-        container.removeChild(newBox);
-    }
+    // if (isOverlapping(newBox, container)) {
+    //     container.removeChild(newBox);
+    // }
 
     setTimeout(() => {
         var evt = new MouseEvent("mousedown", {
@@ -229,21 +301,22 @@ function createDraggableEmployee(event, size, color) {
                 containerRect = container.getBoundingClientRect();
                 if (isOverElement(boxRect, sidebarRect)) {
                     container.removeChild(newBox);
-                }
-                /* commented out temporarily -danielle smith 4/1/2025
-                else if (isOverlapping(newBox, container)) {
-                    container.removeChild(newBox);
-                    displayAlert("Cannot place an element over an existing element.");
-                } */
+                } 
+                //Temporarily disable collision alerts.
+                // else if (isOverlapping(newBox, container)) {
+                //     container.removeChild(newBox);
+                //     displayAlert("Cannot place an element over an existing element.");
+                // } 
                 else {
                     newBox.style.zIndex = 0;
                 }
             }
         });
         //if there is an overlap then it removes the box
-        if (isOverlapping(newBox, container)) {
-            container.removeChild(newBox);
-        }
+        //Temporarily disable collision removal.
+        // if (isOverlapping(newBox, container)) {
+        //     container.removeChild(newBox);
+        // }
     }
 
     //this event listener handles the click event
@@ -282,6 +355,7 @@ function isOverlapping(draggableRect, containerElement) {
     return overlapFound;
 }
 
+
 //this function is to check if the box is over the sidebar
 function isOverElement(boxRect, sidebarRect) {
     return (
@@ -291,6 +365,8 @@ function isOverElement(boxRect, sidebarRect) {
         boxRect.right > sidebarRect.left
     );
 }
+
+
 
 /*
     The flipOrder function changes the flex column direction when the button is selected.
@@ -351,6 +427,8 @@ function searchInputChange() {
         })
     }, 10);
 }
+
+
 
 /*
     The toggleModal function toggles the visibility of a given modal.

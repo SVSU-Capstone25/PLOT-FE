@@ -9,13 +9,14 @@ and allocate floorsets for Platos Closet.
 
 Author: Tristan Calay (3/15/2025)-->
 
+@rendermode InteractiveServer
 @inject IJSRuntime JS
 
-<div class="inner-container">
-    <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
-    <hr style="opacity: 1.0; color:black;">
+<div class="AllocationsSidebar @Class" id="@ID">
+    <div class="inner-container">
+        <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
+        <hr style="opacity: 1.0; color:black;">
 
-    <div class="categories-div">
         @* Danielle Smith 3/17/2025
         changed how these are being displayed to use bootstrap classes
         added params to help text input take up proper width *@
@@ -53,6 +54,10 @@ Author: Tristan Calay (3/15/2025)-->
             Tristan Calay 3/29/25
             Created a foreach loop to iterate over cached category data and display it.*@
 
+            @* Tristan Calay 3/27/25
+            Added UL / LI with onclick to set the painting color. *@
+            <ul style="list-style: none;">
+            
             @foreach(var bar in getAllCategories())
             {
                 //Continue to next category if the search filter is active
@@ -61,24 +66,26 @@ Author: Tristan Calay (3/15/2025)-->
                 @if (bar.isHeader)
                 {
                     <hr class="category-separator">
-                    <ProgressBar iconString="fa-solid fa-chevron-down" mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
-                        barValue=@bar.currentValue barLabel=@bar.getLinearFeet() />
+                    <li><ProgressBar iconString="fa-solid fa-chevron-down" mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
+                        barValue=@bar.currentValue barLabel=@bar.getLinearFeet() /></li>
                 }
                 else 
                 { 
                     @if (bar.isInSearch(categorySearch))
                     {
-                        <ProgressBar mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
-                            barValue=@bar.currentValue barLabel=@bar.getLinearFeet() />       
+                        <li id="@bar.text" onclick="categoryOnClick(this.id,'@bar.headerCategory|@bar.text|@bar.color')"><ProgressBar mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
+                            barValue=@bar.currentValue barLabel=@bar.getLinearFeet() /></li>     
                     }
                 }
             }
+            </ul>
         </div>
     </div>
 </div>
 
+@* Tristan Calay - Scripts for category onclick *@
 <script>
-    //NumSortButtons needs to be equal to the number of sorting buttons defined in the html above.
+        //NumSortButtons needs to be equal to the number of sorting buttons defined in the html above.
     var numSortButtons = 2;
     function swapSortButtons(sortButtonNum)
     {
@@ -86,8 +93,35 @@ Author: Tristan Calay (3/15/2025)-->
         document.getElementById("sortButton" + sortButtonNum).style.display = "none";
         document.getElementById("sortButton" + nextButtonNum).style.display = "";
     }
-</script>
 
+    var lastSelectedCategoryID = -1;
+    //categoryOnClick takes the ID of the list item and highlights that item for noting the selected category.
+    //A reference is stored to the last selected item, if there is one, and it is unselected.
+    function categoryOnClick(id, categoryData)
+    {
+        console.log("Onclick ID "+id+", Data "+categoryData)
+        
+        clearSelectedCategory();
+        document.getElementById(id).style.background = "rgba(0,255,0,.3)";
+        lastSelectedCategoryID = id;
+
+        //Call into the FloorsetEditor script for setting the paint color.
+        //This requires the general category, specific category, and category color split by | characters.
+        setPaintColor(categoryData);
+    }
+
+    //Function to clear the styling and last selected ID for the category list.
+    function clearSelectedCategory()
+    {
+        if (lastSelectedCategoryID !== -1)
+        {
+            //Unselect current category
+            console.log("Removing selection of painting category");
+            document.getElementById(lastSelectedCategoryID).style.background = "transparent";
+            lastSelectedCategoryID = -1;
+        }
+    }
+</script>
 @code
 {
     [Parameter]
@@ -156,7 +190,7 @@ Author: Tristan Calay (3/15/2025)-->
         progressCategoriesAccessories = [];
         @* Men's *@
         var currentColor = "#AAD9FF";
-        var currentCategory = "Men's";
+        var currentCategory = "Men\'s";
         progressCategoriesMen.Add(new categoryData(currentCategory,currentCategory,currentColor,480,290,true));
         progressCategoriesMen.Add(new categoryData(currentCategory,"Pants",currentColor,100,20,false));
         progressCategoriesMen.Add(new categoryData(currentCategory,"Shirts",currentColor,100,30,false));
@@ -169,7 +203,7 @@ Author: Tristan Calay (3/15/2025)-->
 
         @* Women's *@
         currentColor = "#FFAAD6";
-        currentCategory = "Women's";
+        currentCategory = "Women\'s";
         progressCategoriesWomen.Add(new categoryData(currentCategory,currentCategory,currentColor,800,300,true));
         progressCategoriesWomen.Add(new categoryData(currentCategory,"Dresses",currentColor,100,120,false));
         progressCategoriesWomen.Add(new categoryData(currentCategory,"Skirts",currentColor,100,120,false));
@@ -297,4 +331,11 @@ Author: Tristan Calay (3/15/2025)-->
         return 1;
     
     }
+
+    public async Task clearSelectedCategory()
+    {
+        await JS.InvokeVoidAsync("clearSelectedCategory");
+    }
+
+    
 }
