@@ -645,7 +645,7 @@ Author: Andrew Fulton (3/12/2025)
     //Test
     private List<string> UserOptionsText { get; set; } = new List<string> { "initializeText" };
     private List<string> UserOptionsValues { get; set; } = new List<string> { "initializeValue" };
-    //variable to hold the streing of the currently selected user when adding a user to a store (value will ve received from
+    //variable to hold the string of the currently selected user when adding a user to a store (value will ve received from
     //optionsInput)
     private string strUserValueToAdd = "-1,Test,User";
 
@@ -875,10 +875,9 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         //get the image for the store
         stores[index].Blueprint_Image = await getImageUrlEdit();
 
-        //Click the edit button again for the store. This lets it be a single click after updating the store instead of a
-        double.
-    //I have no idea why it was happening, but this is the only fix I coukd find.
-await JS.InvokeVoidAsync("ClickDropdownLink", $"{stores[index].Name}{stores[index].Id}");
+        @* Click the edit button again for the store. This lets it be a single click after updating the store 
+        instead of a double. I have no idea why it was happening, but this is the only fix I could find. *@
+        await JS.InvokeVoidAsync("ClickDropdownLink", $"{stores[index].Name}{stores[index].Id}");
 
         //clear information in edit modal and close it
         await CleanUpEdit();
@@ -1506,6 +1505,7 @@ await JS.InvokeVoidAsync("ClickDropdownLink", $"{stores[index].Name}{stores[inde
         //check if a picture has been chosen
         isBlueprintValidEdit = true;
         SetEditDisabled();
+        //return the string, or if null, the default store layout photo
         return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
     }
 
