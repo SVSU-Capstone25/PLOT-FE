@@ -485,7 +485,7 @@ Author: Andrew Fulton (3/12/2025)
         function FocusOnElement(elementId) {
             const element = document.getElementById(elementId);
             if (element) {
-                console.log(element +"focused on");
+                console.log(element + "focused on");
                 element.focus();
             } else {
                 console.warn(`Element with ID '${elementId}' not found.`);
@@ -515,27 +515,60 @@ Author: Andrew Fulton (3/12/2025)
             }
         }
 
-    function SetBackgroundImage(elementId, strUrl) {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.style.backgroundImage = strUrl;
-            element.classList.remove("dashed-border");
+    @* method to set the background image of the edit modal imageinput to the stores BP image *@
+        function SetBackgroundImage(elementId, strUrl) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.style.backgroundImage = strUrl;
+                element.classList.remove("dashed-border");
+            }
         }
-    }
 
-    @*  *@
-    function ForceCloseModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.style.display = "none"; 
-            modal.setAttribute("aria-hidden", "true"); 
-            //modal.classList.remove("show"); 
-            //document.body.classList.remove("modal-open"); 
-            document.activeElement?.blur(); 
-            document.querySelector('.modal-backdrop')?.remove();
-            document.querySelector('.modal-backdrop')?.remove();
+    @* force close the modal. This was needed because modal elements were invisable after closing the modal,
+        but they could still be interacted with *@
+        function ForceCloseModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                // Hide the modal
+                modal.style.display = "none";
+                modal.setAttribute("aria-hidden", "true");
+                modal.removeAttribute("aria-modal");
+                modal.removeAttribute("role");
+                modal.className = "modal fade"; // Reset class
+
+                // Remove modal backdrop
+                document.querySelector('.modal-backdrop')?.remove();
+                document.querySelector('.modal-backdrop')?.remove();
+
+                // Remove attributes and class from body
+                document.body.classList.remove("modal-open");
+                document.body.removeAttribute("data-bs-overflow");
+                document.body.removeAttribute("data-bs-padding-right");
+                document.body.style.overflow = "";
+                document.body.style.paddingRight = "";
+
+                // Ensure focus is removed
+                document.activeElement?.blur();
+            }
         }
-}
+
+
+    @* function to click the Edit dropdown link for a store. This is to prevent a double click bug that happens when
+        updating a store. *@
+        function ClickDropdownLink(storeId) {
+            const dropdown = document.getElementById(storeId + "Dropdown");
+            if (dropdown) {
+                const links = dropdown.querySelectorAll("a");
+                if (links.length > 1) {
+                    //click the second link (the edit button)
+                    links[1].click();
+                } else {
+                    console.error("Dropdown does not have enough links.");
+                }
+            } else {
+                console.error("Dropdown not found.");
+            }
+        }
 
 
 </script>
@@ -842,15 +875,19 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         //get the image for the store
         stores[index].Blueprint_Image = await getImageUrlEdit();
 
-        // Hide edit user modal
-        //await JS.InvokeVoidAsync("HideModal", "editStoreModal");
+        //Click the edit button again for the store. This lets it be a single click after updating the store instead of a
+        double.
+    //I have no idea why it was happening, but this is the only fix I coukd find.
+await JS.InvokeVoidAsync("ClickDropdownLink", $"{stores[index].Name}{stores[index].Id}");
 
-        await CleanUpEdit(); // Clear information in Edit User Modal
+        //clear information in edit modal and close it
+        await CleanUpEdit();
 
-        StateHasChanged(); // Table is updated to reflect changes
+        StateHasChanged();
     }
 
 
+    //Function used to add a store when the Add Store button is clicked in the addStoreModal
     private async Task AddStore()
     {
         stores.Add
@@ -921,11 +958,8 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         var index = stores.FindIndex(s => s.Id == selectedStore.Id);
         stores.RemoveAt(index);
 
-        // Clean up Delete Modal
-        CleanUpDelete();
-
-        // Hide delete user modal
-        await JS.InvokeVoidAsync("HideModal", "deleteStoreModal");
+        // Clean up Delete Modal and close it
+        await CleanUpDelete();
 
         StateHasChanged(); // Table is updated to reflected changes
     }
@@ -953,7 +987,7 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         StateHasChanged();
     }
 
-
+    //clear the add store modal, reset flags, and close it
     private async Task CleanUpAdd()
     {
         //reset storeToAdd
@@ -984,13 +1018,13 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         await JS.InvokeVoidAsync("clearDivExceptById", "employeesAdd", "addStoreAddUserDiv");
         //clear the image from the store BP imageInput coponent
         await JS.InvokeVoidAsync("ClearBackgroundImage", "addModalStoreBlueprint");
-        //close the modal 
+        //close the modal
         await JS.InvokeVoidAsync("ForceCloseModal", "addStoreModal");
 
         StateHasChanged();
     }
 
-    /* For Edit Store */
+    /* For Edit Store, clear the fields, reset flags, and clos the editStoreModal */
     private async Task CleanUpEdit()
     {
         // Selected Store no longer selected
@@ -1017,7 +1051,7 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         isBlueprintValidEdit = true;
 
         // Set Save Changes Button to enabled
-        isEditDisabled = false;
+        isEditDisabled = true;
 
         //clear the image from the store BP imageInput coponent
         await JS.InvokeVoidAsync("ClearBackgroundImage", "editModalStoreBlueprint");
@@ -1028,11 +1062,13 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     }
 
     // Clean Up - Cleans up Delete Store Modal
-    private void CleanUpDelete()
+    private async Task CleanUpDelete()
     {
         selectedStore = new Store(); // Selected User no longer selected
         confirmDelete = ""; // Delete textbox should now be empty
         isDeleteDisabled = false; // Delete enabled
+
+        await JS.InvokeVoidAsync("ForceCloseModal", "deleteStoreModal");
 
         StateHasChanged();
     }
@@ -1469,7 +1505,7 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         //Console.WriteLine(strImageUrl);
         //check if a picture has been chosen
         isBlueprintValidEdit = true;
-        //SetEditDisabled();
+        SetEditDisabled();
         return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
     }
 
