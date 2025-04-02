@@ -877,15 +877,13 @@
         StateHasChanged();
     }
 
-    private async Task eraseCategoryClicked()
+    private void eraseCategoryClicked()
     {
         Console.WriteLine("Erase Category Function");
-        await JS.InvokeVoidAsync("clearPaintColor");
-
         //Call the func in AllocationsSidebar to remove the styling of the selected category.
         if (allocationsSidebar != null)
         {
-            await allocationsSidebar.clearSelectedCategory();
+            allocationsSidebar.clearSelectedCategory();
         }
     }
 

@@ -73,7 +73,7 @@ Author: Tristan Calay (3/15/2025)-->
                 { 
                     @if (bar.isInSearch(categorySearch))
                     {
-                        <li id="@bar.text" onclick="categoryOnClick(this.id,'@bar.headerCategory|@bar.text|@bar.color')"><ProgressBar mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
+                        <li @onclick=@(e => categoryOnClick(bar)) style=@bar.getStyle()><ProgressBar mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
                             barValue=@bar.currentValue barLabel=@bar.getLinearFeet() /></li>     
                     }
                 }
@@ -92,35 +92,7 @@ Author: Tristan Calay (3/15/2025)-->
         var nextButtonNum = (sortButtonNum + 1) % numSortButtons;
         document.getElementById("sortButton" + sortButtonNum).style.display = "none";
         document.getElementById("sortButton" + nextButtonNum).style.display = "";
-    }
-
-    var lastSelectedCategoryID = -1;
-    //categoryOnClick takes the ID of the list item and highlights that item for noting the selected category.
-    //A reference is stored to the last selected item, if there is one, and it is unselected.
-    function categoryOnClick(id, categoryData)
-    {
-        console.log("Onclick ID "+id+", Data "+categoryData)
-        
-        clearSelectedCategory();
-        document.getElementById(id).style.background = "rgba(0,255,0,.3)";
-        lastSelectedCategoryID = id;
-
-        //Call into the FloorsetEditor script for setting the paint color.
-        //This requires the general category, specific category, and category color split by | characters.
-        setPaintColor(categoryData);
-    }
-
-    //Function to clear the styling and last selected ID for the category list.
-    function clearSelectedCategory()
-    {
-        if (lastSelectedCategoryID !== -1)
-        {
-            //Unselect current category
-            console.log("Removing selection of painting category");
-            document.getElementById(lastSelectedCategoryID).style.background = "transparent";
-            lastSelectedCategoryID = -1;
-        }
-    }
+    }    
 </script>
 @code
 {
@@ -142,6 +114,22 @@ Author: Tristan Calay (3/15/2025)-->
         public String color {get;set;} = "red";
         public int maxValue {get;set;} = 100;
         public int currentValue {get;set;} = 0;
+
+        @* Tristan Calay 4/2/25
+        Added selection tracking to this struct, for state persistence. *@
+        public bool isSelected {get;set;} = false;
+
+        //Returns "Transparent" or the green selected color for the bar,
+        // depending on isSelected.
+        public String getStyle()
+        {
+            if(isSelected)
+            {
+                Console.WriteLine("A selected style is being applied...");
+                return "background-color: rgba(0,255,0,.3);";
+            }
+            return "background-color: transparent;";
+        }
 
         public categoryData(String _headerCategory, String _text, String _color, int _maxValue, int _currentValue, bool _header = false)
         {
@@ -172,6 +160,125 @@ Author: Tristan Calay (3/15/2025)-->
         {
             return Convert.ToDouble(currentValue) / Convert.ToDouble(maxValue);
         }
+
+        override public String ToString()
+        {
+            return String.Format("{0} {1} ({2}): {3} of {4}. Header : {5}. Selected : {6}",headerCategory,text,color,currentValue,maxValue,isHeader,isSelected);
+        }
+    }
+
+    @* Tristan Calay 4/2/25
+    Moved category on click/selection logic into C# @onclick functionality *@
+
+    private static categoryData nullCategory = new categoryData("null","null","transparent",0,0,false);
+    private categoryData lastSelectedCategory = nullCategory;
+    
+
+    //Func to find data in the three reference lists.
+    private void findListAndIndex(ref String list, ref int index, categoryData category)
+    {
+        index = progressCategoriesMen.FindIndex(x => x.Equals(category));
+        list = "mens";
+        if (index < 0)
+        {
+            index = progressCategoriesWomen.FindIndex(x => x.Equals(category));
+            list = "womens";
+        }
+        if (index < 0)
+        {
+            index = progressCategoriesAccessories.FindIndex(x => x.Equals(category));
+            list = "accessories";
+        }
+        if (index < 0)
+        {
+            throw new IndexOutOfRangeException("Could not find selected category reference in men's, women's or accessories.");
+        }
+
+        Console.WriteLine("Selected index: " + index + " in list "+list);
+    }
+    
+
+           
+    //categoryOnClick takes the ID of the list item and highlights that item for noting the selected category.
+    //A reference is stored to the last selected item, if there is one, and it is unselected.
+    private void categoryOnClick(categoryData category)
+    {
+        Console.WriteLine("Category Onclick " + category.ToString());
+        if (!lastSelectedCategory.Equals(nullCategory))
+        {
+            //Since we cannot pass a reference to a struct, find index and set.
+            int index = -1;
+            String list = "null";
+
+            findListAndIndex(ref list, ref index, lastSelectedCategory);
+
+            //Deselect the last category.
+            switch(list)
+            {
+                case "mens":
+                    lastSelectedCategory = progressCategoriesMen[index]; //It would be good to put these ops in a lambda func.
+                    lastSelectedCategory.isSelected = false;
+                    progressCategoriesMen[index] = lastSelectedCategory;
+                    break;
+                case "womens":
+                    lastSelectedCategory = progressCategoriesWomen[index];
+                    lastSelectedCategory.isSelected = false;
+                    progressCategoriesWomen[index] = lastSelectedCategory;
+                    break;
+                case "accessories":
+                    lastSelectedCategory = progressCategoriesAccessories[index];
+                    lastSelectedCategory.isSelected = false;
+                    progressCategoriesAccessories[index] = lastSelectedCategory;
+                    break;
+            }        
+        }
+        
+        if (!category.Equals(nullCategory))
+        {
+            //Find again for the new category.
+            int index = -1;
+            String list = "null";
+
+            findListAndIndex(ref list, ref index, category);
+
+            //Store the reference in lastSelectedCategory and select the index.
+            switch(list)
+            {
+                case "mens":
+                    lastSelectedCategory = progressCategoriesMen[index];
+                    lastSelectedCategory.isSelected = true;
+                    progressCategoriesMen[index] = lastSelectedCategory;
+                    break;
+                case "womens":
+                    lastSelectedCategory = progressCategoriesWomen[index];
+                    lastSelectedCategory.isSelected = true;
+                    progressCategoriesWomen[index] = lastSelectedCategory;
+                    break;
+                case "accessories":
+                    lastSelectedCategory = progressCategoriesAccessories[index];
+                    lastSelectedCategory.isSelected = true;
+                    progressCategoriesAccessories[index] = lastSelectedCategory;
+                    break;
+            }
+        }
+        
+        //Update the UI.
+        StateHasChanged();
+
+        //Call into the FloorsetEditor script for setting the paint color.
+        //This requires the general category, specific category, and category color split by | characters.
+        JS.InvokeVoidAsync("setPaintColor",category.headerCategory+"|"+category.text+"|"+category.color);
+    }
+
+    //Function to clear the styling and last selected ID for the category list.
+    public void clearSelectedCategory()
+    {
+        if (!lastSelectedCategory.Equals(nullCategory))
+        {
+            //Unselect current category
+            Console.WriteLine("Removing selection of painting category");
+            categoryOnClick(nullCategory);
+        }
     }
 
     //Add one list for each super category
@@ -179,6 +286,7 @@ Author: Tristan Calay (3/15/2025)-->
     private List<categoryData> progressCategoriesWomen = [];
     private List<categoryData> progressCategoriesAccessories = [];
 
+    
     //When the component is initialized, retrieve info from database about categories.
     protected override void OnInitialized()
     {
@@ -330,12 +438,5 @@ Author: Tristan Calay (3/15/2025)-->
         //Console.WriteLine("Default to second : only non null item!");
         return 1;
     
-    }
-
-    public async Task clearSelectedCategory()
-    {
-        await JS.InvokeVoidAsync("clearSelectedCategory");
-    }
-
-    
+    }    
 }
