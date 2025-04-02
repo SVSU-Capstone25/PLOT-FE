@@ -23,6 +23,9 @@ public class AuthHttpClient
 
     //Dependency injection of httpClient, this is used to send HTTP requests
     private readonly HttpClient _httpClient;
+    //Dependency injection of IHttpContextAccessor, this is used to get the JWT token from the cookie
+
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     //Dependency injection to run JavaScript scripts
     private readonly IJSRuntime _jsRuntime;
@@ -45,8 +48,9 @@ public class AuthHttpClient
     /// </summary>
     /// <param name="httpClient">Dependency injection of httpclient</param>
     /// <param name="jsRuntime">Dependency injection of jsRuntime</param>
-    public AuthHttpClient(HttpClient httpClient, IJSRuntime jsRuntime)
+    public AuthHttpClient(HttpClient httpClient, IJSRuntime jsRuntime, IHttpContextAccessor httpContextAccessor)
     {
+        _httpContextAccessor=httpContextAccessor;
         _httpClient = httpClient;
         _jsRuntime = jsRuntime;
         httpMethod = HttpMethod.Post;
@@ -65,7 +69,8 @@ public class AuthHttpClient
         try
         {
             // Use Javascript function to get the Jwt Auth token from a cookie stored in the browser.
-            var token = await _jsRuntime.InvokeAsync<string>("getCookie", "Auth");
+            //var token = await _jsRuntime.InvokeAsync<string>("getCookie", "Auth");
+            var token = _httpContextAccessor.HttpContext?.Request.Cookies["Auth"];// Fuck JS contextaccessor is new best friend now
 
             // Test if the Auth token exists
             if (!string.IsNullOrEmpty(token))
@@ -113,7 +118,9 @@ public class AuthHttpClient
         request.Content = jsonBody;
 
         // Use Javascript function to get the Jwt Auth token from a cookie stored in the browser.
-        var token = await _jsRuntime.InvokeAsync<string>("getCookie", "Auth");
+        //var token = await _jsRuntime.InvokeAsync<string>("getCookie", "Auth");
+        var token = _httpContextAccessor.HttpContext?.Request.Cookies["Auth"];// Fuck JS contextaccessor is new best friend now
+
 
         // Test if the Auth token exists
         if (!string.IsNullOrEmpty(token))

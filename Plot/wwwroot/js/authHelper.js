@@ -30,6 +30,25 @@ window.loginUser = async function (url, email, password) {
     }
 }
 
+//Function to send a httprequest to logout a user
+window.logoutUser = async function (url, token) {
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`, 
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include', 
+        });
+        
+        return response.ok;
+    } catch (error) {
+        console.error('LogOut error:', error);
+        return false;
+    }
+}
+
 
 //Function to get a cookie by name from the browser
 window.getCookie = function (name) {

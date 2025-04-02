@@ -1,9 +1,12 @@
 @* Originally by Luke Wollenweber *@
 
 @page "/login"
+@using Microsoft.AspNetCore.Authentication
 @using System.Net.Http.Headers
+@using System.Security.Claims
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject AuthService AuthService
 
 
 <PageTitle>Login</PageTitle>
@@ -43,15 +46,11 @@
     string password = ""; // Var to bind user password input
     bool isInvalid = false; // Flag to show user if login details were bad
 
-    private async void OnLoginSubmit()
+    // Function to handle the login submit event
+    private async Task OnLoginSubmit()
     {
-        //Create uri for api. Dont use Client.BaseAddress, js wont work with backend:8085
-        var loginAPIUri= new Uri("http://localhost:8085/api/auth/login");
-
-        // Call loginUser js function in PLOT-FE\Plot\wwwroot\js\authHelper.js. This function is used to send and receive
-        // a http request to the backend login endpoint. Js is used because using a normal http client
-        // was not seting cookies in the browser.
-        var result = await JSRuntime.InvokeAsync<bool>("loginUser", loginAPIUri, email, password);
+        // Call the AuthService to login the user with the email and password provided
+        var result = await AuthService.LoginAsync(email, password);
          
         // True if user Authentication is good
         if (result)
