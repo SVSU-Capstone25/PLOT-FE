@@ -1,0 +1,167 @@
+// PLOT-FE/Plot/wwwroot/js/floorsetGridCanvas.js
+const floorsetGrid = (function () {
+    let sketchInstance = null;
+
+    class Rack {
+        constructor(sketch, x, y, width, height) {
+            this.sketch = sketch;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.color = this.sketch.color(255, 255, 255);
+        }
+
+        draw(gridSize) {
+            this.sketch.fill(this.color);
+            this.sketch.stroke(0);
+            this.sketch.strokeWeight(3);
+            this.sketch.rect(this.x, this.y, this.width * gridSize, this.height * gridSize);
+        }
+    }
+
+    class Grid {
+        constructor(sketch) {
+            this.sketch = sketch;
+            this.x = 15;
+            this.y = 15;
+            this.size = 30;
+            this.racks = [];
+            this.resize();
+        }
+
+        toGridCoordinates(x, y) {
+            return {
+                x: Math.floor((x - this.translate.x) / this.size),
+                y: Math.floor((y - this.translate.y) / this.size),
+            };
+        }
+
+        getRackAt(gridX, gridY) {
+            for (const rack of this.racks) {
+                const rackGridX = Math.floor(rack.x / this.size);
+                const rackGridY = Math.floor(rack.y / this.size);
+                if (
+                    gridX >= rackGridX &&
+                    gridX < rackGridX + rack.width &&
+                    gridY >= rackGridY &&
+                    gridY < rackGridY + rack.height
+                ) {
+                    return rack;
+                }
+            }
+            return null;
+        }
+
+        resize() {
+            this.translate = {
+                x: this.sketch.width / 2 - (this.size * this.x) / 2,
+                y: this.sketch.height / 2 - (this.size * this.y) / 2
+            };
+        }
+
+        draw() {
+            this.sketch.fill(255, 255, 255);
+            this.sketch.stroke(0, 100);
+            this.sketch.strokeWeight(1);
+            this.sketch.translate(this.translate.x, this.translate.y);
+            for (let y = 0; y < this.y; y++) {
+                for (let x = 0; x < this.x; x++) {
+                    const x1 = x * this.size,
+                        y1 = y * this.size;
+                    this.sketch.rect(x1, y1, this.size, this.size);
+                }
+            }
+
+            for (const rack of this.racks) {
+                rack.draw(this.size);
+            }
+        }
+    }
+
+    return {
+        init() {
+            sketchInstance = new p5((sketch) => {
+                let grid, mouseRack, state, paint;
+
+                sketch.setup = () => {
+                    const $GRIDAREA = document.querySelector("div#grid-area");
+                    if (!$GRIDAREA) return;
+
+                    const canvas = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
+                    canvas.parent($GRIDAREA);
+                    canvas.style("position", "absolute");
+                    canvas.style("top", "0px");
+                    canvas.style("left", "0px");
+                    // sketch.pixelDensity(6);
+
+                    grid = new Grid(sketch);
+                    paint = sketch.color(255, 0, 0);
+
+                    // // Attach drag handlers to Blazor-rendered elements
+                    // document.querySelectorAll('[draggable="true"]').forEach(item => {
+                    //     item.ondragstart = (e) => {
+                    //         const width = Number(e.target.getAttribute("data-width"));
+                    //         const height = Number(e.target.getAttribute("data-height"));
+                    //         dataTransfer = { width, height };
+                    //     };
+                    // });
+                };
+
+                sketch.draw = () => {
+                    sketch.background(220);
+                    grid.draw();
+                    mouseRack?.draw(grid.size);
+                };
+
+                sketch.windowResized = () => {
+                    sketch.resizeCanvas(sketch.windowWidth, sketch.windowHeight);
+                    grid.resize();
+                }
+
+                sketch.mousePressed = () => {
+                    const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                    const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                    if (rack) {
+                        const index = grid.racks.indexOf(rack);
+                        if (index > -1) {
+                            grid.racks.splice(index, 1);
+                            mouseRack = rack;
+                        }
+                    }
+                };
+
+                sketch.mouseDragged = () => {
+                    if (state === "paint") {
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) rack.color = paint;
+                    } else {
+                        // Place mode logic
+                        if (mouseRack) {
+                            const { x: gridX, y: gridY } = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                            if (gridX < 0 || gridX + mouseRack.width > grid.x || gridY < 0 || gridY + mouseRack.height > grid.y) return;
+                            mouseRack.x = gridX * grid.size;
+                            mouseRack.y = gridY * grid.size;
+                        } else if (window.draggedRack) {
+                            const { width, height } = window.draggedRack;
+                            const { x: gridX, y: gridY } = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                            if (gridX + width > grid.x || gridY + height > grid.y) return;
+                            mouseRack = new Rack(sketch, gridX * grid.size, gridY * grid.size, width, height);
+                        }
+                    }
+                };
+
+                sketch.mouseReleased = () => {
+                    if (mouseRack) {
+                        grid.racks.push(mouseRack);
+                        mouseRack = undefined;
+                    }
+                };
+            }, document.querySelector("div#grid-area"));
+        }
+    };
+})();
+
+// Initialize when Blazor component loads
+floorsetGrid.init();
