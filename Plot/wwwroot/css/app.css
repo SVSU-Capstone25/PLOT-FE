@@ -1,8 +1,5 @@
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-
-a, .btn-link {
+a,
+.btn-link {
     color: #006bb7;
 }
 
@@ -12,8 +9,12 @@ a, .btn-link {
     border-color: #1861ac;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -50,12 +51,14 @@ h1:focus {
     border-color: #929292;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+.form-floating>.form-control-plaintext::placeholder,
+.form-floating>.form-control::placeholder {
     color: var(--bs-secondary-color);
     text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+.form-floating>.form-control-plaintext:focus::placeholder,
+.form-floating>.form-control:focus::placeholder {
     text-align: start;
 }
 
@@ -68,12 +71,14 @@ h1:focus {
 
 .user-info-modal .modal-body {
     height: fit-content;
-    overflow-y:auto; /* Scrolls if window height is too small*/
+    overflow-y: auto;
+    /* Scrolls if window height is too small*/
 }
 
 .user-info-modal .user-option-store {
     display: flex;
-    flex-direction: column;  /* Stack the label in store OptionInput on top of Select */
+    flex-direction: column;
+    /* Stack the label in store OptionInput on top of Select */
 }
 
 .user-info-modal .user-option-store-half {
@@ -81,31 +86,33 @@ h1:focus {
 }
 
 .user-info-modal .user-option-store-half h5 {
-    width:100%;
+    width: 100%;
     margin-left: calc(25/16 * 1rem);
     box-sizing: border-box;
 }
 
 .user-info-modal .user-option-store-half .OptionInput select {
-    margin:0px;
-    padding:0px;
-    height: calc(155/16 * 1rem); /* Height of select elements for stores*/
-    overflow:auto; /* Scroll as necessary */
+    margin: 0px;
+    padding: 0px;
+    height: calc(155/16 * 1rem);
+    /* Height of select elements for stores*/
+    overflow: auto;
+    /* Scroll as necessary */
 }
 
 .user-info-modal .user-option-store-half .Button {
     width: calc(150/16 * 1rem) !important;
 }
 
-.user-info-modal .user-option-store-left{
+.user-info-modal .user-option-store-left {
     margin-right: calc(57/16 * 1rem);
 }
 
-.user-info-modal .user-option-store-left .btn-container{
-    margin-left:0px;
+.user-info-modal .user-option-store-left .btn-container {
+    margin-left: 0px;
     margin-right: calc(5/16 * 1rem);
-    padding:0px;
-    float:right;
+    padding: 0px;
+    float: right;
 }
 
 .user-info-modal .user-option-store-left .OptionInput select {
@@ -116,22 +123,22 @@ h1:focus {
     margin-right: calc(4/ 16*1rem);
 }
 
-.user-info-modal .user-option-store-right{
+.user-info-modal .user-option-store-right {
     margin-left: calc(57/16 * 1rem);
 }
 
 .user-info-modal .user-option-store-right div {
-    margin-left:0px;
+    margin-left: 0px;
 }
 
 .user-info-modal .user-option-store.right .OptionInput h5 p {
     padding-left: calc(14/16*1rem);
 }
 
-.user-info-modal .user-option-store-right .btn-container{
-    margin:0px;
-    padding:0px;
-    float:left;
+.user-info-modal .user-option-store-right .btn-container {
+    margin: 0px;
+    padding: 0px;
+    float: left;
 }
 
 .user-info-modal .text-input-container,
@@ -177,25 +184,21 @@ h1:focus {
 }
 
 .user-info-modal .holds-email label {
-    margin-right:calc(50/16 * 1rem) !important;
-}
-
-.user-info-modal .holds-last-name label {
-    margin-right: calc(12/16 * 1rem) !important;
+    margin-right: calc(50/16 * 1rem) !important;
 }
 
 /* Handles select boxes in OptionInput component */
-.user-info-modal .OptionInput select{
+.user-info-modal .OptionInput select {
     border: 1px solid lightgray !important;
-    opacity:100% !important;
+    opacity: 100% !important;
 
-    flex:1;
+    flex: 1;
     box-sizing: border-box;
 }
 
-.user-info-modal #UserRole select{
-    margin-left:0px !important;
-    padding-left:0px !important;
+.user-info-modal #UserRole select {
+    margin-left: 0px !important;
+    padding-left: 0px !important;
 }
 
 .user-info-modal .user-option-role h5 {
@@ -208,84 +211,43 @@ h1:focus {
 
 /* Store div contains select */
 
-.user-info-modal .user-option-role div{
-    display:flex;
-    flex:1;
+.user-info-modal .user-option-role div {
+    display: flex;
+    flex: 1;
 }
 
-.user-info-modal .user-option-store div{
-    flex:1;
+.user-info-modal .user-option-store div {
+    flex: 1;
 }
 
 /* Div that contains select box */
 .user-info-modal .OptionInput div,
 .user-info-modal .OptionInput select {
-    box-sizing:border-box;
-    padding-right:0px;
-    margin-right:0px;
-    width:100% !important;
+    box-sizing: border-box;
+    padding-right: 0px;
+    margin-right: 0px;
+    width: 100% !important;
 }
 
-.user-info-modal .OptionInput #UserRole h5 p{
-    margin:0px;
-    padding:0px;
+.user-info-modal .OptionInput #UserRole h5 p {
+    margin: 0px;
+    padding: 0px;
 }
 
-.user-info-modal .OptionInput #UserRole select{
-    margin:0px;
-    padding:0px;
+.user-info-modal .OptionInput #UserRole select {
+    margin: 0px;
+    padding: 0px;
 }
 
 /*  Consistent font between labels
     for text box and select elements */
 .user-info-modal .text-input-container label,
 .user-info-modal .OptionInput h5 {
-  font-size: 1rem;
-  font-weight: bold;
+    font-size: 1rem;
+    font-weight: bold;
 }
 
 .user-info-modal #StoreSelectHeader {
     font-size: 1rem;
     font-weight: bold;
-}
-
-
-
-
-
-
-/* Written by: Andrew Fulton */
-/* Used in the store-dashboard page */
-/* CSS used for showing employees in modals */
-.circle-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-/* CSS used to actually create the circle for each employee */
-.circle {
-    width: 40px;
-    height: 40px;
-    /* Make the div a circle */
-    border-radius: 50%;
-    background-color: #d8d8d8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* font color and size */
-    color: black;
-    font-size: 18px;
-}
-
-/* CSS for name under circle */
-.circle-name {
-    margin-top: 8px;
-    font-size: 14px;
-}
-
-/* CSS for smaller textInput Boxes */
-.small-textInput {
-    width: 100px;
 }

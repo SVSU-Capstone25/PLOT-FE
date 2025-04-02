@@ -1,8 +1,22 @@
+.NavBar {
+    position: fixed;
+    top: 10;
+    left: 0;
+    width: 100vw;
+    z-index: 1050;
+
+    align-items: center;
+
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
 /* Ensure no background or borders for nav items */
 .nav-item {
     background: none;
     border: none;
-    color: white; /* Set text color */
+    color: white;
+    /* Set text color */
     display: flex;
     align-items: center;
     padding: 0 1rem;
@@ -12,7 +26,8 @@
 
 .nav-item.ml-auto {
     margin-left: auto;
-    justify-content: flex-end; /* Push this item to the far right */
+    justify-content: flex-end;
+    /* Push this item to the far right */
 }
 
 .platos-blue {
@@ -30,10 +45,13 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    color: white;  /* Text color */
+    color: white;
+    /* Text color */
     padding-right: 1rem;
-    text-decoration: none; /* Remove default underline from links */
+    text-decoration: none;
+    /* Remove default underline from links */
 }
+
 .nav.flex-row {
     display: flex;
     justify-content: flex-start;
@@ -42,12 +60,14 @@
 
 .fa {
     position: relative;
-    z-index: 1000;  /* Ensure icons are always on top */
-  }
+    z-index: 1000;
+    /* Ensure icons are always on top */
+}
 
 /* Style for icons inside NavLink */
 .nav-link i {
-    margin-left: 0.5rem; /* Space between text and icon */
+    margin-left: 0.5rem;
+    /* Space between text and icon */
     font-size: 1.2rem;
     display: flex;
     align-items: center;
@@ -55,17 +75,24 @@
 }
 
 /* Remove focus outline from button or link when clicked or focused */
-.nav-item button:focus, .nav-link:focus {
-    outline: none; /* Remove blue outline */
+.nav-item button:focus,
+.nav-link:focus {
+    outline: none;
+    /* Remove blue outline */
 }
 
 /* Hover state for nav links and buttons */
-.nav-item button:hover, .nav-link:hover {
-    background-color: rgba(80, 80, 80, 0.37); /* Optional hover effect */
-    color: white; /* Ensure text stays white on hover */
+.nav-item button:hover,
+.nav-link:hover {
+    background-color: rgba(80, 80, 80, 0.37);
+    /* Optional hover effect */
+    color: white;
+    /* Ensure text stays white on hover */
 }
+
 a {
     cursor: pointer;
+    color: white;
 }
 
 /* Reset styles for nav-scrollable to ensure no background or border */
@@ -79,17 +106,10 @@ a {
     border: none;
 }
 
-/* Ensure navbar-toggler is properly styled
-.navbar-toggler {
-    background: none;
-    border: none;
-    cursor: pointer;
-    width: 3.5rem;
-    height: 2.5rem;
-    color: #1EA6A1;
-    top: 50%;
-    display: flex;
-    transform: translateY(-50%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-} */
-
+.nav-link:focus,
+.nav-link:active {
+    color: white;
+    /* Ensure text remains white even when clicked or focused */
+    outline: none;
+    /* Optional: Remove the outline for better styling */
+}

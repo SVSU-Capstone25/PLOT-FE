@@ -27,15 +27,15 @@ Author: Andrew Fulton (3/12/2025)
     @* loop to generate a card for each store that exists *@
     @foreach (var store in stores)
     {
-        <div @onclick="(() => SetSelectedStore(store))">
-            <Card CardText="@($"{store.City},{store.State}")" CardImage="@($"{store.Blueprint_Image}")">
-                <Dropdown Class="Test Dropdown" Id="@($"{store.Name}{store.Id}Dropdown")"
-                    DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
-                    DropdownLinks="@(new List<string> { $"/floorsets/{store.City},{store.State}/{store.Address},{store.City},{store.State} {store.Zip}", "#editStoreModal", "#deleteStoreModal" })"
-                    LabelText="Store"
-                    DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
-            </Card>
-        </div>
+            <div @onclick="(() => SetSelectedStore(store))">
+                <Card CardText="@($"{store.City},{store.State}")" CardImage="@($"{store.Blueprint_Image}")">
+                    <Dropdown Class="Test Dropdown" Id="@($"{store.Name}{store.Id}Dropdown")"
+                        DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
+                        DropdownLinks="@(new List<string> { $"/floorsets/{store.City},{store.State}/{store.Address},{store.City},{store.State} {store.Zip}", "#editStoreModal", "#deleteStoreModal" })"
+                        LabelText="Store"
+                        DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
+                </Card>
+            </div>
     }
 
 
