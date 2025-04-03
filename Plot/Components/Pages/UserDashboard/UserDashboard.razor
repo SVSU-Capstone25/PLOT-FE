@@ -75,17 +75,13 @@ No author was given.
                             open Edit User and Delete User Modals *@
                             <Dropdown Id="@($"Dropdown-{user.Id}")" DropdownText="@(new List<string> { "Edit", "Delete" })"
                                 DropdownLinks="@(new List<string> { "#UpdateUserModal",
-                                DropdownLinks="@(new List<string> { "#UpdateUserModal",
                                         "#DeleteUserModal" })" LabelText="Role"
                             DropdownIcons="@(new List<string>
-                                                { "fa-solid fa-pen-to-square",
-                                            "fa-regular fa-trash-can" })" />
                                                 { "fa-solid fa-pen-to-square",
                                             "fa-regular fa-trash-can" })" />
                     </div>
                 </td>
             </tr>
-            }
             }
         </tbody>
     </table>
@@ -102,7 +98,6 @@ No author was given.
 @* Modals *@
 
 @* User Info Modal (Add User or Edit User) *@
-@* User Info Modal (Add User or Edit User) *@
 
 <Modal Title="@userModalDetails.Title" Id="UpdateUserModal" Variant="standard" Class="modal-dialog modal-xl user-modal user-info-modal"
     OnCancelFunction="CleanUpUpdateUser">
@@ -111,10 +106,7 @@ No author was given.
 
             <h3>@userModalDetails.Header</h3>
             <p>@userModalDetails.Description</p>
-            <h3>@userModalDetails.Header</h3>
-            <p>@userModalDetails.Description</p>
 
-            <div>
             <div>
             @* First Name *@
             <div class="holds-first-name">
@@ -149,10 +141,7 @@ No author was given.
 
             <OptionInput ID="UserRole" label="Role" optionsValues=userRoles optionsText=userRoles
                 OnSelectFunction="setUserRole" Class="user-option-input user-option-role" />
-            <OptionInput ID="UserRole" label="Role" optionsValues=userRoles optionsText=userRoles
-                OnSelectFunction="setUserRole" Class="user-option-input user-option-role" />
 
-            @* Store Selection *@
             @* Store Selection *@
 
             <p id="StoreSelectHeader">Store Selection</p>
@@ -175,45 +164,9 @@ No author was given.
                     Select Store
                     </Button>
                 </div>
-            <p id="StoreSelectHeader">Store Selection</p>
-
-            <p>To select multiple stores use Ctrl-click</p>
-
-            @* Available Stores *@
-            <div id="UserStores" class="d-flex flex-row user-option-store">
-                
-                <div class="user-option-store-half user-option-store-left">
-
-                <OptionInput ID="UserAvailStores" label="Available Stores" optionsValues="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()" 
-                optionsText="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()" 
-                Class="user-option-input user-option-store" AllowEmpty Multiple />
-
-                <div class="btn-container">
-                <Button Class="Button" Id="buttonPickFromAvail" Variant="primary" TextAlignment="center"
-                    OnClickFunction="PickFromAvail" IsDisabled="@isPickFromAvailDisabled"
-                    Icon="fa-solid fa-arrow-right">
-                    Select Store
-                    </Button>
-                </div>
 
                 </div>
-                </div>
 
-                <div class="user-option-store-half user-option-store-right">
-                @* Selected Stores *@
-                <OptionInput ID="UserSelStores" label="Selected Stores" optionsValues=@inEditUser.Stores optionsText=@inEditUser.Stores
-                    Class="user-option-input user-option-store" AllowEmpty Multiple />
-                
-                <div class="btn-container">
-                <Button Class="Button" Id="buttonUnpickFromSel" Variant="primary" TextAlignment="center"
-                    OnClickFunction="UnpickFromSel" IsDisabled="@isUnpickFromSelDisabled"
-                    Icon="fa-solid fa-arrow-left">
-                    Remove Store
-                    </Button>
-                </div>
-                </div>
-            </div>
-            </div>
                 <div class="user-option-store-half user-option-store-right">
                 @* Selected Stores *@
                 <OptionInput ID="UserSelStores" label="Selected Stores" optionsValues=@inEditUser.Stores optionsText=@inEditUser.Stores
@@ -234,15 +187,10 @@ No author was given.
     </BodyContent>
 
     @* Footer: Cancel button included in Modal, Also adds Add User button *@
-    @* Footer: Cancel button included in Modal, Also adds Add User button *@
     <FooterContent>
 
         @* Add user button, Cancel button comes with Modal component *@
-        @* Add user button, Cancel button comes with Modal component *@
 
-        <Button Class="Button" Id="buttonUpdateUserModal" Variant="primary" TextAlignment="center"
-            OnClickFunction="UpdateUser" IsDisabled="@isUpdateUserDisabled">
-            @userModalDetails.ButtonText
         <Button Class="Button" Id="buttonUpdateUserModal" Variant="primary" TextAlignment="center"
             OnClickFunction="UpdateUser" IsDisabled="@isUpdateUserDisabled">
             @userModalDetails.ButtonText
@@ -360,52 +308,6 @@ No author was given.
         }
     }
 
-    function SelectFirst(id){
-        /* Select first option in list */
-        if(!IsEmptySelect(id)){
-            let optionInput = document.getElementById(id);
-            let select = optionInput.getElementsByTagName("select")[0];
-            let options = select.getElementsByTagName("option");
-
-            select.value = options[0].value;
-        }
-    }
-
-    function IsEmptySelect(id){
-        /* Is the select option box empty? */
-        let optionInput = document.getElementById(id);
-        let select = optionInput.getElementsByTagName("select");
-        return (select[0].options.length == 0);
-    }
-
-    function GetSelectedOptions(id){
-        /* Get all options selected from select-option */
-        let optionInput = document.getElementById(id);
-        let select = optionInput.getElementsByTagName("select")[0];
-        let options = select.getElementsByTagName("option");
-
-        let selected_options = [];
-
-        for (let option of options) {
-            if(option.selected){
-                selected_options.push(option.value);
-            }
-        }
-
-        return selected_options;
-    }
-
-    function UnhighlightStores(){
-        /* Unhighlight and unselect stores from OptionInputs for stores*/
-
-        let ids = ["UserAvailStores", "UserSelStores"];
-        for (let id of ids){
-            let optionInput = document.getElementById(id);
-            let select = optionInput.getElementsByTagName("select")[0];
-            select.selectedIndex = -1; /* Unselects store */
-        }
-    }
-
 </script>
 
 @code {
@@ -425,8 +327,6 @@ No author was given.
 
     // Is button to submit changes for updating user disabled in modal
     private bool isUpdateUserDisabled = false;
-    // Is button to submit changes for updating user disabled in modal
-    private bool isUpdateUserDisabled = false;
 
     // Error messages
     private string firstNameError = "";
@@ -436,9 +336,6 @@ No author was given.
 
     // Tracking validity of fields
     // For Add User modal
-    private bool isFirstValid = true;
-    private bool isLastValid = true;
-    private bool isEmailValid = true;
     private bool isFirstValid = true;
     private bool isLastValid = true;
     private bool isEmailValid = true;
@@ -456,7 +353,6 @@ No author was given.
 
     // Initialize list for values in add user roles
     // Roles added in OnInitialized method
-    private List<string> userRoles = new List<string>();
     private List<string> userRoles = new List<string>();
 
     /* Declaration of lists of stores */
@@ -489,9 +385,6 @@ No author was given.
     private bool isPickFromAvailDisabled = false;
     private bool isUnpickFromSelDisabled = false;
 
-    private bool isPickFromAvailDisabled = false;
-    private bool isUnpickFromSelDisabled = false;
-
     /* Program runs on initialization */
     protected override void OnInitialized()
     {
@@ -500,36 +393,8 @@ No author was given.
         // Example stores - Replace with logic to handle
         // data from database after being hooked up
         stores = new List<string> { "Store 1", "Store 2", "Store 3", "Store 4", "Store 5", "Store 6", "Store 7", "Store 8", "Store 9" };
-        stores = new List<string> { "Store 1", "Store 2", "Store 3", "Store 4", "Store 5", "Store 6", "Store 7", "Store 8", "Store 9" };
 
         // Example data for demo
-        users = new List<User>{
-            new User {
-                Id = nextUserId++, // Id increments for the next user
-                FirstName = "Clayton",
-                LastName = "Cook",
-                Email = "clayton@company.com",
-                Role = "Owner",
-                Stores = new List<string> { "Store 1", "Store 2", "Store 3" }
-
-            },
-            new User {
-                Id = nextUserId++, // Id increments for the next user
-                FirstName = "Andrew",
-                LastName = "Miller",
-                Email = "andrew@company.com",
-                Role = "Manager",
-                Stores = new List<string> { "Store 4", "Store 5", "Store 6"}
-            },
-            new User {
-                Id = nextUserId++, // Id increments for the next user
-                FirstName = "Jane",
-                LastName = "Smith",
-                Email = "jane@company.com",
-                Role = "Employee",
-                Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
-            }
-        };
         users = new List<User>{
             new User {
                 Id = nextUserId++, // Id increments for the next user
@@ -563,12 +428,7 @@ No author was given.
                             {"Owner",
                             "Manager",
                             "Employee"};
-                            {"Owner",
-                            "Manager",
-                            "Employee"};
 
-        // Set user roles (empty OptionInputs give an error otherwise)
-        userRoles = new List<string>{"Bug - Failed to fill"};
         // Set user roles (empty OptionInputs give an error otherwise)
         userRoles = new List<string>{"Bug - Failed to fill"};
     }
@@ -618,7 +478,6 @@ No author was given.
 
         // Open add user modal
         await JS.InvokeVoidAsync("OpenModal", "#UpdateUserModal");
-        await JS.InvokeVoidAsync("OpenModal", "#UpdateUserModal");
     }
 
     // Set selected user to user in row clicked upon
@@ -639,20 +498,7 @@ No author was given.
             ButtonText="Update User"
         };
 
-        // Initialize roles or add user modal
-        userRoles = new List<string>();
-        userRoles.AddRange(roles);
-
-        userModalDetails = new ModalDetails {
-            Id = EDIT_MODAL_DETAIL_ID,
-            Title="Edit User",
-            Header="Edit User",
-            Description="Edit the information of the selected user",
-            ButtonText="Update User"
-        };
-
         // Copy user info for editing in case "Edit" is clicked
-        inEditUser = new User
         inEditUser = new User
         {
             Id = selectedUser.Id,
@@ -661,27 +507,8 @@ No author was given.
             Email = selectedUser.Email,
             Role = selectedUser.Role,
             Stores = selectedUser.Stores
-            Stores = selectedUser.Stores
         };
 
-        // Set validity flags for editing
-        // Reset validity flags to true
-        isFirstValid = true;
-        isLastValid = true;
-        isEmailValid = true;
-        isRoleValid = true;
-        isStoreValid = true;
-
-        SetStoreBtnDisabled(); // Set picking and unpicking buttons to enabled or disabled as appropriate
-
-        isUpdateUserDisabled = false; // Initially not disabled
-        
-        // Select the edited user's role
-        await JS.InvokeVoidAsync("SelectOption", "UserRole", inEditUser.Role);
-
-        // Select first entry for available and selected store OptionInputs
-        await JS.InvokeVoidAsync("SelectFirst", "UserAvailStores");
-        await JS.InvokeVoidAsync("SelectFirst", "UserSelStores");
         // Set validity flags for editing
         // Reset validity flags to true
         isFirstValid = true;
@@ -725,27 +552,7 @@ No author was given.
         StateHasChanged();
     }
 
-    // Update user
-
-    private async Task UpdateUser(){
-        if (userModalDetails.Id == ADD_MODAL_DETAIL_ID){
-            AddUser();
-        }
-        else if (userModalDetails.Id == EDIT_MODAL_DETAIL_ID){
-            SaveChanges();
-        }
-
-        // Hide add user modal
-        await JS.InvokeVoidAsync("HideModal", "UpdateUserModal");
-
-        // Clean up Update User Modal
-        await CleanUpUpdateUser();
-
-        StateHasChanged();
-    }
-
     // Add new user
-    private void AddUser()
     private void AddUser()
     { // Adds new user and handles clean up from closing modal
 
@@ -758,16 +565,10 @@ No author was given.
             Email = inEditUser.Email,
             Role = inEditUser.Role,
             Stores = inEditUser.Stores
-            FirstName = inEditUser.FirstName,
-            LastName = inEditUser.LastName,
-            Email = inEditUser.Email,
-            Role = inEditUser.Role,
-            Stores = inEditUser.Stores
         }
         );
 
         // Reset user for adding new user
-        inEditUser = new User();
         inEditUser = new User();
 
         StateHasChanged();
@@ -775,10 +576,8 @@ No author was given.
 
     // Save edited user as the selected user
     private void SaveChanges()
-    private void SaveChanges()
     {
         var index = users.FindIndex(u => u.Id == selectedUser.Id);
-        users[index] = inEditUser;
         users[index] = inEditUser;
 
         StateHasChanged(); // Table is updated to reflect changes
@@ -855,12 +654,7 @@ No author was given.
 
     // Set update user button to disabled
     private void SetUpdateUserDisabled()
-    // Set update user button to disabled
-    private void SetUpdateUserDisabled()
     {
-        Console.WriteLine("Checking if button should be disabled");
-        Console.WriteLine("Store:" + isStoreValid);
-        isUpdateUserDisabled = !(isFirstValid & isLastValid & isEmailValid & isRoleValid & isStoreValid);
         Console.WriteLine("Checking if button should be disabled");
         Console.WriteLine("Store:" + isStoreValid);
         isUpdateUserDisabled = !(isFirstValid & isLastValid & isEmailValid & isRoleValid & isStoreValid);
@@ -868,30 +662,6 @@ No author was given.
         StateHasChanged();
     }
 
-    private void SetStoreBtnDisabled(){
-        isPickFromAvailDisabled = (stores.Count == inEditUser.Stores.Count);
-        isUnpickFromSelDisabled = (inEditUser.Stores.Count == 0);
-        isStoreValid = !isUnpickFromSelDisabled; // Some stores selected
-    }
-
-    // Set store for user being edited
-    private async Task PickFromAvail()
-    {
-        List<string> stores_to_pick = await JS.InvokeAsync<List<string>>("GetSelectedOptions", "UserAvailStores");
-
-        inEditUser.Stores.AddRange(stores_to_pick);
-        inEditUser.Stores.Sort();
-
-        SetStoreBtnDisabled();
-
-        StateHasChanged();
-
-        // Select first entry for available and selected store OptionInputs
-        await JS.InvokeVoidAsync("SelectFirst", "UserAvailStores");
-        await JS.InvokeVoidAsync("SelectFirst", "UserSelStores");
-
-        // Set add button enabled or disabled
-        SetUpdateUserDisabled();
     private void SetStoreBtnDisabled(){
         isPickFromAvailDisabled = (stores.Count == inEditUser.Stores.Count);
         isUnpickFromSelDisabled = (inEditUser.Stores.Count == 0);
@@ -935,61 +705,33 @@ No author was given.
         // Select first entry for available and selected store OptionInputs
         await JS.InvokeVoidAsync("SelectFirst", "UserAvailStores");
         await JS.InvokeVoidAsync("SelectFirst", "UserSelStores");
-    private async Task UnpickFromSel()
-    {
-        Console.WriteLine("unpicking");
-        List<string> stores_to_remove = await JS.InvokeAsync<List<string>>("GetSelectedOptions", "UserSelStores");
-
-        inEditUser.Stores.RemoveAll(store => stores_to_remove.Contains(store));
-        inEditUser.Stores.Sort();
-
-        SetStoreBtnDisabled();
-
-        StateHasChanged();
-
-        // Select first entry for available and selected store OptionInputs
-        await JS.InvokeVoidAsync("SelectFirst", "UserAvailStores");
-        await JS.InvokeVoidAsync("SelectFirst", "UserSelStores");
 
         // Set add button enabled or disabled
         SetUpdateUserDisabled();
 
         StateHasChanged();
-        SetUpdateUserDisabled();
-
-        StateHasChanged();
     }
 
-    // Set role for user being edited
-    private void setUserRole(string role)
     // Set role for user being edited
     private void setUserRole(string role)
     {
         if (role == optionHeader)
         {
             isRoleValid = false; // No role selected. Role invalid
-            isRoleValid = false; // No role selected. Role invalid
         }
         else
         {
-            isRoleValid = true; // Role selected role valid
-            inEditUser.Role = role;
             isRoleValid = true; // Role selected role valid
             inEditUser.Role = role;
         }
 
         // Set add button enabled or disabled
         SetUpdateUserDisabled();
-        SetUpdateUserDisabled();
     }
 
     /* Modal Clean up methods */
 
     /* For Add User */
-    private async Task CleanUpUpdateUser()
-    {
-        inEditUser = new User(); // Clear in edit User object
-
     private async Task CleanUpUpdateUser()
     {
         inEditUser = new User(); // Clear in edit User object
@@ -1001,12 +743,7 @@ No author was given.
         firstNameError = "";
         lastNameError = "";
         emailError = "";
-        firstNameError = "";
-        lastNameError = "";
-        emailError = "";
 
-        // Unhighlight stores
-        await JS.InvokeVoidAsync("UnhighlightStores");
         // Unhighlight stores
         await JS.InvokeVoidAsync("UnhighlightStores");
 
@@ -1151,16 +888,6 @@ No author was given.
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public string? Role { get; set; }
-        public List<string> Stores { get; set; } = new List<string>();
-    }
-
-    // Details to markup Modal
-    public class ModalDetails {
-        public int? Id {get; set;}
-        public string? Title {get; set;}
-        public string? Header {get; set;}
-        public string? Description {get; set;}
-        public string? ButtonText {get; set;} // Text on submit button
         public List<string> Stores { get; set; } = new List<string>();
     }
 
