@@ -277,10 +277,6 @@ h1:focus {
     font-size: 18px;
 }
 
-.circle:hover {
-    background-color: rgb(235, 116, 116);
-}
-
 /* CSS for name under circle */
 .circle-name {
     margin-top: 8px;
