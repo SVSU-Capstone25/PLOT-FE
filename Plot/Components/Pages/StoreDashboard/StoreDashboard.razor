@@ -494,18 +494,83 @@ Author: Andrew Fulton (3/12/2025)
         }
 
     @* function to get the URL of the image from the elemebts style tag *@
+    @*
         function getBackgroundImageUrl(elementId) {
             const element = document.getElementById(elementId);
             if (element) {
                 const style = window.getComputedStyle(element);
                 const backgroundImage = style.backgroundImage;
+                console.log(backgroundImage);
+                return backgroundImage;
                 // Extract the URL from the backgroundImage string in the style tag
-                const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+                //const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
                 //return urlMatch[1], which is the data URL string
-                return urlMatch && urlMatch[1] ? urlMatch[1] : null;
+                //return urlMatch && urlMatch[1] ? urlMatch[1] : null;
             }
             return null;
         }
+    *@
+@*
+function getBackgroundImageUrl(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        const style = window.getComputedStyle(element);
+        const backgroundImage = style.backgroundImage;
+
+        // Extract the URL from the backgroundImage
+        const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+        if (urlMatch && urlMatch[1]) {
+            const imageUrl = urlMatch[1];
+
+            // Fetch the image and create an Object URL
+            fetch(imageUrl)
+                .then(response => response.blob())  // Get the image as a Blob
+                .then(blob => {
+                    const objectUrl = URL.createObjectURL(blob);  // Create Object URL from Blob
+                    
+                    // Use the Object URL as the image source
+                    document.getElementById(elementId).src = objectUrl;  // Set the Object URL as image source
+                })
+                .catch(error => console.error("Error fetching image:", error));
+        }
+    }
+}
+*@
+
+async function getBackgroundImageUrl(elementId) {
+    /* Get background image url */
+
+    // Get element
+    const element = document.getElementById(elementId);
+    if (!element) return ""; // No element
+
+    // Get the background-image element of the style
+    const style = window.getComputedStyle(element);
+    const backgroundImage = style.backgroundImage;
+
+    // Extract the URL from the backgroundImage property
+    const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+
+    // Nothing - return empty string
+    if (!urlMatch || !urlMatch[1]) return "";
+
+    // Set imageURL to valid url match
+    const imageUrl = urlMatch[1];
+
+    try {
+        // Fetch the image
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
+
+        const blob = await response.blob(); // Convert to Blob
+        const objectUrl = URL.createObjectURL(blob); // Create Object URL
+
+        return objectUrl; // Return Object URL
+    } catch (error) {
+        console.error("Error fetching image:", error);
+        return "";
+    }
+}
 
     @* function used to clear the imageInput background *@
         function ClearBackgroundImage(elementId) {
@@ -1490,13 +1555,49 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     }
 
     @* function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
+    @*
     private async Task<string> getImageUrlAdd()
     {
         string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "addModalStoreBlueprint");
-
+        Console.WriteLine(strImageUrl);
+        
         // Check if the string is null or empty, return default image if true
         return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
     }
+    *@
+
+@*
+    private async Task<string> getImageUrlAdd()
+    {
+    string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "addModalStoreBlueprint");
+    Console.WriteLine(strImageUrl);
+    // Check if we got a valid URL; if not, return default image
+    if (string.IsNullOrEmpty(strImageUrl))
+    {
+        return "/img/LayoutPhotoExample.png";
+    }
+
+    // Return the fetched image URL (this will be the URL to the image, not a Blob/Object URL)
+    return strImageUrl;
+    }
+*@
+
+// Get image url for adding image
+private async Task<string> getImageUrlAdd()
+{
+    // Await call to getBackgroundImageURL 
+    string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "addModalStoreBlueprint");
+    //Console.WriteLine($"Received Image URL: {strImageUrl}");
+
+    if (string.IsNullOrEmpty(strImageUrl)) //
+    {
+        Console.WriteLine("Returning default image");
+        return "/img/LayoutPhotoExample.png";
+    }
+
+    return strImageUrl;
+}
+
 
     @* function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
     private async Task<string> getImageUrlEdit()
@@ -1509,8 +1610,5 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         //return the string, or if null, the default store layout photo
         return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
     }
-
-
-
 
 }

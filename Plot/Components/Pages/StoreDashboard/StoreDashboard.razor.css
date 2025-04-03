@@ -117,3 +117,9 @@ Author: Andrew Fulton (3/12/2025) */
     margin-top: 8px;
     font-size: 14px;
 }
+
+/* Object URL */
+
+#addModalStoreBlueprint {
+    background-image: url('/added_image.png');
+}
