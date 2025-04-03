@@ -9,6 +9,14 @@
    alert if you click on "Cancel" in File Explorer. 
    
 */
+
+window.dotNetReferences = {};
+
+window.registerDotNetReference = function (id, dotNetRef) {
+    
+    window.dotNetReferences[id] = dotNetRef;
+};
+
 window.initializeImageInput = (id) => {
     // get the drag/drop area as well as the file input
     const dropArea = document.getElementById(`${id}`);
@@ -56,13 +64,15 @@ function onImageSelected(event, id) {
     if (file && file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onload = function (e) {
-        let dropArea = document.getElementById(`${id}`);
+            let dropArea = document.getElementById(`${id}`);
 
-        dropArea.style.backgroundImage = `url(${e.target.result})`;
-        dropArea.style.backgroundSize = "cover";
-        dropArea.style.backgroundPosition = "center";
-        dropArea.classList.remove("dashed-border");
-
+            dropArea.style.backgroundImage = `url(${e.target.result})`;
+            dropArea.style.backgroundSize = "cover";
+            dropArea.style.backgroundPosition = "center";
+            dropArea.classList.remove("dashed-border");
+            console.log(id.substring(0,id.length-1));
+            
+            window.dotNetReferences[id].invokeMethodAsync("OnInputChange",e.target.result);
         };
         
         reader.readAsDataURL(file);

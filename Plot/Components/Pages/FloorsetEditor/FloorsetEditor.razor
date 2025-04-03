@@ -262,7 +262,7 @@
 </Modal>
 
 @* Add Fixture Modal *@
-@{    
+    
     <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture">
         <BodyContent>
             <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@ModalName" ValueChanged="@((v)=> ModalName = v)"/>
@@ -359,7 +359,7 @@
 
             <div class="img-input">
                 <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
-                Id="add-fixtureimg" />
+                Id="add-fixtureimg" ImageSrc="@ModalFixtureImg" ValueChanged="@((v)=>{ModalFixtureImg=v;Console.WriteLine(ModalFixtureImg.Length);})"/>
             </div>
 
 
@@ -369,12 +369,15 @@
 
         <FooterContent>
             <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async (e) => {
+                
                 await AddFixture(new Fixture(ModalName,ModalLength,ModalWidth,ModalHangerStack,ModalFixtureImg));
+                string id = "ImageInput-" + ModalName;
+                await JS.InvokeVoidAsync("setEditModalImage",id,ModalFixtureImg);
                 
             })>Add</Button>
         </FooterContent>
     </Modal>
-}
+
 
 @* Edit Fixture Modal *@
 @foreach (Fixture currFixture in fixtures.Values)
@@ -454,14 +457,13 @@
 
             <div class="img-input">
                 <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
-                Id="@("ImageInput-" + currFixture.Name)"/>
+                Id="@("ImageInput-" + currFixture.Name)" ImageSrc="@img" ValueChanged="@((v)=>img=v)"/>
             </div>
         </BodyContent>
 
         <FooterContent>
             <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async () => {
-                    await UpdateFixture(currFixture, new Fixture(currFixture.Name,len,wth,hst,img),id);
-                    
+                    await UpdateFixture(currFixture, new Fixture(currFixture.Name,len,wth,hst,img),"editFixture-" + id);
                 })>
                 Update
             </Button>
@@ -794,21 +796,29 @@ function isOverElement(boxRect, sidebarRect) {
         The addFixtureClose function adds an event listener to the add button in the Add Fixture modal.
     */
     function addFixtureClose(dotNet) {
-        $(".modal").on('hidden.bs.modal', function (e) {
-            // Call the C# function to clear the data from the Add Fixture modal
-            dotNet.invokeMethodAsync("ClearTempFixtureData");
         
-            // Clear the data from the image input
-            var imgInput = document.querySelector('#addFixture .img-input .ImageInput');
-            imgInput.style.backgroundImage = "";
-            imgInput.classList.add("dashed-border");
-
-            // Remove the modal-backdrop on close
-            document.querySelectorAll('.modal-backdrop')?.forEach(m=>m.remove());
+        setTimeout(()=>{
+            Array.from(document.querySelectorAll(".modal")).forEach((modal)=>{
+                console.log("here");
+                $(modal.id).on('hidden.bs.modal', function (e) {
+                    // Call the C# function to clear the data from the Add Fixture modal
+                    dotNet.invokeMethodAsync("ClearTempFixtureData");
+                
+                    // Clear the data from the image input
+                    var imgInput = document.querySelector(`${modal.id} .img-input .ImageInput`);
+                    imgInput.style.backgroundImage = "";
+                    imgInput.classList.add("dashed-border");
+                    console.log(e);
+                    // Remove the modal-backdrop on close
+                    document.querySelectorAll('.modal-backdrop')?.forEach(m=>m.remove());
+            
+                
+                    
+                });
+            });
+        },50);
         
-            
-            
-        })
+        
     }
 
     /*
@@ -856,6 +866,7 @@ function isOverElement(boxRect, sidebarRect) {
             else 
             { 
                 if (document.getElementById(modalId) !== null) {
+                    console.log("closed1");
                     // Otherwise, remove all residuals of the modal
                     document.body.style.removeProperty("overflow");
                     document.body.style.removeProperty("padding-right");
@@ -863,6 +874,7 @@ function isOverElement(boxRect, sidebarRect) {
                     document.getElementById(modalId).classList.remove('show');
                     document.getElementById(modalId).style.display = "none";
                     document.querySelectorAll('.modal-backdrop')?.forEach(m=>m.remove());
+                    console.log("closed2");
                 }
             }
         }
@@ -876,23 +888,21 @@ function isOverElement(boxRect, sidebarRect) {
             Array.from(document.querySelectorAll('.ImageInput')).forEach(i=>i.getElementsByTagName("input")[0].addEventListener('change',(e)=>{
                 setTimeout(()=>{                    
                     console.log(i.style.backgroundImage.substring(5,i.style.backgroundImage.length-3));
-                    dotNet.invokeMethodAsync("UpdateImage", i.style.backgroundImage.substring(5,i.style.backgroundImage.length-3)); 
                 },50);
-            }));
+            })); 
         },25);
     }
 
-    function exportImageAndGetBase64Length(id) {
-        return document.getElementById(id).style.backgroundImage.length;        
+    function setEditModalImage(modalId,imgsrc) {
+        setTimeout(()=>{     
+            console.log(modalId);       
+            if (document.getElementById(modalId) !== null) {
+                document.getElementById(modalId).style.backgroundImage = "url("+imgsrc+")";
+                document.getElementById(modalId).classList.remove("dashed-border");
+            }
+        },50);
+        
     }
-
-    //get part of the generated string
-    function getChunk(imgDivID,startIndex, endIndex) {
-        var imgDiv = document.getElementById(imgDivID);
-        var imgSrc = imgDiv.style.backgroundImage.substring(5,imgDiv.style.backgroundImage.length-3)
-        return imgSrc.substring(startIndex, endIndex);
-    }
-
     /*
         The alertUser function sends an alert to the user with a given message.
     */
@@ -1086,13 +1096,7 @@ function isOverElement(boxRect, sidebarRect) {
     private Dictionary<string, ElementReference> imgDivElements = new Dictionary<string, ElementReference>();
 
     // SortedDictionary for holding all fixtures in alphabetical order.
-    private SortedDictionary<string, Fixture> fixtures = new()
-    {
-        ["Single Hung Rack"] = new Fixture("Single Hung Rack", "5", "2", "1", "img/LayoutPhotoExample.png"),
-        ["Double Hung Rack"] = new Fixture("Double Hung Rack", "3", "2", "2", "img/LayoutPhotoExample.png"),
-        ["Shelf"] = new Fixture("Shelf", "2", "1", "1", "img/LayoutPhotoExample.png"),
-
-    };
+    private SortedDictionary<string, Fixture> fixtures = new();
 
     // Lists for holding icons and texts for the Dropdown component
     private List<string> icons = new List<string> { "fa-regular fa-pen-to-square", "fa-regular fa-trash-can" };
@@ -1119,6 +1123,7 @@ function isOverElement(boxRect, sidebarRect) {
             } else {
                 // If not, tell the user to fill out all fields.
                 await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
+                Console.WriteLine(currFixture.ToString());
             }
             
         } catch (ArgumentException)
@@ -1166,9 +1171,14 @@ function isOverElement(boxRect, sidebarRect) {
         if (firstRender) {
             dotNet = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("imageEventListener",dotNet);
-            await JS.InvokeVoidAsync("addFixtureClose",dotNet);
             
+            
+            
+            fixtures.Add("Single Hung Rack", new Fixture("Single Hung Rack", "5", "2", "1", "img/LayoutPhotoExample.png"));
+            fixtures.Add("Double Hung Rack", new Fixture("Double Hung Rack", "5", "2", "1", "img/LayoutPhotoExample.png"));
+            fixtures.Add("Shelf", new Fixture("Shelf", "5", "2", "1", "img/LayoutPhotoExample.png"));
 
+            
             
             
             
@@ -1219,7 +1229,6 @@ function isOverElement(boxRect, sidebarRect) {
         ModalHangerStack = "";
         ModalTotalLF = "";
         ModalFixtureImg = "";
-        StateHasChanged();
     }
 
     /*
@@ -1227,32 +1236,12 @@ function isOverElement(boxRect, sidebarRect) {
     */
     [JSInvokable]
     public void UpdateImage(string value) {
-        ModalFixtureImg = value;
-        Console.WriteLine(value.Length);
+        @* ModalFixtureImg = value; *@
+        @* Console.WriteLine(value.Length); *@
     }
 
 
-    @* public async Task<StringBuilder> GetLongStringFromJS(string id) {
-        int fileLength = await JS.InvokeAsync<int>("exportImageAndGetBase64Length", id);
-
-        HubOptions a = new HubOptions();
-        int maximumSingnalRMessageSize = (a.MaximumReceiveMessageSize == null || a.MaximumReceiveMessageSize > 32768) ? 32768 : (int)a.MaximumReceiveMessageSize;
-
-        int chunkLength = (int)maximumSingnalRMessageSize / sizeof(char);
-
-        StringBuilder sb = new StringBuilder();
-        for (int startIndex = 0, endIndex = chunkLength; startIndex <= fileLength; startIndex += chunkLength, endIndex += chunkLength) {
-            if (endIndex > fileLength + 1)
-                endIndex = fileLength + 1;
-            
-            string chunk = await JS.InvokeAsync<string>("getChunk",id, startIndex, endIndex);
-            sb.Append(chunk);
-        }
-
-        this.StateHasChanged();
-        return sb; //do somthing with your string
-        
-    } *@
+    
 
     /* END FIXTURE CODE */
 
@@ -1279,6 +1268,13 @@ function isOverElement(boxRect, sidebarRect) {
         addFixtureExpanded = !addFixtureExpanded;
         if (addFixtureExpanded == true)
         {
+            if (!hasExpandedBefore) {
+                hasExpandedBefore = true;
+                await JS.InvokeVoidAsync("addFixtureClose",dotNet);
+                foreach(Fixture fixture in fixtures.Values) {                    
+                    await JS.InvokeVoidAsync("setEditModalImage","ImageInput-"+fixture.Name,fixture.FixtureImg);
+                }
+            }
             await SetSearchEvent();
             buildingWallsExpanded = false;
 

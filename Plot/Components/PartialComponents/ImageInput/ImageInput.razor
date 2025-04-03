@@ -35,6 +35,12 @@ and Height, added aria to input box.
     [Parameter] public string? Class { get; set; } // string of classes (nullable)
     [Parameter] public string? Width { get; set; } // width of the drag/drop area (nullable)
     [Parameter] public string? Height { get; set; } // height of the drag/drop area (nullable)
+    [Parameter] public EventCallback<string> ValueChanged { get; set; } // to send alert when image is updated
+    [Parameter] public string? ImageSrc { get; set; } // the src of the image
+
+    public DotNetObjectReference<ImageInput>? dotNet;
+    
+
 
     // call javascript method to initialize input with the proper Id
     // when the component is first loaded. the other way i was doing it 
@@ -43,7 +49,18 @@ and Height, added aria to input box.
     {
         if (firstRender)
         {
+            dotNet = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("registerDotNetReference", Id, dotNet);
             await JS.InvokeVoidAsync("initializeImageInput", Id);
         }
+    }
+
+
+    [JSInvokable]
+    public async Task OnInputChange(string base64) {
+        
+        ImageSrc = base64;
+        Console.WriteLine(ImageSrc.Length);        
+        await ValueChanged.InvokeAsync(ImageSrc);
     }
 }
