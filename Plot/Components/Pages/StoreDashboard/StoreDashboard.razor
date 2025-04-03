@@ -1016,7 +1016,7 @@ Users = new List<User> { users[2] }
         await JS.InvokeVoidAsync("clearDivExceptById", "employeesEdit", "editStoreAddUserDiv");
 
         @* set a timeout so the modal can open *@
-        await Task.Delay(50);
+        await Task.Delay(500);
         @* check if the modal is open *@
         bool isOpen = await JS.InvokeAsync<bool>("IsModalOpen", "editStoreModal");
         if (isOpen)
