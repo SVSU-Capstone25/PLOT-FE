@@ -2,16 +2,29 @@
 .progress-area {
     background-color: white;
     padding: 5px;
-    height: 100%;
+    height: inherit;
     border-radius: .5rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
 }
 
 .inner-container {
     background-color: #f0f0f0;
     padding: .5rem;
     border-radius: .5rem;
-    height: 84vh;
-    /* Danielle Smith - 3/15/2025 put height on container*/
+    /* Tristan Calay 4/1/2025 Remove height, use flex so sub components size properly */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+ul {
+    /* Remove padding from the category list */
+    padding-left: 0;
+    margin-bottom: 0;
 }
 
 /* Danielle Smith - 3/15/2025
@@ -25,19 +38,14 @@ without the buttons at the bottom ever getting lost */
 }
 
 .AllocationsSidebar {
+    /* Add height here */
+    height: 80vh;
     padding: 1.5rem;
 }
 
 .category-separator {
     margin: 0.2rem;
     opacity: 0.1;
-}
-
-.toolbar-buttons {
-    justify-content: center;
-    gap: 16px;
-    display: flex;
-    padding-top: 0.5rem;
 }
 
 .search-button>button {

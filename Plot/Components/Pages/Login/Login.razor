@@ -27,13 +27,17 @@
             <TextInput Id="password" Type="password" Label="Password" Placeholder="" Value="@password"
                 ValueChanged="@(e => password = e)" Class="masked" Required="true" />
             <Link Id="link" Class="mb-3" Url="/recover_password">Forgot Password?</Link>
-            <Button Class="Button" Id="buttonLogin" Variant="primary" Icon="fa-solid fa-right-to-bracket" Type="submit"
-                IsDisabled=false TextAlignment="center">
-                Log in
-            </Button>
-            <Loader class="d-none" Id="LoginLoader">
-                Loading...
-            </Loader>
+            <<<<<<< HEAD <Button Class="Button" Id="buttonLogin" Variant="primary" Icon="fa-solid fa-right-to-bracket"
+                Type="submit" IsDisabled=false TextAlignment="center">
+                =======
+                <Button Class="Button" Id="buttonLogin" Variant="primary" OnClickFunction="ValidateInput"
+                    IsDisabled=false TextAlignment="center">
+                    >>>>>>> main
+                    Log in
+                </Button>
+                <Loader class="d-none" Id="LoginLoader">
+                    Loading...
+                </Loader>
         </form>
         <div class="footer-content">
             @if (isInvalid)

@@ -8,7 +8,11 @@ Program Purpose:
 The purpose of PLOT is to allow users to easily create, manage, 
 and allocate floorsets for Platos Closet. 
 
-Author: Josh Rodack (2/10/2025)-->
+Author: Josh Rodack (2/10/2025)
+
+Author: Andrew Miller (3/19/2025) - 
+Added code to turn off disabled icon when button is re-enabled.
+-->
 
 <!--Setting to allow dynamic elements-->
 @rendermode InteractiveServer
@@ -36,15 +40,23 @@ Author: Josh Rodack (2/10/2025)-->
         disabledClass = "disabled-btn";
 
     }
+    else
+    {
+        disabledClass = ""; // Remove if re-enabled
+    }
     <!--Button class, adds classes based on data passed icon
     via parameters
     -->
     <button @onclick="OnClickFunc" class="btn btn-@Variant @alignment @disabledClass w-100" disabled="@IsDisabled"
         type="@Type">
         <!--Button content-->
-        <span class="icon">
-            <i class="@Icon"></i>
-        </span>
+        @if (Icon != null)
+        {
+            <span class="icon">
+                <i class="@Icon"></i>
+            </span>
+        }
+
         @if (ChildContent != null)
         {
             <span>@ChildContent</span>

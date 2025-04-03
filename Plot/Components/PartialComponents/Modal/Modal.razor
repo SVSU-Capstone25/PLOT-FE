@@ -11,21 +11,28 @@ Program Purpose:
 The purpose of PLOT is to allow users to easily create, manage, 
 and allocate floorsets for Platos Closet. 
 
-Author: Danielle Smith (2/9/2025) -->
+Author: Danielle Smith (2/9/2025) 
+
+Author: Andrew Miller (3/19/2025) - Added OnCancelFunction 
+parameter to specify a method to run when the cancel button is clicked.
+- (3/24/2025): Added OnCancelFunction parameter ot "x" button
+-->
 
 <div class="modal fade" id="@Id" tabindex="-1" aria-labelledby="@Id + 'Label'">
     <div class="modal-dialog Modal @Class">
         <div class="modal-content border-0">
             <div class="modal-header @Variant">
                 <h5 class="modal-title" id="@Id + 'Label'"><i class="@Icon"></i> @Title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                @onclick="OnCancelFunc"></button>
             </div>
             <div class="modal-body">
                 @BodyContent
             </div>
             <div class="modal-footer">
                 <!-- cancel buttons for all modals -->
-                <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal"
+                @onclick="OnCancelFunc">Cancel</button>
                 @FooterContent
             </div>
         </div>
@@ -50,9 +57,25 @@ Author: Danielle Smith (2/9/2025) -->
     [Parameter]
     public string? Class { get; set; } // classes for the modal (nullable)
 
+    [Parameter]
+    // Method that runs when clicking cancel or clicking the x button in the upper right corner
+    public EventCallback OnCancelFunction { get; set; }
+
     [Parameter, EditorRequired]
     public required RenderFragment BodyContent { get; set; } // body content of the modal
 
     [Parameter, EditorRequired]
     public RenderFragment? FooterContent { get; set; } // footer buttons for the modal
+
+    //When cancel button is clicked this
+    //task is called which then calls
+    //the method invoked in the parent component
+    private async Task OnCancelFunc()
+    {
+        // Checks that it points to an actual method
+        if (OnCancelFunction.HasDelegate) 
+        {
+            await OnCancelFunction.InvokeAsync(); // Enables handling asynchronous methods
+        }
+    }
 }
