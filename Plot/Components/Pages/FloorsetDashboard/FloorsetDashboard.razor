@@ -41,7 +41,7 @@ Author: Andrew Fulton (3/13/2025)  *@
         {
             <Card Id=@floorset.ID Class="Card" CardText=@floorset.Name CardImage=@floorset.ImagePath>
                 <Dropdown Class="Dropdown" Id="@floorset.dropdownID" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-                    DropdownLinks="@(new List<string> { "http://localhost:8080/floorset-editor", "javascript:floorsetDashboardCopyCard('"+@floorset.Name+"')", "#deleteFloorsetModal" })"
+                    DropdownLinks="@(new List<string> { "javascript:window.location.href='/floorset-editor'", "javascript:floorsetDashboardCopyCard('"+@floorset.Name+"')", "#deleteFloorsetModal" })"
                     LabelText="Floorset"
                     DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
             </Card>
@@ -104,7 +104,17 @@ Author: Andrew Fulton (3/13/2025)  *@
             alert("Incorrect input.");
         }
     }
+
+    function GoToFloorsetEditorJS() {
+        /* Danielle Smith fa-plus 4/1/2025 
+        function for dropdown to go to the floorset editor that
+        forces a refresh of the cache to correct styles and such */
+        window.location.href="/floorset-editor";
+    }
 </script>
+
+@* floorsetCopy js *@
+<script src="js/copyFloorsetCard.js"></script>
 
 @code {
     [Parameter]
@@ -139,7 +149,7 @@ Author: Andrew Fulton (3/13/2025)  *@
         public string Name {get; set;}
 
         public string ImagePath{get; set;}
-    }   
+    } 
 
     //Array of stored floorsets to display. Should be manipulated by copy and delete functions to have local updates.
     private List<storedFloorset>? storedFloorsets {get; set;}

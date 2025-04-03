@@ -40,14 +40,15 @@ Added code to turn off disabled icon when button is re-enabled.
         disabledClass = "disabled-btn";
 
     }
-    else{
+    else
+    {
         disabledClass = ""; // Remove if re-enabled
     }
     <!--Button class, adds classes based on data passed icon
     via parameters
     -->
-    <button @onclick="OnClickFunc" type="button" class="btn btn-@Variant @alignment @disabledClass w-100"
-        disabled=@IsDisabled>
+    <button @onclick="OnClickFunc" class="btn btn-@Variant @alignment @disabledClass w-100" disabled="@IsDisabled"
+        type="@Type">
         <!--Button content-->
         @if (Icon != null)
         {
@@ -70,6 +71,9 @@ Added code to turn off disabled icon when button is re-enabled.
 
     [Parameter]
     public string? Id { get; set; }
+
+    [Parameter]
+    public string? Type { get; set; } = "button";
 
     [Parameter]
     public required string Variant { get; set; }

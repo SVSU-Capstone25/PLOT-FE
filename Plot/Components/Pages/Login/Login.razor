@@ -1,30 +1,40 @@
-@* Originally by Luke Wollenweber *@
+@* Front end by Luke Wollenweber *@
+@* Hook up to database by Michael Polhill *@
+@* Updated by Danielle Smith 4/1/2025 *@
 
 @page "/login"
-
+@using Microsoft.AspNetCore.Authentication
+@using System.Net.Http.Headers
+@using System.Security.Claims
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject AuthService AuthService
+
 
 <PageTitle>Login</PageTitle>
 
 <body class="background">
     <div class="login">
-        <div class="body-content">
+        <form class="body-content" onsubmit="@OnLoginSubmit">
             <img src="img/PlatoLogo.png" alt="Plato's closet logo">
             <h4>Welcome to PLOT, </h4>
             <h4>Plato's Layout Optimization Tool</h4>
             <p>Please log in to your account to continue</p>
             @* Danielle Smith - 3/16/2025
                 gave better ids and added some margin on the forgot password link *@
-            <TextInput Id="username" Type="text" Label="Username" Placeholder="" Value="@username"
-                ValueChanged="@(e => username = e)" />
+            <TextInput Id="email" Type="email" Label="Email" Placeholder="" Value="@email"
+                ValueChanged="@(e => email = e)" Required="true" />
             <TextInput Id="password" Type="password" Label="Password" Placeholder="" Value="@password"
-                ValueChanged="@(e => password = e)" Class="masked" />
+                ValueChanged="@(e => password = e)" Class="masked" Required="true" />
             <Link Id="link" Class="mb-3" Url="/recover_password">Forgot Password?</Link>
-            <Button Class="Button" Id="buttonLogin" Variant="primary" OnClickFunction="ValidateInput" IsDisabled=false
-                TextAlignment="center">
+            <Button Class="Button" Id="buttonLogin" Variant="primary" Icon="fa-solid fa-right-to-bracket" Type="submit"
+                IsDisabled=false TextAlignment="center">
                 Log in
             </Button>
-        </div>
+            <Loader class="d-none" Id="LoginLoader">
+                Loading...
+            </Loader>
+        </form>
         <div class="footer-content">
             @if (isInvalid)
             {
@@ -34,28 +44,54 @@
     </div>
 </body>
 
+@* Danielle Smith - 4/1/2025
+function to toggle a loader so the user can't spam 
+the login button while waiting for the auth *@
+<script>
+    function ToggleLoader(state) {
+        let loaderElem = document.getElementById("LoginLoader");
+        let loginButton = document.getElementById("buttonLogin");
+
+        if (state == true) {
+            loaderElem.classList.remove("d-none");
+            loginButton.classList.add("d-none");
+        }
+        else {
+            loaderElem.classList.add("d-none");
+            loginButton.classList.remove("d-none");
+        }
+    }
+</script>
+
 @code
 {
-    string username = ""; // Define the username variable
-    string password = "";
-    bool isInvalid = false;
+    string email = ""; // Var to bind user email input
+    string password = ""; // Var to bind user password input
+    bool isInvalid = false; // Flag to show user if login details were bad
 
-    private void ValidateInput()
+    // Function to handle the login submit event
+    private async Task OnLoginSubmit()
     {
-        // Check if username is "temp" and redirect to localhost:8080 if true
-        if (username == password)
-        {
-            Console.WriteLine("Username: " + username + " --- Password: " + password);
-            isInvalid = false;
-            // Redirect to localhost:8080
+        // set isinavlid to false to hide the text if the user is trying again
+        isInvalid = false;
+
+        // show the loader
+        await JS.InvokeVoidAsync("ToggleLoader", true);
+
+        // Call the AuthService to login the user with the email and password provided
+        var result = await AuthService.LoginAsync(email, password);
+
+        // True if user Authentication is good
+        if (result)
+        { //Good Auth, navigate to the dashbard, use forceload or the next pages elements will be off.
             Navigation.NavigateTo("/store-dashboard", forceLoad: true);
-            /* Danielle Smith - 3/16/2025
-            added force load to this so that the page
-            actually reloads and loads the new styles - also redirect to store dashboard */
         }
-        else
-        {
+        else // False user Authentication is bad, set flag to true, this displays to the user that
+        { // the email or password was bad.
             isInvalid = true;
+
+            // hide the loader
+            await JS.InvokeVoidAsync("ToggleLoader", false);
         }
     }
 }
