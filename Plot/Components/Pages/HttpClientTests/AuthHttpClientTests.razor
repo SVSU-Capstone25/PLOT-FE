@@ -2,11 +2,13 @@
    This can be used as a refrence on how to access
    BE endpoints and how auth attributes/tags *@
 
-@page "/test-auth"
+@page "/test-authclient"
 @attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
 @using System.Net.Http.Headers
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.WebUtilities
+@using Plot.Data.Models.Auth.Registration
 @using Plot.Data.Models.Auth.ResetPassword
 @inject HttpClient Client
 @inject AuthHeaderHttpClient AuthHeaderHttpClient
@@ -85,12 +87,20 @@
     {   
         ResetPasswordRequest newRequest = new ResetPasswordRequest
         {
-            EMAIL = "example@example.com" // Replace with a valid email
+            EMAIL = "plotdevtest@gmail.com" // Replace with a valid email
         };
 
         var response = await AuthHttpClient.ResetPasswordRequest(newRequest);
 
-        Console.WriteLine(response);
+        var testResponse= "Reset email sent";
+
+        if(!response.IsSuccessStatusCode)
+        {
+            testResponse="Email did not send";
+
+        }
+
+        Console.WriteLine(testResponse);
         
     }
 
@@ -98,25 +108,50 @@
 
     private async void ResetPasswordTest()
     {   
-        ResetPasswordRequest newRequest = new ResetPasswordRequest
+
+        var uri = new Uri(Navigation.Uri);
+        var queryParams = QueryHelpers.ParseQuery(uri.Query);
+        var token="";
+
+        if (queryParams.TryGetValue("token", out var tokenValue))
         {
-            EMAIL = "example@example.com" // Replace with a valid email
+            token = tokenValue;
+        }
+
+        token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InBsb3RkZXZ0ZXN0QGdtYWlsLmNvbSIsIlJvbGUiOiJPd25lciIsIlVzZXJJZCI6IjQ0IiwibmJmIjoxNzQzNjY4MTkwLCJleHAiOjE3NDM2NzE3OTAsImlhdCI6MTc0MzY2ODE5MCwiaXNzIjoiaHR0cDovL2JhY2tlbmQ6ODA4NSIsImF1ZCI6Imh0dHA6Ly9mcm9udGVuZDo4MDgwIn0.O_B3aChIlZotuj0qU2ea_mgvO5qATytoaom13qJ2Ttk";
+        ResetPassword newRequest = new ResetPassword
+        {
+            NewPassword = "admin26!", 
+            Token = token! 
         };
 
-        var response = await AuthHttpClient.ResetPasswordRequest(newRequest);
+        var response = await AuthHttpClient.ResetPassword(newRequest);
 
-        Console.WriteLine(response);
+
+        var testResponse= "Password reset";
+
+        if(!response.IsSuccessStatusCode)
+        {
+            testResponse="Password not reset";
+
+        }
+
+        Console.WriteLine(testResponse);
         
     }
 
     private async void RegisterTest()
     {   
-        ResetPasswordRequest newRequest = new ResetPasswordRequest
+        UserRegistration newRequest = new UserRegistration
         {
-            EMAIL = "example@example.com" // Replace with a valid email
+            EMAIL = "plotdevtest@gmail.com",
+            FIRST_NAME = "Plot",
+            LAST_NAME = "Admin",
+            ROLE = "1",
+            
         };
 
-        var response = await AuthHttpClient.ResetPasswordRequest(newRequest);
+        var response = await AuthHttpClient.Register(newRequest);
 
         Console.WriteLine(response);
         
