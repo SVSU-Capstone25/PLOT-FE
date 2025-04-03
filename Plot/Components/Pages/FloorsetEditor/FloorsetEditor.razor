@@ -65,63 +65,63 @@
     else
     {
         @if (addFixtureExpanded)
-        {
+        {            
             
             <div class="expanded">
-                @* Header *@
-                <div class="sidebar-header p-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="mb-0"> Add Fixture </h5>
-                    </div>
-                </div>
+                <div class="inner-container add-fixture-panel">
 
-                <!-- Search Bar -->
-                <div class="p-3 mb-2 border-bottom">
-                    <div class="d-flex align-items-center m-2">
-                        <div class="w-100 search-text">
-                            <TextInput class="form-control p-2 " Id="search" Label="" Type="search" placeholder="Search" />
-                        </div>
-                        <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
+                    
+                    <h3 class="header pt-3" @onclick="ToggleAddFixture">
+                        <i class="fas fa-couch"></i> Add Fixture
+                    </h3>
+                    <hr style="opacity:1">
 
-                    </div>
-                    <div class="align-items-center mt-3 d-flex">
-                        <Button class="btn add-fixture btn-lg w-100" Variant="primary" OnClickFunction=@(async (e) => {
-                                
-                                await JS.InvokeVoidAsync("toggleModal","addFixture",true);
-
-                            })>
-                            <i class="fa-solid fa-plus" style="margin-right: .5rem;" ></i>
-                            Add Fixture
-                        </Button>
-                    </div>
-                </div>
-
-
-                @* Fixture Area *@
-                <div class="fixture-area p-3 mt-3 d-flex mb-2">
-                    @* Create fixture tile for each fixture in dictionary *@
-                    @foreach (Fixture currFixture in fixtures.Values)
-                    {
-
-                     <div class="fixture mb-3 d-flex flex-row" data-value="@currFixture.Name"
-                        @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width, ""))" draggable="true"
-                        @ondragstart:preventDefault="true">
-                            <div class="drag-start-area d-flex flex-row">
-                                <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="">
-                                <p class="fixture-text m-2 disable-select grab-cursor">@currFixture.Name</p>
+                    <!-- Search Bar -->
+                    <div class="p-3 mb-2 border-bottom">
+                        <div class="d-flex align-items-center m-0">
+                            <div class="w-100 search-text">
+                                <TextInput class="form-control p-2 " Id="search" Label="" Type="search" placeholder="Search" />
                             </div>
-                            @{
-                                @* Make a link to a modal for each fixture *@
-                                string id = currFixture.Name.Replace(" ", "");
-                                List<string> links = new List<string> { "#editFixture-" + id, "#deleteFixture-" + id };
+                            <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
 
-                            }
-                            <Dropdown DropdownLinks="@links" DropdownIcons="@icons" DropdownText="@texts"
-                            class="fixture-options ms-auto disable-select" id="@("fixture-options" + currFixture.Name)"
-                            LabelText="Fixture">
-                            </Dropdown>
                         </div>
-                    }
+                        <div class="align-items-center mt-3 d-flex">
+                            <Button class="btn add-fixture btn-lg w-100 p-0" Variant="primary" OnClickFunction=@(async (e) => {
+                                    
+                                    await JS.InvokeVoidAsync("toggleModal","addFixture",true);
+
+                                })>
+                                <i class="fa-solid fa-plus" style="margin-right: .5rem;" ></i>
+                                Add Fixture
+                            </Button>
+                        </div>
+                    </div>
+
+
+                    @* Fixture Area *@
+                    <div class="fixture-area p-3 mt-3 d-flex mb-2">
+                        @* Create fixture tile for each fixture in dictionary *@
+                        @foreach (Fixture currFixture in fixtures.Values)
+                        {
+                         <div class="fixture mb-3 grab-cursor" data-value="@currFixture.Name"
+                            @ondragstart="@((e) => OnDragStart(e, currFixture.Length + "x" + currFixture.Width, "green"))" draggable="true"
+                            @ondragstart:preventDefault="true">
+                                <div class="drag-start-area d-flex flex-row">
+                                    <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="">
+                                    <p class="fixture-text m-2 disable-select grab-cursor">@currFixture.Name</p>
+                                </div>
+                                @{
+                                    @* Make a link to a modal for each fixture *@
+                                    string id = currFixture.Name.Replace(" ", "");
+                                    List<string> links = new List<string> { "#editFixture-" + id, "#deleteFixture-" + id };
+                                }
+                                <Dropdown DropdownLinks="@links" DropdownIcons="@icons" DropdownText="@texts"
+                                class="fixture-options ms-auto disable-select" id="@("fixture-options" + currFixture.Name)"
+                                LabelText="Fixture">
+                                </Dropdown>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         }
@@ -602,7 +602,6 @@
     string ModalTotalLF = "";
     string ModalFixtureImg = "";
 
-    bool hasExpandedBefore = false;
     DotNetObjectReference<FloorsetEditor>? dotNet; // Reference to .NET functions in JS
 
     // SortedDictionary for holding all fixtures in alphabetical order.
@@ -697,11 +696,7 @@
         The SetSearchEvent function calls a JS function to create a search input event listener.
     */
     public async Task SetSearchEvent() {
-
-        if (!hasExpandedBefore) {
-            hasExpandedBefore = true;
-            await JS.InvokeVoidAsync("searchInputChange");
-        }
+        await JS.InvokeVoidAsync("searchInputChange");
     }
 
 

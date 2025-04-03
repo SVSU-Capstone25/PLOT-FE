@@ -10,14 +10,12 @@
     margin-top: 2rem;
 }
 
-
+.add-fixture-panel {
+    height: 100%;
+}
 
 .dimension {
     width: 45%;
-}
-
-.search-text {
-    margin-left: .5rem;
 }
 
 ::deep .Button.filter-btn {
@@ -40,22 +38,15 @@
 }
 
 .fixture:hover {
-    transition: 25ms;
-    background-color: #f1f1f1;
+    transition: 100ms;
+    background-color: #d6d6d6;
 }
 
 .fixture-img {
     height: 55px;
 }
 
-.fixture-text {
-    font-size: x-large;
-}
 
-.fixture-options {
-    background: none;
-    border: none;
-}
 
 /* Ensures that the container aligns the numeric inputs horizontally */
 .horizantal-inputs {
@@ -161,15 +152,7 @@
     border-radius: 4px;
 }
 
-.fixture {
-    border-radius: 4px;
 
-}
-
-.fixture:hover {
-    transition: 25ms;
-    background-color: #f1f1f1;
-}
 
 .emp-only {
     height: 55px;
@@ -180,9 +163,6 @@
     /* Rounded corners */
 }
 
-.fixture-text {
-    font-size: x-large;
-}
 
 .fixture-options {
     background: none;
@@ -199,14 +179,6 @@
 
 #container {
     position: relative;
-}
-
-.box {
-    height: 100px;
-    width: 100px;
-    position: absolute;
-    background: green;
-    border-radius: 5px;
 }
 
 .grid-cell {
@@ -230,50 +202,15 @@
     border: none;
 }
 
-.img-input {
-    justify-self: center;
-    margin-top: 2rem;
-}
-
-
 
 .dimension {
     width: 45%;
 }
 
 
-.filter-btn {
-    margin-left: .5rem;
-    border: none;
-    border-radius: 4px;
-}
-
-.fixture {
-    border-radius: 4px;
-    align-items: center;
-}
-
-.fixture-area {
-    flex-direction: column;
-    max-height: 30vh;
-}
-
-.fixture:hover {
-    transition: 25ms;
-    background-color: #f1f1f1;
-}
-
-.fixture-img {
-    height: 55px;
-}
 
 .fixture-text {
     font-size: x-large;
-}
-
-.fixture-options {
-    background: none;
-    border: none;
 }
 
 
@@ -303,13 +240,13 @@
     border-radius: 5px;
 }
 
-.grid-cell {
-    border: 1px solid #444;
-    width: 49px;
-    height: 49px;
+
+
+.inner-container {
+    background-color: #f0f0f0;
+    padding: .5rem;
+    border-radius: .5rem;
 }
-
-
 
 
 ::deep .add-btn {
@@ -326,18 +263,4 @@
 
 #container {
     position: relative;
-}
-
-.box {
-    height: 100px;
-    width: 100px;
-    position: absolute;
-    background: green;
-    border-radius: 5px;
-}
-
-.grid-cell {
-    border: 1px solid #444;
-    width: 49px;
-    height: 49px;
 }
