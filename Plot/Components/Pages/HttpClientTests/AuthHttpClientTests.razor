@@ -7,11 +7,13 @@
 @using Microsoft.AspNetCore.Authorization
 @using System.Net.Http.Headers
 @using Microsoft.AspNetCore.Components.Authorization
+@using Plot.Data.Models.Auth.ResetPassword
 @inject HttpClient Client
 @inject AuthHeaderHttpClient AuthHeaderHttpClient
 @inject NavigationManager Navigation
 @inject IHttpContextAccessor HttpContextAccessor
 @inject AuthService AuthService
+@inject AuthHttpClient AuthHttpClient
 
 
 <PageTitle>TestAuth</PageTitle>
@@ -43,32 +45,26 @@
 
 <body class="background">
     <div class="login">
-        <form class="body-content" onsubmit="@LogOut">
+        <form class="body-content" onsubmit="@ResetPasswordRequestTest">
             
             <Button Class="Button" Id="buttonFail" Variant="primary" Icon="" Type="submit" IsDisabled=false
                 TextAlignment="center">
-                AuthTest
+                ResetPasswordRequest
             </Button>
             
         </form>
-        <form class="body-content" onsubmit="@LogOut">
+            
+        
+        <form class="body-content" onsubmit="@ResetPasswordTest">
             
             <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
                 TextAlignment="center">
-                TalkToEndpoint
-            </Button>
-            
-        </form>
-        <form class="body-content" onsubmit="@LogOut">
-            
-            <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
-                TextAlignment="center">
-                LogOut
+                ResetPassword
             </Button>
             
         
         </form>
-        <form class="body-content" onsubmit="@NavigateAuth">
+        <form class="body-content" onsubmit="@RegisterTest">
             
             <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
                 TextAlignment="center">
@@ -85,15 +81,46 @@
 @code
 {
 
-    private async void LogOut()
+    private async void ResetPasswordRequestTest()
     {   
-        await AuthService.LogOutAsync();
-        Navigation.NavigateTo("/login",forceLoad:true);
+        ResetPasswordRequest newRequest = new ResetPasswordRequest
+        {
+            EMAIL = "example@example.com" // Replace with a valid email
+        };
+
+        var response = await AuthHttpClient.ResetPasswordRequest(newRequest);
+
+        Console.WriteLine(response);
+        
     }
 
-    private void NavigateAuth()
+    
+
+    private async void ResetPasswordTest()
     {   
+        ResetPasswordRequest newRequest = new ResetPasswordRequest
+        {
+            EMAIL = "example@example.com" // Replace with a valid email
+        };
+
+        var response = await AuthHttpClient.ResetPasswordRequest(newRequest);
+
+        Console.WriteLine(response);
         
-        Navigation.NavigateTo("/test-auth-attr",forceLoad:true);
     }
+
+    private async void RegisterTest()
+    {   
+        ResetPasswordRequest newRequest = new ResetPasswordRequest
+        {
+            EMAIL = "example@example.com" // Replace with a valid email
+        };
+
+        var response = await AuthHttpClient.ResetPasswordRequest(newRequest);
+
+        Console.WriteLine(response);
+        
+    }
+
+
 }

@@ -39,37 +39,37 @@
 
 @code
 {
-    private async void AuthTest()
+    private void AuthTest()
     {   //Set the kind of htpMethod
-        AuthHttpClient.httpMethod=HttpMethod.Post;
+        //AuthHttpClient.httpMethod=HttpMethod.Post;
         //The endpoint of the api, can be found in BE Controllers
-        AuthHttpClient.endPointStr="/authtest/auth-test";
+        //AuthHttpClient.endPointStr="/authtest/auth-test";
         //Send and wait for the response
-        var response = await AuthHttpClient.SendAsyncWithAuth();
+        var response = "";//await AuthHttpClient.SendAsyncWithAuth();
 
         Console.WriteLine(response);
     }
 
-    private async void TalkToEndpoint()
+    private void TalkToEndpoint()
     {
         //Set the kind of htpMethod
-        AuthHttpClient.httpMethod=HttpMethod.Post;
+        //AuthHttpClient.httpMethod=HttpMethod.Post;
         //The endpoint of the api, can be found in BE Controllers
-        AuthHttpClient.endPointStr="/authtest/data-test";
+        //AuthHttpClient.endPointStr="/authtest/data-test";
         // When sending in data to the api bind to the model the api is useing
         // Model can be found in BE /Data/Models
-        AuthHttpClient.jsonBody= JsonContent.Create(new
-            {
-                EmailAddress = "Example@example"
-            }
-        );
+        //AuthHttpClient.jsonBody= JsonContent.Create(new
+        //    {
+        //        EmailAddress = "Example@example"
+        //    }
+        //);
         //Wait response
-        var response = await AuthHttpClient.SendAsyncWithAuth();
+        //var response = await AuthHttpClient.SendAsyncWithAuth();
         
         //get it back as json
-        var json = await response.Content.ReadAsStringAsync();
+        //var json = await response.Content.ReadAsStringAsync();
 
-        Console.WriteLine(json);
+        Console.WriteLine("json");
         //Looks like: {"emailAddress":"new@email.com"}
 
     }
