@@ -366,7 +366,8 @@ Author: Andrew Fulton (3/12/2025)
 
     // function for adding an employee to whatever modal needs to see employees. 
     // Places a circle with their name and initials
-    function addEmployee(name, initials, targetDiv) {
+    function addEmployee(Id, name, initials, targetDiv, dotNet) {
+        //window.dotNetRef = dotNet;
         //Get the employees div
         const employeesDiv = document.getElementById(targetDiv);
 
@@ -377,6 +378,11 @@ Author: Andrew Fulton (3/12/2025)
         //Create the circle div
         const circle = document.createElement("div");
         circle.classList.add("circle");
+
+        //dotNet.invokeMethodAsync("OnCircleClicked");
+        circle.addEventListener("click", function () {
+            dotNet.invokeMethodAsync("OnCircleClicked", Id);
+        });
 
         //Create the initials span
         const initialsSpan = document.createElement("span");
@@ -400,7 +406,7 @@ Author: Andrew Fulton (3/12/2025)
 
     @* helper function to get the value from the Option input component in the 
         addEmployee modal when trying to add an employee to a store *@
-        function GetEmployeeBeingAddedToStore(targetDiv, strUserValues) {
+        function GetEmployeeBeingAddedToStore(targetDiv, strUserValues, dotNet) {
             @* const employeeOptionInput = document.getElementById(targetDropdownID);
             const strUserValues = employeeOptionInput.value; *@
 
@@ -413,7 +419,7 @@ Author: Andrew Fulton (3/12/2025)
             @* get the initials fro the names *@
             const strInitials = strFirstName.charAt(0) + strLastName.charAt(0);
             @* create the employee fro the name and initials *@
-                addEmployee(strName, strInitials, targetDiv)
+                addEmployee(strUserValues[0], strName, strInitials, targetDiv, dotNet)
         }
 
 
@@ -581,6 +587,9 @@ Author: Andrew Fulton (3/12/2025)
 </script>
 
 @code {
+
+    DotNetObjectReference<StoreDashboard>? dotNet;
+
     //list to hold all of the stores
     private List<Store> stores = new List<Store>();
     //list to hold all of the available employees
@@ -663,11 +672,16 @@ Author: Andrew Fulton (3/12/2025)
     private string strUserValueToAdd = "-1,Test,User";
 
 
+
+
+
+
     //initialize components
     protected override void OnInitialized()
     {
+        //Get the dotnet into JS
+        dotNet = DotNetObjectReference.Create(this);
 
-        //create a list of users to select from
         users = new List<User>
 {
 new User
@@ -876,7 +890,7 @@ Users = new List<User> { users[2] }
         if (!arrSplitUserValues[0].Equals("-1"))
         {
             //add the user to the employee section of the modal
-            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", strUserValueToAdd);
+            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", strUserValueToAdd, dotNet);
             //add the user to list of users that will potentially be added
             usersToAdd.Add(new User
             {
@@ -904,7 +918,7 @@ Users = new List<User> { users[2] }
         if (!arrSplitUserValues[0].Equals("-1"))
         {
             //add the employee to the modals employee section
-            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesAdd", strUserValueToAdd);
+            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesAdd", strUserValueToAdd, dotNet);
             //add the user to the list of users to be added
             usersToAdd.Add(new User
             {
@@ -985,13 +999,21 @@ Users = new List<User> { users[2] }
             Width = selectedStore.Width,
             Length = selectedStore.Length,
             Blueprint_Image = selectedStore.Blueprint_Image,
-            Users = selectedStore.Users
+            Users = selectedStore.Users.Select(user => new User
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Role = user.Role
+            }).ToList() // Create a new list of users
         };
 
         //SetBackgroundImage(elementId, strUrl)
         await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.Blueprint_Image);
 
-
+        //clear out the emloyees from the employees section of the edit store div
+        await JS.InvokeVoidAsync("clearDivExceptById", "employeesEdit", "editStoreAddUserDiv");
 
         @* set a timeout so the modal can open *@
         await Task.Delay(50);
@@ -1000,10 +1022,10 @@ Users = new List<User> { users[2] }
         if (isOpen)
         {
             @* add every employee for that store to the employees section of the modal *@
-            foreach (User user in editedStoreInfo.Users)
+            foreach (User user in selectedStore.Users)
             {
                 string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
-                await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", $"{userValues}");
+                await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", $"{userValues}", dotNet);
             }
         }
 
@@ -1023,6 +1045,8 @@ Users = new List<User> { users[2] }
         editedStoreInfo.Users.AddRange(usersToAdd);
         //add the updated list of users to the selected store
         stores[index].Users = editedStoreInfo.Users;
+
+
 
         @* Click the edit button again for the store. This lets it be a single click after updating the store 
         instead of a double. I have no idea why it was happening, but this is the only fix I could find. *@
@@ -1681,4 +1705,63 @@ Users = new List<User> { users[2] }
         public string? Email { get; set; }
         public string? Role { get; set; }
     }
+
+    [JSInvokable]
+    public async Task OnCircleClicked(string Id)
+    {
+        //user ID of the user to be removed
+        int ID = int.Parse(Id);
+
+        //find the user to remove from the usersToAddlist
+        var userToRemove = usersToAdd.Find(user => user.Id == ID);
+        if (userToRemove != null)
+        {
+            usersToAdd.Remove(userToRemove);
+        }
+
+        //if Add Store modal is open, clear the old employees and put in the updated list
+        bool isAddOpen = await JS.InvokeAsync<bool>("IsModalOpen", "addStoreModal");
+        if (isAddOpen)
+        {
+            await JS.InvokeVoidAsync("clearDivExceptById", "employeesAdd", "addStoreAddUserDiv");
+            foreach (User user in usersToAdd)
+            {
+                string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
+                await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesAdd", $"{userValues}", dotNet);
+            }
+
+            SetAddDisabled();
+        }
+
+        //Check if we are editing a modal
+        bool isEditOpen = await JS.InvokeAsync<bool>("IsModalOpen", "editStoreModal");
+        if (isEditOpen)
+        {
+            //remove the user from the copied version of the selected store
+            userToRemove = editedStoreInfo.Users.Find(user => user.Id == ID);
+            if (userToRemove != null)
+            {
+                editedStoreInfo.Users.Remove(userToRemove);
+            }
+
+            //clear the employees section of the store
+            await JS.InvokeVoidAsync("clearDivExceptById", "employeesEdit", "editStoreAddUserDiv");
+            //add in the users that will be a part of the store
+            foreach (User user in editedStoreInfo.Users)
+            {
+                string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
+                await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", $"{userValues}", dotNet);
+            }
+            foreach (User user in usersToAdd)
+            {
+                string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
+                await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", $"{userValues}", dotNet);
+            }
+            //check if changes happened and enable the update button
+            SetEditDisabled();
+        }
+
+
+    }
+
 }
