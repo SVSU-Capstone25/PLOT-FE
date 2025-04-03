@@ -251,3 +251,9 @@ h1:focus {
     font-size: 1rem;
     font-weight: bold;
 }
+
+.masked {
+    -webkit-text-security: disc;
+    -moz-text-security: disc;
+    text-security: disc;
+}
