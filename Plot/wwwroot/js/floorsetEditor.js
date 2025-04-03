@@ -171,8 +171,8 @@ function createDraggable(event, size, color) {
 
 // Tristan Calay 4/2/25
 // Paint employee areas on click and drag on the main grid container.
-container.addEventListener("mousedown",e => paintEmployeeBoxes(e,"1x1","red"))
-container.addEventListener("mousemove",e => paintEmployeeBoxes(e,"1x1","red"))
+container.addEventListener("mousedown",e => paintEmployeeBoxes(e,"1x1","rgba(255,0,0,.5)"))
+container.addEventListener("mousemove",e => paintEmployeeBoxes(e,"1x1","rgba(255,0,0,.5)"))
 
 
 // These bools allow employee areas to be created or erased on mouse click/drag events.
@@ -327,16 +327,26 @@ function paintEmployeeBoxes(event, size, color) {
     var boxHeight = boxSize[0] * height;
     var boxWidth = boxSize[1] * width;
 
-    var mouseX = event.clientX;
-    var mouseY = event.clientY;
-
     var containerRect = container.getBoundingClientRect();
-    var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
-    var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
+    var snappedX = event.clientX - containerRect.left;
+    var snappedY = event.clientY - containerRect.top;
 
-    //this prevents the box from going outside the container boundaries
-    snappedX = Math.max(0, Math.min(snappedX, containerRect.width - boxHeight));
-    snappedY = Math.max(0, Math.min(snappedY, containerRect.height - boxWidth));
+    //Tristan Calay - Rework snapping math to fix the coords being offset weirdly.
+    //First, clamp it to the bounds of the container.
+    snappedX = Math.min(Math.max(snappedX, 0), containerRect.width - boxWidth);
+    snappedY = Math.min(Math.max(snappedY, 0), containerRect.height - boxHeight);
+
+    snappedX = Math.floor(snappedX / snap) * snap;
+    snappedY = Math.floor(snappedY / snap) * snap;
+
+    // var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
+    // var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
+
+    // //this prevents the box from going outside the container boundaries
+    // snappedX = Math.max(0, Math.min(snappedX, containerRect.width - boxHeight));
+    // snappedY = Math.max(0, Math.min(snappedY, containerRect.height - boxWidth));
+
+    console.log("Paint employee boxes function at " + snappedX + ", " + snappedY)
 
     var gridID = "empArea" + snappedX + "_" + snappedY; // Unique ID based on grid position
 
@@ -369,8 +379,8 @@ function paintEmployeeBoxes(event, size, color) {
     newBox.style.position = "absolute";
    
     newBox.style.background = color;
-    newBox.style.border = "3px solid black";
-    newBox.style.borderRadius = "8px";
+    //newBox.style.border = "3px solid black";
+    //newBox.style.borderRadius = "8px";
 
     newBox.style.left = snappedX + "px";
     newBox.style.top = snappedY + "px";
