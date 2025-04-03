@@ -18,38 +18,6 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 Note: A small amount of skeleton code was present before. 
 No author was given.
 
-/* Database functionality needed: 
- Selecting users from database:
-1. SELECT TUID, FIRST_NAME, LAST_NAME, EMAIL, ROLE_TUID
-FROM USERS
-WHERE ACTIVE=1; (todo: get role name, get stores)
-2. Set User object's Id, FirstName, LastName, Email
-3. SELECT * FROM ROLES; -> list of roles
-4. Use list of roles to set User's Role parameter
-5. SELECT STORE_TUID
-FROM ACCESS
-WHERE USER_TUID = {place user's TUID here};
-6. User that to fill stores
-
-Deleting users - Find the user, set Active to 0
-Probably will just use inactivate_user stored procedure
-Just in case:
-UPDATE USERS
-SET INACTIVE
-WHERE TUID = {user_tuid};
-
-Adding users -
-INSERT INTO USERS (FirstName,LastName) VALUES ()
-
-Editing users -
-UPDATE Users
-SET FIRST_NAME = {inEditUser.FirstName}, 
-    LAST_NAME = {inEditUser.LastName},
-    EMAIL = {inEditUser.Email},
-    ROLE_TUID = {depending on role set for user}
-
-Also: Adding or deleting store access
-Probably will use revoke user store access
 */
 
 *@
@@ -119,7 +87,6 @@ Probably will use revoke user store access
     </table>
 </div>
 
-<!-- <div class="fixed-bottom-right"> -->
 <div class="add-btn-container">
 <Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary" TextAlignment="center"
     OnClickFunction="OpenAddUserModal">
@@ -344,7 +311,7 @@ Probably will use revoke user store access
 </script>
 
 @code {
-
+    // User object for information in edit in update user modal
     private User inEditUser = new User();
 
     // Holds details about modal (Id, Title, Header, Description,

@@ -151,22 +151,19 @@ h1:focus {
 /*  Classes of divs holding TextInput or OptionInput in
     Users Dashboard
 */
-.user-info-modal .holds-first-name {
+
 .user-info-modal .holds-first-name {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
 
 .user-info-modal .holds-last-name {
-.user-info-modal .holds-last-name {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
 
 .user-info-modal .holds-email {
-.user-info-modal .holds-email {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
 
-.user-info-modal .OptionInput {
 .user-info-modal .OptionInput {
     margin-bottom: calc(25/16 * 1rem) !important;
 }
@@ -176,13 +173,11 @@ h1:focus {
     element and OptionInput uses h5
     with a p element inside it*/
 
-.user-info-modal .holds-last-name label {
 
 .user-info-modal .holds-last-name label {
     margin-right: calc(12/16 * 1rem) !important;
 }
 
-.user-info-modal .holds-email label {
 .user-info-modal .holds-email label {
     margin-right:calc(50/16 * 1rem) !important;
 }
@@ -206,15 +201,13 @@ h1:focus {
 
 .user-info-modal #UserRole select{
     margin-left:0px !important;
-    padding-left:calc(5/16 * 1rem) !important;
+    padding-left:calc(3/16 * 1rem) !important;
 }
 
-.user-info-modal .user-option-role h5 {
 .user-info-modal .user-option-role h5 {
     margin-right: calc(57/16 * 1rem);
 }
 
-.user-info-modal .user-option-store h5 {
 .user-info-modal .user-option-store h5 {
     margin-right: calc(52/16 * 1rem);
 }
@@ -225,8 +218,6 @@ h1:focus {
     display:flex;
     flex:1;
 }
-
-.user-info-modal .user-option-store div{
 
 .user-info-modal .user-option-role div{
     display:flex;
@@ -258,8 +249,6 @@ h1:focus {
 
 /*  Consistent font between labels
     for text box and select elements */
-.user-info-modal .text-input-container label,
-.user-info-modal .OptionInput h5 {
 .user-info-modal .text-input-container label,
 .user-info-modal .OptionInput h5 {
   font-size: 1rem;

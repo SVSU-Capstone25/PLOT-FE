@@ -40,7 +40,6 @@ Author: Josh Rodack (2/10/2025) */
     align-self: flex-end;
     display: flex;
     margin:0px;
-    height:10%;
 }
 
 .add-btn {
@@ -48,7 +47,6 @@ Author: Josh Rodack (2/10/2025) */
     width: calc(50/16 * 1rem);
     margin:0px;
     padding:0px;
-    width:100%;
 }
 
 .name_column {
@@ -67,21 +65,5 @@ Author: Josh Rodack (2/10/2025) */
 .role-box {
     background-color: lightgray;
     border-radius: 5px;
-}
-
-/*  Andrew Miller: Taken from StoreDashboard.razor.css (3/22/2025)
-    Original Author: Andrew Fulton */
-/* CSS used to fix the button in the bottom right */
-.fixed-bottom-right {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 150px;
-    height: 60px;
-    background-color: transparent;
-    border: none;
-    text-align: center;
-    z-index: 1000;
-    /* Ensure it's on top */
 }
 
