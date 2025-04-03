@@ -786,11 +786,11 @@ Users = new List<User> { users[2] }
         //and also the users that havent already been marked to be added
         foreach (User user in users)
         {
-            bool isInSelectedStore = selectedStore.Users.Any(su => su.Id == user.Id);
+            bool isInEditedStore = editedStoreInfo.Users.Any(su => su.Id == user.Id);
             bool isInUsersToAdd = usersToAdd.Any(u => u.Id == user.Id);
 
             //if user is no associated with the store, add them to the dropdown text and values
-            if (!isInSelectedStore & !isInUsersToAdd)
+            if (!isInEditedStore & !isInUsersToAdd)
             {
                 UserOptionsText.Add(user.FirstName + " " + user.LastName);
                 UserOptionsValues.Add($"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}");
@@ -1012,11 +1012,10 @@ Users = new List<User> { users[2] }
         //SetBackgroundImage(elementId, strUrl)
         await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.Blueprint_Image);
 
-        //clear out the emloyees from the employees section of the edit store div
-        await JS.InvokeVoidAsync("clearDivExceptById", "employeesEdit", "editStoreAddUserDiv");
-
         @* set a timeout so the modal can open *@
         await Task.Delay(500);
+        //clear out the emloyees from the employees section of the edit store div
+        await JS.InvokeVoidAsync("clearDivExceptById", "employeesEdit", "editStoreAddUserDiv");
         @* check if the modal is open *@
         bool isOpen = await JS.InvokeAsync<bool>("IsModalOpen", "editStoreModal");
         if (isOpen)
