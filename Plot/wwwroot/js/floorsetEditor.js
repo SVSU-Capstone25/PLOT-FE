@@ -399,7 +399,7 @@ function paintEmployeeBoxes(event, size, color) {
             containerRect = container.getBoundingClientRect();
             
             //Runs once the tween is finished. Set the ID to the new position.
-            newBox.id = "empArea" + (newBox.left + (Math.round(this.x / snap) * snap)) + "_" + (newbox.top + (Math.round(this.y / snap) * snap))
+            newBox.id = "empArea" + (parseInt(newBox.style.left.replace("px","")) + (Math.round(this.x / snap) * snap)) + "_" + (parseInt(newBox.style.top.replace("px","")) + (Math.round(this.y / snap) * snap))
             console.log("Renamed area to "+newBox.id)
 
             if (isOverElement(boxRect, sidebarRect)) {
