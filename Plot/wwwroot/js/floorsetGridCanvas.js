@@ -1,3 +1,15 @@
+function togglePaint() {
+    window.gridState = window.gridState === 'paint' ? 'place' : 'paint';
+}
+
+function toggleErase() {
+    window.gridState = window.gridState === 'erase' ? 'place' : 'erase';
+}
+
+function setPlace() {
+    window.gridState = 'place';
+}
+
 const floorsetGrid = (function () {
     let sketchInstance = null;
 
@@ -89,11 +101,14 @@ const floorsetGrid = (function () {
     return {
         init() {
             sketchInstance = new p5((sketch) => {
-                let grid, mouseRack, state, paint;
+                let grid, mouseRack;
 
                 sketch.setup = () => {
                     const $GRIDAREA = document.querySelector("div#grid-area");
                     if (!$GRIDAREA) return;
+
+                    window.gridState = "place";
+
 
                     const canvas = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
                     canvas.parent($GRIDAREA);
@@ -102,7 +117,7 @@ const floorsetGrid = (function () {
                     canvas.style("left", "0px");
 
                     grid = new Grid(sketch);
-                    paint = sketch.color(255, 0, 0);
+                    window.paint = '#fff';
                 };
 
                 sketch.draw = () => {
@@ -131,22 +146,46 @@ const floorsetGrid = (function () {
                 }
 
                 sketch.mousePressed = () => {
-                    const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                    const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                    if (rack) {
-                        const index = grid.racks.indexOf(rack);
-                        if (index > -1) {
-                            grid.racks.splice(index, 1);
-                            mouseRack = rack;
+                    if (window.gridState === "place") {
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) {
+                            const index = grid.racks.indexOf(rack);
+                            if (index > -1) {
+                                grid.racks.splice(index, 1);
+                                mouseRack = rack;
+                            }
                         }
+                    } else if (window.gridState === "erase") {
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) {
+                            const index = grid.racks.indexOf(rack);
+                            if (index > -1) {
+                                grid.racks.splice(index, 1);
+                            }
+                        }
+                    } else {
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) rack.color = window.paint;
                     }
                 };
 
                 sketch.mouseDragged = () => {
-                    if (state === "paint") {
+                    if (window.gridState === "paint") {
                         const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
                         const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) rack.color = paint;
+                        if (rack) rack.color = window.paint;
+                    } else if (window.gridState === "erase") {
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) {
+                            const index = grid.racks.indexOf(rack);
+                            if (index > -1) {
+                                grid.racks.splice(index, 1);
+                            }
+                        }
                     } else {
                         // Place mode logic
                         if (mouseRack) {

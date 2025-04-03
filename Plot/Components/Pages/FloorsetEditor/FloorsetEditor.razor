@@ -841,9 +841,10 @@
         await JS.InvokeVoidAsync("toggleModal","printModal", false);
     }
 
-    private void editFixture()
+    private async Task editFixture()
     {
         Console.WriteLine("Edit Fixture Function");
+        await JS.InvokeVoidAsync("setPlace");
         allocationsOpen = false;
     }
 
@@ -851,16 +852,13 @@
     //It passes that information to the javascript.
     private async Task togglePaintClicked()
     {
-        paintModeEnabled = !paintModeEnabled;
-        Console.WriteLine("Paint Category Function - set paint mode to "+paintModeEnabled);
-        await JS.InvokeVoidAsync("setPaintEnabled",paintModeEnabled);
-        StateHasChanged();
+        await JS.InvokeVoidAsync("togglePaint");
     }
 
     private async Task eraseCategoryClicked()
     {
         Console.WriteLine("Erase Category Function");
-        await JS.InvokeVoidAsync("clearPaintColor");
+        await JS.InvokeVoidAsync("toggleErase");
 
         //Call the func in AllocationsSidebar to remove the styling of the selected category.
         if (allocationsSidebar != null)

@@ -96,6 +96,11 @@ Author: Tristan Calay (3/15/2025)-->
     function categoryOnClick(id, categoryData)
     {
         console.log("Onclick ID "+id+", Data "+categoryData)
+
+        const [category, clothing, color] = categoryData.split('|');
+
+        // Set paint color for canvas grid
+        window.paint = color;
         
         clearSelectedCategory();
         document.getElementById(id).style.background = "rgba(0,255,0,.3)";
