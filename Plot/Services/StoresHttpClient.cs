@@ -38,7 +38,7 @@ public class StoresHttpClient
     }
 
  
-    //THE CONTROLLER IS NOT COMPLETE FOR THIS ONE !!BE WARNED!!
+ 
     // [HttpGet("access/{userId:int}")]
     public async Task<List<Store>?> GetStoreAccessByUserId(int userId)
     {
@@ -59,7 +59,7 @@ public class StoresHttpClient
 
 
     // [HttpPost] I THINK THIS ONE NEEDS A NEW PATH
-    public async Task<Store?> CreateStore(CreateStore store)
+    public async Task<Select_Store?> CreateStore(Select_Store store)
     {
         string endpoint ="";
         HttpMethod httpMethod = HttpMethod.Post;
@@ -72,12 +72,12 @@ public class StoresHttpClient
             return null;
         }
         
-        return await response.Content.ReadFromJsonAsync<Store>();
+        return await response.Content.ReadFromJsonAsync<Select_Store>();
     }
 
 
     //[HttpPatch("public-info/{storeId:int}")]
-    public async Task<Store?> UpdatePublicInfo(int storeId, UpdatePublicInfoStore store)
+    public async Task<Select_Store?> UpdatePublicInfo(int storeId, Select_Store store)
     {
         string endpoint =$"/public-info/{storeId}";
         HttpMethod httpMethod = HttpMethod.Patch;
@@ -91,11 +91,11 @@ public class StoresHttpClient
         }
 
         
-        return await response.Content.ReadFromJsonAsync<Store>();
+        return await response.Content.ReadFromJsonAsync<Select_Store>();
     }
 
     //[HttpPatch("size/{storeId:int}")]
-    public async Task<Store?> UpdatePublicInfo(int storeId, UpdateSizeStore store)
+    public async Task<Select_Store?> UpdateStoreSize(int storeId, Select_Store store)
     {
         string endpoint =$"/size/{storeId}";
         HttpMethod httpMethod = HttpMethod.Patch;
@@ -109,7 +109,7 @@ public class StoresHttpClient
         }
 
         
-        return await response.Content.ReadFromJsonAsync<Store>();
+        return await response.Content.ReadFromJsonAsync<Select_Store>();
     }
 
 
