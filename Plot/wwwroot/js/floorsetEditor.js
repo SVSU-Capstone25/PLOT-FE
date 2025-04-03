@@ -16,7 +16,7 @@ container.style.height = (height * rows) + "px";
 container.style.width = (width * cols) + "px";
 
 // Set the grid area with a grid layout, and fill it with divs
-container.setAttribute("style","display: grid; grid-column-gap: 0px;grid-row-gap: 0px;");
+container.setAttribute("style", "display: grid; grid-column-gap: 0px;grid-row-gap: 0px;");
 container.style.gridTemplateColumns = `repeat(${cols},${width}px)`;
 container.style.gridTemplateRows = `repeat(${rows},${height}px)`;
 
@@ -33,7 +33,7 @@ var paintModeEnabled = false;
 
 //The set paint color function sets the paint_mode_color, which will be used in the onmouseenter event of the fixture div.
 function setPaintColor(newColor) {
-    console.log("Paint color recieved: "+newColor)
+    console.log("Paint color recieved: " + newColor)
     paintModeColor = newColor;
 }
 
@@ -147,12 +147,11 @@ function createDraggable(event, size, color) {
             containerRect = container.getBoundingClientRect();
             if (isOverElement(boxRect, sidebarRect)) {
                 container.removeChild(newBox);
-            } 
-            else if (isOverlapping(newBox, container))
-            {
+            }
+            else if (isOverlapping(newBox, container)) {
                 container.removeChild(newBox);
                 displayAlert("Cannot place an element over an existing element.");
-            } 
+            }
             else {
                 newBox.style.zIndex = 0;
             }
@@ -168,88 +167,17 @@ function createDraggable(event, size, color) {
         });
         newBox.dispatchEvent(evt);
     }, 10);
-} 
+}
 //this boolean controls painting so that once the user is done, it prevents "painting" from happening unless 
 //they make a new div from the sidebar
 var isPaintingEnabled = false;
 
 //this function is specific to the employee only area as it uses "painting" for the div it creates
 function createDraggableEmployee(event, size, color) {
-isPaintingEnabled = true;
-var sidebar = document.getElementById("FloorsetSlideOut");
-var newBox = document.createElement("div");
-newBox.id = new Date().getTime(); // Unique ID
-container.appendChild(newBox);
-
-newBox.className = "box";
-newBox.style.position = "absolute";
-var boxSize = size.split("x");
-newBox.style.height = boxSize[0] * height + "px";
-newBox.style.width = boxSize[1] * width + "px";
-newBox.style.background = color;
-newBox.style.border = "3px solid black";
-newBox.style.borderRadius = "8px";
-
-//returns the boundaries of the container, set to containerRect variable
-var containerRect = container.getBoundingClientRect();
-
-var mouseX = event.clientX;
-var mouseY = event.clientY;
-var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
-var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
-
-//this prevents the box from going outside the container boundaries
-snappedX = Math.max(0, Math.min(snappedX, containerRect.width - newBox.offsetWidth));
-snappedY = Math.max(0, Math.min(snappedY, containerRect.height - newBox.offsetHeight));
-
-newBox.style.left = snappedX + "px";
-newBox.style.top = snappedY + "px";
-var draggable = Draggable.create(newBox, {
-        bounds: container,
-        onDrag: function () {
-            //snap to grid while adding
-            TweenLite.to(newBox, 0.5, {
-                x: Math.round(this.endX / snap) * snap,
-                y: Math.round(this.y / snap) * snap,
-                ease: Back.easeOut.config(2)
-            });
-        },
-        onDragEnd: function () {
-            var boxRect = newBox.getBoundingClientRect();
-            var sidebarRect = sidebar.getBoundingClientRect();
-            containerRect = container.getBoundingClientRect();
-
-            //if there is an overlap with the sidebar or the containers children then the element will be removed
-            if (isOverElement(boxRect, sidebarRect)) {
-                container.removeChild(newBox);
-            } else if (isOverlapping(newBox, container)) {
-                container.removeChild(newBox);
-                displayAlert("Cannot place an element over an existing element.");
-            } else {
-                newBox.style.zIndex = 0;
-            }
-        }
-    });
-//if there is an overlap then removes the box
-if (isOverlapping(newBox, container)) {
-    container.removeChild(newBox);
-}
-
-setTimeout(() => {
-    var evt = new MouseEvent("mousedown", {
-        bubbles: true,
-        cancelable: true,
-        clientX: mouseX,
-        clientY: mouseY
-    });
-    newBox.dispatchEvent(evt);
-}, 10);
-
-//this method paints the boxes and handles adding and creating new elements
-function paintEmployeeBoxes(event, size, color) {
+    isPaintingEnabled = true;
+    var sidebar = document.getElementById("FloorsetSlideOut");
     var newBox = document.createElement("div");
-    newBox.id = new Date().getTime(); // Unique ID based on timestamp
-  
+    newBox.id = new Date().getTime(); // Unique ID
     container.appendChild(newBox);
 
     newBox.className = "box";
@@ -261,11 +189,11 @@ function paintEmployeeBoxes(event, size, color) {
     newBox.style.border = "3px solid black";
     newBox.style.borderRadius = "8px";
 
+    //returns the boundaries of the container, set to containerRect variable
     var containerRect = container.getBoundingClientRect();
 
     var mouseX = event.clientX;
     var mouseY = event.clientY;
-
     var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
     var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
 
@@ -293,22 +221,18 @@ function paintEmployeeBoxes(event, size, color) {
             //if there is an overlap with the sidebar or the containers children then the element will be removed
             if (isOverElement(boxRect, sidebarRect)) {
                 container.removeChild(newBox);
-            } 
-            // Tristan Calay 4/1/2025 - Commenting out alerts for isoverlapping.
-            // else if (isOverlapping(newBox, container)) {
-            //     container.removeChild(newBox);
-            //     displayAlert("Cannot place an element over an existing element.");
-            // } 
-            else {
+            } else if (isOverlapping(newBox, container)) {
+                container.removeChild(newBox);
+                displayAlert("Cannot place an element over an existing element.");
+            } else {
                 newBox.style.zIndex = 0;
             }
         }
     });
-    //Temporarily comment this collision detection out.
     //if there is an overlap then removes the box
-    // if (isOverlapping(newBox, container)) {
-    //     container.removeChild(newBox);
-    // }
+    if (isOverlapping(newBox, container)) {
+        container.removeChild(newBox);
+    }
 
     setTimeout(() => {
         var evt = new MouseEvent("mousedown", {
@@ -324,6 +248,7 @@ function paintEmployeeBoxes(event, size, color) {
     function paintEmployeeBoxes(event, size, color) {
         var newBox = document.createElement("div");
         newBox.id = new Date().getTime(); // Unique ID based on timestamp
+
         container.appendChild(newBox);
 
         newBox.className = "box";
@@ -334,6 +259,8 @@ function paintEmployeeBoxes(event, size, color) {
         newBox.style.background = color;
         newBox.style.border = "3px solid black";
         newBox.style.borderRadius = "8px";
+
+        var containerRect = container.getBoundingClientRect();
 
         var mouseX = event.clientX;
         var mouseY = event.clientY;
@@ -350,7 +277,7 @@ function paintEmployeeBoxes(event, size, color) {
         var draggable = Draggable.create(newBox, {
             bounds: container,
             onDrag: function () {
-                //this snaps the box to a given distnace
+                //snap to grid while adding
                 TweenLite.to(newBox, 0.5, {
                     x: Math.round(this.endX / snap) * snap,
                     y: Math.round(this.y / snap) * snap,
@@ -361,255 +288,328 @@ function paintEmployeeBoxes(event, size, color) {
                 var boxRect = newBox.getBoundingClientRect();
                 var sidebarRect = sidebar.getBoundingClientRect();
                 containerRect = container.getBoundingClientRect();
+
+                //if there is an overlap with the sidebar or the containers children then the element will be removed
                 if (isOverElement(boxRect, sidebarRect)) {
                     container.removeChild(newBox);
-                } else if (isOverlapping(newBox, container)) {
-                    container.removeChild(newBox);
-                    displayAlert("Cannot place an element over an existing element.");
-                } else {
+                }
+                // Tristan Calay 4/1/2025 - Commenting out alerts for isoverlapping.
+                // else if (isOverlapping(newBox, container)) {
+                //     container.removeChild(newBox);
+                //     displayAlert("Cannot place an element over an existing element.");
+                // } 
+                else {
                     newBox.style.zIndex = 0;
                 }
             }
         });
+        //Temporarily comment this collision detection out.
+        //if there is an overlap then removes the box
+        // if (isOverlapping(newBox, container)) {
+        //     container.removeChild(newBox);
+        // }
 
-    //if there is an overlap then it removes the box
-    if (isOverlapping(newBox, container)) {
-        container.removeChild(newBox);
-    }
-}
+        setTimeout(() => {
+            var evt = new MouseEvent("mousedown", {
+                bubbles: true,
+                cancelable: true,
+                clientX: mouseX,
+                clientY: mouseY
+            });
+            newBox.dispatchEvent(evt);
+        }, 10);
 
-//this event listener handles the click event
-document.addEventListener("mousedown", function (event) {
-    if (isPaintingEnabled) {
-        paintEmployeeBoxes(event, size, color);
-        document.addEventListener("mousemove", function (event) {
+        //this method paints the boxes and handles adding and creating new elements
+        function paintEmployeeBoxes(event, size, color) {
+            var newBox = document.createElement("div");
+            newBox.id = new Date().getTime(); // Unique ID based on timestamp
+            container.appendChild(newBox);
+
+            newBox.className = "box";
+            newBox.style.position = "absolute";
+            var boxSize = size.split("x");
+            newBox.style.height = boxSize[0] * height + "px";
+            newBox.style.width = boxSize[1] * width + "px";
+            newBox.style.background = color;
+            newBox.style.border = "3px solid black";
+            newBox.style.borderRadius = "8px";
+
+            var mouseX = event.clientX;
+            var mouseY = event.clientY;
+
+            var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
+            var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
+
+            //this prevents the box from going outside the container boundaries
+            snappedX = Math.max(0, Math.min(snappedX, containerRect.width - newBox.offsetWidth));
+            snappedY = Math.max(0, Math.min(snappedY, containerRect.height - newBox.offsetHeight));
+
+            newBox.style.left = snappedX + "px";
+            newBox.style.top = snappedY + "px";
+            var draggable = Draggable.create(newBox, {
+                bounds: container,
+                onDrag: function () {
+                    //this snaps the box to a given distnace
+                    TweenLite.to(newBox, 0.5, {
+                        x: Math.round(this.endX / snap) * snap,
+                        y: Math.round(this.y / snap) * snap,
+                        ease: Back.easeOut.config(2)
+                    });
+                },
+                onDragEnd: function () {
+                    var boxRect = newBox.getBoundingClientRect();
+                    var sidebarRect = sidebar.getBoundingClientRect();
+                    containerRect = container.getBoundingClientRect();
+                    if (isOverElement(boxRect, sidebarRect)) {
+                        container.removeChild(newBox);
+                    } else if (isOverlapping(newBox, container)) {
+                        container.removeChild(newBox);
+                        displayAlert("Cannot place an element over an existing element.");
+                    } else {
+                        newBox.style.zIndex = 0;
+                    }
+                }
+            });
+
+            //if there is an overlap then it removes the box
+            if (isOverlapping(newBox, container)) {
+                container.removeChild(newBox);
+            }
+        }
+
+        //this event listener handles the click event
+        document.addEventListener("mousedown", function (event) {
             if (isPaintingEnabled) {
                 paintEmployeeBoxes(event, size, color);
+                document.addEventListener("mousemove", function (event) {
+                    if (isPaintingEnabled) {
+                        paintEmployeeBoxes(event, size, color);
+                    }
+                });
             }
         });
+
+        //on the mouse up, set the flag to false to stop painting
+        document.addEventListener("mouseup", function () {
+            isPaintingEnabled = false;
+        });
     }
-});
 
-//on the mouse up, set the flag to false to stop painting
-document.addEventListener("mouseup", function () {
-    isPaintingEnabled = false;
-});
-}
+    //this method checks whether or not there is an overlap between the passed element and any child element in the container
+    function isOverlapping(draggableRect, containerElement) {
+        var overlapFound = false;
+        var children = containerElement.children;
+        var draggableArea = draggableRect.getBoundingClientRect();
 
-//this method checks whether or not there is an overlap between the passed element and any child element in the container
-function isOverlapping(draggableRect, containerElement) {
-var overlapFound = false;
-var children = containerElement.children;
-var draggableArea = draggableRect.getBoundingClientRect();
-
-Array.from(children).forEach(function(child) {
-    if (child.className === "box" && child !== draggableRect) {
-        var area = child.getBoundingClientRect();
-        if (draggableArea.top < area.bottom && draggableArea.bottom > area.top &&
-            draggableArea.left < area.right && draggableArea.right > area.left) {
-            overlapFound = true;
-        }
-    }
-});
-return overlapFound;
-}
-
-
-//this function is to check if the box is over the sidebar
-function isOverElement(boxRect, sidebarRect) {
-return (
-    boxRect.top < sidebarRect.bottom &&
-    boxRect.bottom > sidebarRect.top &&
-    boxRect.left < sidebarRect.right &&
-    boxRect.right > sidebarRect.left
-);
-}
-
-
-
-/*
-    The flipOrder function changes the flex column direction when the button is selected.
-*/
-function flipOrder() {
-    // Change the flex direction based on the boolean value           
-    if (isAsc) {
-        document.querySelector(".fixture-area").style.flexDirection = "column-reverse";
-    } else {
-        document.querySelector(".fixture-area").style.flexDirection = "column";
-    }
-    // Flip the isAsc value to indicate a reversed column
-    isAsc = !isAsc;
-}
-
-/*
-    The addFixtureClose function adds an event listener to the add button in the Add Fixture modal.
-*/
-function addFixtureClose(dotNet) {
-    $("#addFixture").on('hidden.bs.modal', function (e) {
-        // Call the C# function to clear the data from the Add Fixture modal
-        dotNet.invokeMethodAsync("ClearTempFixtureData");
-
-        // Clear the data from the image input
-        var imgInput = document.querySelector('#addFixture .img-input .ImageInput');
-        imgInput.style.backgroundImage = "";
-        imgInput.classList.add("dashed-border");
-
-        // Remove the modal-backdrop on close
-        document.querySelectorAll('.modal-backdrop')?.forEach(m => m.remove());
-    })
-}
-
-/*
-    The searchInputChange function adds an event listener to the fixture search bar.
-*/
-function searchInputChange() {
-    setTimeout(() => {
-        document.getElementById('search').addEventListener("keyup", function (e) {
-            // Get the text from the search field
-            var searchText = this.value;
-
-            // Loop through each fixture tile 
-            Array.from(document.getElementsByClassName('fixture')).forEach(function (fixture) {
-                // Get the name of the fixture
-                var nameElement = fixture.firstChild.getElementsByTagName('p')[0];
-
-                // If any fixture's name contains the search string, display the tile
-                if (nameElement && nameElement.innerText.toLowerCase()
-                    .indexOf(searchText.toLowerCase()) > -1) {
-                    fixture.style.display = 'flex';
-                } else {
-                    // Otherwise, do not display the tile
-                    fixture.style.display = 'none';
+        Array.from(children).forEach(function (child) {
+            if (child.className === "box" && child !== draggableRect) {
+                var area = child.getBoundingClientRect();
+                if (draggableArea.top < area.bottom && draggableArea.bottom > area.top &&
+                    draggableArea.left < area.right && draggableArea.right > area.left) {
+                    overlapFound = true;
                 }
-            })
+            }
+        });
+        return overlapFound;
+    }
+
+
+    //this function is to check if the box is over the sidebar
+    function isOverElement(boxRect, sidebarRect) {
+        return (
+            boxRect.top < sidebarRect.bottom &&
+            boxRect.bottom > sidebarRect.top &&
+            boxRect.left < sidebarRect.right &&
+            boxRect.right > sidebarRect.left
+        );
+    }
+
+
+
+    /*
+        The flipOrder function changes the flex column direction when the button is selected.
+    */
+    function flipOrder() {
+        // Change the flex direction based on the boolean value           
+        if (isAsc) {
+            document.querySelector(".fixture-area").style.flexDirection = "column-reverse";
+        } else {
+            document.querySelector(".fixture-area").style.flexDirection = "column";
+        }
+        // Flip the isAsc value to indicate a reversed column
+        isAsc = !isAsc;
+    }
+
+    /*
+        The addFixtureClose function adds an event listener to the add button in the Add Fixture modal.
+    */
+    function addFixtureClose(dotNet) {
+        $("#addFixture").on('hidden.bs.modal', function (e) {
+            // Call the C# function to clear the data from the Add Fixture modal
+            dotNet.invokeMethodAsync("ClearTempFixtureData");
+
+            // Clear the data from the image input
+            var imgInput = document.querySelector('#addFixture .img-input .ImageInput');
+            imgInput.style.backgroundImage = "";
+            imgInput.classList.add("dashed-border");
+
+            // Remove the modal-backdrop on close
+            document.querySelectorAll('.modal-backdrop')?.forEach(m => m.remove());
         })
-    }, 10);
-}
+    }
+
+    /*
+        The searchInputChange function adds an event listener to the fixture search bar.
+    */
+    function searchInputChange() {
+        setTimeout(() => {
+            document.getElementById('search').addEventListener("keyup", function (e) {
+                // Get the text from the search field
+                var searchText = this.value;
+
+                // Loop through each fixture tile 
+                Array.from(document.getElementsByClassName('fixture')).forEach(function (fixture) {
+                    // Get the name of the fixture
+                    var nameElement = fixture.firstChild.getElementsByTagName('p')[0];
+
+                    // If any fixture's name contains the search string, display the tile
+                    if (nameElement && nameElement.innerText.toLowerCase()
+                        .indexOf(searchText.toLowerCase()) > -1) {
+                        fixture.style.display = 'flex';
+                    } else {
+                        // Otherwise, do not display the tile
+                        fixture.style.display = 'none';
+                    }
+                })
+            })
+        }, 10);
+    }
 
 
 
-/*
-    The toggleModal function toggles the visibility of a given modal.
-*/
-function toggleModal(modalId, showModal) {
-    // If the modal exists
-    if (document.getElementById(modalId)) {
-        let modal = bootstrap.Modal.getOrCreateInstance(`#${modalId}`);
-        // Show the modal when showModal is true
-        if (showModal) {
-            modal.show();
-        }
-        else {
-            if (document.getElementById(modalId) != undefined) {
-                // Otherwise, remove all residuals of the modal
-                document.body.style.removeProperty("overflow");
-                document.body.style.removeProperty("padding-right");
-                document.body.classList.remove("modal-open");
-                document.getElementById(modalId).classList.remove('show');
-                document.getElementById(modalId).style.display = "none";
-                document.querySelectorAll('.modal-backdrop')?.forEach(m => m.remove());
+    /*
+        The toggleModal function toggles the visibility of a given modal.
+    */
+    function toggleModal(modalId, showModal) {
+        // If the modal exists
+        if (document.getElementById(modalId)) {
+            let modal = bootstrap.Modal.getOrCreateInstance(`#${modalId}`);
+            // Show the modal when showModal is true
+            if (showModal) {
+                modal.show();
+            }
+            else {
+                if (document.getElementById(modalId) != undefined) {
+                    // Otherwise, remove all residuals of the modal
+                    document.body.style.removeProperty("overflow");
+                    document.body.style.removeProperty("padding-right");
+                    document.body.classList.remove("modal-open");
+                    document.getElementById(modalId).classList.remove('show');
+                    document.getElementById(modalId).style.display = "none";
+                    document.querySelectorAll('.modal-backdrop')?.forEach(m => m.remove());
+                }
             }
         }
     }
-}
 
-/*
-    The imageEventListener function creates an event listener for the image inputs on the modals.
-*/
-function imageEventListener(dotNet) {
-    document.querySelectorAll('.img-input').forEach(i => i.firstChild.addEventListener('change', (e) => {
-        console.log(e.target);
-        dotNet.invokeMethodAsync("UpdateImage", e.target.value);
-    }));
-}
-
-/*
-    The alertUser function sends an alert to the user with a given message.
-*/
-function displayAlert(msg) {
-    alert(msg);
-}
-
-/* END FLOORSET SCRIPTS */
-
-
-/* Luke Wollenweber - 3/22/2025
-   js function to re-add cells based on new Dimensions 
-   updated 3/27 by Luke Wollenweber */
-function UpdateGridDimensions(passedLength, passedWidth) {
-    var positionMap = {};
-
-    Array.from(container.children).forEach(child => {
-        if (child.className === "box") {
-            var childRect = child.getBoundingClientRect();
-
-            positionMap[child.id] = { item: child, loc: childRect };
-        }
-    });
-    var previousDimensions = container.innerHTML;
-    var previousRows = rows;
-    var previousCols = cols;
-
-
-    container.innerHTML = '';
-
-    rows = passedWidth;
-    cols = passedLength;
-
-    container.style.height = (height * rows) + "px";
-    container.style.width = (width * cols) + "px";
-
-    container.setAttribute("style", "display: grid; grid-column-gap: 0px; grid-row-gap: 0px;");
-    container.style.gridTemplateColumns = `repeat(${cols}, ${width}px)`;
-    container.style.gridTemplateRows = `repeat(${rows}, ${height}px)`;
-
-    for (var i = 0; i < rows * cols; i++) {
-        var gridCell = document.createElement('div');
-        gridCell.className = "grid-cell";
-        container.appendChild(gridCell);
+    /*
+        The imageEventListener function creates an event listener for the image inputs on the modals.
+    */
+    function imageEventListener(dotNet) {
+        document.querySelectorAll('.img-input').forEach(i => i.firstChild.addEventListener('change', (e) => {
+            console.log(e.target);
+            dotNet.invokeMethodAsync("UpdateImage", e.target.value);
+        }));
     }
 
-    var containerDimensions = container.getBoundingClientRect();
-    var fixturesRemoved = false;
+    /*
+        The alertUser function sends an alert to the user with a given message.
+    */
+    function displayAlert(msg) {
+        alert(msg);
+    }
 
-    Object.values(positionMap).forEach(({ item, loc }) => {
-        if (loc.top >= containerDimensions.bottom || loc.bottom > containerDimensions.bottom + 1) {
-            fixturesRemoved = true;
-        }
-        else if (loc.bottom <= containerDimensions.top || loc.top < containerDimensions.top) {
-            fixturesRemoved = true;
-        }
-        else if (loc.right > containerDimensions.right || loc.left >= containerDimensions.right) {
-            fixturesRemoved = true;
-        }
-        else if (loc.right <= containerDimensions.left || loc.left < containerDimensions.left) {
-            fixturesRemoved = true;
-        }
-        else {
-            container.appendChild(item);
-        }
-    });
-    if (fixturesRemoved == true) {
-        var confirmUpdate = confirm("Please be aware that there are fixtures that are outside of the new grid area and they will be removed. Do you want to proceed?");
-        if (!confirmUpdate) {
-            Array.from(container.querySelectorAll('.grid-cell')).forEach(cell => cell.remove());
-            container.style.height = (height * previousRows) + "px";
-            container.style.width = (width * previousCols) + "px";
+    /* END FLOORSET SCRIPTS */
 
-            container.setAttribute("style", "display: grid; grid-column-gap: 0px; grid-row-gap: 0px;");
-            container.style.gridTemplateColumns = `repeat(${previousCols}, ${width}px)`;
-            container.style.gridTemplateRows = `repeat(${previousRows}, ${height}px)`;
 
-            for (var i = 0; i < previousRows * previousCols; i++) {
-                var oldCell = document.createElement('div');
-                oldCell.className = "grid-cell";
-                container.appendChild(oldCell);
+    /* Luke Wollenweber - 3/22/2025
+       js function to re-add cells based on new Dimensions 
+       updated 3/27 by Luke Wollenweber */
+    function UpdateGridDimensions(passedLength, passedWidth) {
+        var positionMap = {};
+
+        Array.from(container.children).forEach(child => {
+            if (child.className === "box") {
+                var childRect = child.getBoundingClientRect();
+
+                positionMap[child.id] = { item: child, loc: childRect };
             }
+        });
+        var previousDimensions = container.innerHTML;
+        var previousRows = rows;
+        var previousCols = cols;
 
-            // Re-adding any positioned items from positionMap
-            Object.values(positionMap).forEach(({ item, loc }) => {
+
+        container.innerHTML = '';
+
+        rows = passedWidth;
+        cols = passedLength;
+
+        container.style.height = (height * rows) + "px";
+        container.style.width = (width * cols) + "px";
+
+        container.setAttribute("style", "display: grid; grid-column-gap: 0px; grid-row-gap: 0px;");
+        container.style.gridTemplateColumns = `repeat(${cols}, ${width}px)`;
+        container.style.gridTemplateRows = `repeat(${rows}, ${height}px)`;
+
+        for (var i = 0; i < rows * cols; i++) {
+            var gridCell = document.createElement('div');
+            gridCell.className = "grid-cell";
+            container.appendChild(gridCell);
+        }
+
+        var containerDimensions = container.getBoundingClientRect();
+        var fixturesRemoved = false;
+
+        Object.values(positionMap).forEach(({ item, loc }) => {
+            if (loc.top >= containerDimensions.bottom || loc.bottom > containerDimensions.bottom + 1) {
+                fixturesRemoved = true;
+            }
+            else if (loc.bottom <= containerDimensions.top || loc.top < containerDimensions.top) {
+                fixturesRemoved = true;
+            }
+            else if (loc.right > containerDimensions.right || loc.left >= containerDimensions.right) {
+                fixturesRemoved = true;
+            }
+            else if (loc.right <= containerDimensions.left || loc.left < containerDimensions.left) {
+                fixturesRemoved = true;
+            }
+            else {
                 container.appendChild(item);
-            });
+            }
+        });
+        if (fixturesRemoved == true) {
+            var confirmUpdate = confirm("Please be aware that there are fixtures that are outside of the new grid area and they will be removed. Do you want to proceed?");
+            if (!confirmUpdate) {
+                Array.from(container.querySelectorAll('.grid-cell')).forEach(cell => cell.remove());
+                container.style.height = (height * previousRows) + "px";
+                container.style.width = (width * previousCols) + "px";
+
+                container.setAttribute("style", "display: grid; grid-column-gap: 0px; grid-row-gap: 0px;");
+                container.style.gridTemplateColumns = `repeat(${previousCols}, ${width}px)`;
+                container.style.gridTemplateRows = `repeat(${previousRows}, ${height}px)`;
+
+                for (var i = 0; i < previousRows * previousCols; i++) {
+                    var oldCell = document.createElement('div');
+                    oldCell.className = "grid-cell";
+                    container.appendChild(oldCell);
+                }
+
+                // Re-adding any positioned items from positionMap
+                Object.values(positionMap).forEach(({ item, loc }) => {
+                    container.appendChild(item);
+                });
+            }
         }
     }
 }
