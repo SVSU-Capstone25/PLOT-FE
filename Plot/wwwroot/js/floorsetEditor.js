@@ -172,62 +172,240 @@ function createDraggable(event, size, color) {
         newBox.dispatchEvent(evt);
     }, 10);
 }
-//this boolean controls painting so that once the user is done, it prevents "painting" from happening unless 
-//they make a new div from the sidebar
-var isPaintingEnabled = false;
 
-//this function is specific to the employee only area as it uses "painting" for the div it creates
-function createDraggableEmployee(event, size, color) {
-    //flag set to true
-    isPaintingEnabled = true;
-    var sidebar = document.getElementById("FloorsetSlideOut");
-    var newBox = document.createElement("div");
-    newBox.id = new Date().getTime(); // Unique ID
-    container.appendChild(newBox);
+// Tristan Calay 4/2/25
+// Paint employee areas on click and drag on the main grid container.
+container.addEventListener("mousedown",e => paintEmployeeBoxes(e,"1x1","red"))
+container.addEventListener("mousemove",e => paintEmployeeBoxes(e,"1x1","red"))
 
-    newBox.className = "box";
-    newBox.style.position = "absolute";
+
+// These bools allow employee areas to be created or erased on mouse click/drag events.
+var isEmployeePaintEnabled = false; //Tristan Calay 4/2/25 - Renamed in anticipation of compatibility with category painting.
+var isEmployeeEraseEnabled = false
+
+// Tristan Calay 4/2/25 - Toggles for employee paint/erase mode.
+function toggleEmployeePaint()
+{
+    isEmployeePaintEnabled = !isEmployeePaintEnabled;
+    console.log("Employee paint mode is "+isEmployeePaintEnabled);
+    var marker = document.getElementById("employeePaintEnabledMarker");
+    if(isEmployeePaintEnabled)
+    {
+        console.log("Setting marker green...")
+        marker.style.color="green";
+    }
+    else
+    {
+        console.log("Setting marker black...")
+        marker.style.color="black";
+    }
+    
+}
+function toggleEmployeeErase()
+{
+    isEmployeeEraseEnabled = !isEmployeeEraseEnabled;
+    console.log("Employee Erase mode is "+isEmployeeEraseEnabled);
+    var marker = document.getElementById("employeeEraseEnabledMarker");
+    if(isEmployeeEraseEnabled)
+    {
+        console.log("Setting marker green...")
+        marker.style.color="green";
+    }
+    else
+    {
+        console.log("Setting marker black...")
+        marker.style.color="black";
+    }
+}
+
+// //this function is specific to the employee only area as it uses "painting" for the div it creates
+// function createDraggableEmployee(event, size, color) {
+//     //flag set to true
+//     isPaintingEnabled = true;
+//     var sidebar = document.getElementById("FloorsetSlideOut");
+//     var newBox = document.createElement("div");
+//     newBox.id = new Date().getTime(); // Unique ID
+//     container.appendChild(newBox);
+
+//     newBox.className = "box";
+//     newBox.style.position = "absolute";
+//     var boxSize = size.split("x");
+//     newBox.style.height = boxSize[0] * height + "px";
+//     newBox.style.width = boxSize[1] * width + "px";
+//     newBox.style.background = color;
+//     newBox.style.border = "3px solid black";
+//     newBox.style.borderRadius = "8px";
+
+//     //returns the boundaries of the container, set to containerRect variable
+//     var containerRect = container.getBoundingClientRect();
+
+//     var mouseX = event.clientX;
+//     var mouseY = event.clientY;
+//     var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
+//     var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
+
+//     //this prevents the box from going outside the container boundaries
+//     snappedX = Math.max(0, Math.min(snappedX, containerRect.width - newBox.offsetWidth));
+//     snappedY = Math.max(0, Math.min(snappedY, containerRect.height - newBox.offsetHeight));
+
+//     newBox.style.left = snappedX + "px";
+//     newBox.style.top = snappedY + "px";
+//     var draggable = Draggable.create(newBox, {
+//         bounds: container,
+//         onDrag: function () {
+//             //snap to grid while adding
+//             TweenLite.to(newBox, 0.5, {
+//                 x: Math.round(this.endX / snap) * snap,
+//                 y: Math.round(this.y / snap) * snap,
+//                 ease: Back.easeOut.config(2)
+//             });
+//         },
+//         onDragEnd: function () {
+//             var boxRect = newBox.getBoundingClientRect();
+//             var sidebarRect = sidebar.getBoundingClientRect();
+//             containerRect = container.getBoundingClientRect();
+
+//             //if there is an overlap with the sidebar or the containers children then the element will be removed
+//             if (isOverElement(boxRect, sidebarRect)) {
+//                 container.removeChild(newBox);
+//             } 
+//             // Tristan Calay 4/1/2025 - Commenting out alerts for isoverlapping.
+//             // else if (isOverlapping(newBox, container)) {
+//             //     container.removeChild(newBox);
+//             //     displayAlert("Cannot place an element over an existing element.");
+//             // } 
+//             else {
+//                 newBox.style.zIndex = 0;
+//             }
+//         }
+//     });
+//     //Temporarily comment this collision detection out.
+//     //if there is an overlap then removes the box
+//     // if (isOverlapping(newBox, container)) {
+//     //     container.removeChild(newBox);
+//     // }
+
+//     setTimeout(() => {
+//         var evt = new MouseEvent("mousedown", {
+//             bubbles: true,
+//             cancelable: true,
+//             clientX: mouseX,
+//             clientY: mouseY
+//         });
+//         newBox.dispatchEvent(evt);
+//     }, 10);
+
+    
+
+//     //this event listener handles the click event
+//     document.addEventListener("mousedown", function (event) {
+//         if (isPaintingEnabled) {
+//             paintEmployeeBoxes(event, size, color);
+//             document.addEventListener("mousemove", function (event) {
+//                 if (isPaintingEnabled) {
+//                     paintEmployeeBoxes(event, size, color);
+//                 }
+//             });
+//         }
+//     });
+
+//     //on the mouse up, set the flag to false to stop painting
+//     document.addEventListener("mouseup", function () {
+//         isPaintingEnabled = false;
+//     });
+// }
+
+//this method paints the boxes and handles adding and creating new elements
+function paintEmployeeBoxes(event, size, color) {
+    // Tristan Calay 4/2/25
+    // Update such that boxes are not painted on top of other boxes.
+    // Removed dragging functionality from sidebar.
+    
+    //Validate that button 1 is pressed and paint mode is on.
+    if (event.buttons % 2 !== 1 || !isEmployeePaintEnabled)
+    {
+        return; //Abort if not pressed.
+    }
+
     var boxSize = size.split("x");
-    newBox.style.height = boxSize[0] * height + "px";
-    newBox.style.width = boxSize[1] * width + "px";
-    newBox.style.background = color;
-    newBox.style.border = "3px solid black";
-    newBox.style.borderRadius = "8px";
-
-    //returns the boundaries of the container, set to containerRect variable
-    var containerRect = container.getBoundingClientRect();
+    var boxHeight = boxSize[0] * height;
+    var boxWidth = boxSize[1] * width;
 
     var mouseX = event.clientX;
     var mouseY = event.clientY;
+
+    var containerRect = container.getBoundingClientRect();
     var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
     var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
 
     //this prevents the box from going outside the container boundaries
-    snappedX = Math.max(0, Math.min(snappedX, containerRect.width - newBox.offsetWidth));
-    snappedY = Math.max(0, Math.min(snappedY, containerRect.height - newBox.offsetHeight));
+    snappedX = Math.max(0, Math.min(snappedX, containerRect.width - boxHeight));
+    snappedY = Math.max(0, Math.min(snappedY, containerRect.height - boxWidth));
+
+    var gridID = "empArea" + snappedX + "_" + snappedY; // Unique ID based on grid position
+
+    //If erase mode, erase at the grid coordinates instead of making a new element at them.
+    if (isEmployeeEraseEnabled)
+    {
+        var existingElement = document.getElementById(gridID);
+        if (existingElement !== null)
+        {
+            //Remove the existing element
+            existingElement.remove();
+        }
+        return; //Erase mode doesn't add new elements.
+    }
+
+    //If not erase mode, if there's already an element here, don't make a new one.
+    if(document.getElementById(gridID) !== null)
+    {
+        return;
+    }
+
+
+    console.log("Adding new box... "+gridID);
+    var newBox = document.createElement("div");
+    newBox.id = gridID;
+    newBox.style.height = boxHeight + "px";
+    newBox.style.width = boxWidth + "px";
+
+    newBox.className = "box";
+    newBox.style.position = "absolute";
+   
+    newBox.style.background = color;
+    newBox.style.border = "3px solid black";
+    newBox.style.borderRadius = "8px";
 
     newBox.style.left = snappedX + "px";
     newBox.style.top = snappedY + "px";
+
+    container.appendChild(newBox);
+    
+    var sidebar = document.getElementById("FloorsetSlideOut");
+
     var draggable = Draggable.create(newBox, {
         bounds: container,
         onDrag: function () {
-            //snap to grid while adding
+            //this snaps the box to a given distnace
             TweenLite.to(newBox, 0.5, {
                 x: Math.round(this.endX / snap) * snap,
                 y: Math.round(this.y / snap) * snap,
-                ease: Back.easeOut.config(2)
+                ease: Back.easeOut.config(2) 
             });
         },
         onDragEnd: function () {
             var boxRect = newBox.getBoundingClientRect();
             var sidebarRect = sidebar.getBoundingClientRect();
             containerRect = container.getBoundingClientRect();
+            
+            //Runs once the tween is finished. Set the ID to the new position.
+            newBox.id = "empArea" + (newBox.left + (Math.round(this.x / snap) * snap)) + "_" + (newbox.top + (Math.round(this.y / snap) * snap))
+            console.log("Renamed area to "+newBox.id)
 
-            //if there is an overlap with the sidebar or the containers children then the element will be removed
             if (isOverElement(boxRect, sidebarRect)) {
                 container.removeChild(newBox);
             } 
-            // Tristan Calay 4/1/2025 - Commenting out alerts for isoverlapping.
+            //Temporarily disable collision alerts.
             // else if (isOverlapping(newBox, container)) {
             //     container.removeChild(newBox);
             //     displayAlert("Cannot place an element over an existing element.");
@@ -237,99 +415,11 @@ function createDraggableEmployee(event, size, color) {
             }
         }
     });
-    //Temporarily comment this collision detection out.
-    //if there is an overlap then removes the box
+    //if there is an overlap then it removes the box
+    //Temporarily disable collision removal.
     // if (isOverlapping(newBox, container)) {
     //     container.removeChild(newBox);
     // }
-
-    setTimeout(() => {
-        var evt = new MouseEvent("mousedown", {
-            bubbles: true,
-            cancelable: true,
-            clientX: mouseX,
-            clientY: mouseY
-        });
-        newBox.dispatchEvent(evt);
-    }, 10);
-
-    //this method paints the boxes and handles adding and creating new elements
-    function paintEmployeeBoxes(event, size, color) {
-        var newBox = document.createElement("div");
-        newBox.id = new Date().getTime(); // Unique ID based on timestamp
-        container.appendChild(newBox);
-
-        newBox.className = "box";
-        newBox.style.position = "absolute";
-        var boxSize = size.split("x");
-        newBox.style.height = boxSize[0] * height + "px";
-        newBox.style.width = boxSize[1] * width + "px";
-        newBox.style.background = color;
-        newBox.style.border = "3px solid black";
-        newBox.style.borderRadius = "8px";
-
-        var mouseX = event.clientX;
-        var mouseY = event.clientY;
-
-        var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
-        var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
-
-        //this prevents the box from going outside the container boundaries
-        snappedX = Math.max(0, Math.min(snappedX, containerRect.width - newBox.offsetWidth));
-        snappedY = Math.max(0, Math.min(snappedY, containerRect.height - newBox.offsetHeight));
-
-        newBox.style.left = snappedX + "px";
-        newBox.style.top = snappedY + "px";
-        var draggable = Draggable.create(newBox, {
-            bounds: container,
-            onDrag: function () {
-                //this snaps the box to a given distnace
-                TweenLite.to(newBox, 0.5, {
-                    x: Math.round(this.endX / snap) * snap,
-                    y: Math.round(this.y / snap) * snap,
-                    ease: Back.easeOut.config(2)
-                });
-            },
-            onDragEnd: function () {
-                var boxRect = newBox.getBoundingClientRect();
-                var sidebarRect = sidebar.getBoundingClientRect();
-                containerRect = container.getBoundingClientRect();
-                if (isOverElement(boxRect, sidebarRect)) {
-                    container.removeChild(newBox);
-                } 
-                //Temporarily disable collision alerts.
-                // else if (isOverlapping(newBox, container)) {
-                //     container.removeChild(newBox);
-                //     displayAlert("Cannot place an element over an existing element.");
-                // } 
-                else {
-                    newBox.style.zIndex = 0;
-                }
-            }
-        });
-        //if there is an overlap then it removes the box
-        //Temporarily disable collision removal.
-        // if (isOverlapping(newBox, container)) {
-        //     container.removeChild(newBox);
-        // }
-    }
-
-    //this event listener handles the click event
-    document.addEventListener("mousedown", function (event) {
-        if (isPaintingEnabled) {
-            paintEmployeeBoxes(event, size, color);
-            document.addEventListener("mousemove", function (event) {
-                if (isPaintingEnabled) {
-                    paintEmployeeBoxes(event, size, color);
-                }
-            });
-        }
-    });
-
-    //on the mouse up, set the flag to false to stop painting
-    document.addEventListener("mouseup", function () {
-        isPaintingEnabled = false;
-    });
 }
 
 //this method checks whether or not there is an overlap between the passed element and any child element in the container
