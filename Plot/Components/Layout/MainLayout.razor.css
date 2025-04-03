@@ -9,40 +9,21 @@ main {
     flex: 1;
 }
 
-/* .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
-} */
-
 .top-row {
     background-color: #1EA6A1;
     border-bottom: 1px solid #d6d5d5;
     height: 3.5rem;
-    /* display: flex; 
-    align-items: center; */
-    padding: .5rem 0rem;  /* Adds spacing to prevent content touching edges */
+    padding: .5rem 0rem;
+    /* Adds spacing to prevent content touching edges */
 }
-
-    /* .top-row a, .top-row .btn-link {
-        white-space: nowrap;
-        display: flex;
-        text-decoration: none;
-    }
-
-    .top-row a:hover, .top-row .btn-link:hover {
-        text-decoration: underline;
-    }
-*/
-/* .top-row a:last-child {
-    margin-left: auto;
-    justify-content: flex-end;
-} */
 
 @media (max-width: 640.98px) {
     .top-row {
         justify-content: space-between;
     }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
+    .top-row ::deep a,
+    .top-row ::deep .btn-link {
         margin-left: 0;
     }
 }
@@ -71,7 +52,8 @@ main {
         width: 0;
     }
 
-    .top-row, article {
+    .top-row,
+    article {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
     }
@@ -91,9 +73,9 @@ main {
     z-index: 1000;
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-    }
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
