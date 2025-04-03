@@ -2,8 +2,9 @@ function togglePaint() {
     window.gridState = window.gridState === 'paint' ? 'place' : 'paint';
 }
 
-function toggleErase() {
-    window.gridState = window.gridState === 'erase' ? 'place' : 'erase';
+function setErase() {
+    window.paint = '#fff';
+    window.gridState = 'paint';
 }
 
 function setPlace() {

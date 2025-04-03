@@ -858,7 +858,7 @@
     private async Task eraseCategoryClicked()
     {
         Console.WriteLine("Erase Category Function");
-        await JS.InvokeVoidAsync("toggleErase");
+        await JS.InvokeVoidAsync("setErase");
 
         //Call the func in AllocationsSidebar to remove the styling of the selected category.
         if (allocationsSidebar != null)
