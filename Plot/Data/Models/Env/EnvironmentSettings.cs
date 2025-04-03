@@ -1,6 +1,6 @@
 /*
     Filename: EnvironmentSettings.cs
-    Part of Project: PLOT/PLOT-FE/Plot/Data/Models/Environment
+    Part of Project: PLOT/PLOT-BE/Plot/Data/Models/Environment
 
     File Purpose:
     This file defines the EnvironmentSettings record,
