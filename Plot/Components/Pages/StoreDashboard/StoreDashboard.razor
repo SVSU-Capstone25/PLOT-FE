@@ -582,13 +582,38 @@ async function getBackgroundImageUrl(elementId) {
         }
 
     @* method to set the background image of the edit modal imageinput to the stores BP image *@
+@*
         function SetBackgroundImage(elementId, strUrl) {
             const element = document.getElementById(elementId);
             if (element) {
-                element.style.backgroundImage = strUrl;
+                // Create Object URL
+                const objectURL = URL.createObjectURL(strUrl);
+
+                element.style.backgroundImage = objectURL;
                 element.classList.remove("dashed-border");
             }
         }
+*@
+
+async function SetBackgroundImage(elementId, imageUrl) {
+    const element = document.getElementById(elementId);
+    if (!element || !imageUrl) return;
+
+    try {
+        // Fetch the image as a Blob
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
+
+        const blob = await response.blob(); // Convert response to Blob
+        const objectURL = URL.createObjectURL(blob); // Create Object URL
+
+        element.style.backgroundImage = `url("${objectURL}")`; // Correctly format the background image
+        element.classList.remove("dashed-border");
+
+    } catch (error) {
+        console.error("Error setting background image:", error);
+    }
+}
 
     @* force close the modal. This was needed because modal elements were invisable after closing the modal,
         but they could still be interacted with *@
@@ -909,7 +934,7 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     // Set selected user to user in row clicked upon
     private async Task SetSelectedStore(Store store)
     {
-        // Store of blocl clicked is selected store
+        // Store of block clicked is selected store
         selectedStore = store;
 
         // Copy store info for editing in case "Edit" is clicked
@@ -1589,13 +1614,13 @@ private async Task<string> getImageUrlAdd()
     string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "addModalStoreBlueprint");
     //Console.WriteLine($"Received Image URL: {strImageUrl}");
 
-    if (string.IsNullOrEmpty(strImageUrl)) //
+    if (string.IsNullOrEmpty(strImageUrl)) // If string is null or empty
     {
         Console.WriteLine("Returning default image");
         return "/img/LayoutPhotoExample.png";
     }
 
-    return strImageUrl;
+    return strImageUrl; // Return string image url
 }
 
 
@@ -1607,8 +1632,18 @@ private async Task<string> getImageUrlAdd()
         //check if a picture has been chosen
         isBlueprintValidEdit = true;
         SetEditDisabled();
+/*
+        if (string.IsNull)
         //return the string, or if null, the default store layout photo
-        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
-    }
+        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl; */
+
+            if (string.IsNullOrEmpty(strImageUrl)) // If string is null or empty
+            {
+                Console.WriteLine("Returning default image");
+                return "/img/LayoutPhotoExample.png";
+            }
+
+        return strImageUrl; // Return string image url
+        }
 
 }

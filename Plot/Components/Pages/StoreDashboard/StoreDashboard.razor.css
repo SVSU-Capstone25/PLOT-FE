@@ -123,3 +123,14 @@ Author: Andrew Fulton (3/12/2025) */
 #addModalStoreBlueprint {
     background-image: url('/added_image.png');
 }
+
+#editModalStoreBlueprint {
+    background-image: url('/edited_image.png');
+}
+
+.image-in-card { /* todo: place */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+}
