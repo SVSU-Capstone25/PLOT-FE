@@ -17,17 +17,38 @@ Author: Josh Rodack (2/10/2025) */
 
 }
 
-/* Andrew  Miller - (3/19/2025) - 
-For Error Message on validation*/
-.error {
-    color: red;
-    font-size: 0.9rem;
-    margin-top: 0.25rem;
-}
-
 /* Andrew  Miller - (3/22/2025) */
 
+/* User dashboard */
+
 /* Table columns */
+
+.user-dashboard{
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    box-sizing: border-box;
+}
+
+.table-set{
+    flex-grow:1;
+    height: 95%;
+    overflow:auto;
+}
+
+.add-btn-container{
+    align-self: flex-end;
+    display: flex;
+    margin:0px;
+}
+
+.add-btn {
+    align-self: flex-end;
+    width: calc(50/16 * 1rem);
+    margin:0px;
+    padding:0px;
+}
+
 .name_column {
     width: 20%;
 }
@@ -45,20 +66,3 @@ For Error Message on validation*/
     background-color: lightgray;
     border-radius: 5px;
 }
-
-/*  Andrew Miller: Taken from StoreDashboard.razor.css (3/22/2025)
-    Original Author: Andrew Fulton */
-/* CSS used to fix the button in the bottom right */
-.fixed-bottom-right {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 150px;
-    height: 60px;
-    background-color: transparent;
-    border: none;
-    text-align: center;
-    z-index: 1000;
-    /* Ensure it's on top */
-}
-

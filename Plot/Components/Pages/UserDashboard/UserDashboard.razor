@@ -1,6 +1,9 @@
 @*
 File Purpose:
 User dashboard for managing, adding, editing, and deleting users.
+Employee Name, Employee ID, And Role visible on dashboard.
+Editing allows changes to name, role, and stores the user
+can access.
 
 Note:
 Database is not hooked up yet, so a lot of functionality here
@@ -15,6 +18,8 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 Note: A small amount of skeleton code was present before. 
 No author was given.
 
+*/
+
 *@
 
 @page "/user-dashboard"
@@ -24,7 +29,8 @@ No author was given.
 @using System;
 @using System.Collections.Generic;
 
-<div class="mb-4">
+<div class="d-flex flex-column align-content-between user-dashboard">
+<div class="mb-4 table-set">
     @* Users Table *@
     <table class="table w-100">
         <tbody>
@@ -79,20 +85,21 @@ No author was given.
             }
         </tbody>
     </table>
-
 </div>
-<div class="fixed-bottom-right">
-    <Button Class="Button" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary" TextAlignment="center"
-        OnClickFunction="OpenAddUserModal">
-        Add User
-    </Button>
+
+<div class="add-btn-container">
+<Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary" TextAlignment="center"
+    OnClickFunction="OpenAddUserModal">
+    Add User
+</Button>
+</div>
 </div>
 
 @* Modals *@
 
 @* User Info Modal (Add User or Edit User) *@
 
-<Modal Title="@userModalDetails.Title" Id="UpdateUserModal" Variant="standard" Class="modal-dialog modal-xl user-info-modal"
+<Modal Title="@userModalDetails.Title" Id="UpdateUserModal" Variant="standard" Class="modal-dialog modal-xl user-modal user-info-modal"
     OnCancelFunction="CleanUpUpdateUser">
     <BodyContent>
         <form>
@@ -104,28 +111,28 @@ No author was given.
             @* First Name *@
             <div class="holds-first-name">
                 <TextInput Id="UserFirstNameUser" Label="First Name" Type="Text" LabelOnTop=false
-                    Value="@inEditUser.FirstName" ValueChanged="@ValidateFirstName"/>
+                    Value="@inEditUser.FirstName" ValueChanged="@HandleFirstName"/>
 
                 @* Error message *@
-                <p class="error">@firstNameError</p>
+                <p class="validation-message">@firstNameError</p>
             </div>
 
             @* Last Name *@
             <div class="holds-last-name">
                 <TextInput Id="UserLastNameUser" Label="Last Name" Type="Text" LabelOnTop=false 
-                Value="@inEditUser.LastName" ValueChanged="@ValidateLastName"/>
+                Value="@inEditUser.LastName" ValueChanged="@HandleLastName"/>
 
                 @* Error message *@
-                <p class="error">@lastNameError</p>
+                <p class="validation-message">@lastNameError</p>
             </div>
 
             @* Email *@
             <div class="holds-email">
                 <TextInput Id="UserEmail" Label="Email" Type="Text" LabelOnTop=false Value="@inEditUser.Email"
-                    ValueChanged="@ValidateEmail" />
+                    ValueChanged="@HandleEmail" />
 
                 @* Error message *@
-                <p class="error">@emailError</p>
+                <p class="validation-message">@emailError</p>
             </div>
 
             @* Role and Store Select Options *@
@@ -194,8 +201,8 @@ No author was given.
 
 @* Delete User Modal *@
 
-<Modal Title="Confirm Deletion" Id="DeleteUserModal" Variant="danger" Class="modal-dialog w-100 h-100"
-    OnCancelFunction="CleanUpDelete" Icon="fa-solid fa-x">
+<Modal Title="Confirm Deletion" Id="DeleteUserModal" Variant="danger" Class="modal-dialog w-100 h-100 user-modal"
+    OnCancelFunction="CleanUpDelete">
 
     @* Confirm delete Question and Textbox *@
     <BodyContent>
@@ -207,7 +214,9 @@ No author was given.
         with EnableDelete function every time the text changes *@
 
         <TextInput Id="deleteTextInput" Label="If so, type DELETE here" Type="Text" Placeholder="Type DELETE here"
-            Value="@confirmDelete" ValueChanged="EnableDelete" />
+            Value="@confirmDelete" ValueChanged="HandleDelete" />
+
+        <p class="validation-message">@deleteError</p>
 
     </BodyContent>
 
@@ -232,7 +241,6 @@ No author was given.
 
     function OpenModal(modal_id) {
         /* Opens Modal of given Id */
-
         bootstrap.Modal.getOrCreateInstance(modal_id).show();
     }
 
@@ -303,7 +311,7 @@ No author was given.
 </script>
 
 @code {
-
+    // User object for information in edit in update user modal
     private User inEditUser = new User();
 
     // Holds details about modal (Id, Title, Header, Description,
@@ -313,7 +321,6 @@ No author was given.
     // Modal ids
     private int ADD_MODAL_DETAIL_ID = 0;
     private int EDIT_MODAL_DETAIL_ID = 1;
-
 
     // Headers for OptionInputs in Add user modal
     private string optionHeader = "Select an Option";
@@ -325,6 +332,7 @@ No author was given.
     private string firstNameError = "";
     private string lastNameError = "";
     private string emailError = "";
+    private string deleteError = "";
 
     // Tracking validity of fields
     // For Add User modal
@@ -335,6 +343,9 @@ No author was given.
     // These start as "Select an Option" and so are false
     private bool isRoleValid = false;
     private bool isStoreValid = false;
+
+    // General character limit for text fields
+    const int GEN_CHAR_LIMIT = 32;
 
     // Roles
     // Basic roles list
@@ -431,7 +442,9 @@ No author was given.
     /* Opening Add User Modal */
     private async Task OpenAddUserModal()
     {
-        Console.WriteLine("Open add user modal");
+        // Clean update user modal of previous information
+        await CleanUpUpdateUser();
+
         // Initialize roles or add user modal
         userRoles = new List<string> { optionHeader };
         userRoles.AddRange(roles);
@@ -588,7 +601,29 @@ No author was given.
 
     /* Modal data and button-handling functions */
 
-    // Enable delete button
+    // Validate delete text field on change - if valid (<= 32 characters, check if 
+    // delete button should be enabled or disabled)
+    private void HandleDelete(string text){
+        if (ValidateLength(text, "Delete Text", ref deleteError, GEN_CHAR_LIMIT)) {EnableDelete(text); }
+    }
+
+    private bool ValidateLength(string text, string textLocation,
+    ref string errorMsg, int charLimit){
+        /* text: text in the text box
+           textLocation: String at beginning of error message to refer to the text field
+           errorMsg: References error message bound to paragraph element in modal
+           charLimit: character limit
+           */
+
+        if(text.Length > charLimit){
+            ErrorTooLong(textLocation, ref errorMsg, charLimit);
+            return false;
+        }
+
+        return true; // Length is valid
+    }
+
+    // Enable or disable delete button
     private void EnableDelete(string value)
     {
         // set confirmDelete variable to value
@@ -721,6 +756,7 @@ No author was given.
         selectedUser = new User(); // Selected User no longer selected
         confirmDelete = ""; // Delete textbox should now be empty
         isDeleteDisabled = false; // Delete enabled
+        deleteError = ""; // Empty delete error message
 
         StateHasChanged();
     }
@@ -747,105 +783,98 @@ No author was given.
         errorMsg = textLocation + " is not alphabetic.";
     }
 
-    // Validates email characters
-    private bool ValidateEmailChar(char c)
-    {
-        return Char.IsLetterOrDigit(c) || c == '.' || c == '@';
-    }
+    // Validates email characters - letters, digits, period, or @
+    private bool ValidateEmailChar(char c){ return Char.IsLetterOrDigit(c) || c == '.' || c == '@';}
 
-    private bool IsTextPresent(string text)
-    {
-        // Checks if text is greater than 0
-        if (text.Length > 0)
-        {
-            return true;
+    // Is text present?
+    private bool IsTextPresent(string text){ return (text.Length > 0); }
+
+    private bool ValidateAlpha(string text, string textLocation,
+    ref string errorMsg, int charLimit){
+        /* text: text in the text box
+           textLocation: String at beginning of error message to refer to the text field
+           errorMsg: References error message bound to paragraph element in modal
+           charLimit: character limit
+           */
+
+        if(text.All(c => Char.IsLetter(c))){
+            return true; // All are alphabetical
         }
-        else
-        {
+        else{ // All are not alphabetical
+            ErrorNotAlpha(textLocation, ref errorMsg);
             return false;
         }
     }
 
-    private void ValidateFirstName(string text)
-    {
-        const int CHAR_LIMIT = 32;
+    private void HandleName(string text, string textLocation,
+    ref string errorMsg, int charLimit, ref bool isNameValid){
+        /* text: text from TextInput,
+        textLocation: Refers to text location for use in error message i.e. "first name"
+                or "last name"
+        errorMsg: error message
+        charLimit: character limit
+        isNameValid: References flag for whether text field is valid
+        */
 
-        // Set value of first name to text
-        inEditUser.FirstName = text;
+        if(ValidateLength(text, textLocation, ref errorMsg, charLimit) &
+            ValidateAlpha(text, textLocation, ref errorMsg, charLimit)){
 
-        if (text.Length > CHAR_LIMIT)
-        {
-            ErrorTooLong("First Name", ref firstNameError, CHAR_LIMIT);
-            isFirstValid = false;
+            ClearError(ref errorMsg); // Clear error message
+            isNameValid = IsTextPresent(text); // Referenced flag for name validity
+                                            // depends on if text is present
         }
-        else if (!text.All(c => Char.IsLetter(c)))
-        {
-            ErrorNotAlpha("First Name", ref firstNameError);
-            isFirstValid = false;
+        else{
+            isNameValid = false; // Set referenced flag for name validity to false
         }
-        else
-        {
-            // No error message needed
-            ClearError(ref firstNameError);
-            // Is text length greater than 0?
-            isFirstValid = IsTextPresent(text);
-        }
-
-        SetUpdateUserDisabled(); // Determine if button should be disabled
     }
 
-    private void ValidateLastName(string text)
-    {
-        const int CHAR_LIMIT = 32;
+    private void HandleFirstName(string text){
+        inEditUser.FirstName = text; // Set first name parameter to text
 
+        HandleName(text, "First Name",
+        ref firstNameError, GEN_CHAR_LIMIT, ref isFirstValid);
+
+        SetUpdateUserDisabled();
+    }
+
+    private void HandleLastName(string text)
+    {
         // Set last name to text
         inEditUser.LastName = text;
 
-        if (text.Length > CHAR_LIMIT)
-        {
-            ErrorTooLong("Last Name", ref lastNameError, CHAR_LIMIT);
-            isLastValid = false;
-        }
-        else if (!text.All(c => Char.IsLetter(c)))
-        {
-            ErrorNotAlpha("Last Name", ref lastNameError);
-
-            isLastValid = false;
-        }
-        else
-        {
-            // No error message needed
-            ClearError(ref lastNameError);
-            isLastValid = IsTextPresent(text);
-        }
-        SetUpdateUserDisabled(); // Determine if button should be disabled
+        HandleName(text, "Last Name",
+        ref lastNameError, GEN_CHAR_LIMIT, ref isLastValid);
+        
+        SetUpdateUserDisabled();
     }
 
-    private void ValidateEmail(string text)
-    {
-        // character limit
-        const int CHAR_LIMIT = 32;
+    private bool ValidateEmailText(string text){
 
-        inEditUser.Email = text; // Set email to text
-
-        // Validate text (non-email) in Add User modal
-        if (text.Length > CHAR_LIMIT)
-        {
-            ErrorTooLong("Email", ref emailError, CHAR_LIMIT);
-            isEmailValid = false;
+        // Validates each character of email
+        if(text.All(c => ValidateEmailChar(c))){
+            return true; // Email text is valid
         }
-        else if (!text.All(c => ValidateEmailChar(c)))
-        {
-            // Validate email characters
+        else{ // Set email error, return false
             emailError = "Email has invalid characters. characters must be alphanumeric, " +
             "the period '.' or the at symbol '@'";
-
-            isEmailValid = false;
+            return false;
         }
-        else
-        {
-            ClearError(ref emailError);
-            isEmailValid = IsTextPresent(text);
+    }
+
+    private void HandleEmail(string text)
+    {
+        inEditUser.Email = text; // Set email to text
+
+        // Check that email is 32 character sor less and satisfies
+        // validation rules for email text
+        if(ValidateLength(text,"Email",ref emailError,GEN_CHAR_LIMIT) &
+            ValidateEmailText(text)
+        ){
+            ClearError(ref emailError); // Clear error message
+            isEmailValid = IsTextPresent(text); // Valid Email flag 
+            // depends on if email is present
+        }else{
+            isEmailValid = false; // Email is not valid
         }
 
         SetUpdateUserDisabled(); // Determine if button should be disabled
@@ -874,7 +903,6 @@ No author was given.
     // Debug Utilities
     private void printUsers(List<User> users)
     {
-
         // Output information on list of users to the console
         foreach (var user in users)
         {
