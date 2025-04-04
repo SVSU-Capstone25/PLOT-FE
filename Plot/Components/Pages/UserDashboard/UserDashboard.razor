@@ -794,6 +794,7 @@ No author was given.
         SetUpdateUserDisabled(); // Determine if button should be disabled
     }
 
+
     private void ValidateLastName(string text)
     {
         const int CHAR_LIMIT = 32;
@@ -821,6 +822,7 @@ No author was given.
         SetUpdateUserDisabled(); // Determine if button should be disabled
     }
 
+    @* Validate email *@
     private void ValidateEmail(string text)
     {
         // character limit
@@ -828,22 +830,27 @@ No author was given.
 
         inEditUser.Email = text; // Set email to text
 
-        // Validate text (non-email) in Add User modal
-        if (text.Length > CHAR_LIMIT)
+        // Email must be unique: Either not found in users or not
+        // matches what the email of the selected user was
+        if((users.FirstOrDefault(user => user.Email == text) != null) &&
+            !(text == selectedUser.Email)){
+            emailError = "Email must be unique.";
+            isEmailValid = false;
+        }
+        else if (text.Length > CHAR_LIMIT) // Email is not too long
         {
             ErrorTooLong("Email", ref emailError, CHAR_LIMIT);
             isEmailValid = false;
         }
-        else if (!text.All(c => ValidateEmailChar(c)))
+        else if (!text.All(c => ValidateEmailChar(c))) // Email characters are valid
         {
             // Validate email characters
             emailError = "Email has invalid characters. characters must be alphanumeric, " +
             "the period '.' or the at symbol '@'";
-
             isEmailValid = false;
         }
         else
-        {
+        {   // Doesn't need a validation message - Just check if there is text present
             ClearError(ref emailError);
             isEmailValid = IsTextPresent(text);
         }
