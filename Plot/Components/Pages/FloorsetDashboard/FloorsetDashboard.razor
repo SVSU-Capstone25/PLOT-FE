@@ -61,7 +61,7 @@ Author: Andrew Fulton (3/13/2025)  *@
 
 @* HARD CODED MODAL: Delete Floorset modal *@
 <Modal Title="Confirm Deletion" Id="deleteFloorsetModal" Class="standard" Variant="danger"
-    OnCancelFunction="deleteFloorset">
+    OnCancelFunction="ClearDeleteStoreModalTextbox">
 
     <BodyContent>
         <h5>Are you SURE you want to delete this Floorset?</h5>
@@ -80,11 +80,23 @@ Author: Andrew Fulton (3/13/2025)  *@
 
     @* event listeners that load when the page loads  *@
         document.addEventListener("DOMContentLoaded", function () {
-            document.addEventListener("keydown", function () {
-                if (event.key === "Escape") {
-                    ForceCloseModal("deleteFloorsetModal");
-                }
-            });
+
+            @* Logic to remove the faded background when clicking off of layered modals *@
+                document.addEventListener("click", function (event) {
+                    @* if the clicked item is a modal with the "fade class, then change the Z-index of the modals being returned to " *@
+                if (event.target.matches(".fade")) {
+                        ClearDeleteStoreModalTextbox();
+
+                    }
+                });
+
+            @* clicking Esscape logic *@
+                document.addEventListener("keydown", function () {
+                    if (event.key === "Escape") {
+                        ForceCloseModal("deleteFloorsetModal");
+                        ClearDeleteStoreModalTextbox();
+                    }
+                });
         });
 
     @* function to try an focs on a specific element *@
@@ -210,7 +222,6 @@ Author: Andrew Fulton (3/13/2025)  *@
     //function for deleting a store
     private async Task deleteFloorset()
     {
-        Console.WriteLine("DELETE THIS FLOORSET");
         await JS.InvokeVoidAsync("DeleteFloorset");
     }
 
@@ -278,5 +289,12 @@ Author: Andrew Fulton (3/13/2025)  *@
         {
             storedFloorsets.Add(new storedFloorset(name));
         }
+    }
+
+
+    //function that calls the JS function to clear the text from the Delete store modal textbox
+    private async void ClearDeleteStoreModalTextbox()
+    {
+        await JS.InvokeVoidAsync("ClearDeleteStoreModalTextbox");
     }
 }

@@ -1,0 +1,13 @@
+.dimension {
+    width: 45%;
+}
+
+.img-input {
+    justify-self: center;
+    margin-top: 2rem;
+}
+
+.add-btn {
+    background-color: var(--platos-blue);
+    color: white;
+}
