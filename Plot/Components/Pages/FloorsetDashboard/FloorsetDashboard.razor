@@ -36,12 +36,14 @@ Author: Andrew Fulton (3/13/2025)  *@
     Iterate over each name and image in the floorsets.
     *@
 
-    @if(storedFloorsets != null){
+    @if (storedFloorsets != null)
+    {
         @foreach (var floorset in storedFloorsets)
         {
             <Card Id=@floorset.ID Class="Card" CardText=@floorset.Name CardImage=@floorset.ImagePath>
-                <Dropdown Class="Dropdown" Id="@floorset.dropdownID" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-                    DropdownLinks="@(new List<string> { "javascript:window.location.href='/floorset-editor'", "javascript:floorsetDashboardCopyCard('"+@floorset.Name+"')", "#deleteFloorsetModal" })"
+                <Dropdown Class="Dropdown" Id="@floorset.dropdownID"
+                    DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
+                    DropdownLinks="@(new List<string> { "javascript:window.location.href='/floorset-editor'", "javascript:floorsetDashboardCopyCard('" + @floorset.Name + "')", "#deleteFloorsetModal" })"
                     LabelText="Floorset"
                     DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
             </Card>
@@ -58,7 +60,8 @@ Author: Andrew Fulton (3/13/2025)  *@
 </button>
 
 @* HARD CODED MODAL: Delete Floorset modal *@
-<Modal Title="Confirm Deletion" Id="deleteFloorsetModal" Class="standard" Variant="danger">
+<Modal Title="Confirm Deletion" Id="deleteFloorsetModal" Class="standard" Variant="danger"
+    OnCancelFunction="deleteFloorset">
 
     <BodyContent>
         <h5>Are you SURE you want to delete this Floorset?</h5>
@@ -74,6 +77,26 @@ Author: Andrew Fulton (3/13/2025)  *@
 </Modal>
 
 <script>
+
+    @* event listeners that load when the page loads  *@
+        document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("keydown", function () {
+                if (event.key === "Escape") {
+                    ForceCloseModal("deleteFloorsetModal");
+                }
+            });
+        });
+
+    @* function to try an focs on a specific element *@
+        function ClickOnElement(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.click();
+            } else {
+                console.warn(`Element with ID '${elementId}' not found.`);
+            }
+        }
+
     // show the whichever modal ID is passed into it
     function showModal(modalId) {
         var modal = new bootstrap.Modal(document.getElementById(modalId));
@@ -90,15 +113,35 @@ Author: Andrew Fulton (3/13/2025)  *@
         document.querySelector('.modal-backdrop')?.remove();
     }
 
+    function ForceCloseModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            // Hide the modal
+            modal.style.display = "none";
+            modal.setAttribute("aria-hidden", "true");
+            modal.removeAttribute("aria-modal");
+            modal.removeAttribute("role");
+            //modal.className = "modal fade"; // Reset class
+
+            // Remove modal backdrop
+            document.querySelector('.modal-backdrop')?.remove();
+            document.querySelector('.modal-backdrop')?.remove();
+
+            // Ensure focus is removed
+            document.activeElement?.blur();
+        }
+    }
+
     function DeleteFloorset() {
         /* Danielle Smith - 3/18/2025
         function that mimics deleting a floorset. still checks if the text equals delete.
         if so, close the modal to mimic deleting a floorset. clear the text box for next use
         otherwise, alert the user */
         let deleteStr = document.getElementById("deleteModalTextInput").value;
-        if (deleteStr.equals("DELETE")) {
-            document.getElementById("deleteModalTextInput").value = "Delete";
+        if (deleteStr === "DELETE") {
+            document.getElementById("deleteModalTextInput").value = "";
             HideModal("deleteFloorsetModal");
+            ClickOnElement("deleteFloorsetModal");
         }
         else {
             alert("Incorrect input.");
@@ -109,9 +152,15 @@ Author: Andrew Fulton (3/13/2025)  *@
         /* Danielle Smith fa-plus 4/1/2025 
         function for dropdown to go to the floorset editor that
         forces a refresh of the cache to correct styles and such */
-        window.location.href="/floorset-editor";
+        window.location.href = "/floorset-editor";
     }
+
+    @* simply clears the textbox of the deleteStoreModal *@
+        function ClearDeleteStoreModalTextbox() {
+            document.getElementById("deleteModalTextInput").value = "";
+        }
 </script>
+
 
 @* floorsetCopy js *@
 <script src="js/copyFloorsetCard.js"></script>
@@ -134,25 +183,29 @@ Author: Andrew Fulton (3/13/2025)  *@
             ImagePath = img;
         }
 
-        public string dropdownID {
-            get{
+        public string dropdownID
+        {
+            get
+            {
                 return "Dropdown" + Name;
             }
         }
 
-        public string ID {
-            get{
-                return Name.Replace(" ","");
+        public string ID
+        {
+            get
+            {
+                return Name.Replace(" ", "");
             }
         }
 
-        public string Name {get; set;}
+        public string Name { get; set; }
 
-        public string ImagePath{get; set;}
-    } 
+        public string ImagePath { get; set; }
+    }
 
     //Array of stored floorsets to display. Should be manipulated by copy and delete functions to have local updates.
-    private List<storedFloorset>? storedFloorsets {get; set;}
+    private List<storedFloorset>? storedFloorsets { get; set; }
 
     //function for deleting a store
     private async void deleteFloorset()
@@ -174,20 +227,21 @@ Author: Andrew Fulton (3/13/2025)  *@
     public void CopyFloorset(string originalName)
     {
         Console.WriteLine("Copy Floorset Func");
-        if (storedFloorsets != null){
+        if (storedFloorsets != null)
+        {
             //Search the list for the index where the name property is the same as the original name.
             var index = storedFloorsets.FindIndex(p => p.Name == originalName);
             if (index >= 0)
             {
-                storedFloorsets.Insert(index+1, new storedFloorset(originalName + " Copy"));
+                storedFloorsets.Insert(index + 1, new storedFloorset(originalName + " Copy"));
                 StateHasChanged();
             }
             else
             {
-                Console.WriteLine("Could not find index for name "+originalName);
+                Console.WriteLine("Could not find index for name " + originalName);
             }
         }
-        
+
     }
 
     //Retrieve the floorsets on initialization.
@@ -201,25 +255,27 @@ Author: Andrew Fulton (3/13/2025)  *@
     }
 
     //Function to retrieve floorsets from DB. For now, some hardcoded references.
-    private void getFloorsets(){
-        storedFloorsets = new List<storedFloorset> {};
-        
+    private void getFloorsets()
+    {
+        storedFloorsets = new List<storedFloorset> { };
+
         //This array and following foreach is for default testing floorsets.
         Console.WriteLine("Adding default floorsets to storedFloorsets");
         var floorsetNames = new String[] {
-            "Nov24 Floorset",
-            "Dec24 Floorset",
-            "Jan25 Floorset",
-            "Feb25 Floorset",
-            "Mar25 Floorset",
-            "Apr25 Floorset",
-            "May25 Floorset",
-            "Jun25 Floorset",
-            "Jul25 Floorset",
-            "Aug25 Floorset",
-        };
+"Nov24 Floorset",
+"Dec24 Floorset",
+"Jan25 Floorset",
+"Feb25 Floorset",
+"Mar25 Floorset",
+"Apr25 Floorset",
+"May25 Floorset",
+"Jun25 Floorset",
+"Jul25 Floorset",
+"Aug25 Floorset",
+};
 
-        foreach (String name in floorsetNames){
+        foreach (String name in floorsetNames)
+        {
             storedFloorsets.Add(new storedFloorset(name));
         }
     }
