@@ -556,8 +556,8 @@ function displayAlert(msg) {
 
 
 /* Luke Wollenweber - 3/22/2025
-    js function to re-add cells based on new Dimensions 
-    updated 3/27 by Luke Wollenweber */
+   js function to re-add cells based on new Dimensions 
+   updated 3/27 by Luke Wollenweber */
 function UpdateGridDimensions(passedLength, passedWidth) {
     var positionMap = {};
 
