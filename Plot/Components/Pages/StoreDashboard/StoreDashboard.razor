@@ -252,7 +252,7 @@ Author: Andrew Fulton (3/12/2025)
             @* right side of modal *@
             <div class="col d-flex justify-content-center">
                 @* holds store image *@
-                <ImageInput Label="Upload Image" Id="editModalStoreBlueprint" Width="330px" Height="300px" />
+                <ImageInput Label="Upload Image" Id="editModalStoreBlueprint" Width="330px" Height="300px"/>
                 <p class="error">@blueprintErrorEdit</p>
             </div>
         </div>
@@ -324,9 +324,6 @@ Author: Andrew Fulton (3/12/2025)
     </FooterContent>
 
 </Modal>
-
-
-
 
 <script>
 
@@ -493,84 +490,29 @@ Author: Andrew Fulton (3/12/2025)
             }
         }
 
-    @* function to get the URL of the image from the elemebts style tag *@
-    @*
-        function getBackgroundImageUrl(elementId) {
-            const element = document.getElementById(elementId);
-            if (element) {
-                const style = window.getComputedStyle(element);
-                const backgroundImage = style.backgroundImage;
-                console.log(backgroundImage);
-                return backgroundImage;
-                // Extract the URL from the backgroundImage string in the style tag
-                //const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
-                //return urlMatch[1], which is the data URL string
-                //return urlMatch && urlMatch[1] ? urlMatch[1] : null;
-            }
-            return null;
-        }
-    *@
-@*
-function getBackgroundImageUrl(elementId) {
-    const element = document.getElementById(elementId);
-    if (element) {
-        const style = window.getComputedStyle(element);
-        const backgroundImage = style.backgroundImage;
+    @* function to get the URL of the image from the elements style tag *@
 
-        // Extract the URL from the backgroundImage
-        const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
-        if (urlMatch && urlMatch[1]) {
+        async function getBackgroundImageUrl(elementId) {
+            const element = document.getElementById(elementId);
+
+            const style = window.getComputedStyle(element);
+            const backgroundImage = style.backgroundImage;
+
+            // Extract the URL from the backgroundImage property
+            const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+
+            // Set imageURL to valid url match
             const imageUrl = urlMatch[1];
 
-            // Fetch the image and create an Object URL
-            fetch(imageUrl)
-                .then(response => response.blob())  // Get the image as a Blob
-                .then(blob => {
-                    const objectUrl = URL.createObjectURL(blob);  // Create Object URL from Blob
-                    
-                    // Use the Object URL as the image source
-                    document.getElementById(elementId).src = objectUrl;  // Set the Object URL as image source
-                })
-                .catch(error => console.error("Error fetching image:", error));
+            // Fetch image url
+            const response = await fetch(imageUrl);
+            if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
+
+            const blob = await response.blob(); // Convert response to Blob
+            const objectUrl = URL.createObjectURL(blob); // Create Object URL
+
+            return objectUrl; // Return Object URL
         }
-    }
-}
-*@
-
-async function getBackgroundImageUrl(elementId) {
-    /* Get background image url */
-
-    // Get element
-    const element = document.getElementById(elementId);
-    if (!element) return ""; // No element
-
-    // Get the background-image element of the style
-    const style = window.getComputedStyle(element);
-    const backgroundImage = style.backgroundImage;
-
-    // Extract the URL from the backgroundImage property
-    const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
-
-    // Nothing - return empty string
-    if (!urlMatch || !urlMatch[1]) return "";
-
-    // Set imageURL to valid url match
-    const imageUrl = urlMatch[1];
-
-    try {
-        // Fetch the image
-        const response = await fetch(imageUrl);
-        if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
-
-        const blob = await response.blob(); // Convert to Blob
-        const objectUrl = URL.createObjectURL(blob); // Create Object URL
-
-        return objectUrl; // Return Object URL
-    } catch (error) {
-        console.error("Error fetching image:", error);
-        return "";
-    }
-}
 
     @* function used to clear the imageInput background *@
         function ClearBackgroundImage(elementId) {
@@ -582,38 +524,21 @@ async function getBackgroundImageUrl(elementId) {
         }
 
     @* method to set the background image of the edit modal imageinput to the stores BP image *@
-@*
-        function SetBackgroundImage(elementId, strUrl) {
+        async function SetBackgroundImage(elementId, imageUrl) {
             const element = document.getElementById(elementId);
-            if (element) {
-                // Create Object URL
-                const objectURL = URL.createObjectURL(strUrl);
 
-                element.style.backgroundImage = objectURL;
-                element.classList.remove("dashed-border");
-            }
+            // Fetch the image url
+            const response = await fetch(imageUrl);
+            if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
+
+            const blob = await response.blob(); // Convert response to Blob
+            const objectURL = URL.createObjectURL(blob); // Create Object URL
+
+            element.style.backgroundImage = `url("${objectURL}")`;
+            element.style.backgroundSize = "cover";   // Image is sized just enough to cover the upload
+            element.style.backgroundPosition = "center";
+            element.classList.remove("dashed-border");
         }
-*@
-
-async function SetBackgroundImage(elementId, imageUrl) {
-    const element = document.getElementById(elementId);
-    if (!element || !imageUrl) return;
-
-    try {
-        // Fetch the image as a Blob
-        const response = await fetch(imageUrl);
-        if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
-
-        const blob = await response.blob(); // Convert response to Blob
-        const objectURL = URL.createObjectURL(blob); // Create Object URL
-
-        element.style.backgroundImage = `url("${objectURL}")`; // Correctly format the background image
-        element.classList.remove("dashed-border");
-
-    } catch (error) {
-        console.error("Error setting background image:", error);
-    }
-}
 
     @* force close the modal. This was needed because modal elements were invisable after closing the modal,
         but they could still be interacted with *@
@@ -1163,10 +1088,6 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         StateHasChanged();
     }
 
-
-
-
-
     // Clear error message for variable
     // given by reference parameter
     private void ClearError(ref string errorMsg)
@@ -1188,23 +1109,7 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         errorMsg = textLocation + " is too long. Limit is " + charLimit + " characters.";
     }
     //make sure there is text in the textbox
-    private bool IsTextPresent(string text)
-    {
-        // Checks if text is greater than 0
-        if (text.Length > 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-
-
-
-
+    private bool IsTextPresent(string text){return (text.Length > 0); }
 
     @* method used to validate the name of the store being added *@
     private void ValidateNameAdd(string text)
@@ -1395,12 +1300,6 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         Console.WriteLine($"Uploaded image size: {storeToAdd.Blueprint_Image.Length} bytes");
     } *@
 
-
-
-
-
-
-
     @* method used to validate the name of the store being added *@
     private void ValidateNameEdit(string text)
     {
@@ -1580,70 +1479,20 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     }
 
     @* function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
-    @*
     private async Task<string> getImageUrlAdd()
     {
         string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "addModalStoreBlueprint");
-        Console.WriteLine(strImageUrl);
-        
-        // Check if the string is null or empty, return default image if true
-        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
+        return strImageUrl;
     }
-    *@
-
-@*
-    private async Task<string> getImageUrlAdd()
-    {
-    string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "addModalStoreBlueprint");
-    Console.WriteLine(strImageUrl);
-    // Check if we got a valid URL; if not, return default image
-    if (string.IsNullOrEmpty(strImageUrl))
-    {
-        return "/img/LayoutPhotoExample.png";
-    }
-
-    // Return the fetched image URL (this will be the URL to the image, not a Blob/Object URL)
-    return strImageUrl;
-    }
-*@
-
-// Get image url for adding image
-private async Task<string> getImageUrlAdd()
-{
-    // Await call to getBackgroundImageURL 
-    string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "addModalStoreBlueprint");
-    //Console.WriteLine($"Received Image URL: {strImageUrl}");
-
-    if (string.IsNullOrEmpty(strImageUrl)) // If string is null or empty
-    {
-        Console.WriteLine("Returning default image");
-        return "/img/LayoutPhotoExample.png";
-    }
-
-    return strImageUrl; // Return string image url
-}
-
 
     @* function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
     private async Task<string> getImageUrlEdit()
     {
         string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "editModalStoreBlueprint");
-        //Console.WriteLine(strImageUrl);
-        //check if a picture has been chosen
+
         isBlueprintValidEdit = true;
         SetEditDisabled();
-/*
-        if (string.IsNull)
-        //return the string, or if null, the default store layout photo
-        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl; */
 
-            if (string.IsNullOrEmpty(strImageUrl)) // If string is null or empty
-            {
-                Console.WriteLine("Returning default image");
-                return "/img/LayoutPhotoExample.png";
-            }
-
-        return strImageUrl; // Return string image url
-        }
-
+        return strImageUrl;
+    }
 }
