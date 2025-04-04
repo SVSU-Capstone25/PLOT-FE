@@ -90,8 +90,11 @@ function createDraggable(event, size, color) {
     //Tristan Calay -- 3/27/25
     //Add in listeners for mouse over for category painting.
     newBox.addEventListener("mouseenter", onPaintColor);
-    newBox.addEventListener("mousedown", onPaintColor);
-    newBox.addEventListener("mousedown", editFixtureListener);
+    newBox.addEventListener("mousedown", e => { //Can't have two addEventListeners on one func. Call both here instead.
+        console.log("fixture mouse down event. Firing onPaintColor and editFixtureListener.")
+        onPaintColor(e)
+        editFixtureListener(e)
+    });
     function onPaintColor(event) {
         //console.log("Fixture mouse over detected!!! ID: " + newBox.id);
         if (!paintModeEnabled) {
@@ -118,7 +121,7 @@ function createDraggable(event, size, color) {
     function editFixtureListener(event) {
         //Buttons needs to be 2, the secondary/right mouse button.
         if (event.buttons === 2) {
-            console.log("Edit Fixture Function : Fixture " + newBox.id);
+            startEditFixture(newBox.id);
         }
     }
 
@@ -139,6 +142,14 @@ function createDraggable(event, size, color) {
     // Create the draggable box 
     var draggable = Draggable.create(newBox, {
         bounds: container,
+        onClick: function () {
+            //On right click, open the edit modal.
+            console.log("Draggable clicked.");
+            if (this.pointerEvent.buttons === 2) {
+                console.log("Toggling edit modal.");
+                startEditFixture(newBox.id);
+            }
+        },
         onDrag: function () {
 
             // Using TweenLite, snap the box to a given snap distance,
@@ -167,6 +178,8 @@ function createDraggable(event, size, color) {
             }
         }
     });
+
+    draggable.allowContextMenu = true;
     // Wait for 10ms, then dispatch a mousedown event to simulate a drag on the box.
     setTimeout(() => {
         var evt = new MouseEvent("mousedown", {
@@ -179,6 +192,11 @@ function createDraggable(event, size, color) {
     }, 10);
 }
 
+//Function to populate and display the edit fixture modal.
+function startEditFixture(element_id) {
+    console.log("Edit Fixture Function : Fixture " + element_id);
+    bootstrap.Modal.getOrCreateInstance("#fixtureEditModal").show();
+}
 //this boolean controls painting so that once the user is done, it prevents "painting" from happening unless 
 //they make a new div from the sidebar
 var isPaintingEnabled = false;

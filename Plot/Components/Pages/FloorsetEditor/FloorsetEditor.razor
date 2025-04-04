@@ -30,9 +30,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script>
 
+@* Add fixture edit modal to the floorset editor. *@
+<Modal Title="Fixture Configuration" Id="fixtureEditModal" Class="modal-dialog">
+    <BodyContent>
+        <h4>Default Fixture Title</h4>
+        <OptionInput ID="categoryOption" Class="optionInput" iconString="fa-solid fa-bars"
+            label="Select Category" optionsText="@(new List<String>{"Default Category"})" optionsValues="@(new List<String>{"Default Category"})" />
+
+        <OptionInput ID="hangingOption" Class="optionInput" iconString="fa-solid fa-sign-hanging" label="Select Hanging"
+            optionsText="@(new List<String>{"Default Hanging"})" optionsValues="@(new List<String>{"Default Hanging"})" />
+        <hr>
+        <TextInput Id="fixtureNotes" Label="Add Notes" Placeholder="Notes text..."/>
+    </BodyContent>
+
+    <FooterContent>
+        <button type="button" class="btn btn-success text-white">Save changes</button>
+    </FooterContent>
+</Modal>
+
 @* Grid Area *@
 <div id="container"></div>
-
 
 @* Sidebar *@
 <SlideOut Id="FloorsetSlideOut">
