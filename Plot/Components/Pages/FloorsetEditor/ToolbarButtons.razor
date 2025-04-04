@@ -1,0 +1,64 @@
+@inject IJSRuntime JS
+
+@using Plot.Components.PartialComponents.Button
+
+<div class="toolbar-buttons">
+    @*Edit Fixture Button *@
+    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="editFixture"
+        TextAlignment="center" />
+
+    @*Paint Category Button *@
+    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="togglePaintClicked"
+        TextAlignment="center" />
+
+    @*Erase Category Button *@
+    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategoryClicked"
+        TextAlignment="center" />
+
+    @*View Fullfillment Button *@
+    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eye" OnClickFunction="viewFulfillment"
+        TextAlignment="center" />
+
+    @*Edit Layout Button *@
+    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-wrench" OnClickFunction="editLayout"
+        TextAlignment="center" />
+</div>
+
+@code {
+    private void editFixture()
+    {
+        Console.WriteLine("Edit Fixture Function");
+        @* allocationsOpen = false; *@
+    }
+
+    //The paintCategory button toggles the paint mode of the floorset editor.
+    //It passes that information to the javascript.
+    private void togglePaintClicked()
+    {
+        Console.WriteLine("Toggle Paint Clicked");
+        @* paintModeEnabled = !paintModeEnabled;
+        Console.WriteLine("Paint Category Function - set paint mode to " + paintModeEnabled); *@
+        @* await JS.InvokeVoidAsync("setPaintEnabled", paintModeEnabled); *@
+        @* StateHasChanged(); *@
+    }
+
+    private void eraseCategoryClicked()
+    {
+        Console.WriteLine("Erase Category Function");
+        //Call the func in AllocationsSidebar to remove the styling of the selected category.
+        @* if (allocationsSidebar != null)
+        {
+            allocationsSidebar.clearSelectedCategory();
+        } *@
+    }
+
+    private void viewFulfillment()
+    {
+        Console.WriteLine("View Fulfillment Function");
+    }
+
+    private void editLayout()
+    {
+        Console.WriteLine("Edit Layout Function");
+    }
+}

@@ -27,15 +27,15 @@ Author: Andrew Fulton (3/12/2025)
     @* loop to generate a card for each store that exists *@
     @foreach (var store in stores)
     {
-            <div @onclick="(() => SetSelectedStore(store))">
-                <Card CardText="@($"{store.City},{store.State}")" CardImage="@($"{store.Blueprint_Image}")">
-                    <Dropdown Class="Test Dropdown" Id="@($"{store.Name}{store.Id}Dropdown")"
-                        DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
-                        DropdownLinks="@(new List<string> { $"/floorsets/{store.City},{store.State}/{store.Address},{store.City},{store.State} {store.Zip}", "#editStoreModal", "#deleteStoreModal" })"
-                        LabelText="Store"
-                        DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
-                </Card>
-            </div>
+        <div @onclick="(() => SetSelectedStore(store))">
+            <Card CardText="@($"{store.City},{store.State}")" CardImage="@($"{store.Blueprint_Image}")">
+                <Dropdown Class="Test Dropdown" Id="@($"{store.Name}{store.Id}Dropdown")"
+                    DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
+                    DropdownLinks="@(new List<string> { $"/floorsets/{store.City},{store.State}/{store.Address},{store.City},{store.State} {store.Zip}", "#editStoreModal", "#deleteStoreModal" })"
+                    LabelText="Store"
+                    DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
+            </Card>
+        </div>
     }
 
 
@@ -366,7 +366,8 @@ Author: Andrew Fulton (3/12/2025)
 
     // function for adding an employee to whatever modal needs to see employees. 
     // Places a circle with their name and initials
-    function addEmployee(name, initials, targetDiv) {
+    function addEmployee(Id, name, initials, targetDiv, dotNet) {
+        //window.dotNetRef = dotNet;
         //Get the employees div
         const employeesDiv = document.getElementById(targetDiv);
 
@@ -377,6 +378,11 @@ Author: Andrew Fulton (3/12/2025)
         //Create the circle div
         const circle = document.createElement("div");
         circle.classList.add("circle");
+
+        //dotNet.invokeMethodAsync("OnCircleClicked");
+        circle.addEventListener("click", function () {
+            dotNet.invokeMethodAsync("OnCircleClicked", Id);
+        });
 
         //Create the initials span
         const initialsSpan = document.createElement("span");
@@ -400,7 +406,7 @@ Author: Andrew Fulton (3/12/2025)
 
     @* helper function to get the value from the Option input component in the 
         addEmployee modal when trying to add an employee to a store *@
-        function GetEmployeeBeingAddedToStore(targetDiv, strUserValues) {
+        function GetEmployeeBeingAddedToStore(targetDiv, strUserValues, dotNet) {
             @* const employeeOptionInput = document.getElementById(targetDropdownID);
             const strUserValues = employeeOptionInput.value; *@
 
@@ -413,7 +419,7 @@ Author: Andrew Fulton (3/12/2025)
             @* get the initials fro the names *@
             const strInitials = strFirstName.charAt(0) + strLastName.charAt(0);
             @* create the employee fro the name and initials *@
-                addEmployee(strName, strInitials, targetDiv)
+                addEmployee(strUserValues[0], strName, strInitials, targetDiv, dotNet)
         }
 
 
@@ -571,12 +577,25 @@ Author: Andrew Fulton (3/12/2025)
             }
         }
 
+    @* function to check if a modal is open or not *@
+        function IsModalOpen(modalId) {
+            const modal = document.getElementById(modalId);
+            return modal && modal.classList.contains("show");
+        }
+
 
 </script>
 
 @code {
+
+    DotNetObjectReference<StoreDashboard>? dotNet;
+
     //list to hold all of the stores
     private List<Store> stores = new List<Store>();
+    //list to hold all of the available employees
+    private List<User> users = new List<User>();
+    //list to hold the user that might be added to a store
+    private List<User> usersToAdd = new List<User>();
 
     //store variable that will be updated to when a store is being made
     private Store storeToAdd = new Store();
@@ -606,6 +625,8 @@ Author: Andrew Fulton (3/12/2025)
 
     //Variable to keep track of the current ID index
     private int intNextStoreId = 1;
+    //variable to hold employee Id index
+    private int intNextUserId = 1;
 
     // Deletion confirmation string, initialized as empty
     private string confirmDelete = "";
@@ -644,16 +665,68 @@ Author: Andrew Fulton (3/12/2025)
 
     //lists to hold the value and names of users for the options inputs used to add employees to a store
     //Test
-    private List<string> UserOptionsText { get; set; } = new List<string> { "initializeText" };
-    private List<string> UserOptionsValues { get; set; } = new List<string> { "initializeValue" };
+    private List<string> UserOptionsText { get; set; } = new List<string> { "init" };
+    private List<string> UserOptionsValues { get; set; } = new List<string> { "init" };
     //variable to hold the string of the currently selected user when adding a user to a store (value will ve received from
     //optionsInput)
     private string strUserValueToAdd = "-1,Test,User";
 
 
+
+
+
+
     //initialize components
     protected override void OnInitialized()
     {
+        //Get the dotnet into JS
+        dotNet = DotNetObjectReference.Create(this);
+
+        users = new List<User>
+{
+new User
+{
+Id = intNextUserId++,
+FirstName = "Homer",
+LastName = "Simpson",
+Email = "homer@email.com",
+Role = "Owner"
+},
+new User
+{
+Id = intNextUserId++,
+FirstName = "Marge",
+LastName = "Simpson",
+Email = "marge@email.com",
+Role = "Manager"
+},new User
+{
+Id = intNextUserId++,
+FirstName = "Bart",
+LastName = "Simpson",
+Email = "Bart@email.com",
+Role = "Employee"
+},
+new User
+{
+Id = intNextUserId++,
+FirstName = "Lisa",
+LastName = "Simpson",
+Email = "lisa@email.com",
+Role = "Employee"
+},new User
+{
+Id = intNextUserId++,
+FirstName = "Sideshow",
+LastName = "Bob",
+Email = "sideshow@email.com",
+Role = "employee"
+}
+}
+        ;
+
+
+
         //list of stores
         stores = new List<Store>
 {
@@ -667,7 +740,8 @@ State="MI",
 Zip="48507",
 Width="200",
 Length="300",
-Blueprint_Image = "img/LayoutPhotoExample.png"
+Blueprint_Image = "img/LayoutPhotoExample.png",
+Users = new List<User> { users[0] }
 },
 new Store
 {
@@ -679,7 +753,8 @@ State="TX",
 Zip="78745",
 Width="250",
 Length="325",
-Blueprint_Image = "img/LayoutPhotoExample.png"
+Blueprint_Image = "img/LayoutPhotoExample.png",
+Users = new List<User> { users[1] }
 },
 new Store
 {
@@ -691,10 +766,10 @@ State="MI",
 Zip="48315",
 Width="375",
 Length="225",
-Blueprint_Image = "img/LayoutPhotoExample.png"
+Blueprint_Image = "img/LayoutPhotoExample.png",
+Users = new List<User> { users[2] }
 }
 };
-
     }
 
 
@@ -702,15 +777,44 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     //function to update the optionsInput lists to display the users available to add to a store
     private void UpdateUserOptions()
     {
-        //set the content of the lists of users
+        //clear the dropdown values and text
+        UserOptionsText.Clear();
+        UserOptionsValues.Clear();
+
+        //add the available users into the dropdown
+        //this only shows the employees that aren't already in the store user list
+        //and also the users that havent already been marked to be added
+        foreach (User user in users)
+        {
+            bool isInEditedStore = editedStoreInfo.Users.Any(su => su.Id == user.Id);
+            bool isInUsersToAdd = usersToAdd.Any(u => u.Id == user.Id);
+
+            //if user is no associated with the store, add them to the dropdown text and values
+            if (!isInEditedStore & !isInUsersToAdd)
+            {
+                UserOptionsText.Add(user.FirstName + " " + user.LastName);
+                UserOptionsValues.Add($"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}");
+            }
+        }
+
+        @* set the content of the lists of users
         UserOptionsText = new List<string> { "Homer Simpson", "Marge Simpson", "Bart Simpson", "Sideshow Bob" };
         UserOptionsValues = new List<string> { "1,Homer,Simpson", "2,Marge,Simpson", "3,Bart,Simpson", "4,Sideshow,Bob" };
-        //set the starter value to the first value
+        set the starter value to the first value *@
         if (UserOptionsValues.Count > 0)
         {
             SetUserThatWillBeAddedToAStore(UserOptionsValues[0]);
         }
+        else
+        {
+            @* if no user is available, then create a no value option *@
+            UserOptionsText.Add("No Available Users");
+            UserOptionsValues.Add("-1,NoUserToAdd");
+            //set the starter value
+            SetUserThatWillBeAddedToAStore(UserOptionsValues[0]);
+        }
     }
+
     //function that sets the user (strUserValueToAdd variable) that will be added to the store
     private void SetUserThatWillBeAddedToAStore(string selectedOption)
     {
@@ -723,11 +827,7 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     {
         await JS.InvokeVoidAsync("showModal", "addStoreModal");
     }
-    //Edit Store modal
-    private async Task ShowEditStoreModal()
-    {
-        await JS.InvokeVoidAsync("showModal", "editStoreModal");
-    }
+
     //Delete store modal
     private async Task ShowDeleteStoreModal()
     {
@@ -774,28 +874,66 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     //function for creating a store
     private async void createNewStore()
     {
-        Console.WriteLine("CREATE NEW STORE");
         //clear out the added users for the new store
         await JS.InvokeVoidAsync("clearDivExceptById", "employeesAdd", "addStoreAddUserDiv");
         //close the modal
         await JS.InvokeVoidAsync("HideModal", "addStoreModal");
     }
+
     //function for adding a new employee when editing a store
     private async void EditStoreAddNewEmployee()
     {
-        Console.WriteLine("ADD NEW EDIT METHOD EMPLOYEE");
-        //add an employee to the edit store modal
-        await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", strUserValueToAdd);
-        //await JS.InvokeVoidAsync("doNothing");
+        //get the user being added to the store values
+        string[] arrSplitUserValues = strUserValueToAdd.Split(",");
 
+        //only add the user if they aren't the placeholder
+        if (!arrSplitUserValues[0].Equals("-1"))
+        {
+            //add the user to the employee section of the modal
+            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", strUserValueToAdd, dotNet);
+            //add the user to list of users that will potentially be added
+            usersToAdd.Add(new User
+            {
+                Id = int.Parse(arrSplitUserValues[0]),
+                FirstName = arrSplitUserValues[1],
+                LastName = arrSplitUserValues[2],
+                Email = arrSplitUserValues[3],
+                Role = arrSplitUserValues[4]
+            });
+            //mark that there was a change and make the store updatable
+            SetEditDisabled();
+        }
+        //update the user dropdown list to only show users that aren't associated with the store
+        UpdateUserOptions();
+        StateHasChanged();
     }
+
     //function for adding a new employee when editing a store
     private async void AddStoreAddNewEmployee()
     {
-        Console.WriteLine("ADD NEW EMPLOYEE");
-        //add an employee to the add store modal
-        await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesAdd", strUserValueToAdd);
+        //get the parts of the selected user
+        string[] arrSplitUserValues = strUserValueToAdd.Split(",");
+
+        //make sure it's a user and not the placeholder
+        if (!arrSplitUserValues[0].Equals("-1"))
+        {
+            //add the employee to the modals employee section
+            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesAdd", strUserValueToAdd, dotNet);
+            //add the user to the list of users to be added
+            usersToAdd.Add(new User
+            {
+                Id = int.Parse(arrSplitUserValues[0]),
+                FirstName = arrSplitUserValues[1],
+                LastName = arrSplitUserValues[2],
+                Email = arrSplitUserValues[3],
+                Role = arrSplitUserValues[4]
+            });
+        }
+        //update the list of available users to add
+        UpdateUserOptions();
+        StateHasChanged();
     }
+
     //function fir updating a store's info
     private void updateStoreInformation()
     {
@@ -839,12 +977,14 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         //byte[] is for the varbinary type that the DB is using to store the image
         //public byte[] Blueprint_Image { get; set; }
         public string? Blueprint_Image { get; set; }
+
+        public List<User> Users { get; set; } = new List<User>();
     }
 
     // Set selected user to user in row clicked upon
     private async Task SetSelectedStore(Store store)
     {
-        // Store of blocl clicked is selected store
+        // Store of block clicked is selected store
         selectedStore = store;
 
         // Copy store info for editing in case "Edit" is clicked
@@ -858,11 +998,35 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
             Zip = selectedStore.Zip,
             Width = selectedStore.Width,
             Length = selectedStore.Length,
-            Blueprint_Image = selectedStore.Blueprint_Image
+            Blueprint_Image = selectedStore.Blueprint_Image,
+            Users = selectedStore.Users.Select(user => new User
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Role = user.Role
+            }).ToList() // Create a new list of users
         };
 
         //SetBackgroundImage(elementId, strUrl)
         await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.Blueprint_Image);
+
+        @* set a timeout so the modal can open *@
+        await Task.Delay(500);
+        //clear out the emloyees from the employees section of the edit store div
+        await JS.InvokeVoidAsync("clearDivExceptById", "employeesEdit", "editStoreAddUserDiv");
+        @* check if the modal is open *@
+        bool isOpen = await JS.InvokeAsync<bool>("IsModalOpen", "editStoreModal");
+        if (isOpen)
+        {
+            @* add every employee for that store to the employees section of the modal *@
+            foreach (User user in selectedStore.Users)
+            {
+                string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
+                await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", $"{userValues}", dotNet);
+            }
+        }
 
         StateHasChanged();
     }
@@ -875,6 +1039,13 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         stores[index] = editedStoreInfo;
         //get the image for the store
         stores[index].Blueprint_Image = await getImageUrlEdit();
+
+        //add the users that shoukld be added to the store to the edited store list
+        editedStoreInfo.Users.AddRange(usersToAdd);
+        //add the updated list of users to the selected store
+        stores[index].Users = editedStoreInfo.Users;
+
+
 
         @* Click the edit button again for the store. This lets it be a single click after updating the store 
         instead of a double. I have no idea why it was happening, but this is the only fix I could find. *@
@@ -890,6 +1061,9 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     //Function used to add a store when the Add Store button is clicked in the addStoreModal
     private async Task AddStore()
     {
+        //add the users that were selected to be added to the store
+        storeToAdd.Users.AddRange(usersToAdd);
+
         stores.Add
         (
         new Store
@@ -902,14 +1076,14 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
             Zip = storeToAdd.Zip,
             Width = storeToAdd.Width,
             Length = storeToAdd.Length,
-            Blueprint_Image = await getImageUrlAdd()
+            Blueprint_Image = await getImageUrlAdd(),
+            Users = storeToAdd.Users
             //Blueprint_Image = "img/LayoutPhotoExample.png"
         }
         );
 
         //reset storeToAdd
         storeToAdd = new Store();
-
 
         //clear the add store modal fields and close it
         await CleanUpAdd();
@@ -993,6 +1167,9 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         //reset storeToAdd
         storeToAdd = new Store();
 
+        //clear out the users that were added to the last store
+        usersToAdd.Clear();
+
         //set back the error messages
         nameErrorAdd = "";
         addressErrorAdd = "";
@@ -1030,6 +1207,9 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         // Selected Store no longer selected
         selectedStore = new Store();
 
+        //clear the users to be added to the editied store
+        usersToAdd.Clear();
+
         // Clean up error messages
         nameErrorEdit = "";
         addressErrorEdit = "";
@@ -1055,6 +1235,8 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
 
         //clear the image from the store BP imageInput coponent
         await JS.InvokeVoidAsync("ClearBackgroundImage", "editModalStoreBlueprint");
+        @* clear the employees *@
+        await JS.InvokeVoidAsync("clearDivExceptById", "employeesEdit", "editStoreAddUserDiv");
         //close the modal
         await JS.InvokeVoidAsync("ForceCloseModal", "editStoreModal");
 
@@ -1068,6 +1250,7 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         confirmDelete = ""; // Delete textbox should now be empty
         isDeleteDisabled = false; // Delete enabled
 
+        //close the delete modal
         await JS.InvokeVoidAsync("ForceCloseModal", "deleteStoreModal");
 
         StateHasChanged();
@@ -1512,5 +1695,72 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
 
 
 
+    @* user class for managing/addingh employees to a store *@
+    public class User
+    {
+        public int? Id { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Email { get; set; }
+        public string? Role { get; set; }
+    }
+
+    [JSInvokable]
+    public async Task OnCircleClicked(string Id)
+    {
+        //user ID of the user to be removed
+        int ID = int.Parse(Id);
+
+        //find the user to remove from the usersToAddlist
+        var userToRemove = usersToAdd.Find(user => user.Id == ID);
+        if (userToRemove != null)
+        {
+            usersToAdd.Remove(userToRemove);
+        }
+
+        //if Add Store modal is open, clear the old employees and put in the updated list
+        bool isAddOpen = await JS.InvokeAsync<bool>("IsModalOpen", "addStoreModal");
+        if (isAddOpen)
+        {
+            await JS.InvokeVoidAsync("clearDivExceptById", "employeesAdd", "addStoreAddUserDiv");
+            foreach (User user in usersToAdd)
+            {
+                string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
+                await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesAdd", $"{userValues}", dotNet);
+            }
+
+            SetAddDisabled();
+        }
+
+        //Check if we are editing a modal
+        bool isEditOpen = await JS.InvokeAsync<bool>("IsModalOpen", "editStoreModal");
+        if (isEditOpen)
+        {
+            //remove the user from the copied version of the selected store
+            userToRemove = editedStoreInfo.Users.Find(user => user.Id == ID);
+            if (userToRemove != null)
+            {
+                editedStoreInfo.Users.Remove(userToRemove);
+            }
+
+            //clear the employees section of the store
+            await JS.InvokeVoidAsync("clearDivExceptById", "employeesEdit", "editStoreAddUserDiv");
+            //add in the users that will be a part of the store
+            foreach (User user in editedStoreInfo.Users)
+            {
+                string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
+                await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", $"{userValues}", dotNet);
+            }
+            foreach (User user in usersToAdd)
+            {
+                string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
+                await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", $"{userValues}", dotNet);
+            }
+            //check if changes happened and enable the update button
+            SetEditDisabled();
+        }
+
+
+    }
 
 }
