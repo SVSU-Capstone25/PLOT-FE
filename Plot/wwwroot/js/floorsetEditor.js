@@ -91,14 +91,15 @@ function createDraggable(event, size, color) {
     //Add in listeners for mouse over for category painting.
     newBox.addEventListener("mouseenter", onPaintColor);
     newBox.addEventListener("mousedown", onPaintColor);
+    newBox.addEventListener("mousedown", editFixtureListener);
     function onPaintColor(event) {
         //console.log("Fixture mouse over detected!!! ID: " + newBox.id);
         if (!paintModeEnabled) {
             return;
         }
-        //Check if mouse buttons contains the number 1, representing primary button.
+        //Check if mouse buttons contains *ONLY* the number 1, representing primary button.
         console.log("Buttons equals " + event.buttons)
-        if (event.buttons % 2 === 1) {
+        if (event.buttons === 1) {
             //Tristan Calay
             //paintModeColor contains the overall category "Men's, Women's, Accessories", 
             //The specific item "Pants, Shorts, etc..."
@@ -110,6 +111,15 @@ function createDraggable(event, size, color) {
         with ID "newBox.id" has been changed to a certain category.
         We should probably store the actual category string when a category list item is clicked!
         */
+    }
+
+    //Tristan Calay 4/3/25
+    //Add listener for right click on the fixtures.
+    function editFixtureListener(event) {
+        //Buttons needs to be 2, the secondary/right mouse button.
+        if (event.buttons === 2) {
+            console.log("Edit Fixture Function : Fixture " + newBox.id);
+        }
     }
 
 
@@ -168,6 +178,7 @@ function createDraggable(event, size, color) {
         newBox.dispatchEvent(evt);
     }, 10);
 }
+
 //this boolean controls painting so that once the user is done, it prevents "painting" from happening unless 
 //they make a new div from the sidebar
 var isPaintingEnabled = false;
