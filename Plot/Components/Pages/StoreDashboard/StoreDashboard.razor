@@ -368,7 +368,7 @@ Author: Andrew Fulton (3/12/2025)
     // function for adding an employee to whatever modal needs to see employees. 
     // Places a circle with their name and initials
     function addEmployee(name, initials, targetDiv) {
-        //Get the employees div
+        // Get the employees div
         const employeesDiv = document.getElementById(targetDiv);
 
         //Create the main container div for the user  
@@ -436,8 +436,8 @@ Author: Andrew Fulton (3/12/2025)
         if so, close the modal to mimic deleting a store. clear the text box for next use
         otherwise, alert the user */
         let deleteStr = document.getElementById("deleteModalTextInput").value;
-        if (deleteStr === "DELETE") {
-            ClearDeleteStoreModalTextbox();
+        if (deleteStr.equals("DELETE")) {
+            document.getElementById("deleteModalTextInput").value = "Delete";
             HideModal("deleteStoreModal");
         }
         else {
@@ -1217,290 +1217,33 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
     @* method used to validate the state of the store being added *@
     private void ValidateStateAdd(string text)
     {
-        //City in DB is varchar(25)
-        const int CHAR_LIMIT = 25;
 
-        storeToAdd.State = text;
-
-        //check the length of the text
-        if (text.Length > CHAR_LIMIT)
-        {
-            //set the error <p> under State to Too Long
-            ErrorTooLong("State", ref stateErrorAdd, CHAR_LIMIT);
-            isStateValidAdd = false;
-        }
-        else if (string.IsNullOrWhiteSpace(text) &&
-        !text.All(c => Char.IsLetter(c) || c == ' ' || c == '-')) // Check if text contains only valid characters
-        {
-            //set the error <p> under state to Not Alphabetical
-            ErrorNotAlpha("State", ref stateErrorAdd);
-            isStateValidAdd = false;
-        }
-        else
-        {
-            //Clear error message (none needed for blank box)
-            ClearError(ref stateErrorAdd);
-            // Is text length greater than 0?
-            isStateValidAdd = IsTextPresent(text);
-        }
-
-        // Determine if button should be disabled
-        SetAddDisabled();
     }
 
-    @* method used to valisdate the zip code of the store being added *@
-    private void ValidateZipAdd(string text)
+    //functun for the three dots on a store
+    //opens an optionsinput(component) for each store
+    private void StoreOpionInput()
     {
-        //Zip in DB is varchar(10)
-        const int CHAR_LIMIT = 10;
-        storeToAdd.Zip = text;
 
-        //check the lenght of the text
-        if (text.Length > CHAR_LIMIT)
-        {
-            //text is too long
-            ErrorTooLong("Zip", ref zipErrorAdd, CHAR_LIMIT);
-            isZipValidAdd = false;
-        }
-        else if (!text.All(c => char.IsDigit(c) || c == '-' || c == ' ')) // Check if ZIP code contains only numbers and hyphens
-        {
-            //sets the error that there should be no letters in the zip
-            ErrorNotNumeric("Zip", ref zipErrorAdd);
-            isZipValidAdd = false;
-        }
-        else
-        {
-            //Clear error message (none needed for blank box)
-            ClearError(ref zipErrorAdd);
-            //is thetext length more than 0
-            isZipValidAdd = IsTextPresent(text);
-        }
-
-        // Determine if button should be disabled
-        SetAddDisabled();
     }
-
-    @* vmethod used to validate the width of the store being added *@
-    private void ValidateWidthAdd(string text)
+    //function for deleting a store
+    private async void deleteStore()
     {
-        storeToAdd.Width = text;
-
-        isWidthValidAdd = IsTextPresent(text);
-        SetAddDisabled();
+        Console.WriteLine("DELETE THE STORE");
+        await JS.InvokeVoidAsync("DeleteStore");
     }
-    @* method used to validate the height of the store being added *@
-    private void ValidateLengthAdd(string text)
+    //function for creating a store
+    private void createNewStore()
     {
-        storeToAdd.Length = text;
-
-        isLengthValidAdd = IsTextPresent(text);
-        SetAddDisabled();
+        Console.WriteLine("CREATE NEW STORE");
     }
-
-    @* private async Task ValidateBlueprintAdd(InputFileChangeEventArgs e)
+    //function for adding a new employee
+    private void addNewEmployee()
     {
-        var file = e.File;
-        using var stream = new MemoryStream();
-        await file.OpenReadStream().CopyToAsync(stream);
-        storeToAdd.Blueprint_Image = stream.ToArray();
-        Console.WriteLine($"Uploaded image size: {storeToAdd.Blueprint_Image.Length} bytes");
-    } *@
-
-
-
-
-
-
-
-    @* method used to validate the name of the store being added *@
-    private void ValidateNameEdit(string text)
-    {
-        //name in DB is varchar(100)
-        const int CHAR_LIMIT = 100;
-
-        // Set value of first name to text
-        editedStoreInfo.Name = text;
-
-        //check the length of the text
-        if (text.Length > CHAR_LIMIT)
-        {
-            //set the error <p> uder name to Too Long
-            ErrorTooLong("Name", ref nameErrorEdit, CHAR_LIMIT);
-            isNameValidEdit = false;
-        }
-        else if (string.IsNullOrWhiteSpace(text) &&
-        !text.All(c => Char.IsLetter(c) || c == ' ' || c == '-')) // Check if text contains only valid characters
-        {
-            // Set the error <p> under name to "Not Alphabetical"
-            ErrorNotAlpha("Name", ref nameErrorEdit);
-            isNameValidEdit = false;
-        }
-
-        else
-        {
-            //Clear error message (none needed for blank box)
-            ClearError(ref nameErrorEdit);
-            // Is text length greater than 0?
-            isNameValidEdit = IsTextPresent(text);
-        }
-
-        // Determine if button should be disabled
-        SetEditDisabled();
+        Console.WriteLine("ADD NEW EMPLOYEE");
     }
-
-    @* method used to validate the Address of the store being added *@
-    private void ValidateAddressEdit(string text)
-    {
-        //address in DB is varchar(100)
-        const int CHAR_LIMIT = 100;
-
-        editedStoreInfo.Address = text;
-
-        //check the length of the text
-        if (text.Length > CHAR_LIMIT)
-        {
-            //set the error <p> under address to Too Long
-            ErrorTooLong("Address", ref addressErrorEdit, CHAR_LIMIT);
-            isAddressValidEdit = false;
-        }
-        else
-        {
-            //Clear error message (none needed for blank box)
-            ClearError(ref addressErrorEdit);
-            // Is text length greater than 0?
-            isAddressValidEdit = IsTextPresent(text);
-        }
-
-        // Determine if button should be disabled
-        SetEditDisabled();
-    }
-
-    @* method used to validate the city of the store being added *@
-    private void ValidateCityEdit(string text)
-    {
-        //City in DB is varchar(100)
-        const int CHAR_LIMIT = 100;
-
-        editedStoreInfo.City = text;
-
-        //check the length of the text
-        if (text.Length > CHAR_LIMIT)
-        {
-            //set the error <p> under city to Too Long
-            ErrorTooLong("City", ref cityErrorEdit, CHAR_LIMIT);
-            isCityValidEdit = false;
-        }
-        else if (string.IsNullOrWhiteSpace(text) &&
-        !text.All(c => Char.IsLetter(c) || c == ' ' || c == '-')) // Check if text contains only valid characters
-        {
-            //set the error <p> under city to Not Alphabetical
-            ErrorNotAlpha("City", ref cityErrorEdit);
-            isCityValidEdit = false;
-        }
-        else
-        {
-            //Clear error message (none needed for blank box)
-            ClearError(ref cityErrorEdit);
-            // Is text length greater than 0?
-            isCityValidEdit = IsTextPresent(text);
-        }
-
-        // Determine if button should be disabled
-        SetEditDisabled();
-    }
-
-    @* method used to validate the state of the store being added *@
-    private void ValidateStateEdit(string text)
-    {
-        //City in DB is varchar(25)
-        const int CHAR_LIMIT = 25;
-
-        editedStoreInfo.State = text;
-
-        //check the length of the text
-        if (text.Length > CHAR_LIMIT)
-        {
-            //set the error <p> under State to Too Long
-            ErrorTooLong("State", ref stateErrorEdit, CHAR_LIMIT);
-            isStateValidEdit = false;
-        }
-        else if (string.IsNullOrWhiteSpace(text) &&
-        !text.All(c => Char.IsLetter(c) || c == ' ' || c == '-')) // Check if text contains only valid characters
-        {
-            //set the error <p> under state to Not Alphabetical
-            ErrorNotAlpha("State", ref stateErrorEdit);
-            isStateValidEdit = false;
-        }
-        else
-        {
-            //Clear error message (none needed for blank box)
-            ClearError(ref stateErrorEdit);
-            // Is text length greater than 0?
-            isStateValidEdit = IsTextPresent(text);
-        }
-
-        // Determine if button should be disabled
-        SetEditDisabled();
-    }
-    @* method used to valisdate the zip code of the store being added *@
-    private void ValidateZipEdit(string text)
-    {
-        //Zip in DB is varchar(10)
-        const int CHAR_LIMIT = 10;
-        editedStoreInfo.Zip = text;
-
-        //check the lenght of the text
-        if (text.Length > CHAR_LIMIT)
-        {
-            //text is too long
-            ErrorTooLong("Zip", ref zipErrorEdit, CHAR_LIMIT);
-            isZipValidEdit = false;
-        }
-        else if (!text.All(c => char.IsDigit(c) || c == '-' || c == ' ')) // Check if ZIP code contains only numbers and hyphens
-        {
-            //sets the error that there should be no letters in the zip
-            ErrorNotNumeric("Zip", ref zipErrorEdit);
-            isZipValidEdit = false;
-        }
-        else
-        {
-            //Clear error message (none needed for blank box)
-            ClearError(ref zipErrorEdit);
-            //is thetext length more than 0
-            isZipValidEdit = IsTextPresent(text);
-        }
-
-        // Determine if button should be disabled
-        SetEditDisabled();
-    }
-    @* vmethod used to validate the width of the store being added *@
-    private void ValidateWidthEdit(string text)
-    {
-        editedStoreInfo.Width = text;
-
-        isWidthValidEdit = IsTextPresent(text);
-        SetEditDisabled();
-    }
-    @* method used to validate the height of the store being added *@
-    private void ValidateLengthEdit(string text)
-    {
-        editedStoreInfo.Length = text;
-
-        isLengthValidEdit = IsTextPresent(text);
-        SetEditDisabled();
-    }
-
-    @* function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
-    private async Task<string> getImageUrlAdd()
-    {
-        string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "addModalStoreBlueprint");
-
-        // Check if the string is null or empty, return default image if true
-        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
-    }
-
-    @* function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
-    private async Task<string> getImageUrlEdit()
+    //function fir updating a store's info
+    private void updateStoreInformation()
     {
         string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "editModalStoreBlueprint");
         //Console.WriteLine(strImageUrl);

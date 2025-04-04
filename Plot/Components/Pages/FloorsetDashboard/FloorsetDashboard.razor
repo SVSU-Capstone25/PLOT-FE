@@ -208,7 +208,7 @@ Author: Andrew Fulton (3/13/2025)  *@
     private List<storedFloorset>? storedFloorsets { get; set; }
 
     //function for deleting a store
-    private async void deleteFloorset()
+    private async Task deleteFloorset()
     {
         Console.WriteLine("DELETE THIS FLOORSET");
         await JS.InvokeVoidAsync("DeleteFloorset");
