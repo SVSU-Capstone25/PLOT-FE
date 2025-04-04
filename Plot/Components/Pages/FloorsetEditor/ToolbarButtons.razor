@@ -25,9 +25,13 @@
 </div>
 
 @code {
-    private void editFixture()
+    [Parameter] public required EventCallback ToggleAllocationsOpen { get; set; }
+
+    private async Task editFixture()
     {
         Console.WriteLine("Edit Fixture Function");
+        await JS.InvokeVoidAsync("setPlace");
+        await ToggleAllocationsOpen.InvokeAsync();
         @* allocationsOpen = false; *@
     }
 
