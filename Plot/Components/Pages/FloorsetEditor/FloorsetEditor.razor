@@ -27,12 +27,9 @@
 @using Plot.Components.PartialComponents.FileInput
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script>
 
 @* Grid Area *@
-<div id="container"></div>
-
+<div id="grid-area"></div>
 
 @* Sidebar *@
 <SlideOut Id="FloorsetSlideOut">
@@ -47,7 +44,7 @@
         @if (addFixtureExpanded)
         {
 
-            <AddFixturePanel />
+            <AddFixturePanel ToggleAddFixture="@ToggleAddFixture" />
         }
         else
         {
@@ -143,6 +140,7 @@
             dotNet = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("imageEventListener", dotNet);
             await JS.InvokeVoidAsync("addFixtureClose", dotNet);
+            await JS.InvokeVoidAsync("eval", "floorsetGrid.init()");
         }
     }
 
@@ -210,9 +208,10 @@
         await JS.InvokeVoidAsync("toggleModal", "printModal", true);
     }
 
-    private void editFixture()
+    private async Task editFixture()
     {
         Console.WriteLine("Edit Fixture Function");
+        await JS.InvokeVoidAsync("setPlace");
         allocationsOpen = false;
     }
 
@@ -220,15 +219,14 @@
     //It passes that information to the javascript.
     private async Task togglePaintClicked()
     {
-        paintModeEnabled = !paintModeEnabled;
-        Console.WriteLine("Paint Category Function - set paint mode to " + paintModeEnabled);
-        await JS.InvokeVoidAsync("setPaintEnabled", paintModeEnabled);
-        StateHasChanged();
+        await JS.InvokeVoidAsync("togglePaint");
     }
 
-    private void eraseCategoryClicked()
+    private async Task eraseCategoryClicked()
     {
         Console.WriteLine("Erase Category Function");
+        await JS.InvokeVoidAsync("setErase");
+
         //Call the func in AllocationsSidebar to remove the styling of the selected category.
         if (allocationsSidebar != null)
         {
