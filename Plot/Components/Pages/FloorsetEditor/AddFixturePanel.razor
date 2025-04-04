@@ -1,0 +1,69 @@
+@inject IJSRuntime JS
+
+<div class="inner-container add-fixture-panel">
+    <h3 class="header pt-3" @onclick="ToggleAddFixture">
+        <i class="fas fa-couch"></i> Add Fixture
+    </h3>
+    <hr style="opacity:1">
+
+    <!-- Search Bar -->
+    <div class="p-3 mb-2 border-bottom">
+        <div class="d-flex align-items-center m-0">
+            <div class="w-100 search-text">
+                <TextInput class="form-control p-2 " Id="search" Label="" Type="search" placeholder="Search" />
+            </div>
+            <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
+        </div>
+        <div class="align-items-center mt-3 d-flex">
+            <Button class="btn add-fixture btn-lg w-100 p-0" Variant="primary" OnClickFunction="OnFixtureAddClick">
+                <i class="fa-solid fa-plus" style="margin-right: .5rem;"></i>
+                Add Fixture
+            </Button>
+        </div>
+    </div>
+
+
+    @* Fixture Area *@
+    <div class="fixture-area p-3 mt-3 d-flex gap-4 mb-2">
+        @* Create fixture tile for each fixture in dictionary *@
+        @foreach (Fixture currFixture in Fixture.fixtures.Values)
+        {
+            <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-value="@currFixture.Name" draggable="true"
+                data-width="@currFixture.Width" data-height="@currFixture.Length" ondragstart="createDraggable(event)">
+                <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="" draggable="false">
+                <p class="fixture-text m-0 disable-select text-truncate">@currFixture.Name</p>
+                <Dropdown
+                    DropdownLinks="@(new List<string> { "#editFixture-" + currFixture.Name.Replace(" ", ""), "#deleteFixture-" + currFixture.Name.Replace(" ", "") })"
+                    DropdownIcons="@icons" DropdownText="@texts" class="fixture-options ms-auto disable-select"
+                    id="@(" fixture-options" + currFixture.Name)" LabelText="Fixture">
+                </Dropdown>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    /* Danielle Smith - 3/24/2025
+    added back add fixture stuff & also made it so expansions work properly with it */
+    [Parameter] public EventCallback ToggleAddFixture { get; set; }
+
+    /*
+    The FilterBtn function calls a JS function to flip the order of the fixture tiles.
+    */
+    private async Task FilterBtn()
+    {
+        await JS.InvokeVoidAsync("flipOrder");
+    }
+
+    // Lists for holding icons and texts for the Dropdown component
+    private List<string> icons = new List<string> { "fa-regular fa-pen-to-square", "fa-regular fa-trash-can" };
+    private List<string> texts = new List<string> { "Edit", "Delete" };
+
+    /*
+    The OnFixtureAddClick function calls a JS function to toggle the add fixture modal.
+    */
+    private async Task OnFixtureAddClick()
+    {
+        await JS.InvokeVoidAsync("toggleModal", "addFixture", true);
+    }
+}

@@ -1,0 +1,68 @@
+@inject IJSRuntime JS
+
+@using Plot.Components.PartialComponents.NumericInput
+
+<div class="walls-container">
+    <h3 class="header pt-3" style="font-weight: bold;" onclick="ToggleBuildingWalls"><i class="fas fa-edit"></i>
+        Edit Building Walls
+    </h3>
+    <hr style="opacity: 1.0; color:black;">
+    <label>Dimensions</label>
+    <div class="horizantal-inputs">
+        <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description="" value="@width.ToString()"
+            ValueChanged="@(str => NumberChanged(str, value => width = value))" />
+        @* The X to separate the two inputs *@
+        <span class="dimension-separator" onclick="SwapDimensions('width-number-input','length-number-input')"
+            style="cursor: pointer;">X</span>
+        <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
+            value="@length.ToString()" ValueChanged="@(str => NumberChanged(str, value => length = value))" />
+    </div>
+    <label>Enter the Dimensions (length and width) in feet</label>
+
+    <div class="fixture-area p-3 mt-3 d-flex mb-2">
+        <div class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStartEmployee(e, "1x1", "red"))"
+            draggable="true" @ondragstart:preventDefault="true">
+            <div class="drag-start-area d-flex flex-row">
+                <div class="emp-only"></div>
+                <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+            </div>
+        </div>
+    </div>
+    <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+        Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
+        Apply
+    </Button>
+</div>
+
+@code {
+
+    private double width { get; set; }
+    private double length { get; set; }
+
+    /* This function is called when the number is changed */
+    private async Task NumberChanged(string strNumber, Action<double> setValue)
+    {
+        Double.TryParse(strNumber, out double newNumber);
+
+        setValue(newNumber);
+
+        await InvokeAsync(StateHasChanged);
+    }
+    //this method is called when teh apply button in the edit floor layout panel is clicked
+    private async Task ApplyDimensions()
+    {
+        //if either length and width are null
+        if (length <= 0 || width <= 0)
+        {
+            //alerts the user that the data entered is invalid
+            await JS.InvokeVoidAsync("alert", "Please enter valid dimensions greater than 0.");
+            return;
+        }
+        await JS.InvokeVoidAsync("UpdateGridDimensions", length, width);
+    }
+
+    private async Task OnDragStartEmployee(DragEventArgs e, string size, string color)
+    {
+        await JS.InvokeVoidAsync("createDraggableEmployee", e, size, color);
+    }
+}

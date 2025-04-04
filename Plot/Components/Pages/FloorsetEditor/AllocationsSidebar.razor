@@ -12,7 +12,7 @@ Author: Tristan Calay (3/15/2025)-->
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 
-<div class="AllocationsSidebar @Class" id="@ID">
+<div class="AllocationsSidebar">
     <div class="inner-container">
         <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
         <hr style="opacity: 1.0; color:black;">
@@ -96,12 +96,6 @@ Author: Tristan Calay (3/15/2025)-->
 </script>
 @code
 {
-    [Parameter]
-    public String? Class { get; set; }
-
-    [Parameter]
-    public String? ID { get; set; }
-
     private String categorySearch = ""; //Default storage of the category search textbox.
 
     //Tristan Calay 3/29/25
@@ -201,7 +195,7 @@ Author: Tristan Calay (3/15/2025)-->
            
     //categoryOnClick takes the ID of the list item and highlights that item for noting the selected category.
     //A reference is stored to the last selected item, if there is one, and it is unselected.
-    private void categoryOnClick(categoryData category)
+    private async Task categoryOnClick(categoryData category)
     {
         Console.WriteLine("Category Onclick " + category.ToString());
         //Don't do anything if we click the current selection.
@@ -290,17 +284,17 @@ Author: Tristan Calay (3/15/2025)-->
 
         //Call into the FloorsetEditor script for setting the paint color.
         //This requires the general category, specific category, and category color split by | characters.
-        JS.InvokeVoidAsync("setPaintColor",category.headerCategory+"|"+category.text+"|"+category.color);
+        await JS.InvokeVoidAsync("setPaint",category.color);
     }
 
     //Function to clear the styling and last selected ID for the category list.
-    public void clearSelectedCategory()
+    public async Task clearSelectedCategory()
     {
         if (!lastSelectedCategory.Equals(nullCategory))
         {
             //Unselect current category
             Console.WriteLine("Removing selection of painting category");
-            categoryOnClick(nullCategory);
+            await categoryOnClick(nullCategory);
         }
     }
 

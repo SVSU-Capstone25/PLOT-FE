@@ -1,0 +1,98 @@
+.fixture-area {
+    flex-direction: column;
+    max-height: 30vh;
+    overflow-y: scroll;
+}
+
+/* Ensure horizontal inputs are spaced out as well */
+.horizantal-inputs {
+    display: flex;
+    gap: 10px;
+    /* Adds space between the inputs */
+    align-items: center;
+    /* Aligns the inputs vertically in the center */
+}
+
+
+/* Ensures that the container aligns the numeric inputs horizontally */
+.horizantal-inputs {
+    display: flex;
+    /* Align children horizontally */
+    align-items: center;
+    /* Ensure inputs align to the center vertically */
+    gap: 10px;
+    /* Adds space between the inputs and separator */
+    flex-wrap: nowrap;
+}
+
+/* Error message styles */
+.numeric-input .error {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    color: var(--cancel);
+    display: none;
+    /* Initially hidden */
+}
+
+/* If there's an error, we show the error message */
+.numeric-input.has-error .error {
+    display: block;
+}
+
+/* Separator X */
+.dimension-separator {
+    font-size: 24px;
+    font-weight: bold;
+    align-self: center;
+    /* Centers the separator in the middle of the inputs */
+}
+
+/* Ensures the numeric input container has consistent height */
+.numeric-input.has-error {
+    min-height: 160px;
+    /* Increase height to accommodate the error message */
+}
+
+/* To remove the error message if no error */
+.numeric-input:not(.has-error) .error {
+    display: none;
+}
+
+.walls-container {
+    background-color: #f0f0f0;
+    padding: .5rem;
+    border-radius: .5rem;
+}
+
+/* Style for the button to ensure spacing */
+.button-green {
+    margin-top: 15px;
+    /* Adds space above the Apply button */
+    padding: 10px 20px;
+    /* Adds internal padding to the button */
+    background-color: rgb(27, 176, 27);
+}
+
+.emp-only {
+    height: 55px;
+    width: 55px;
+    background-color: red;
+    color: red;
+    border-radius: 8px;
+    /* Rounded corners */
+}
+
+.fixture-options {
+    background: none;
+    border: none;
+}
+
+.disable-select {
+    user-select: none;
+}
+
+.fixture-text {
+    font-size: x-large;
+}

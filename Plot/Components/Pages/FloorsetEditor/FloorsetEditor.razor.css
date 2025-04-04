@@ -5,19 +5,6 @@
     padding: 1rem;
 }
 
-.img-input {
-    justify-self: center;
-    margin-top: 2rem;
-}
-
-.add-fixture-panel {
-    height: 100%;
-}
-
-.dimension {
-    width: 45%;
-}
-
 ::deep .Button.filter-btn {
 
     border: none;
@@ -31,67 +18,9 @@
     align-items: center;
 }
 
-.fixture-area {
-    flex-direction: column;
-    max-height: 30vh;
-    overflow-y: scroll;
-}
-
 .fixture:hover {
     transition: 100ms;
     background-color: #d6d6d6;
-}
-
-.fixture-img {
-    height: 55px;
-}
-
-
-
-/* Ensures that the container aligns the numeric inputs horizontally */
-.horizantal-inputs {
-    display: flex;
-    /* Align children horizontally */
-    align-items: center;
-    /* Ensure inputs align to the center vertically */
-    gap: 10px;
-    /* Adds space between the inputs and separator */
-    flex-wrap: nowrap;
-}
-
-/* Error message styles */
-.numeric-input .error {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    color: var(--cancel);
-    display: none;
-    /* Initially hidden */
-}
-
-/* If there's an error, we show the error message */
-.numeric-input.has-error .error {
-    display: block;
-}
-
-/* Separator X */
-.dimension-separator {
-    font-size: 24px;
-    font-weight: bold;
-    align-self: center;
-    /* Centers the separator in the middle of the inputs */
-}
-
-/* Ensures the numeric input container has consistent height */
-.numeric-input.has-error {
-    min-height: 160px;
-    /* Increase height to accommodate the error message */
-}
-
-/* To remove the error message if no error */
-.numeric-input:not(.has-error) .error {
-    display: none;
 }
 
 /* Slide-out container with padding */
@@ -101,84 +30,13 @@
 }
 
 /* Expanded container inside SlideOut */
-.expanded {
-    padding: 1.5rem;
-}
-
-.walls-container {
-    background-color: #f0f0f0;
-    padding: .5rem;
-    border-radius: .5rem;
-    height: 84vh;
-}
-
-/* Expanded container inside SlideOut */
 .button-with-spacing {
     padding: 20px;
     /* Adds padding inside the expanded container */
 }
 
-
-
-/* Ensure horizontal inputs are spaced out as well */
-.horizantal-inputs {
-    display: flex;
-    gap: 10px;
-    /* Adds space between the inputs */
-    align-items: center;
-    /* Aligns the inputs vertically in the center */
-}
-
-/* Add padding to header text */
-.header {
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* Style for the button to ensure spacing */
-.button-green {
-    margin-top: 15px;
-    /* Adds space above the Apply button */
-    padding: 10px 20px;
-    /* Adds internal padding to the button */
-    background-color: rgb(27, 176, 27);
-
-}
-
-
-.filter-btn {
-    margin-left: .5rem;
-    border: none;
-    border-radius: 4px;
-}
-
-
-
-.emp-only {
-    height: 55px;
-    width: 55px;
-    background-color: red;
-    color: red;
-    border-radius: 8px;
-    /* Rounded corners */
-}
-
-
-.fixture-options {
-    background: none;
-    border: none;
-}
-
-.disable-select {
-    user-select: none;
-}
-
 .grab-cursor {
     cursor: grab;
-}
-
-#container {
-    position: relative;
 }
 
 .grid-cell {
@@ -187,80 +45,13 @@
     height: 49px;
 }
 
+#container {
+    position: relative;
+}
 
-.toolbar-buttons {
+.vertical-sidebar-buttons {
     justify-content: center;
-    gap: 16px;
+    row-gap: 16px;
     display: flex;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-}
-
-.add-fixture {
-    background: var(--platos-blue);
-    color: white;
-    border: none;
-}
-
-
-.dimension {
-    width: 45%;
-}
-
-
-
-.fixture-text {
-    font-size: x-large;
-}
-
-
-
-.add-btn {
-    background-color: var(--platos-blue);
-    color: white;
-}
-
-.disable-select {
-    user-select: none;
-}
-
-.grab-cursor {
-    cursor: grab;
-}
-
-#container {
-    position: relative;
-}
-
-.box {
-    height: 100px;
-    width: 100px;
-    position: absolute;
-    background: green;
-    border-radius: 5px;
-}
-
-
-
-.inner-container {
-    background-color: #f0f0f0;
-    padding: .5rem;
-    border-radius: .5rem;
-}
-
-
-::deep .add-btn {
-    color: white;
-}
-
-.disable-select {
-    user-select: none;
-}
-
-.grab-cursor {
-    cursor: grab;
-}
-
-#container {
-    position: relative;
+    flex-direction: column;
 }
