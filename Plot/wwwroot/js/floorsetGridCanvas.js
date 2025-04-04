@@ -148,7 +148,6 @@ const floorsetGrid = (function () {
 
                     grid.scale = Math.max(0.1, grid.scale);
                     grid.resize();
-                    return false;
                 }
 
                 sketch.mousePressed = () => {
