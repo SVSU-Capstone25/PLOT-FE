@@ -64,8 +64,6 @@ h1:focus {
     1 rem is typically 16 px. This approach makes using inspect element
     easier to debug and adjust styles. */
 
-/* Todo: Flex-box user info modal into columns and then put labels up top */
-
 .user-info-modal .modal-body {
     height: fit-content;
     overflow-y:auto; /* Scrolls if window height is too small*/
