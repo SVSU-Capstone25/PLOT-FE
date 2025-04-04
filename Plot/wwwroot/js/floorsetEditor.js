@@ -171,8 +171,8 @@ function createDraggable(event, size, color) {
 
 // Tristan Calay 4/2/25
 // Paint employee areas on click and drag on the main grid container.
-container.addEventListener("mousedown",e => paintEmployeeBoxes(e,"1x1","rgba(255,0,0,.5)"))
-container.addEventListener("mousemove",e => paintEmployeeBoxes(e,"1x1","rgba(255,0,0,.5)"))
+container.addEventListener("mousedown", e => paintEmployeeBoxes(e, "1x1", "rgba(255,0,0,.5)"))
+container.addEventListener("mousemove", e => paintEmployeeBoxes(e, "1x1", "rgba(255,0,0,.5)"))
 
 
 // These bools allow employee areas to be created or erased on mouse click/drag events.
@@ -180,37 +180,31 @@ var isEmployeePaintEnabled = false; //Tristan Calay 4/2/25 - Renamed in anticipa
 var isEmployeeEraseEnabled = false
 
 // Tristan Calay 4/2/25 - Toggles for employee paint/erase mode.
-function toggleEmployeePaint()
-{
+function toggleEmployeePaint() {
     isEmployeePaintEnabled = !isEmployeePaintEnabled;
-    console.log("Employee paint mode is "+isEmployeePaintEnabled);
+    console.log("Employee paint mode is " + isEmployeePaintEnabled);
     var marker = document.getElementById("employeePaintEnabledMarker");
-    if(isEmployeePaintEnabled)
-    {
+    if (isEmployeePaintEnabled) {
         console.log("Setting marker green...")
-        marker.style.color="green";
+        marker.style.color = "green";
     }
-    else
-    {
+    else {
         console.log("Setting marker black...")
-        marker.style.color="black";
+        marker.style.color = "black";
     }
-    
+
 }
-function toggleEmployeeErase()
-{
+function toggleEmployeeErase() {
     isEmployeeEraseEnabled = !isEmployeeEraseEnabled;
-    console.log("Employee Erase mode is "+isEmployeeEraseEnabled);
+    console.log("Employee Erase mode is " + isEmployeeEraseEnabled);
     var marker = document.getElementById("employeeEraseEnabledMarker");
-    if(isEmployeeEraseEnabled)
-    {
+    if (isEmployeeEraseEnabled) {
         console.log("Setting marker green...")
-        marker.style.color="green";
+        marker.style.color = "green";
     }
-    else
-    {
+    else {
         console.log("Setting marker black...")
-        marker.style.color="black";
+        marker.style.color = "black";
     }
 }
 
@@ -291,7 +285,7 @@ function toggleEmployeeErase()
 //         newBox.dispatchEvent(evt);
 //     }, 10);
 
-    
+
 
 //     //this event listener handles the click event
 //     document.addEventListener("mousedown", function (event) {
@@ -316,10 +310,9 @@ function paintEmployeeBoxes(event, size, color) {
     // Tristan Calay 4/2/25
     // Update such that boxes are not painted on top of other boxes.
     // Removed dragging functionality from sidebar.
-    
+
     //Validate that button 1 is pressed and paint mode is on.
-    if (event.buttons % 2 !== 1 || !isEmployeePaintEnabled)
-    {
+    if (event.buttons % 2 !== 1 || !isEmployeePaintEnabled) {
         return; //Abort if not pressed.
     }
 
@@ -351,11 +344,9 @@ function paintEmployeeBoxes(event, size, color) {
     var gridID = "empArea" + snappedX + "_" + snappedY; // Unique ID based on grid position
 
     //If erase mode, erase at the grid coordinates instead of making a new element at them.
-    if (isEmployeeEraseEnabled)
-    {
+    if (isEmployeeEraseEnabled) {
         var existingElement = document.getElementById(gridID);
-        if (existingElement !== null)
-        {
+        if (existingElement !== null) {
             //Remove the existing element
             existingElement.remove();
         }
@@ -363,13 +354,12 @@ function paintEmployeeBoxes(event, size, color) {
     }
 
     //If not erase mode, if there's already an element here, don't make a new one.
-    if(document.getElementById(gridID) !== null)
-    {
+    if (document.getElementById(gridID) !== null) {
         return;
     }
 
 
-    console.log("Adding new box... "+gridID);
+    console.log("Adding new box... " + gridID);
     var newBox = document.createElement("div");
     newBox.id = gridID;
     newBox.style.height = boxHeight + "px";
@@ -377,7 +367,7 @@ function paintEmployeeBoxes(event, size, color) {
 
     newBox.className = "box";
     newBox.style.position = "absolute";
-   
+
     newBox.style.background = color;
     //newBox.style.border = "3px solid black";
     //newBox.style.borderRadius = "8px";
@@ -386,7 +376,7 @@ function paintEmployeeBoxes(event, size, color) {
     newBox.style.top = snappedY + "px";
 
     container.appendChild(newBox);
-    
+
     var sidebar = document.getElementById("FloorsetSlideOut");
 
     var draggable = Draggable.create(newBox, {
@@ -396,21 +386,21 @@ function paintEmployeeBoxes(event, size, color) {
             TweenLite.to(newBox, 0.5, {
                 x: Math.round(this.endX / snap) * snap,
                 y: Math.round(this.y / snap) * snap,
-                ease: Back.easeOut.config(2) 
+                ease: Back.easeOut.config(2)
             });
         },
         onDragEnd: function () {
             var boxRect = newBox.getBoundingClientRect();
             var sidebarRect = sidebar.getBoundingClientRect();
             containerRect = container.getBoundingClientRect();
-            
+
             //Runs once the tween is finished. Set the ID to the new position.
-            newBox.id = "empArea" + (parseInt(newBox.style.left.replace("px","")) + (Math.round(this.x / snap) * snap)) + "_" + (parseInt(newBox.style.top.replace("px","")) + (Math.round(this.y / snap) * snap))
-            console.log("Renamed area to "+newBox.id)
+            newBox.id = "empArea" + (parseInt(newBox.style.left.replace("px", "")) + (Math.round(this.x / snap) * snap)) + "_" + (parseInt(newBox.style.top.replace("px", "")) + (Math.round(this.y / snap) * snap))
+            console.log("Renamed area to " + newBox.id)
 
             if (isOverElement(boxRect, sidebarRect)) {
                 container.removeChild(newBox);
-            } 
+            }
             //Temporarily disable collision alerts.
             // else if (isOverlapping(newBox, container)) {
             //     container.removeChild(newBox);
