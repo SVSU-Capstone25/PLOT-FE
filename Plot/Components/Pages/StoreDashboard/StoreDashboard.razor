@@ -847,24 +847,37 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
         // Store of blocl clicked is selected store
         selectedStore = store;
 
-        // Copy store info for editing in case "Edit" is clicked
-        editedStoreInfo = new Store
-        {
-            Id = selectedStore.Id,
-            Name = selectedStore.Name,
-            Address = selectedStore.Address,
-            City = selectedStore.City,
-            State = selectedStore.State,
-            Zip = selectedStore.Zip,
-            Width = selectedStore.Width,
-            Length = selectedStore.Length,
-            Blueprint_Image = selectedStore.Blueprint_Image
-        };
+        //Siona Beaudoin - 4/4/2025
+        //If the dropdown is open, then that means 'Edit' was clicked. If the dropdown was not open, 
+        then the card was clicked and the Floorset page for that store should be opened
+        var dropdownMenu = await JS.InvokeAsync<object>("document.querySelector", ".dropdown-menu.show");
+        bool isDropdownMenuVisible = dropdownMenu != null;
+        Console.WriteLine($"Is Dropdown Menu Visible: {isDropdownMenuVisible}");
 
-        //SetBackgroundImage(elementId, strUrl)
-        await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.Blueprint_Image);
+        if (!isDropdownMenuVisible) {
+            //redirect to store page
+            Navigation.NavigateTo($"/floorsets/{selectedStore.City},{selectedStore.State}/{selectedStore.Address}, {selectedStore.City}, {selectedStore.State} {selectedStore.Zip}");
+        }
+        else{
+            // Copy store info for editing in case "Edit" is clicked
+            editedStoreInfo = new Store
+            {
+                Id = selectedStore.Id,
+                Name = selectedStore.Name,
+                Address = selectedStore.Address,
+                City = selectedStore.City,
+                State = selectedStore.State,
+                Zip = selectedStore.Zip,
+                Width = selectedStore.Width,
+                Length = selectedStore.Length,
+                Blueprint_Image = selectedStore.Blueprint_Image
+            };
 
-        StateHasChanged();
+            //SetBackgroundImage(elementId, strUrl)
+            await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.Blueprint_Image);
+
+            StateHasChanged();
+        }
     }
 
 
