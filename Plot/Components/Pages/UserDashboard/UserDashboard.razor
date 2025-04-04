@@ -485,6 +485,10 @@ No author was given.
             ButtonText="Update User"
         };
 
+        // Copy stores from inEditUser
+        List<string> stores_for_in_edit = new List<string>();
+        stores_for_in_edit.AddRange(selectedUser.Stores);
+
         // Copy user info for editing in case "Edit" is clicked
         inEditUser = new User
         {
@@ -493,7 +497,7 @@ No author was given.
             LastName = selectedUser.LastName,
             Email = selectedUser.Email,
             Role = selectedUser.Role,
-            Stores = selectedUser.Stores
+            Stores = stores_for_in_edit
         };
 
         // Set validity flags for editing
