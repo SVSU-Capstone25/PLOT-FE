@@ -30,11 +30,6 @@
 }
 
 /* Expanded container inside SlideOut */
-.expanded {
-    padding: 1.5rem;
-}
-
-/* Expanded container inside SlideOut */
 .button-with-spacing {
     padding: 20px;
     /* Adds padding inside the expanded container */
@@ -52,4 +47,11 @@
 
 #container {
     position: relative;
+}
+
+.vertical-sidebar-buttons {
+    justify-content: center;
+    row-gap: 16px;
+    display: flex;
+    flex-direction: column;
 }

@@ -12,7 +12,7 @@ Author: Tristan Calay (3/15/2025)-->
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 
-<div class="AllocationsSidebar @Class" id="@ID">
+<div class="AllocationsSidebar">
     <div class="inner-container">
         <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
         <hr style="opacity: 1.0; color:black;">
@@ -96,12 +96,6 @@ Author: Tristan Calay (3/15/2025)-->
 </script>
 @code
 {
-    [Parameter]
-    public String? Class { get; set; }
-
-    [Parameter]
-    public String? ID { get; set; }
-
     private String categorySearch = ""; //Default storage of the category search textbox.
 
     //Tristan Calay 3/29/25
