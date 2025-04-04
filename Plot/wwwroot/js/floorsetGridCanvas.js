@@ -11,6 +11,11 @@ function setPlace() {
     window.gridState = 'place';
 }
 
+function setPaint(paint) {
+    console.log(paint);
+    window.paint = paint;
+}
+
 const floorsetGrid = (function () {
     let sketchInstance = null;
 
