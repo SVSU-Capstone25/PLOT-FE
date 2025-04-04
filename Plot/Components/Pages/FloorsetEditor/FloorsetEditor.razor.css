@@ -196,6 +196,14 @@
     padding-bottom: 0.5rem;
 }
 
+.vertical-sidebar-buttons {
+    justify-content: center;
+    row-gap: 16px;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+
 .add-fixture {
     background: var(--platos-blue);
     color: white;

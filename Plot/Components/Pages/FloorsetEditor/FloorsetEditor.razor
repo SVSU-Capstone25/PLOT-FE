@@ -125,19 +125,12 @@
                 </div>
             </div>
         }
-        else 
-        {
-            <Button Class="Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
-                OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
-                Add Fixture
-            </Button>
-        }
 
         @if (buildingWallsExpanded)
         {
             <div class="expanded">
                 <div class="walls-container">
-                    <h3 style="font-weight: bold;" onclick="ToggleBuildingWalls"><i class="fas fa-edit"></i> Edit Building Walls</h3>
+                    <h3 style="font-weight: bold;" @onclick="ToggleBuildingWalls"><i class="fas fa-edit"></i> Edit Building Walls</h3>
                     <hr style="opacity: 1.0; color:black;">
                     <label>Dimensions</label>
                     <div class="horizantal-inputs">
@@ -168,32 +161,43 @@
                 </div>
             </div>
         }
-        else
-        {
-            <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
-                OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
-                Edit Building Walls
+
+        <div class="vertical-sidebar-buttons">
+            @if(!addFixtureExpanded)
+            {
+                <Button Class="Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
+                    OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+                    Add Fixture
+                </Button>
+            }
+
+            @if(!buildingWallsExpanded)
+            {
+                <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
+                    OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+                    Edit Building Walls
+                </Button>
+            }
+
+            <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="ToggleAllocations"
+                Icon="fa-solid fa-eye" IsDisabled=false TextAlignment="center">
+                View Allocations
             </Button>
-        }
 
-        <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="ToggleAllocations"
-            Icon="fa-solid fa-eye" IsDisabled=false TextAlignment="center">
-            View Allocations
-        </Button>
+            <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="OpenImportModal"
+                Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
+                Import Excel File
+            </Button>
 
-        <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="OpenImportModal"
-            Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
-            Import Excel File
-        </Button>
+            <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
+                OnClickFunction="openPrint">
+                Print Layout
+            </Button>
 
-        <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
-            OnClickFunction="openPrint">
-            Print Layout
-        </Button>
-
-        <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
-            Save
-        </Button>
+            <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
+                Save
+            </Button>
+        </div>
     }
 </SlideOut>
 
