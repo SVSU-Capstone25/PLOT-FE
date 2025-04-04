@@ -36,7 +36,13 @@ builder.Services.AddScoped(sp =>
 
 // Add services for authentication and authorization
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<AuthHeaderHttpClient>();
 builder.Services.AddScoped<AuthHttpClient>();
+builder.Services.AddScoped<FixturesHttpClient>();
+builder.Services.AddScoped<FloorsetsHttpClient>();
+builder.Services.AddScoped<StoresHttpClient>();
+builder.Services.AddScoped<UsersHttpClient>();
+
 
 // Add JWT authentication and authorization 
 builder.Services.AddAuthentication(options =>   
