@@ -1,0 +1,43 @@
+@* Add fixture edit modal to the floorset editor. *@
+<Modal Title="Fixture Configuration" Id="fixtureConfig" Class="modal-dialog">
+    <BodyContent>
+        <h4>@fixtureName</h4>
+        <OptionInput @ref=categoryInput ID="categoryOption" Class="optionInput" iconString="fa-solid fa-bars"
+            label="Select Category" optionsText="@(new List<String> { "Default Category" })"
+            optionsValues="@(new List<String> { "Default Category" })" />
+
+        <OptionInput @ref=hangingInput ID="hangingOption" Class="optionInput" iconString="fa-solid fa-sign-hanging"
+            label="Select Hanging" optionsText="@(new List<String> { "Default Hanging" })"
+            optionsValues="@(new List<String> { "Default Hanging" })" />
+        <hr>
+        <TextInput Id="fixtureNotes" Label="Add Notes" Placeholder="Notes text..." />
+    </BodyContent>
+
+    <FooterContent>
+        <button type="button" class="btn btn-success text-white" @onclick="saveChangesToCurrentFixture">Save
+            changes</button>
+    </FooterContent>
+</Modal>
+
+@code {
+    private String fixtureName = "Default Fixture Title";
+    private OptionInput? categoryInput;
+    private OptionInput? hangingInput;
+
+    private String notesText = "";
+
+    private Fixture? currentFixture;
+    public void selectFixture(Fixture selectedFixture)
+    {
+        currentFixture = selectedFixture;
+        fixtureName = selectedFixture.Name;
+        //TODO: Change hanging, notes and category components here.
+        StateHasChanged();
+    }
+
+    private void saveChangesToCurrentFixture()
+    {
+        //TODO: Send data to DB and fixture object.
+        //currentFixture....
+    }
+}

@@ -196,7 +196,7 @@ Author: Andrew Fulton (3/13/2025)  *@
         getFloorsets();
 
         var dotNetReference = DotNetObjectReference.Create(this);
-        JS.InvokeVoidAsync("floorsetDashboardSetDotNet", dotNetReference);
+        JS.InvokeVoidAsync("setDotNet", dotNetReference);
         base.OnInitialized();
     }
 
