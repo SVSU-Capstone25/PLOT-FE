@@ -1,4 +1,5 @@
-// Floorset editor/fixture script - Andrew Kennedy
+// Floorset editor/fixture script - Andrew Kennedy 
+
 // Get reference to the grid area
 var container = document.getElementById("container");
 var isAsc = true;
@@ -32,7 +33,7 @@ var paintModeEnabled = false;
 
 //The set paint color function sets the paint_mode_color, which will be used in the onmouseenter event of the fixture div.
 function setPaintColor(newColor) {
-    console.log("Paint color recieved: "+newColor)
+    console.log("Paint color recieved: " + newColor)
     paintModeColor = newColor;
 }
 
@@ -49,7 +50,6 @@ function setPaintEnabled(isEnabled) {
 
     })
 }
-
 
 /*
     The createDraggable function creates a draggable fixture to add to the grid.
@@ -146,20 +146,16 @@ function createDraggable(event, size, color) {
             var sidebarRect = sidebar.getBoundingClientRect();
             containerRect = container.getBoundingClientRect();
             if (isOverElement(boxRect, sidebarRect)) {
-                //Tristan Calay - Splice out the fixture id of the removed element.
-                fixture_IDs.splice(fixture_IDs.indexOf(newBox.id), 1);
                 container.removeChild(newBox);
             }
-            /* commented out temporarily -danielle smith 4/1/2025
             else if (isOverlapping(newBox, container)) {
                 container.removeChild(newBox);
                 displayAlert("Cannot place an element over an existing element.");
-            } */
+            }
             else {
                 newBox.style.zIndex = 0;
             }
-
-        },
+        }
     });
     // Wait for 10ms, then dispatch a mousedown event to simulate a drag on the box.
     setTimeout(() => {
@@ -178,7 +174,6 @@ var isPaintingEnabled = false;
 
 //this function is specific to the employee only area as it uses "painting" for the div it creates
 function createDraggableEmployee(event, size, color) {
-    //flag set to true
     isPaintingEnabled = true;
     var sidebar = document.getElementById("FloorsetSlideOut");
     var newBox = document.createElement("div");
@@ -226,7 +221,79 @@ function createDraggableEmployee(event, size, color) {
             //if there is an overlap with the sidebar or the containers children then the element will be removed
             if (isOverElement(boxRect, sidebarRect)) {
                 container.removeChild(newBox);
-            } 
+            } else if (isOverlapping(newBox, container)) {
+                container.removeChild(newBox);
+                displayAlert("Cannot place an element over an existing element.");
+            } else {
+                newBox.style.zIndex = 0;
+            }
+        }
+    });
+    //if there is an overlap then removes the box
+    if (isOverlapping(newBox, container)) {
+        container.removeChild(newBox);
+    }
+
+    setTimeout(() => {
+        var evt = new MouseEvent("mousedown", {
+            bubbles: true,
+            cancelable: true,
+            clientX: mouseX,
+            clientY: mouseY
+        });
+        newBox.dispatchEvent(evt);
+    }, 10);
+}
+
+//this method paints the boxes and handles adding and creating new elements
+function paintEmployeeBoxes(event, size, color) {
+    var newBox = document.createElement("div");
+    newBox.id = new Date().getTime(); // Unique ID based on timestamp
+
+    container.appendChild(newBox);
+
+    newBox.className = "box";
+    newBox.style.position = "absolute";
+    var boxSize = size.split("x");
+    newBox.style.height = boxSize[0] * height + "px";
+    newBox.style.width = boxSize[1] * width + "px";
+    newBox.style.background = color;
+    newBox.style.border = "3px solid black";
+    newBox.style.borderRadius = "8px";
+
+    var containerRect = container.getBoundingClientRect();
+
+    var mouseX = event.clientX;
+    var mouseY = event.clientY;
+
+    var snappedX = Math.round((mouseX - containerRect.left - snap * 2) / snap) * snap;
+    var snappedY = Math.round((mouseY - containerRect.top - snap * 2) / snap) * snap;
+
+    //this prevents the box from going outside the container boundaries
+    snappedX = Math.max(0, Math.min(snappedX, containerRect.width - newBox.offsetWidth));
+    snappedY = Math.max(0, Math.min(snappedY, containerRect.height - newBox.offsetHeight));
+
+    newBox.style.left = snappedX + "px";
+    newBox.style.top = snappedY + "px";
+    var draggable = Draggable.create(newBox, {
+        bounds: container,
+        onDrag: function () {
+            //snap to grid while adding
+            TweenLite.to(newBox, 0.5, {
+                x: Math.round(this.endX / snap) * snap,
+                y: Math.round(this.y / snap) * snap,
+                ease: Back.easeOut.config(2)
+            });
+        },
+        onDragEnd: function () {
+            var boxRect = newBox.getBoundingClientRect();
+            var sidebarRect = sidebar.getBoundingClientRect();
+            containerRect = container.getBoundingClientRect();
+
+            //if there is an overlap with the sidebar or the containers children then the element will be removed
+            if (isOverElement(boxRect, sidebarRect)) {
+                container.removeChild(newBox);
+            }
             // Tristan Calay 4/1/2025 - Commenting out alerts for isoverlapping.
             // else if (isOverlapping(newBox, container)) {
             //     container.removeChild(newBox);
@@ -296,22 +363,19 @@ function createDraggableEmployee(event, size, color) {
                 containerRect = container.getBoundingClientRect();
                 if (isOverElement(boxRect, sidebarRect)) {
                     container.removeChild(newBox);
-                } 
-                //Temporarily disable collision alerts.
-                // else if (isOverlapping(newBox, container)) {
-                //     container.removeChild(newBox);
-                //     displayAlert("Cannot place an element over an existing element.");
-                // } 
-                else {
+                } else if (isOverlapping(newBox, container)) {
+                    container.removeChild(newBox);
+                    displayAlert("Cannot place an element over an existing element.");
+                } else {
                     newBox.style.zIndex = 0;
                 }
             }
         });
+
         //if there is an overlap then it removes the box
-        //Temporarily disable collision removal.
-        // if (isOverlapping(newBox, container)) {
-        //     container.removeChild(newBox);
-        // }
+        if (isOverlapping(newBox, container)) {
+            container.removeChild(newBox);
+        }
     }
 
     //this event listener handles the click event
@@ -392,7 +456,6 @@ function addFixtureClose(dotNet) {
 
         // Remove the modal-backdrop on close
         document.querySelectorAll('.modal-backdrop')?.forEach(m => m.remove());
-
     })
 }
 

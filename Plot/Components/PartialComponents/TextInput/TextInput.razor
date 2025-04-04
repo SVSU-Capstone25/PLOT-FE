@@ -37,6 +37,7 @@
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public bool? LabelOnTop { get; set; } = true;
+    [Parameter] public bool? Required { get; set; } = false;
     [Parameter] public int? Max { get; set; } = 255; // max length of input
 
     // This is used for JS interop

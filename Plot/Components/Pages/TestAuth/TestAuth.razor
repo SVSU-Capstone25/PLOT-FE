@@ -1,0 +1,133 @@
+@* Quick page to test Authentication of endpoints
+   This can be used as a refrence on how to access
+   BE endpoints and how auth attributes/tags *@
+
+@page "/test-auth"
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@using System.Net.Http.Headers
+@using Microsoft.AspNetCore.Components.Authorization
+@inject HttpClient Client
+@inject AuthHttpClient AuthHttpClient
+@inject NavigationManager Navigation
+@inject IHttpContextAccessor HttpContextAccessor
+@inject AuthService AuthService
+
+
+<PageTitle>TestAuth</PageTitle>
+
+<AuthorizeView Policy="Owner">
+    <p>Auth Role: Owner</p>
+
+</AuthorizeView>
+
+<AuthorizeView Policy="Manager">
+    <p>Auth Role: Manager</p>
+
+</AuthorizeView>
+
+<AuthorizeView Policy="Employee">
+    <p>Auth Role: Employee</p>
+
+</AuthorizeView>
+
+
+<AuthorizeView>
+    <NotAuthorized>
+        <div>You are not authorized.</div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+<h1>Hello Auth</h1>
+
+<body class="background">
+    <div class="login">
+        <form class="body-content" onsubmit="@AuthTest">
+            
+            <Button Class="Button" Id="buttonFail" Variant="primary" Icon="" Type="submit" IsDisabled=false
+                TextAlignment="center">
+                AuthTest
+            </Button>
+            
+        </form>
+        <form class="body-content" onsubmit="@TalkToEndpoint">
+            
+            <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
+                TextAlignment="center">
+                TalkToEndpoint
+            </Button>
+            
+        </form>
+        <form class="body-content" onsubmit="@LogOut">
+            
+            <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
+                TextAlignment="center">
+                LogOut
+            </Button>
+            
+        
+        </form>
+        <form class="body-content" onsubmit="@NavigateAuth">
+            
+            <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
+                TextAlignment="center">
+                NavigateAuth
+            </Button>
+            
+        </form>
+        <div class="footer-content">
+        </div>
+    </div>
+</body>
+
+
+@code
+{
+    private async void AuthTest()
+    {   //Set the kind of htpMethod
+        AuthHttpClient.httpMethod=HttpMethod.Post;
+        //The endpoint of the api, can be found in BE Controllers
+        AuthHttpClient.endPointStr="/authtest/auth-test";
+        //Send and wait for the response
+        var response = await AuthHttpClient.SendAsyncWithAuth();
+
+        Console.WriteLine(response);
+    }
+
+    private async void TalkToEndpoint()
+    {
+        //Set the kind of htpMethod
+        AuthHttpClient.httpMethod=HttpMethod.Post;
+        //The endpoint of the api, can be found in BE Controllers
+        AuthHttpClient.endPointStr="/authtest/data-test";
+        // When sending in data to the api bind to the model the api is useing
+        // Model can be found in BE /Data/Models
+        AuthHttpClient.jsonBody= JsonContent.Create(new
+            {
+                EmailAddress = "Example@example"
+            }
+        );
+        //Wait response
+        var response = await AuthHttpClient.SendAsyncWithAuth();
+        
+        //get it back as json
+        var json = await response.Content.ReadAsStringAsync();
+
+        Console.WriteLine(json);
+        //Looks like: {"emailAddress":"new@email.com"}
+
+    }
+
+    private async void LogOut()
+    {   
+        await AuthService.LogOutAsync();
+        Navigation.NavigateTo("/login",forceLoad:true);
+    }
+
+    private void NavigateAuth()
+    {   
+        
+        Navigation.NavigateTo("/test-auth-attr",forceLoad:true);
+    }
+}
