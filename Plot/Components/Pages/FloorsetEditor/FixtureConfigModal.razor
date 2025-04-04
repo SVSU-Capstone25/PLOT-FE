@@ -30,8 +30,15 @@
     public void selectFixture(Fixture selectedFixture)
     {
         currentFixture = selectedFixture;
-        fixtureName = selectedFixture.Name;
-        //TODO: Change hanging, notes and category components here.
+        if (selectedFixture == null)
+        {
+            return;
+        }
+        else
+        {
+            fixtureName = selectedFixture.Name;
+            //TODO: Change hanging, notes and category components here.
+        }
         StateHasChanged();
     }
 

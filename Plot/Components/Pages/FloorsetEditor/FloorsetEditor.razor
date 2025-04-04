@@ -97,11 +97,20 @@
 
 <EditFixtureModal />
 
-<FixtureConfigModal />
+<FixtureConfigModal @ref=configModal />
 
 <script src="js/floorsetEditor.js"></script>
 
 @code {
+    @* Tristan Calay 4/4/25
+    Dictionary to cache fixture data from DB by TUID 
+    Int to track the current selected fixture
+    config modal reference to call functions*@
+    private Dictionary<int, Fixture> fixturesDict = new Dictionary<int, Fixture>();
+    private int? selectedFixtureID;
+    private FixtureConfigModal? configModal;
+
+
     @* Tristan Calay 3/28/25
     The allocations sidebar reference allows methods to be called from here to the sidebar.
     It should be set by @ref in the page layout above.
@@ -144,6 +153,7 @@
             dotNet = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("imageEventListener", dotNet);
             await JS.InvokeVoidAsync("addFixtureClose", dotNet);
+            await JS.InvokeVoidAsync("setDotNet", dotNet);
         }
     }
 
@@ -245,5 +255,16 @@
     private void editLayout()
     {
         Console.WriteLine("Edit Layout Function");
+    }
+
+    @* Tristan Calay 4/4/25
+    Select fixture from cache by ID. *@
+    public void selectFixtureByID(int fixtureID)
+    {
+        selectedFixtureID = fixtureID;
+        if (configModal != null)
+        {
+            configModal.selectFixture(fixturesDict[fixtureID]);
+        }
     }
 }
