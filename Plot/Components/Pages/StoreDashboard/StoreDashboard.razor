@@ -28,7 +28,7 @@ Author: Andrew Fulton (3/12/2025)
     @foreach (var store in stores)
     {
             <div @onclick="(() => SetSelectedStore(store))">
-                <Card CardText="@($"{store.City},{store.State}")" CardImage="@($"{store.Blueprint_Image}")">
+                <Card CardText="@($"{store.City},{store.State}")" CardImage="@($"{store.Blueprint_Image}")" Class="clickable-card">
                     <Dropdown Class="Test Dropdown" Id="@($"{store.Name}{store.Id}Dropdown")"
                         DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
                         DropdownLinks="@(new List<string> { $"/floorsets/{store.City},{store.State}/{store.Address},{store.City},{store.State} {store.Zip}", "#editStoreModal", "#deleteStoreModal" })"
@@ -849,7 +849,7 @@ Blueprint_Image = "img/LayoutPhotoExample.png"
 
         //Siona Beaudoin - 4/4/2025
         //If the dropdown is open, then that means 'Edit' was clicked. If the dropdown was not open, 
-        then the card was clicked and the Floorset page for that store should be opened
+        // then the card was clicked and the Floorset page for that store should be opened
         var dropdownMenu = await JS.InvokeAsync<object>("document.querySelector", ".dropdown-menu.show");
         bool isDropdownMenuVisible = dropdownMenu != null;
         Console.WriteLine($"Is Dropdown Menu Visible: {isDropdownMenuVisible}");

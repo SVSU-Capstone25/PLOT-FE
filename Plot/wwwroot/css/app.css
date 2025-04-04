@@ -251,3 +251,7 @@ h1:focus {
     font-size: 1rem;
     font-weight: bold;
 }
+
+.clickable-card:hover {
+    cursor: pointer !important;
+}
