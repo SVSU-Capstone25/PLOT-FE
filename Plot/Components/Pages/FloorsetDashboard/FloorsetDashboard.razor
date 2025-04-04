@@ -52,7 +52,7 @@ Author: Andrew Fulton (3/13/2025)  *@
             <Modal Title="Edit Floorset Title" Id="@("editFloorsetTitleModal-" + floorset.ID)" Class="standard"
                 Variant="standard">
                 <BodyContent>
-                    <TextInput type="text" Id="editFloorsetTitleModalTextInput" Label="Enter the new name for the floorset:" />
+                    <TextInput type="text" Id="@("editFloorsetTitleModalTextInput-"+ floorset.ID)" Label="Enter the new name for the floorset:" class="w-100" />
                 </BodyContent>
 
                 <FooterContent>
@@ -113,9 +113,9 @@ Author: Andrew Fulton (3/13/2025)  *@
         /* Siona Beaudoin - 4/3/2025
         Function to handle the edit floorset title modal. It retrieves the new title from the input field,
         checks if it's not empty, and then closes the modal. */
-        let newTitle = document.getElementById("editFloorsetTitleModalTextInput").value;
         let modalId = document.querySelector(".modal.show").id; // Get the ID of the currently shown modal
         let floorsetID = modalId.replace("editFloorsetTitleModal-", "");
+        let newTitle = document.getElementById("editFloorsetTitleModalTextInput-" + floorsetID).value;
         if (newTitle.trim() !== "") {
             console.log("New Floorset Title: " + newTitle);
 
@@ -124,7 +124,7 @@ Author: Andrew Fulton (3/13/2025)  *@
             if (floorsetCard) {
                 floorsetCard.querySelector(".card-content").textContent = newTitle;
             }
-            document.getElementById("editFloorsetTitleModalTextInput").value = "";
+            document.getElementById("editFloorsetTitleModalTextInput-" + floorsetID).value = "";
             HideModal(modalId);
         } else {
             alert("Please enter a valid title.");
