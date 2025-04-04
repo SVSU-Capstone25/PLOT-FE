@@ -21,7 +21,7 @@ public class StoresHttpClient
     
     // [HttpGet]
     // 
-    public async Task<List<Store>?> GetListOfStores()
+    public async Task<List<Store>?> GetListOfStores()//WORKING 
     {
         string endpoint = "";
         HttpMethod httpMethod = HttpMethod.Get;
@@ -39,8 +39,8 @@ public class StoresHttpClient
 
  
  
-    // [HttpGet("access/{userId:int}")]
-    public async Task<List<Store>?> GetStoreAccessByUserId(int userId)
+    // [HttpGet("access/{userId:int}")] 
+    public async Task<List<Store>?> GetStoreAccessByUserId(int userId)//WORKING just need to change API endpoint return
     {
         string endpoint = $"/access/{userId}";
         HttpMethod httpMethod = HttpMethod.Get;
@@ -58,8 +58,8 @@ public class StoresHttpClient
         
 
 
-    // [HttpPost] I THINK THIS ONE NEEDS A NEW PATH
-    public async Task<Select_Store?> CreateStore(Select_Store store)
+    // [HttpPost]
+    public async Task<Select_Store?> CreateStore(Select_Store store) //WORKING just need to change API endpoint return
     {
         string endpoint ="";
         HttpMethod httpMethod = HttpMethod.Post;
@@ -77,7 +77,7 @@ public class StoresHttpClient
 
 
     //[HttpPatch("public-info/{storeId:int}")]
-    public async Task<Select_Store?> UpdatePublicInfo(int storeId, Select_Store store)
+    public async Task<Select_Store?> UpdatePublicInfo(int storeId, Select_Store store)//NOT tested but assumed working
     {
         string endpoint =$"/public-info/{storeId}";
         HttpMethod httpMethod = HttpMethod.Patch;
@@ -95,7 +95,7 @@ public class StoresHttpClient
     }
 
     //[HttpPatch("size/{storeId:int}")]
-    public async Task<Select_Store?> UpdateStoreSize(int storeId, Select_Store store)
+    public async Task<Select_Store?> UpdateStoreSize(int storeId, Select_Store store)//NOT tested but assumed working
     {
         string endpoint =$"/size/{storeId}";
         HttpMethod httpMethod = HttpMethod.Patch;
@@ -115,7 +115,7 @@ public class StoresHttpClient
 
    
     //[HttpDelete("{storeId:int}")]
-    public async Task<HttpResponseMessage> DeleteStore(int storeId)
+    public async Task<HttpResponseMessage> DeleteStore(int storeId)//Working
     {
         string endpoint =$"/{storeId}";
         HttpMethod httpMethod = HttpMethod.Delete;

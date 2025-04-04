@@ -1,0 +1,194 @@
+@* Quick page to test Authentication of endpoints
+   This can be used as a refrence on how to access
+   BE endpoints and how auth attributes/tags *@
+
+@page "/client-test-store"
+
+@using Microsoft.AspNetCore.Authorization
+@using System.Net.Http.Headers
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.WebUtilities
+@using Plot.Data.Models.Auth.Registration
+@using Plot.Data.Models.Auth.ResetPassword
+@using Plot.Data.Models.Stores
+@inject HttpClient Client
+@inject AuthHeaderHttpClient AuthHeaderHttpClient
+@inject NavigationManager Navigation
+@inject IHttpContextAccessor HttpContextAccessor
+@inject AuthService AuthService
+@inject StoresHttpClient StoresHttpClient
+
+
+<PageTitle>TestStores</PageTitle>
+
+
+
+
+<h1>Hello Stores</h1>
+
+<body class="background">
+    <div class="login">
+        <form class="body-content" onsubmit="@GetListOfStores">
+            
+            <Button Class="Button" Id="buttonFail" Variant="primary" Icon="" Type="submit" IsDisabled=false
+                TextAlignment="center">
+                GetListOfStores
+            </Button>
+            
+        </form>
+            
+        
+        <form class="body-content" onsubmit="@GetStoreAccessByUserId">
+            
+            <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
+                TextAlignment="center">
+                GetStoreAccessByUserId
+            </Button>
+            
+        
+        </form>
+        <form class="body-content" onsubmit="@CreateStore">
+            
+            <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
+                TextAlignment="center">
+                CreateStore
+            </Button>
+            
+        </form>
+        <form class="body-content" onsubmit="@UpdatePublicInfo">
+            
+            <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
+                TextAlignment="center">
+                UpdatePublicInfo
+            </Button>
+            
+        </form>
+        <form class="body-content" onsubmit="@UpdateStoreSize">
+            
+            <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
+                TextAlignment="center">
+                UpdateStoreSize
+            </Button>
+            
+        
+        </form>
+        <form class="body-content" onsubmit="@DeleteStore">
+            
+            <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
+                TextAlignment="center">
+                DeleteStore
+            </Button>
+            
+        </form>
+        <div class="footer-content">
+        </div>
+    </div>
+</body>
+
+
+@code
+{//THIS TESTING PAGE IS NOT DONE-----------------------------------------------------------NOT DONE
+
+    //WORKS
+    private async void GetListOfStores()
+    {   
+        var stores = await StoresHttpClient.GetListOfStores();
+
+        
+
+        if(stores == null)
+        {
+            Console.WriteLine("Error All store list is null");
+
+        }else
+        {
+            foreach (Store store in stores)
+            {
+                Console.WriteLine(store.ToString());
+            }
+        }
+    }
+
+    
+    // 4/3(Database connection failed: , 
+    // Could not find stored procedure 'Select_Store'.)-mp
+    private async void GetStoreAccessByUserId()
+    {   
+        var userId=10;
+
+        var stores = await StoresHttpClient.GetStoreAccessByUserId(userId);
+
+        
+
+        if(stores == null)
+        {
+            Console.WriteLine("Error store list by userID is null");
+
+        }else
+        {
+            foreach (Store store in stores)
+            {
+                Console.WriteLine(store.ToString());
+            }
+        }
+    }
+
+    // 4/3(Database connection failed: , 
+    //Could not find stored procedure 'Insert_Update_Store'.)-mp
+    private async void CreateStore()
+    {   
+        Select_Store newStore = new Select_Store
+        {
+            NAME = "TEST Store Name",
+            ADDRESS = "123 TEST Address",
+            CITY = "TEST City",
+            STATE = "TEST State",
+            ZIP = "12345",
+            WIDTH= 100,
+            LENGTH= 100,
+            BLUEPRINT_IMAGE= System.Text.Encoding.UTF8.GetBytes("0X01020304"),
+        };
+
+        var store = await StoresHttpClient.CreateStore(newStore);
+
+        
+
+        if(store == null)
+        {
+            Console.WriteLine("Error new stor is null");
+
+        }else
+            Console.WriteLine(store.ToString());
+    }
+
+//THESE TESETS ARE NOT DONE-----------------------------------------------------------NOT DONE
+    private async void UpdatePublicInfo()
+    {   
+        var stores = await StoresHttpClient.GetListOfStores();
+        
+    }
+
+    private async void UpdateStoreSize()
+    {   
+        var stores = await StoresHttpClient.GetListOfStores();
+        
+    }
+
+//Works-------------------------------------------------------------------------
+    private async void DeleteStore()
+    {   
+        var response = await StoresHttpClient.DeleteStore(21);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Did not delete");
+        }else{
+             Console.WriteLine("Good delete");
+        }
+
+    }
+
+    
+
+
+}
