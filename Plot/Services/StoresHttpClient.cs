@@ -1,4 +1,3 @@
-
 using Plot.Data.Models.Auth.Registration;
 using Plot.Data.Models.Auth.ResetPassword;
 using Plot.Data.Models.Fixtures;
