@@ -28,57 +28,57 @@
 
 <body class="background">
     <div class="login">
-        <form class="body-content" onsubmit="@GetListOfStores">
-            
+        <form class="body-content" onsubmit="GetListOfStores()">
+
             <Button Class="Button" Id="buttonFail" Variant="primary" Icon="" Type="submit" IsDisabled=false
                 TextAlignment="center">
                 GetListOfStores
             </Button>
-            
+
         </form>
-            
-        
-        <form class="body-content" onsubmit="@GetStoreAccessByUserId">
-            
+
+
+        <form class="body-content" onsubmit="GetStoreAccessByUserId()">
+
             <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
                 TextAlignment="center">
                 GetStoreAccessByUserId
             </Button>
-            
-        
+
+
         </form>
-        <form class="body-content" onsubmit="@CreateStore">
-            
+        <form class="body-content" onsubmit="CreateStore()">
+
             <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
                 TextAlignment="center">
                 CreateStore
             </Button>
-            
+
         </form>
-        <form class="body-content" onsubmit="@UpdatePublicInfo">
-            
+        <form class="body-content" onsubmit="UpdatePublicInfo()">
+
             <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
                 TextAlignment="center">
                 UpdatePublicInfo
             </Button>
-            
+
         </form>
-        <form class="body-content" onsubmit="@UpdateStoreSize">
-            
+        <form class="body-content" onsubmit="UpdateStoreSize()">
+
             <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
                 TextAlignment="center">
                 UpdateStoreSize
             </Button>
-            
-        
+
+
         </form>
-        <form class="body-content" onsubmit="@DeleteStore">
-            
+        <form class="body-content" onsubmit="DeleteStore()">
+
             <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
                 TextAlignment="center">
                 DeleteStore
             </Button>
-            
+
         </form>
         <div class="footer-content">
         </div>
@@ -87,20 +87,22 @@
 
 
 @code
-{//THIS TESTING PAGE IS NOT DONE-----------------------------------------------------------NOT DONE
+{
+    //THIS TESTING PAGE IS NOT DONE-----------------------------------------------------------NOT DONE
 
     //WORKS
     private async void GetListOfStores()
-    {   
+    {
         var stores = await StoresHttpClient.GetListOfStores();
 
-        
 
-        if(stores == null)
+
+        if (stores == null)
         {
             Console.WriteLine("Error All store list is null");
 
-        }else
+        }
+        else
         {
             foreach (Store store in stores)
             {
@@ -109,22 +111,23 @@
         }
     }
 
-    
-    // 4/3(Database connection failed: , 
+
+    // 4/3(Database connection failed: ,
     // Could not find stored procedure 'Select_Store'.)-mp
     private async void GetStoreAccessByUserId()
-    {   
-        var userId=10;
+    {
+        var userId = 10;
 
         var stores = await StoresHttpClient.GetStoreAccessByUserId(userId);
 
-        
 
-        if(stores == null)
+
+        if (stores == null)
         {
             Console.WriteLine("Error store list by userID is null");
 
-        }else
+        }
+        else
         {
             foreach (Store store in stores)
             {
@@ -133,10 +136,10 @@
         }
     }
 
-    // 4/3(Database connection failed: , 
+    // 4/3(Database connection failed: ,
     //Could not find stored procedure 'Insert_Update_Store'.)-mp
     private async void CreateStore()
-    {   
+    {
         CreateStore newStore = new CreateStore
         {
             NAME = "TEST Store Name",
@@ -144,26 +147,26 @@
             CITY = "TEST City",
             STATE = "TEST State",
             ZIP = "12345",
-            WIDTH= 100,
-            LENGTH= 100,
-            BLUEPRINT_IMAGE= System.Text.Encoding.UTF8.GetBytes("0X01020304"),
+            WIDTH = 100,
+            LENGTH = 100,
         };
 
         var store = await StoresHttpClient.CreateStore(newStore);
 
-        
 
-        if(store == null)
+
+        if (store == null)
         {
             Console.WriteLine("Error new stor is null");
 
-        }else
+        }
+        else
             Console.WriteLine(store.ToString());
     }
 
-//THESE TESETS ARE NOT DONE-----------------------------------------------------------NOT DONE
+    //THESE TESETS ARE NOT DONE-----------------------------------------------------------NOT DONE
     private async void UpdatePublicInfo()
-    {   
+    {
         var storeId = 21;
 
         UpdatePublicInfoStore updateStore = new UpdatePublicInfoStore
@@ -173,55 +176,59 @@
             CITY = "UPDATE TEST City",
             STATE = "UPDATE TEST State",
             ZIP = "UPDATE 12345",
-            BLUEPRINT_IMAGE= System.Text.Encoding.UTF8.GetBytes("0X01020304"),
         };
 
         var store = await StoresHttpClient.UpdatePublicInfo(storeId, updateStore);
 
-        
 
-        if(store == null)
+
+        if (store == null)
         {
             Console.WriteLine("Error update store is null");
 
-        }else
+        }
+        else
             Console.WriteLine(store.ToString());
     }
-    
+
 
     private async void UpdateStoreSize()
-    {   
+    {
         var storeId = 21;
         UpdateSizeStore updateStore = new UpdateSizeStore
         {
-            WIDTH= 150,
-            LENGTH= 150,
+            WIDTH = 150,
+            LENGTH = 150,
         };
 
         var store = await StoresHttpClient.UpdateStoreSize(storeId, updateStore);
 
-        
 
-        if(store == null)
+
+        if (store == null)
         {
             Console.WriteLine("Error update store is null");
 
-        }else
+        }
+        else
             Console.WriteLine(store.ToString());
     }
-        
-    
 
-//Works-------------------------------------------------------------------------
+
+
+    //Works-------------------------------------------------------------------------
     private async void DeleteStore()
-    {   var storeId = 21;
+    {
+        var storeId = 21;
         var response = await StoresHttpClient.DeleteStore(storeId);
 
         if (!response.IsSuccessStatusCode)
         {
             Console.WriteLine("Did not delete");
-        }else{
-             Console.WriteLine("Good delete");
+        }
+        else
+        {
+            Console.WriteLine("Good delete");
         }
     }
 }
