@@ -14,7 +14,6 @@ Author: Andrew Fulton (3/12/2025)
 
 @page "/store-dashboard"
 @inject IJSRuntime JS
-@inject HttpClient Http
 @using Plot.Components.PartialComponents.NumericInput
 @inject NavigationManager Navigation
 @using System.Drawing;
@@ -684,95 +683,93 @@ Author: Andrew Fulton (3/12/2025)
         dotNet = DotNetObjectReference.Create(this);
 
         users = new List<User>
-
-
-        {
-        new User
-        {
-        Id = intNextUserId++,
-        FirstName = "Homer",
-        LastName = "Simpson",
-        Email = "homer@email.com",
-        Role = "Owner"
-        },
-        new User
-        {
-        Id = intNextUserId++,
-        FirstName = "Marge",
-        LastName = "Simpson",
-        Email = "marge@email.com",
-        Role = "Manager"
-        },new User
-        {
-        Id = intNextUserId++,
-        FirstName = "Bart",
-        LastName = "Simpson",
-        Email = "Bart@email.com",
-        Role = "Employee"
-        },
-        new User
-        {
-        Id = intNextUserId++,
-        FirstName = "Lisa",
-        LastName = "Simpson",
-        Email = "lisa@email.com",
-        Role = "Employee"
-        },new User
-        {
-        Id = intNextUserId++,
-        FirstName = "Sideshow",
-        LastName = "Bob",
-        Email = "sideshow@email.com",
-        Role = "employee"
-        }
-        }
-                ;
+{
+new User
+{
+Id = intNextUserId++,
+FirstName = "Homer",
+LastName = "Simpson",
+Email = "homer@email.com",
+Role = "Owner"
+},
+new User
+{
+Id = intNextUserId++,
+FirstName = "Marge",
+LastName = "Simpson",
+Email = "marge@email.com",
+Role = "Manager"
+},new User
+{
+Id = intNextUserId++,
+FirstName = "Bart",
+LastName = "Simpson",
+Email = "Bart@email.com",
+Role = "Employee"
+},
+new User
+{
+Id = intNextUserId++,
+FirstName = "Lisa",
+LastName = "Simpson",
+Email = "lisa@email.com",
+Role = "Employee"
+},new User
+{
+Id = intNextUserId++,
+FirstName = "Sideshow",
+LastName = "Bob",
+Email = "sideshow@email.com",
+Role = "employee"
+}
+}
+        ;
 
 
 
-                //list of stores
-                stores = new List<Store>
-        {
-        new Store
-        {
-        Id=intNextStoreId++,
-        Name="Plato's Closet Flint",
-        Address="3192 S Linden Rd",
-        City="Flint",
-        State="MI",
-        Zip="48507",
-        Width="200",
-        Length="300",
-        Blueprint_Image = "img/LayoutPhotoExample.png",
-        Users = new List<User> { users[0] }
-        },
-        new Store
-        {
-        Id=intNextStoreId++,
-        Name="Plato's Closet Austin",
-        Address="35400 Brodie Ln Ste 240",
-        City="Austin",
-        State="TX",
-        Zip="78745",
-        Width="250",
-        Length="325",
-        Blueprint_Image = "img/LayoutPhotoExample.png",
-        Users = new List<User> { users[1] }
-        },
-        new Store
-        {
-        Id=intNextStoreId++,
-        Name="Plato's Closet Utica",
-        Address="13287 Hall Rd",
-        City="Utica",
-        State="MI",
-        Zip="48315",
-        Width="375",
-        Length="225",
-        Blueprint_Image = "img/LayoutPhotoExample.png",
-        Users = new List<User> { users[2] }
-        }
-        };
+        //list of stores
+        stores = new List<Store>
+{
+new Store
+{
+Id=intNextStoreId++,
+Name="Plato's Closet Flint",
+Address="3192 S Linden Rd",
+City="Flint",
+State="MI",
+Zip="48507",
+Width="200",
+Length="300",
+Blueprint_Image = "img/LayoutPhotoExample.png",
+Users = new List<User> { users[0] }
+},
+new Store
+{
+Id=intNextStoreId++,
+Name="Plato's Closet Austin",
+Address="35400 Brodie Ln Ste 240",
+City="Austin",
+State="TX",
+Zip="78745",
+Width="250",
+Length="325",
+Blueprint_Image = "img/LayoutPhotoExample.png",
+Users = new List<User> { users[1] }
+},
+new Store
+{
+Id=intNextStoreId++,
+Name="Plato's Closet Utica",
+Address="13287 Hall Rd",
+City="Utica",
+State="MI",
+Zip="48315",
+Width="375",
+Length="225",
+Blueprint_Image = "img/LayoutPhotoExample.png",
+Users = new List<User> { users[2] }
+}
+};
     }
 
 
@@ -1034,12 +1031,7 @@ Author: Andrew Fulton (3/12/2025)
         StateHasChanged();
     }
 
-    private async Task GetStoreData()
-    {
-        var index = stores.FindIndex(s => s.Id == selectedStore.Id);
 
-        await Http.GetFromJsonAsync<Store>("https://localhost:5001/api/stores/");
-    }
     // Save edited store as the selected store
     private async Task SaveChanges()
     {
