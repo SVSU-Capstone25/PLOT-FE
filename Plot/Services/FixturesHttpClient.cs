@@ -5,7 +5,7 @@ using Plot.Data.Models.Fixtures;
 
 public class FixturesHttpClient
 {
-    private const string BASE_CONTROLLER_ADDRESS="/Fixtures" ;
+    private const string BASE_CONTROLLER_ADDRESS = "/Fixtures";
 
     private readonly AuthHeaderHttpClient _authHeaderHttpClient;
 
@@ -17,7 +17,7 @@ public class FixturesHttpClient
         _authHeaderHttpClient.AppendBaseAddress(BASE_CONTROLLER_ADDRESS);
     }
 
-    
+
     /// <summary>
     /// This method gets all of a floorsets fixture information
     /// from the backend api.
@@ -25,7 +25,7 @@ public class FixturesHttpClient
     /// </summary>
     /// <param name="floorsetId"></param>
     /// <returns>A floorsets fixture information or null if bad http response</returns>
-public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floorsetId) //NOT SURE BACKEND API ONLY RETURNS ONE FixtureInstance
+    public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floorsetId) //NOT SURE BACKEND API ONLY RETURNS ONE FixtureInstance
     {
         //End point for the Api
         string endpoint = $"/get-fixtures/{floorsetId}";
@@ -55,10 +55,10 @@ public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floo
     /// <param name="floorsetId"> Current floorset</param>
     /// <param name="fixtures">A floorsets entire fixture information</param>
     /// <returns>Http response</returns>
-    public async Task<HttpResponseMessage> UpdateFixtureInformation(int floorsetId,Fixtures_State fixtures)
+    public async Task<HttpResponseMessage> UpdateFixtureInformation(int floorsetId, FixturesState fixtures)
     {
         //Set the api end point of the floorset you want to update
-        string endpoint =$"/update-fixture/{floorsetId}";
+        string endpoint = $"/update-fixture/{floorsetId}";
         //Need to use http patch
         HttpMethod httpMethod = HttpMethod.Patch;
         //Put the fixtures information into json so the controller can receive the  object.
@@ -70,7 +70,7 @@ public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floo
         //Send back the http response
         return response;
     }
-        
+
 
     /// <summary>
     /// This method sends a new fixtures information to the backend api 
@@ -80,10 +80,10 @@ public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floo
     /// <param name="storeId">Fixtures store</param>
     /// <param name="FixtureModel information"> </param>
     /// <returns>New fixture</returns>
-    public async Task<Select_Fixtures?> CreateFixtureModel(int storeId, CreateFixtureModel fixtureModel)
+    public async Task<FixtureModel?> CreateFixtureModel(int storeId, CreateFixtureModel fixtureModel)
     {
         //Set the api end point and the current store
-        string endpoint =$"/create-fixture/{storeId}";
+        string endpoint = $"/create-fixture/{storeId}";
         //Http patch
         HttpMethod httpMethod = HttpMethod.Patch;
         //Create a json representation of the fixture model
@@ -99,7 +99,7 @@ public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floo
         }
 
         //Return the new fixture.
-        return await response.Content.ReadFromJsonAsync<Select_Fixtures>();
+        return await response.Content.ReadFromJsonAsync<FixtureModel>();
     }
 
 
@@ -113,7 +113,7 @@ public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floo
     public async Task<HttpResponseMessage> DeleteFixtureModel(int storeId, int modelId)
     {
         //Set api end point, include the store and model for deletion
-        string endpoint =$"/delete-model/{storeId}?modelId={modelId}";
+        string endpoint = $"/delete-model/{storeId}?modelId={modelId}";
         //Set http to patch
         HttpMethod httpMethod = HttpMethod.Patch;
         //Dont need any Json data
@@ -121,7 +121,7 @@ public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floo
 
         //Wait for servers response
         var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
-        
+
         //Return the response
         return response;
     }
@@ -133,14 +133,14 @@ public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floo
     /// <param name="storeId"></param>
     /// <param name="update"></param>
     /// <returns></returns>
-    public async Task<HttpResponseMessage> UpdateFixtureModel(int storeId, Select_Fixtures update)
+    public async Task<HttpResponseMessage> UpdateFixtureModel(int storeId, FixtureModel update)
     {
-        string endpoint =$"/delete-store/{storeId}";
+        string endpoint = $"/delete-store/{storeId}";
         HttpMethod httpMethod = HttpMethod.Patch;
         JsonContent jsonBody = JsonContent.Create(update);
 
         var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
-        
+
         return response;
     }
 }
