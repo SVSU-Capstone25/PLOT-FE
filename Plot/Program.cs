@@ -92,9 +92,9 @@ builder.Services.AddAuthentication(options =>
      
 // Add authorization policies
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("Employee", policy => policy.RequireClaim("Role", "3", "2", "1"))
-    .AddPolicy("Manager", policy => policy.RequireClaim("Role", "1", "2"))
-    .AddPolicy("Owner", policy => policy.RequireClaim("Role", "1"));
+    .AddPolicy("Employee", policy => policy.RequireClaim("Role", "Owner", "Manager", "Employee"))
+    .AddPolicy("Manager", policy => policy.RequireClaim("Role", "Owner", "Manager"))
+    .AddPolicy("Owner", policy => policy.RequireClaim("Role", "Owner"));
     
 builder.Services.AddCascadingAuthenticationState();
 
