@@ -841,7 +841,9 @@ No author was given.
         SetUpdateUserDisabled();
     }
 
-    private void HandleLastName(string text)
+
+
+    private void ValidateLastName(string text)
     {
         // Set last name to text
         inEditUser.LastName = text;
@@ -865,20 +867,36 @@ No author was given.
         }
     }
 
-    private void HandleEmail(string text)
+
+    @* Validate email *@
+    private void ValidateEmail(string text)
     {
         inEditUser.Email = text; // Set email to text
 
-        // Check that email is 32 character sor less and satisfies
-        // validation rules for email text
-        if(ValidateLength(text,"Email",ref emailError,GEN_CHAR_LIMIT) &
-            ValidateEmailText(text)
-        ){
-            ClearError(ref emailError); // Clear error message
-            isEmailValid = IsTextPresent(text); // Valid Email flag 
-            // depends on if email is present
-        }else{
-            isEmailValid = false; // Email is not valid
+
+        // Email must be unique: Either not found in users or not
+        // matches what the email of the selected user was
+        if((users.FirstOrDefault(user => user.Email == text) != null) &&
+            !(text == selectedUser.Email)){
+            emailError = "Email must be unique.";
+            isEmailValid = false;
+        }
+        else if (text.Length > CHAR_LIMIT) // Email is not too long
+        {
+            ErrorTooLong("Email", ref emailError, CHAR_LIMIT);
+            isEmailValid = false;
+        }
+        else if (!text.All(c => ValidateEmailChar(c))) // Email characters are valid
+        {
+            // Validate email characters
+            emailError = "Email has invalid characters. characters must be alphanumeric, " +
+            "the period '.' or the at symbol '@'";
+            isEmailValid = false;
+        }
+        else
+        {   // Doesn't need a validation message - Just check if there is text present
+            ClearError(ref emailError);
+            isEmailValid = IsTextPresent(text);
         }
 
         SetUpdateUserDisabled(); // Determine if button should be disabled
