@@ -25,7 +25,7 @@ public class FixturesHttpClient
     /// </summary>
     /// <param name="floorsetId"></param>
     /// <returns>A floorsets fixture information or null if bad http response</returns>
-    public async Task<Select_Floorset_Fixtures?> GetFloorsetFixtureInformation(int floorsetId)
+public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floorsetId) //NOT SURE BACKEND API ONLY RETURNS ONE FixtureInstance
     {
         //End point for the Api
         string endpoint = $"/get-fixtures/{floorsetId}";
@@ -44,7 +44,7 @@ public class FixturesHttpClient
         }
 
         //Return a floor sets fixtures information.
-        return await response.Content.ReadFromJsonAsync<Select_Floorset_Fixtures>();
+        return await response.Content.ReadFromJsonAsync<List<FixtureInstance>>();
     }
 
 
@@ -80,7 +80,7 @@ public class FixturesHttpClient
     /// <param name="storeId">Fixtures store</param>
     /// <param name="FixtureModel information"> </param>
     /// <returns>New fixture</returns>
-    public async Task<Select_Fixtures?> CreateFixtureModel(int storeId, Select_Fixtures fixtureModel)
+    public async Task<Select_Fixtures?> CreateFixtureModel(int storeId, CreateFixtureModel fixtureModel)
     {
         //Set the api end point and the current store
         string endpoint =$"/create-fixture/{storeId}";

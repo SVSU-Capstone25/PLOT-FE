@@ -59,7 +59,7 @@ public class StoresHttpClient
 
 
     // [HttpPost]
-    public async Task<Select_Store?> CreateStore(Select_Store store) //WORKING just need to change API endpoint return
+    public async Task<Store?> CreateStore(Store store) //WORKING just need to change API endpoint return
     {
         string endpoint ="";
         HttpMethod httpMethod = HttpMethod.Post;
@@ -72,12 +72,12 @@ public class StoresHttpClient
             return null;
         }
         
-        return await response.Content.ReadFromJsonAsync<Select_Store>();
+        return await response.Content.ReadFromJsonAsync<Store>();
     }
 
 
     //[HttpPatch("public-info/{storeId:int}")]
-    public async Task<Select_Store?> UpdatePublicInfo(int storeId, Select_Store store)//NOT tested but assumed working
+    public async Task<Store?> UpdatePublicInfo(int storeId, Store store)//NOT tested but assumed working
     {
         string endpoint =$"/public-info/{storeId}";
         HttpMethod httpMethod = HttpMethod.Patch;
@@ -91,11 +91,11 @@ public class StoresHttpClient
         }
 
         
-        return await response.Content.ReadFromJsonAsync<Select_Store>();
+        return await response.Content.ReadFromJsonAsync<Store>();
     }
 
     //[HttpPatch("size/{storeId:int}")]
-    public async Task<Select_Store?> UpdateStoreSize(int storeId, Select_Store store)//NOT tested but assumed working
+    public async Task<Store?> UpdateStoreSize(int storeId, Store store)//NOT tested but assumed working
     {
         string endpoint =$"/size/{storeId}";
         HttpMethod httpMethod = HttpMethod.Patch;
@@ -109,7 +109,7 @@ public class StoresHttpClient
         }
 
         
-        return await response.Content.ReadFromJsonAsync<Select_Store>();
+        return await response.Content.ReadFromJsonAsync<Store>();
     }
 
 
