@@ -223,6 +223,106 @@
     </FooterContent>
 </Modal>
 
+@* help modal *@
+<Modal Title="Help Page" Id="helpModal" Class="modal-dialog">
+    <BodyContent>
+        <h4>Welcome to the Floorset Editor Page!</h4>
+        <p>Here’s a quick guide to help you navigate and use the tools available on this page:</p>
+
+        <h5>Sidebar Options</h5>
+        <ul>
+            <li><strong>Add fixture</strong>
+                <ul>
+                    <li>Create a fixture by specifying:</li>
+                    <ul>
+                        <li>Name</li>
+                        <li>Dimensions (width × length in feet)</li>
+                        <li>Hanger stack</li>
+                        <li>Linear feet capacity</li>
+                        <li>Total linear feet</li>
+                        <li>Image</li>
+                    </ul>
+                    <li>Fixtures can be dragged/dropped or clicked to appear on the floorset area.</li>
+                    <li>Fixtures on the working area can be moved, annotated, categorized, or sub-categorized.</li>
+                    <li>Includes search and sort by name (asc/desc).</li>
+                </ul>
+            </li>
+
+            <li><strong>Edit building walls</strong>
+                <ul>
+                    <li>Set building dimensions (width × length)</li>
+                    <li>Define Employee-only areas</li>
+                    <li>Click <em>Apply</em> to save changes</li>
+                </ul>
+            </li>
+
+            <li><strong>View Allocations</strong>
+                <ul>
+                    <li>Displays all categories and subcategories</li>
+                    <li>Color indicators:
+                        <ul>
+                            <li>Men – Blue</li>
+                            <li>Women – Pink</li>
+                            <li>Accessories – Green</li>
+                        </ul>
+                    </li>
+                    <li>Selected category has a check mark</li>
+                    <li>Drag categories to assign them to fixtures</li>
+                    <li>Clicking a fixture shows detailed info</li>
+                    <li>Highlighted categories show allocation status from Excel data</li>
+                    <li>Numbers represent:
+                        <ul>
+                            <li>1st: Assigned allocation</li>
+                            <li>2nd: Target allocation</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+
+            <li><strong>Tools</strong>
+                <ul>
+                    <li>Painting tool: Assign categories</li>
+                    <li>Eraser tool: Remove categories</li>
+                    <li>Includes search, sort, and filter options</li>
+                </ul>
+            </li>
+
+            <li><strong>Print Layout</strong>
+                <ul>
+                    <li>Preview floorset</li>
+                    <li>Choose printer, page size</li>
+                    <li>Options to include allocations and notes</li>
+                </ul>
+            </li>
+
+            <li><strong>Import Excel File</strong>
+                <ul>
+                    <li>Import floorset data via:
+                        <ul>
+                            <li>File picker</li>
+                            <li>Drag and drop</li>
+                        </ul>
+                    </li>
+                    <li>Clicking import generates a new floorset</li>
+                </ul>
+            </li>
+
+            <li><strong>Save</strong>
+                <ul>
+                    <li>Click save to retain your changes</li>
+                    <li><strong>Tip:</strong> Save regularly to avoid losing work</li>
+                </ul>
+            </li>
+        </ul>
+
+        <p>Use this help modal for quick guidance on floorset tools and features.</p>
+    </BodyContent>
+
+    <FooterContent>
+    </FooterContent>
+</Modal>
+
+
 @*Print Modal *@
 @*Tristan Calay *@
 <Modal Title="Print Layout" Id="printModal" Class="modal-dialog">
