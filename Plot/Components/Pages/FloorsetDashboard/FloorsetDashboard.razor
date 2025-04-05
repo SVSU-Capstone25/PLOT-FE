@@ -12,7 +12,7 @@ Author: Andrew Fulton (3/13/2025)  *@
 
 @* /floorsets/Flint, MI/3192 S Linden Rd, Flint, MI 48507 *@
 
-@page "/floorsets/{storeId}/{storeLocation}"
+@page "/floorsets/{storeId}"
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
 
@@ -21,7 +21,7 @@ Author: Andrew Fulton (3/13/2025)  *@
     <div class="left">
         <h1 font-size="3em">Floorsets for @storeId Store</h1>
         <br>
-        <h3>@storeLocation</h3>
+        @* <h3>@storeLocation</h3> *@
     </div>
     <div class="right">
         <img height="auto" width="500px" src="/img/FloorsetPhotoExample.png">
@@ -41,12 +41,31 @@ Author: Andrew Fulton (3/13/2025)  *@
         @foreach (var floorset in storedFloorsets)
         {
             <Card Id=@floorset.ID Class="Card" CardText=@floorset.Name CardImage=@floorset.ImagePath>
-                <Dropdown Class="Dropdown" Id="@floorset.dropdownID"
-                    DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-                    DropdownLinks="@(new List<string> { "javascript:window.location.href='/floorset-editor'", "javascript:floorsetDashboardCopyCard('" + @floorset.Name + "')", "#deleteFloorsetModal" })"
-                    LabelText="Floorset"
-                    DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+                <Dropdown Class="Dropdown" Id="@floorset.dropdownID" LabelText="Floorset">
+                    <DropdownLink Link="@($"#editFloorsetTitleModal-{floorset.ID}")" Icon="fa-solid fa-pen-to-square">Edit
+                    </DropdownLink>
+                    <DropdownLink Link="@($"javascript:floorsetDashboardCopyCard('{floorset.Name}')")" Icon="fa-solid fa-copy">
+                        Copy</DropdownLink>
+                    <DropdownLink Link="#deleteFloorsetModal" Icon="fa-solid fa-trash-can" data-bs-toggle="modal">Delete
+                    </DropdownLink>
+                </Dropdown>
             </Card>
+
+            @* + Siona Beaudoin, 4/3/2025, edit the title of floorsets*@
+            <Modal Title="Edit Floorset Title" Id="@("editFloorsetTitleModal-" + floorset.ID)" Class="standard"
+                Variant="standard">
+                <BodyContent>
+                    <TextInput type="text" Id="@("editFloorsetTitleModalTextInput-" + floorset.ID)"
+                        Label="Enter the new name for the floorset:" class="w-100" />
+                </BodyContent>
+
+                <FooterContent>
+                    <p style="margin-left: auto;"></p>
+                    <Button Class="Button" TextAlignment="center" Variant="primary" OnClickFunction="editFloorsetTitle">
+                        Confirm Edit
+                    </Button>
+                </FooterContent>
+            </Modal>
         }
     }
 </div>
@@ -58,6 +77,8 @@ Author: Andrew Fulton (3/13/2025)  *@
         Add Floorset
     </Button>
 </button>
+
+
 
 @* HARD CODED MODAL: Delete Floorset modal *@
 <Modal Title="Confirm Deletion" Id="deleteFloorsetModal" Class="standard" Variant="danger"
@@ -125,6 +146,28 @@ Author: Andrew Fulton (3/13/2025)  *@
         document.querySelector('.modal-backdrop')?.remove();
     }
 
+    function EditFloorsetTitle() {
+        /* Siona Beaudoin - 4/3/2025
+        Function to handle the edit floorset title modal. It retrieves the new title from the input field,
+        checks if it's not empty, and then closes the modal. */
+        let modalId = document.querySelector(".modal.show").id; // Get the ID of the currently shown modal
+        let floorsetID = modalId.replace("editFloorsetTitleModal-", "");
+        let newTitle = document.getElementById("editFloorsetTitleModalTextInput-" + floorsetID).value;
+        if (newTitle.trim() !== "") {
+            console.log("New Floorset Title: " + newTitle);
+
+            // Update the floorset title in the UI (this part may need to be adjusted based on your actual implementation)
+            let floorsetCard = document.getElementById(floorsetID);
+            if (floorsetCard) {
+                floorsetCard.querySelector(".card-content").textContent = newTitle;
+            }
+            document.getElementById("editFloorsetTitleModalTextInput-" + floorsetID).value = "";
+            HideModal(modalId);
+        } else {
+            alert("Please enter a valid title.");
+        }
+    }
+
     function ForceCloseModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
@@ -181,8 +224,8 @@ Author: Andrew Fulton (3/13/2025)  *@
     [Parameter]
     public string? storeId { get; set; }
 
-    [Parameter]
-    public string? storeLocation { get; set; }
+    @* [Parameter]
+    public string? storeLocation { get; set; } *@
 
     //Tristan Calay - 3/22/25
     //Structure to store retreived database information on floorsets for rendering and local updates without page reload.
@@ -225,6 +268,12 @@ Author: Andrew Fulton (3/13/2025)  *@
         await JS.InvokeVoidAsync("DeleteFloorset");
     }
 
+    //Siona Beaudoin - 4/3/2025
+    private async void editFloorsetTitle()
+    {
+        Console.WriteLine("Edit Floorset Title Function Called");
+        await JS.InvokeVoidAsync("EditFloorsetTitle");
+    }
     //general function to take us to the floorsets editor page for a floorset store
     private void goToFloorsetEditorPage()
     {
