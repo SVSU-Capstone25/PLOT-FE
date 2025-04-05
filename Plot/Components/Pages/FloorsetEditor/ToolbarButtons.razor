@@ -25,26 +25,32 @@
 </div>
 
 @code {
-    private void editFixture()
+    [Parameter] public required EventCallback ToggleAllocationsOpen { get; set; }
+
+    private async Task editFixture()
     {
         Console.WriteLine("Edit Fixture Function");
+        await JS.InvokeVoidAsync("setPlace");
+        await ToggleAllocationsOpen.InvokeAsync();
         @* allocationsOpen = false; *@
     }
 
     //The paintCategory button toggles the paint mode of the floorset editor.
     //It passes that information to the javascript.
-    private void togglePaintClicked()
+    private async Task togglePaintClicked()
     {
         Console.WriteLine("Toggle Paint Clicked");
+        await JS.InvokeVoidAsync("togglePaint");
         @* paintModeEnabled = !paintModeEnabled;
         Console.WriteLine("Paint Category Function - set paint mode to " + paintModeEnabled); *@
         @* await JS.InvokeVoidAsync("setPaintEnabled", paintModeEnabled); *@
         @* StateHasChanged(); *@
     }
 
-    private void eraseCategoryClicked()
+    private async Task eraseCategoryClicked()
     {
         Console.WriteLine("Erase Category Function");
+        await JS.InvokeVoidAsync("setErase");
         //Call the func in AllocationsSidebar to remove the styling of the selected category.
         @* if (allocationsSidebar != null)
         {

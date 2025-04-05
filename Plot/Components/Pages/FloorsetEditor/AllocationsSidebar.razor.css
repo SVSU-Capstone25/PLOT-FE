@@ -37,12 +37,6 @@ without the buttons at the bottom ever getting lost */
     height: 70vh;
 }
 
-.AllocationsSidebar {
-    /* Add height here */
-    height: 80vh;
-    padding: 1.5rem;
-}
-
 .category-separator {
     margin: 0.2rem;
     opacity: 0.1;
