@@ -224,95 +224,96 @@
 </Modal>
 
 @* help modal *@
-<Modal Title="Help Page" Id="helpModal" Class="modal-dialog">
+<Modal Title="Help Page" Id="helpModal" Class="modal-xl">
     <BodyContent>
         <h4>Welcome to the Floorset Editor Page!</h4>
         <p>Here’s a quick guide to help you navigate and use the tools available on this page:</p>
 
-        <h5>Sidebar Options</h5>
+        <h5>Add Fixture</h5>
+        <img src="img/add_fixture_button.png" alt="Add Fixture Example" class="img-fluid mb-3" />
         <ul>
-            <li><strong>Add fixture</strong>
+            <li>Create a fixture by specifying:
                 <ul>
-                    <li>Create a fixture by specifying:</li>
-                    <ul>
-                        <li>Name</li>
-                        <li>Dimensions (width × length in feet)</li>
-                        <li>Hanger stack</li>
-                        <li>Linear feet capacity</li>
-                        <li>Total linear feet</li>
-                        <li>Image</li>
-                    </ul>
-                    <li>Fixtures can be dragged/dropped or clicked to appear on the floorset area.</li>
-                    <li>Fixtures on the working area can be moved, annotated, categorized, or sub-categorized.</li>
-                    <li>Includes search and sort by name (asc/desc).</li>
+                    <li>Name</li>
+                    <li>Dimensions (width × length in feet)</li>
+                    <li>Hanger stack</li>
+                    <li>Linear feet capacity</li>
+                    <li>Total linear feet</li>
+                    <li>Image</li>
                 </ul>
             </li>
+            <li>Fixtures can be dragged/dropped or clicked to appear on the floorset area.</li>
+            <li>Fixtures on the working area can be moved, annotated, categorized, or sub-categorized.</li>
+            <li>Includes search and sort by name (asc/desc).</li>
+            <img src="img/add_fixture_search.png" alt="Add Fixture Search" class="img-fluid mb-3" />
+        </ul>
 
-            <li><strong>Edit building walls</strong>
-                <ul>
-                    <li>Set building dimensions (width × length)</li>
-                    <li>Define Employee-only areas</li>
-                    <li>Click <em>Apply</em> to save changes</li>
-                </ul>
-            </li>
+        <h5>Edit Building Walls</h5>
+        <img src="img/edit_walls_button.png" alt="Edit Walls Example" class="img-fluid mb-3" />
+        <ul>
+            <li>Set building dimensions (width × length)</li>
+            <li>Define Employee-only areas</li>
+            <li>Click <em>Apply</em> to save changes</li>
+        </ul>
 
-            <li><strong>View Allocations</strong>
+        <h5>View Allocations</h5>
+        <img src="img/view_allocations_button.png" alt="View Allocations Example" class="img-fluid mb-3" />
+        <ul>
+            <li>Displays all categories and subcategories</li>
+            <li>Color indicators:
                 <ul>
-                    <li>Displays all categories and subcategories</li>
-                    <li>Color indicators:
-                        <ul>
-                            <li>Men – Blue</li>
-                            <li>Women – Pink</li>
-                            <li>Accessories – Green</li>
-                        </ul>
-                    </li>
-                    <li>Selected category has a check mark</li>
-                    <li>Drag categories to assign them to fixtures</li>
-                    <li>Clicking a fixture shows detailed info</li>
-                    <li>Highlighted categories show allocation status from Excel data</li>
-                    <li>Numbers represent:
-                        <ul>
-                            <li>1st: Assigned allocation</li>
-                            <li>2nd: Target allocation</li>
-                        </ul>
-                    </li>
+                    <li>Men – Blue</li>
+                    <li>Women – Pink</li>
+                    <li>Accessories – Green</li>
                 </ul>
             </li>
+            <li>Selected category has a check mark</li>
+            <li>Drag categories to assign them to fixtures</li>
+            <li>Clicking a fixture shows detailed info</li>
+            <li>Highlighted categories show allocation status from Excel data</li>
+            <li>Numbers represent:
+                <ul>
+                    <li>1st: Assigned allocation</li>
+                    <li>2nd: Target allocation</li>
+                </ul>
+            </li>
+        </ul>
+        <img src="img/category_fulfillment.png" alt="Category Fulfillment" class="img-fluid mb-3" />
 
-            <li><strong>Tools</strong>
-                <ul>
-                    <li>Painting tool: Assign categories</li>
-                    <li>Eraser tool: Remove categories</li>
-                    <li>Includes search, sort, and filter options</li>
-                </ul>
-            </li>
+        <h5>Toolbar</h5>
+        <ul>
+            <li>Painting tool: Assign categories</li>
+            <img src="img/paint_button.png" alt="Paint Example" class="img-fluid mb-3" />
+            <li>Eraser tool: Remove categories</li>
+            <img src="img/erase_button.png" alt="Erase Example" class="img-fluid mb-3" />
+            <li>Includes search, sort, and filter options</li>
+        </ul>
 
-            <li><strong>Print Layout</strong>
+        <h5>Import Excel File</h5>
+        <img src="img/import_excel_button.png" alt="Import Excel Example" class="img-fluid mb-3" />
+        <ul>
+            <li>Import floorset data via:
                 <ul>
-                    <li>Preview floorset</li>
-                    <li>Choose printer, page size</li>
-                    <li>Options to include allocations and notes</li>
+                    <li>File picker</li>
+                    <li>Drag and drop</li>
                 </ul>
             </li>
+            <li>Clicking import generates a new floorset</li>
+        </ul>
 
-            <li><strong>Import Excel File</strong>
-                <ul>
-                    <li>Import floorset data via:
-                        <ul>
-                            <li>File picker</li>
-                            <li>Drag and drop</li>
-                        </ul>
-                    </li>
-                    <li>Clicking import generates a new floorset</li>
-                </ul>
-            </li>
+        <h5>Print Layout</h5>
+        <img src="img/print_layout_button.png" alt="Print Layout Example" class="img-fluid mb-3" />
+        <ul>
+            <li>Preview floorset</li>
+            <li>Choose printer, page size</li>
+            <li>Options to include allocations and notes</li>
+        </ul>
 
-            <li><strong>Save</strong>
-                <ul>
-                    <li>Click save to retain your changes</li>
-                    <li><strong>Tip:</strong> Save regularly to avoid losing work</li>
-                </ul>
-            </li>
+        <h5>Save</h5>
+        <img src="img/save_button.png" alt="Save Example" class="img-fluid mb-3" />
+        <ul>
+            <li>Click save to retain your changes</li>
+            <li><strong>Tip:</strong> Save regularly to avoid losing work</li>
         </ul>
 
         <p>Use this help modal for quick guidance on floorset tools and features.</p>
@@ -321,6 +322,8 @@
     <FooterContent>
     </FooterContent>
 </Modal>
+
+
 
 
 @*Print Modal *@
