@@ -36,7 +36,7 @@
     {
         <AllocationsSidebar @ref="allocationsSidebar" />
 
-        <ToolbarButtons ToggleAllocationsOpen="@ToggleAllocations" />
+        <ToolbarButtons EraseButtonClicked="OnEraseCategoryClicked" ToggleAllocationsOpen="@ToggleAllocations" />
     }
     else
     {
@@ -280,7 +280,7 @@
         await JS.InvokeVoidAsync("togglePaint");
     }
 
-    private async Task eraseCategoryClicked()
+    private async Task OnEraseCategoryClicked()
     {
         Console.WriteLine("Erase Category Function");
         await JS.InvokeVoidAsync("setErase");
