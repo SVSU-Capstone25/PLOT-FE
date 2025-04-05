@@ -16,24 +16,69 @@ function setPaint(paint) {
     window.paint = paint;
 }
 
+// Tristan Calay 4/2/25 - Toggles for employee paint/erase mode.
+var isEmployeePaintEnabled = false;
+var isEmployeeEraseEnabled = false;
+
+function toggleEmployeePaint() {
+    isEmployeePaintEnabled = !isEmployeePaintEnabled;
+    console.log("Employee paint mode is " + isEmployeePaintEnabled);
+    var marker = document.getElementById("employeePaintEnabledMarker");
+    if (isEmployeePaintEnabled) {
+        console.log("Setting marker green...")
+        marker.style.color = "green";
+        window.gridState = 'employeePaint';
+    }
+    else {
+        console.log("Setting marker black...")
+        marker.style.color = "black";
+        window.gridState = 'place';
+    }
+}
+
+function toggleEmployeeErase() {
+    isEmployeeEraseEnabled = !isEmployeeEraseEnabled;
+    console.log("Employee Erase mode is " + isEmployeeEraseEnabled);
+    var marker = document.getElementById("employeeEraseEnabledMarker");
+    if (isEmployeeEraseEnabled) {
+        console.log("Setting marker green...")
+        marker.style.color = "green";
+    }
+    else {
+        console.log("Setting marker black...")
+        marker.style.color = "black";
+    }
+}
+
+
 const floorsetGrid = (function () {
     let sketchInstance = null;
 
     class Rack {
-        constructor(sketch, x, y, width, height) {
+        constructor(sketch, x, y, width, height, isEmployee = false) {
             this.sketch = sketch;
             this.x = x;
             this.y = y;
             this.width = width;
             this.height = height;
-            this.color = this.sketch.color(255, 255, 255);
+            this.isEmployee = isEmployee;
+            if (isEmployee) {
+                this.color = this.sketch.color(255, 0, 0, 100);
+            }
+            else {
+                this.color = this.sketch.color(255, 255, 255);
+            }
         }
 
         draw(gridSize) {
+            this.sketch.push();
             this.sketch.fill(this.color);
             this.sketch.stroke(0);
-            this.sketch.strokeWeight(3);
+            if (!this.isEmployee) {
+                this.sketch.strokeWeight(3);
+            }
             this.sketch.rect(this.x, this.y, this.width * gridSize, this.height * gridSize);
+            this.sketch.pop();
         }
     }
 
@@ -61,6 +106,13 @@ const floorsetGrid = (function () {
             };
         }
 
+        isOnGrid(gridX, gridY) {
+            if (gridX >= 0 && gridX < this.x && gridY >= 0 && gridY < this.y) {
+                return true;
+            }
+            return false;
+        }
+
         getRackAt(gridX, gridY) {
             for (const rack of this.racks) {
                 const rackGridX = Math.floor(rack.x / this.size);
@@ -85,6 +137,7 @@ const floorsetGrid = (function () {
         }
 
         draw() {
+            // this.sketch.push();
             this.sketch.fill(255, 255, 255);
             this.sketch.stroke(0, 100);
             this.sketch.strokeWeight(1);
@@ -101,6 +154,7 @@ const floorsetGrid = (function () {
             for (const rack of this.racks) {
                 rack.draw(this.size);
             }
+            // this.sketch.pop();
         }
     }
 
@@ -170,10 +224,36 @@ const floorsetGrid = (function () {
                                 grid.racks.splice(index, 1);
                             }
                         }
+                    } else if (window.gridState === "employeePaint") {
+                        //Handle drawing employee boxes on the grid.
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) {
+                            if (isEmployeeEraseEnabled && rack.isEmployee) {
+                                //Erase this rack if it is an employee area
+                                //console.log("I should erase this rack")
+                                const index = grid.racks.indexOf(rack);
+                                if (index > -1) {
+                                    grid.racks.splice(index, 1);
+                                }
+                            }
+                            //Do nothing if an employee area already exists under the cursor.
+                            //console.log("Don't place a new rack here, one exists already.")
+                        }
+                        else {
+                            if (isEmployeeEraseEnabled || !grid.isOnGrid(gridCoords.x, gridCoords.y)) {
+                                //Don't place a rack if erase mode is on, or is off grid
+                                return;
+                            }
+                            //console.log("I should put a rack here!")
+                            let newEmployeeRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size, 1, 1, true);
+                            grid.racks.push(newEmployeeRack);
+
+                        }
                     } else {
                         const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
                         const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) rack.color = window.paint;
+                        if (rack && !rack.isEmployee) rack.color = window.paint;
                     }
                 };
 
@@ -181,15 +261,40 @@ const floorsetGrid = (function () {
                     if (window.gridState === "paint") {
                         const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
                         const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) rack.color = window.paint;
+                        if (rack && !rack.isEmployee) rack.color = window.paint;
                     } else if (window.gridState === "erase") {
                         const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
                         const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) {
+                        if (rack && !rack.isEmployee) {
                             const index = grid.racks.indexOf(rack);
                             if (index > -1) {
                                 grid.racks.splice(index, 1);
                             }
+                        }
+                    } else if (window.gridState === "employeePaint") {
+                        //Handle drawing employee boxes on the grid.
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) {
+                            if (isEmployeeEraseEnabled && rack.isEmployee) {
+                                //Erase this rack if it is an employee area
+                                //console.log("I should erase this rack")
+                                const index = grid.racks.indexOf(rack);
+                                if (index > -1) {
+                                    grid.racks.splice(index, 1);
+                                }
+                            }
+                            //console.log("Don't place a new rack here, one exists already.")
+                            //Do nothing if an employee area already exists under the cursor.
+                        }
+                        else {
+                            if (isEmployeeEraseEnabled || !grid.isOnGrid(gridCoords.x, gridCoords.y)) {
+                                //Don't place a rack if erase mode is on.
+                                return;
+                            }
+                            //console.log("I should put a rack here!")
+                            let newEmployeeRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size, 1, 1, true);
+                            grid.racks.push(newEmployeeRack);
                         }
                     } else {
                         // Place mode logic

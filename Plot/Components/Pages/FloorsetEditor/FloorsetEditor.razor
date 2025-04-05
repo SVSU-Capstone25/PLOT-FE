@@ -36,7 +36,7 @@
     {
         <AllocationsSidebar @ref="allocationsSidebar" />
 
-        <ToolbarButtons ToggleAllocationsOpen="@ToggleAllocations" />
+        <ToolbarButtons EraseButtonClicked="OnEraseCategoryClicked" ToggleAllocationsOpen="@ToggleAllocations" />
     }
     else
     {
@@ -200,6 +200,56 @@
         allocationsOpen = !allocationsOpen;
     }
 
+    private double width { get; set; }
+    private double length { get; set; }
+
+    /* This function is called when the number is changed */
+    private async Task NumberChanged(string strNumber, Action<double> setValue)
+    {
+        Double.TryParse(strNumber, out double newNumber);
+
+        setValue(newNumber);
+
+        await InvokeAsync(StateHasChanged);
+    }
+    //this method is called when teh apply button in the edit floor layout panel is clicked
+    private async Task ApplyDimensions()
+    {
+        //if either length and width are null
+        if (length <= 0 || width <= 0)
+        {
+            //alerts the user that the data entered is invalid
+            await JS.InvokeVoidAsync("alert", "Please enter valid dimensions greater than 0.");
+            return;
+        }
+        await JS.InvokeVoidAsync("UpdateGridDimensions", length, width);
+    }
+
+    private IBrowserFile? selectedFile;
+
+    /*
+    Set selectedFile to file placed in FileInput Tool
+    */
+    private void HandleFileSelected(IBrowserFile file)
+    {
+        selectedFile = file;
+    }
+
+    // Replace below with processing from the FloorSet Grid FE task
+    // Processes it
+    private void ProcessExcelFile(IBrowserFile file)
+    {
+        // Processing of excel file
+    }
+
+    // Runs when import button is pressed inside modal
+    private void HandleExcelFile()
+    {
+        if (selectedFile == null) return;
+
+        ProcessExcelFile(selectedFile);
+    }
+
     /* Danielle Smith - 3/16/2025
     function that calls a javascript function to open the import file modal */
     private async Task OpenImportModal()
@@ -230,7 +280,7 @@
         await JS.InvokeVoidAsync("togglePaint");
     }
 
-    private async Task eraseCategoryClicked()
+    private async Task OnEraseCategoryClicked()
     {
         Console.WriteLine("Erase Category Function");
         await JS.InvokeVoidAsync("setErase");

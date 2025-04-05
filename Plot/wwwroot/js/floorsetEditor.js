@@ -180,6 +180,8 @@
 //     newBox.id = new Date().getTime(); // Unique ID
 //     container.appendChild(newBox);
 
+
+
 //     newBox.className = "box";
 //     newBox.style.position = "absolute";
 //     var boxSize = size.split("x");
