@@ -23,7 +23,7 @@ public class StoresHttpClient
     // 
     public async Task<List<Store>?> GetListOfStores()//WORKING 
     {
-        string endpoint = "";
+        string endpoint = "get-all";
         HttpMethod httpMethod = HttpMethod.Get;
         JsonContent jsonBody = JsonContent.Create("");
 
@@ -59,7 +59,7 @@ public class StoresHttpClient
 
 
     // [HttpPost]
-    public async Task<Store?> CreateStore(Store store) //WORKING just need to change API endpoint return
+    public async Task<Store?> CreateStore(CreateStore store) //WORKING just need to change API endpoint return
     {
         string endpoint ="";
         HttpMethod httpMethod = HttpMethod.Post;
@@ -77,7 +77,7 @@ public class StoresHttpClient
 
 
     //[HttpPatch("public-info/{storeId:int}")]
-    public async Task<Store?> UpdatePublicInfo(int storeId, Store store)//NOT tested but assumed working
+    public async Task<Store?> UpdatePublicInfo(int storeId, UpdatePublicInfoStore store)//NOT tested but assumed working
     {
         string endpoint =$"/public-info/{storeId}";
         HttpMethod httpMethod = HttpMethod.Patch;
@@ -95,7 +95,7 @@ public class StoresHttpClient
     }
 
     //[HttpPatch("size/{storeId:int}")]
-    public async Task<Store?> UpdateStoreSize(int storeId, Store store)//NOT tested but assumed working
+    public async Task<Store?> UpdateStoreSize(int storeId, UpdateSizeStore store)//NOT tested but assumed working
     {
         string endpoint =$"/size/{storeId}";
         HttpMethod httpMethod = HttpMethod.Patch;

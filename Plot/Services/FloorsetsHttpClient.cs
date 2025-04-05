@@ -21,7 +21,7 @@ public class FloorsetsHttpClient
     
     //  [HttpGet("get-floorsets/{storeId:int}")]
     // 
-    public async Task<List<Select_Floorset>?> GetFloorsetsByStore(int storeId)
+    public async Task<List<Floorset>?> GetFloorsetsByStore(int storeId)
     {
         string endpoint = $"/get-floorsets/{storeId}";
         HttpMethod httpMethod = HttpMethod.Get;
@@ -34,12 +34,12 @@ public class FloorsetsHttpClient
             return null;
         }
 
-        return await response.Content.ReadFromJsonAsync<List<Select_Floorset>>();
+        return await response.Content.ReadFromJsonAsync<List<Floorset>>();
     }
 
  
-    //[HttpPost]THERE IS NO ENDPOINT ON THIS ONE---------------------------------------------------------------------------------
-    public async Task<Select_Floorset?> CreateFloorset(Select_Floorset newFloorset)
+    //[HttpPost]
+    public async Task<int> CreateFloorset(CreateFloorset newFloorset)
     {
         string endpoint ="";
         HttpMethod httpMethod = HttpMethod.Post;
@@ -51,17 +51,17 @@ public class FloorsetsHttpClient
 
         if (!response.IsSuccessStatusCode)
         {
-            return null;
+            return 0;
         }
 
     
-        return await response.Content.ReadFromJsonAsync<Select_Floorset>();
+        return await response.Content.ReadFromJsonAsync<int>();
     }
         
 
 
     // [HttpPatch("public-info/{floorsetId:int}")]
-    public async Task<Select_Floorset?> UpdatePublicInfo(int floorsetId, Select_Floorset floorset)
+    public async Task<int?> UpdatePublicInfo(int floorsetId, UpdatePublicInfoFloorset floorset)
     {
         string endpoint =$"/public-info/{floorsetId}";
         HttpMethod httpMethod = HttpMethod.Patch;
@@ -75,7 +75,7 @@ public class FloorsetsHttpClient
         }
 
         
-        return await response.Content.ReadFromJsonAsync<Select_Floorset>();
+        return await response.Content.ReadFromJsonAsync<int>();
     }
 
 

@@ -11,24 +11,32 @@
     for the instance of a fixture in the application. This will
     look the same as the schema in the database.
 
-    4/4 Updated to match the database schema.-mp
-
     Written by: Jordan Houlihan
 */
 
 namespace Plot.Data.Models.Fixtures;
 
-public class FixtureInstance
+public class FixtureInstance: IEquatable<FixtureInstance>
 {
     public int? TUID { get; set; }
-    public int? FLOORSET_TUID { get; set; }
     public int? FIXTURE_TUID { get; set; }
+    public int? FLOORSET_TUID { get; set; }
     public double? X_POS { get; set; }
     public double? Y_POS { get; set; }
-    public int? HANGER_STACK { get; set; }
-    public double? TOT_LF { get; set; }
     public double? ALLOCATED_LF { get; set; }
-    public string? SUBCATEGORY { get; set; }
+    public float? TOT_LF { get; set; }
+    public int? HANGER_STACK { get; set; }
+    public string? CATEGORY { get; set; }
     public string? NOTE { get; set; }
-    public string? SUPERCATEGORY_TUID { get; set; }
+
+
+    public bool Equals(FixtureInstance other)
+    {
+        if(other is null)
+        {
+            return false;
+        }
+        return this.TUID == other.TUID;
+    }
+
 }

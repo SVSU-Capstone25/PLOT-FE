@@ -39,6 +39,73 @@ public class UsersHttpClient
         return await response.Content.ReadFromJsonAsync<List<UserDTO>>();
     }
 
- 
-    
+
+    public async Task<UserDTO?> GetUserById(int userId)
+    {
+        string endpoint = $"/get-users-by-id/{userId}";
+        HttpMethod httpMethod = HttpMethod.Get;
+        JsonContent jsonBody = JsonContent.Create("");
+
+        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        return await response.Content.ReadFromJsonAsync<UserDTO>();
+    }
+
+
+    public async Task<HttpResponseMessage> UpdateUserPublicInfo(int userId, UpdatePublicInfoUser user)
+    {
+        string endpoint = $"/public-info/{userId}";
+        HttpMethod httpMethod = HttpMethod.Patch;
+        JsonContent jsonBody = JsonContent.Create(user);
+
+        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
+
+        return response;
+    }
+
+
+    public async Task<HttpResponseMessage> DeleteUserById(int userId)
+    {
+        string endpoint = $"/delete-user/{userId}";
+        HttpMethod httpMethod = HttpMethod.Delete;
+        JsonContent jsonBody = JsonContent.Create("");
+
+        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
+
+        return response;
+    }
+
+
+    public async Task<HttpResponseMessage> DeleteFromStore(DeleteUserFromStoreRequest deleteUserFromStoreRequest)
+    {
+        string endpoint = $"/delete-user-from-store";
+        HttpMethod httpMethod = HttpMethod.Delete;
+        JsonContent jsonBody = JsonContent.Create("");
+
+        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
+
+        return response;
+    }
+
+
+    public async Task<Store?> GetStoreOfUserById(int userId)
+    {
+        string endpoint = $"/stores/{userId}";
+        HttpMethod httpMethod = HttpMethod.Get;
+        JsonContent jsonBody = JsonContent.Create("");
+
+        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        return await response.Content.ReadFromJsonAsync<Store>();
+    }
 }
