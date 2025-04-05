@@ -28,6 +28,7 @@ No author was given.
 @inject NavigationManager Navigation
 @using System;
 @using System.Collections.Generic;
+@using System.Net.Mail;
 
 <div class="d-flex flex-column align-content-between user-dashboard">
     <div class="mb-4 table-set">
@@ -142,7 +143,7 @@ No author was given.
                 @* Role Select Option *@
 
                 <OptionInput ID="UserRole" label="Role" optionsValues=userRoles optionsText=userRoles
-                    OnSelectFunction="setUserRole" Class="user-option-input user-option-role" />
+                    OnSelectFunction="SetUserRole" Class="user-option-input user-option-role" />
 
                 @* Store Selection *@
 
@@ -219,8 +220,6 @@ No author was given.
 
         <TextInput Id="deleteTextInput" Label="If so, type DELETE here" Type="Text" Placeholder="Type DELETE here"
             Value="@confirmDelete" ValueChanged="ValidateDelete" />
-
-        <p class="validation-message">@deleteError</p>
 
     </BodyContent>
 
@@ -316,7 +315,15 @@ No author was given.
 
 @code {
     // User object for information in edit in update user modal
+    // (add or edit)
     private User inEditUser = new User();
+
+    // Unicode lit Declarations
+    private List<int> hyphen_unicodes = new List<int>();
+
+    private List<int> apostrophe_unicodes = new List<int>();
+
+    private int space_unicode = 0x0020; /*Space unicode */
 
     // Holds details about modal (Id, Title, Header, Description,
     // Button Text)
@@ -336,7 +343,6 @@ No author was given.
     private string firstNameError = "";
     private string lastNameError = "";
     private string emailError = "";
-    private string deleteError = "";
 
     // Tracking validity of fields
     // For Add User modal
@@ -347,9 +353,6 @@ No author was given.
     // These start as "Select an Option" and so are false
     private bool isRoleValid = false;
     private bool isStoreValid = false;
-
-    // General character limit for text fields
-    const int CHAR_LIMIT = 32;
 
     // Roles
     // Basic roles list
@@ -383,56 +386,67 @@ No author was given.
     // User selected when clicking on a row
     private User selectedUser = new User();
 
-    // Id of next user if another is added initialized at 1
-    private int nextUserId = 1;
-
+    /* Controls whether pick from available (left side)
+        and unpick from selected (right side)
+        are enabled or disabled */
     private bool isPickFromAvailDisabled = false;
     private bool isUnpickFromSelDisabled = false;
 
     /* Program runs on initialization */
     protected override void OnInitialized()
     {
+        /* Unicode initializations
+           Given in unicode hexadecimal
+           https://unicodelookup.com/#0x2010/1 <-- To do: Remove or
+           or reposition for reference */
+
+        // hyphen (‐), en dash (–), em dash (—), hyphen-minus (-)
+        hyphen_unicodes.AddRange(new List<int>{0x2010, 0x2013, 0x2014, 0x2D});
+
+        /* apostrophe( ' ), grave accent( ` ), accute accent( ´ ) */
+        apostrophe_unicodes.AddRange(new List<int>{0x0027,0x0060,0x00B4});
+
         // Handling stores
 
         // Example stores - Replace with logic to handle
         // data from database after being hooked up
-        stores = new List<string> { "Store 1", "Store 2", "Store 3", "Store 4", "Store 5", "Store 6", "Store 7", "Store 8",
-"Store 9" };
+        stores = new List<string> { "Store 1", "Store 2", "Store 3", "Store 4",
+            "Store 5", "Store 6", "Store 7", "Store 8","Store 9" };
 
         // Example data for demo
         users = new List<User>{
-new User {
-Id = nextUserId++, // Id increments for the next user
-FirstName = "Clayton",
-LastName = "Cook",
-Email = "clayton@company.com",
-Role = "Owner",
-Stores = new List<string> { "Store 1", "Store 2", "Store 3" }
+            new User {
+            Id = 1,
+            FirstName = "Clayton",
+            LastName = "Cook",
+            Email = "clayton@company.com",
+            Role = "Owner",
+            Stores = new List<string> { "Store 1", "Store 2", "Store 3" }
 
-},
-new User {
-Id = nextUserId++, // Id increments for the next user
-FirstName = "Andrew",
-LastName = "Miller",
-Email = "andrew@company.com",
-Role = "Manager",
-Stores = new List<string> { "Store 4", "Store 5", "Store 6"}
-},
-new User {
-Id = nextUserId++, // Id increments for the next user
-FirstName = "Jane",
-LastName = "Smith",
-Email = "jane@company.com",
-Role = "Employee",
-Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
-}
-};
+            },
+            new User {
+            Id = 2,
+            FirstName = "Andrew",
+            LastName = "Miller",
+            Email = "andrew@company.com",
+            Role = "Manager",
+            Stores = new List<string> { "Store 4", "Store 5", "Store 6"}
+            },
+            new User {
+            Id = 3, // Id increments for the next user
+            FirstName = "Jane",
+            LastName = "Smith",
+            Email = "jane@company.com",
+            Role = "Employee",
+            Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
+            }
+            };
 
         // Fill roles with owner, manager, and employee
         roles = new List<string>
-{"Owner",
-"Manager",
-"Employee"};
+                    {"Owner",
+                    "Manager",
+                    "Employee"};
 
         // Set user roles (empty OptionInputs give an error otherwise)
         userRoles = new List<string> { "Bug - Failed to fill" };
@@ -572,14 +586,14 @@ Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
 
         users.Add(
         new User
-        {
-            Id = nextUserId++, // Id increments for the next user
-            FirstName = inEditUser.FirstName,
-            LastName = inEditUser.LastName,
-            Email = inEditUser.Email,
-            Role = inEditUser.Role,
-            Stores = inEditUser.Stores
-        }
+            {
+                Id = users.Count + 1, // Id increments for the next user
+                FirstName = inEditUser.FirstName,
+                LastName = inEditUser.LastName,
+                Email = inEditUser.Email,
+                Role = inEditUser.Role,
+                Stores = inEditUser.Stores
+            }
         );
 
         // Reset user for adding new user
@@ -615,33 +629,8 @@ Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
 
     /* Modal data and button-handling functions */
 
-    // Validate delete text field on change - if valid (<= 32 characters, check if
-    // delete button should be enabled or disabled)
-    private void ValidateDelete(string text)
-    {
-        if (ValidateLength(text, "Delete Text", ref deleteError, CHAR_LIMIT)) { EnableDelete(text); }
-    }
-
-    private bool ValidateLength(string text, string textLocation,
-    ref string errorMsg, int charLimit)
-    {
-        /* text: text in the text box
-        textLocation: String at beginning of error message to refer to the text field
-        errorMsg: References error message bound to paragraph element in modal
-        charLimit: character limit
-        */
-
-        if (text.Length > charLimit)
-        {
-            ErrorTooLong(textLocation, ref errorMsg, charLimit);
-            return false;
-        }
-
-        return true; // Length is valid
-    }
-
     // Enable or disable delete button
-    private void EnableDelete(string value)
+    private void ValidateDelete(string value)
     {
         // set confirmDelete variable to value
         confirmDelete = value;
@@ -664,16 +653,12 @@ Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
 
     // Clear error message for variable
     // given by reference parameter
-    private void ClearError(ref string errorMsg)
-    {
-        errorMsg = "";
-    }
+    private void ClearError(ref string errorMsg){ errorMsg = ""; }
 
     // Set update user button to disabled
     private void SetUpdateUserDisabled()
     {
-        Console.WriteLine("Checking if button should be disabled");
-        Console.WriteLine("Store:" + isStoreValid);
+        /* Depends on each field being valid for submission*/
         isUpdateUserDisabled = !(isFirstValid & isLastValid & isEmailValid & isRoleValid & isStoreValid);
 
         StateHasChanged();
@@ -708,7 +693,7 @@ Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
         StateHasChanged();
     }
 
-    private async Task UnpickFromSel()
+    private async Task UnpickFromSel() /* Unpick stores that were selected */
     {
         Console.WriteLine("unpicking");
         List<string> stores_to_remove = await JS.InvokeAsync<List<string>>("GetSelectedOptions", "UserSelStores");
@@ -716,7 +701,7 @@ Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
         inEditUser.Stores.RemoveAll(store => stores_to_remove.Contains(store));
         inEditUser.Stores.Sort();
 
-        SetStoreBtnDisabled();
+        SetStoreBtnDisabled(); /* Set if store button should be disabled */
 
         StateHasChanged();
 
@@ -731,7 +716,7 @@ Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
     }
 
     // Set role for user being edited
-    private void setUserRole(string role)
+    private void SetUserRole(string role)
     {
         if (role == optionHeader)
         {
@@ -774,81 +759,65 @@ Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
         selectedUser = new User(); // Selected User no longer selected
         confirmDelete = ""; // Delete textbox should now be empty
         isDeleteDisabled = false; // Delete enabled
-        deleteError = ""; // Empty delete error message
 
         StateHasChanged();
     }
 
     /* Validation and Error-Display methods */
 
-    // Produces Error message if a text field is too long
-    private void ErrorTooLong(string textLocation, ref string errorMsg, int charLimit)
-    {
-        // textLocation: References textbox that has error message
-        // First Name or Last Name or Email
-        // errorMsg: References bound variable to the error paragraph
-        // charLimit: character limit that has been exceeded
-
-        errorMsg = textLocation + " is too long. Limit is " + charLimit + " characters.";
-    }
-
     // Produces Error message if a text field is not alphabetic
-    private void ErrorNotAlpha(string textLocation, ref string errorMsg)
+    private void ErrorInvalidChar(string textLocation, ref string errorMsg)
     {
         // textLocation: References textbox that has error message
         // First Name or Last Name
         // errorMsg: References bound variable to the error paragraph
-        errorMsg = textLocation + " is not alphabetic.";
+        errorMsg = textLocation + " has invalid characters. Valid characters are letters, apostrophes, hyphens, and spaces.";
     }
 
     // Validates email characters - letters, digits, period, or @
-    private bool ValidateEmailChar(char c) { return Char.IsLetterOrDigit(c) || c == '.' || c == '@'; }
+    private bool ValidateEmailChar(char c) { 
+        return (
+        Char.IsLetterOrDigit(c) ||
+        c == '.' ||
+        c == '@' ||
+        "!#$%&'*+-/=?^_`{|}~".Contains(c)
+        );
+    }
 
     // Is text present?
     private bool IsTextPresent(string text) { return (text.Length > 0); }
 
-    private bool ValidateAlpha(string text, string textLocation,
-    ref string errorMsg, int charLimit)
-    {
-        /* text: text in the text box
-        textLocation: String at beginning of error message to refer to the text field
-        errorMsg: References error message bound to paragraph element in modal
-        charLimit: character limit
-        */
+    // Validate character for validating names
+    private bool ValidateNameChar(char character) {
+        int unicode = character;
 
-        if (text.All(c => Char.IsLetter(c)))
-        {
-            return true; // All are alphabetical
-        }
-        else
-        { // All are not alphabetical
-            ErrorNotAlpha(textLocation, ref errorMsg);
-            return false;
-        }
+        return
+        (hyphen_unicodes.Contains(unicode) ||       /* hyphens */
+        unicode == space_unicode ||                 /* space */
+        apostrophe_unicodes.Contains(unicode) ||    /* apostrophe */
+        Char.IsLetter(character));                  /* letter */
     }
 
     private void ValidateName(string text, string textLocation,
-    ref string errorMsg, int charLimit, ref bool isNameValid)
+    ref string errorMsg, ref bool isNameValid)
     {
         /* text: text from TextInput,
         textLocation: Refers to text location for use in error message i.e. "first name"
         or "last name"
         errorMsg: error message
-        charLimit: character limit
         isNameValid: References flag for whether text field is valid
         */
 
-        if (ValidateLength(text, textLocation, ref errorMsg, charLimit) &
-        ValidateAlpha(text, textLocation, ref errorMsg, charLimit))
+        if (text.All(c => ValidateNameChar(c)))
         {
-
             ClearError(ref errorMsg); // Clear error message
             isNameValid = IsTextPresent(text); // Referenced flag for name validity
                                                // depends on if text is present
         }
         else
-        {
+        { // All do not meet the requirements
             isNameValid = false; // Set referenced flag for name validity to false
+            ErrorInvalidChar(textLocation, ref errorMsg);
         }
     }
 
@@ -857,12 +826,10 @@ Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
         inEditUser.FirstName = text; // Set first name parameter to text
 
         ValidateName(text, "First Name",
-        ref firstNameError, CHAR_LIMIT, ref isFirstValid);
+        ref firstNameError, ref isFirstValid);
 
         SetUpdateUserDisabled();
     }
-
-
 
     private void ValidateLastName(string text)
     {
@@ -870,61 +837,52 @@ Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
         inEditUser.LastName = text;
 
         ValidateName(text, "Last Name",
-        ref lastNameError, CHAR_LIMIT, ref isLastValid);
+        ref lastNameError, ref isLastValid);
 
         SetUpdateUserDisabled();
     }
 
-    private bool ValidateEmailText(string text)
-    {
+    private void ValidateEmail(string email)
+    { /* Validate Email */
+        /* Checks if email is properly formatted using 
+           MailAddress class,
+           Checks if email is unique
+           Checks if text is present in the textbox
+        */
 
-        // Validates each character of email
-        if (text.All(c => ValidateEmailChar(c)))
+
+        inEditUser.Email = email; /* Set inEditUser parameter to email text */
+
+        /* Attempts to make a mail address object
+        Will fail if the email address is not
+        properly formatted */
+        try
         {
-            return true; // Email text is valid
+            // If making MailAddress object succeeds, email
+            // is properly formatted
+            var addr = new MailAddress(email);
+
+            // Email's characters and format is valid - Is the email unique?
+            if ((users.FirstOrDefault(user => user.Email == email) != null) &&
+            !(email == selectedUser.Email)) /* Email in users and not the email of the selected user*/
+            {
+                isEmailValid = false;
+                emailError = "Email must be unique.";
+            }
+            else{
+                emailError = ""; // Empty email validation message
+                isEmailValid = IsTextPresent(email); // The isEmailValid flag depends on if text is present
+            }
         }
-        else
-        { // Set email error, return false
-            emailError = "Email has invalid characters. characters must be alphanumeric, " +
-            "the period '.' or the at symbol '@'";
-            return false;
-        }
-    }
-
-
-    @* Validate email *@
-    private void ValidateEmail(string text)
-    {
-        inEditUser.Email = text; // Set email to text
-
-
-        // Email must be unique: Either not found in users or not
-        // matches what the email of the selected user was
-        if ((users.FirstOrDefault(user => user.Email == text) != null) &&
-        !(text == selectedUser.Email))
+        catch /* Failed - Email address not properly formatted */
         {
-            emailError = "Email must be unique.";
             isEmailValid = false;
-        }
-        else if (text.Length > CHAR_LIMIT) // Email is not too long
-        {
-            ErrorTooLong("Email", ref emailError, CHAR_LIMIT);
-            isEmailValid = false;
-        }
-        else if (!text.All(c => ValidateEmailChar(c))) // Email characters are valid
-        {
-            // Validate email characters
-            emailError = "Email has invalid characters. characters must be alphanumeric, " +
-            "the period '.' or the at symbol '@'";
-            isEmailValid = false;
-        }
-        else
-        { // Doesn't need a validation message - Just check if there is text present
-            ClearError(ref emailError);
-            isEmailValid = IsTextPresent(text);
+            emailError = "Invalid email address format";
         }
 
-        SetUpdateUserDisabled(); // Determine if button should be disabled
+        /* Check if button to update user (for add/edit) should be disabled */
+        SetUpdateUserDisabled();
+
     }
 
     // User class
