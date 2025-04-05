@@ -21,7 +21,7 @@ Author: Andrew Kennedy (4/4/2025) - Added IsStatic parameter
 when true, modal does not close when user clickes outside or presses esc
 -->
 
-<div class="modal fade" id="@Id" tabindex="-1" data-bs-backdrop="@(IsStatic == true ? "static" : "")"
+<div class="modal fade" id="@Id" tabindex="-1" data-bs-backdrop="true" data-bs-focus="false"
     data-bs-keyboard="@(IsStatic == true ? "false" : "true")" aria-labelledby="@Id + 'Label'">
     <div class="modal-dialog Modal @Class">
         <div class="modal-content border-0">

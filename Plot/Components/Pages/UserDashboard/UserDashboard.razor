@@ -73,15 +73,18 @@ No author was given.
                             dynamically reflecting the id of the user
                             Provides Edit and Delete options which 
                             open Edit User and Delete User Modals *@
-                                <Dropdown Id="@($"Dropdown-{user.Id}")"
-                                    DropdownText="@(new List<string> { "Edit", "Delete" })" DropdownLinks="@(new List<string> { "#UpdateUserModal",
-                                                                                                                                "#DeleteUserModal" })" LabelText="Role" DropdownIcons="@(new List<string>
-                                                                                                                                { "fa-solid fa-pen-to-square",
-                                                                                                                            "fa-regular fa-trash-can" })" />
-                        </div>
-                    </td>
-                </tr>
-                                }
+
+                                <Dropdown Id="@($"Dropdown-{user.Id}")" LabelText="Role">
+                                    <DropdownLink Link="#UpdateUserModal" Icon="fa-solid fa-pen-to-square"
+                                        data-bs-toggle="modal">Edit</DropdownLink>
+                                    <DropdownLink Link="#DeleteUserModal" Icon="fa-regular fa-trash-can"
+                                        data-bs-toggle="modal">Delete
+                                    </DropdownLink>
+                                </Dropdown>
+                            </div>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
