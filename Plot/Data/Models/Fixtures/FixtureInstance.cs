@@ -30,7 +30,7 @@ public class FixtureInstance: IEquatable<FixtureInstance>
     public string? NOTE { get; set; }
 
 
-    public bool Equals(FixtureInstance other)
+    public bool Equals(FixtureInstance? other)
     {
         if(other is null)
         {

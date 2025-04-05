@@ -17,7 +17,8 @@ Author: Andrew Fulton (3/12/2025)
 @inject NavigationManager Navigation
 @using System.Drawing;
 @using System.IO;
-
+@inject StoresHttpClient storeClient;
+@inject UsersHttpClient userClient;
 @using Plot.Components.PartialComponents.NumericInput
 @using Plot.Components.PartialComponents.Modal
 
@@ -700,10 +701,15 @@ Author: Andrew Fulton (3/12/2025)
 
 
     //initialize components
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
         //Get the dotnet into JS
         dotNet = DotNetObjectReference.Create(this);
+
+        // Call the Store service to get all the stores for a user
+        var result = await storeClient.GetStoreAccessByUserId();
+
+       
 
         users.Add(new User
         {
