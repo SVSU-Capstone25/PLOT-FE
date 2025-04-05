@@ -23,30 +23,30 @@ var isEmployeeEraseEnabled = false;
 function toggleEmployeePaint() {
     isEmployeePaintEnabled = !isEmployeePaintEnabled;
     console.log("Employee paint mode is " + isEmployeePaintEnabled);
-    var marker = document.getElementById("employeePaintEnabledMarker");
+    //var marker = document.getElementById("employeePaintEnabledMarker");
     if (isEmployeePaintEnabled) {
         console.log("Setting marker green...")
         marker.style.color = "green";
-        window.gridState = 'employeePaint';
+        //window.gridState = 'employeePaint';
     }
     else {
         console.log("Setting marker black...")
         marker.style.color = "black";
-        window.gridState = 'place';
+        //window.gridState = 'place';
     }
 }
 
 function toggleEmployeeErase() {
     isEmployeeEraseEnabled = !isEmployeeEraseEnabled;
     console.log("Employee Erase mode is " + isEmployeeEraseEnabled);
-    var marker = document.getElementById("employeeEraseEnabledMarker");
+    //var marker = document.getElementById("employeeEraseEnabledMarker");
     if (isEmployeeEraseEnabled) {
         console.log("Setting marker green...")
-        marker.style.color = "green";
+        //marker.style.color = "green";
     }
     else {
         console.log("Setting marker black...")
-        marker.style.color = "black";
+        //marker.style.color = "black";
     }
 }
 
