@@ -8,7 +8,7 @@
 @using System.Net.Http.Headers
 @using Microsoft.AspNetCore.Components.Authorization
 @inject HttpClient Client
-@inject AuthHttpClient AuthHttpClient
+@inject AuthHeaderHttpClient AuthHeaderHttpClient
 @inject NavigationManager Navigation
 @inject IHttpContextAccessor HttpContextAccessor
 @inject AuthService AuthService
@@ -43,7 +43,7 @@
 
 <body class="background">
     <div class="login">
-        <form class="body-content" onsubmit="@AuthTest">
+        <form class="body-content" onsubmit="@LogOut">
             
             <Button Class="Button" Id="buttonFail" Variant="primary" Icon="" Type="submit" IsDisabled=false
                 TextAlignment="center">
@@ -51,7 +51,7 @@
             </Button>
             
         </form>
-        <form class="body-content" onsubmit="@TalkToEndpoint">
+        <form class="body-content" onsubmit="@LogOut">
             
             <Button Class="Button" Id="buttonPass" Variant="primary" Icon="" Type="submit" IsDisabled=false
                 TextAlignment="center">
@@ -84,40 +84,6 @@
 
 @code
 {
-    private async void AuthTest()
-    {   //Set the kind of htpMethod
-        AuthHttpClient.httpMethod=HttpMethod.Post;
-        //The endpoint of the api, can be found in BE Controllers
-        AuthHttpClient.endPointStr="/authtest/auth-test";
-        //Send and wait for the response
-        var response = await AuthHttpClient.SendAsyncWithAuth();
-
-        Console.WriteLine(response);
-    }
-
-    private async void TalkToEndpoint()
-    {
-        //Set the kind of htpMethod
-        AuthHttpClient.httpMethod=HttpMethod.Post;
-        //The endpoint of the api, can be found in BE Controllers
-        AuthHttpClient.endPointStr="/authtest/data-test";
-        // When sending in data to the api bind to the model the api is useing
-        // Model can be found in BE /Data/Models
-        AuthHttpClient.jsonBody= JsonContent.Create(new
-            {
-                EmailAddress = "Example@example"
-            }
-        );
-        //Wait response
-        var response = await AuthHttpClient.SendAsyncWithAuth();
-        
-        //get it back as json
-        var json = await response.Content.ReadAsStringAsync();
-
-        Console.WriteLine(json);
-        //Looks like: {"emailAddress":"new@email.com"}
-
-    }
 
     private async void LogOut()
     {   
