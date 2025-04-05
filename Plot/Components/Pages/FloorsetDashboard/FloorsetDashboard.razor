@@ -12,7 +12,7 @@ Author: Andrew Fulton (3/13/2025)  *@
 
 @* /floorsets/Flint, MI/3192 S Linden Rd, Flint, MI 48507 *@
 
-@page "/floorsets/{storeId}/{storeLocation}"
+@page "/floorsets/{storeId}"
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
 
@@ -21,7 +21,7 @@ Author: Andrew Fulton (3/13/2025)  *@
     <div class="left">
         <h1 font-size="3em">Floorsets for @storeId Store</h1>
         <br>
-        <h3>@storeLocation</h3>
+        @* <h3>@storeLocation</h3> *@
     </div>
     <div class="right">
         <img height="auto" width="500px" src="/img/FloorsetPhotoExample.png">
@@ -165,8 +165,8 @@ Author: Andrew Fulton (3/13/2025)  *@
     [Parameter]
     public string? storeId { get; set; }
 
-    [Parameter]
-    public string? storeLocation { get; set; }
+    @* [Parameter]
+    public string? storeLocation { get; set; } *@
 
     //Tristan Calay - 3/22/25
     //Structure to store retreived database information on floorsets for rendering and local updates without page reload.

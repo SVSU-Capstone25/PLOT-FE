@@ -29,10 +29,10 @@ Author: Andrew Fulton (3/12/2025)
     @* loop to generate a card for each store that exists *@
     @foreach (var store in stores)
     {
-        <a href="@($"/floorsets?store={store.Id}")">
+        <a href="@($"/floorsets/{store.Id}")">
             <Card CardText="@($"{store.City},{store.State}")" CardImage="@($"{store.Blueprint_Image}")">
                 <Dropdown Class="Test Dropdown" Id="@($"{store.Name}{store.Id}Dropdown")" LabelText="Store">
-                    <DropdownLink Link="@($"/floorsets?store={store.Id}")" Icon="fa-solid fa-note-sticky">Floorsets
+                    <DropdownLink Link="@($"/floorsets/{store.Id}")" Icon="fa-solid fa-note-sticky">Floorsets
                     </DropdownLink>
 
                     <DropdownLink @onclick="() => OnEditClick(store)" Link="#editStoreModal"
