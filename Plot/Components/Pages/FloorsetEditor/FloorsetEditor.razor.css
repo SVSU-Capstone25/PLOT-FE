@@ -55,3 +55,8 @@
     display: flex;
     flex-direction: column;
 }
+
+/*TODO: This didn't work - Tried to disable touch action in relation to this issue */
+#FloorsetSlideOut {
+    touch-action: none;
+}
