@@ -4,7 +4,7 @@
 
 @* Add Fixture Modal *@
 @{    
-    <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture">
+    <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture" IsStatic=true OnCancelFunction="ClearTempFixtureData">
         <BodyContent>
             <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@ModalName" ValueChanged="@((v)=> ModalName = v)"/>
             <div class="d-flex flex-row align-items-center justify-content-between">
@@ -82,7 +82,6 @@
             <NumericInput Id="add-hanger-stack" Label="Hanger Stack" Placeholder="2" Description="Enter the number of vertically stacked racks"
             Value="@ModalHangerStack" ValueChanged="@(v => {
                         ModalHangerStack = v; 
-                        ModalFixtureImg = v;
                         
                         // If the LF capacity and the hanger stack have values, calculate total LF
                         if (ModalLFCapacity.Equals("") || ModalHangerStack.Equals("")) {
@@ -112,12 +111,20 @@
 
         <FooterContent>
             <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async (e) => {
-                await AddFixture(new Fixture(ModalName,ModalLength,ModalWidth,ModalHangerStack,ModalFixtureImg));
-                
+                await AddFixture();
+                StateHasChanged();
             })>Add</Button>
         </FooterContent>
     </Modal>
 }
+
+<script>
+    function SetFixtureImage(elementID,strUrl) {
+
+    }
+
+</script>
+
 
 @code {
     // Temporary fields for the Add Fixture modal.
@@ -127,19 +134,27 @@
     string ModalLFCapacity = "";
     string ModalHangerStack = "";
     string ModalTotalLF = "";
-    string ModalFixtureImg = "";
 
     /*
         The AddFixture function adds the fixture to the dictionary and clears the temporary fields.
     */
-    public async Task AddFixture(Fixture currFixture)
+    public async Task AddFixture()
     {
         try {
+            Fixture newFixture = new Fixture(
+                ModalName,
+                ModalLength,
+                ModalWidth,
+                ModalHangerStack,
+                await getImageUrlAdd()
+            );
+
             // If the fixture has valid values, add to the dictionary and close the modal.
-            if (!currFixture.HasNullProperties()) {
-                Fixture.fixtures.Add(currFixture.Name, currFixture);
+            if (!newFixture.HasNullProperties()) {
+                Fixture.fixtures.Add(newFixture.Name, newFixture);
                 await JS.InvokeVoidAsync("toggleModal","addFixture",false);
-                ClearTempFixtureData();
+                await ClearTempFixtureData();
+                StateHasChanged();
             } else {
                 // If not, tell the user to fill out all fields.
                 await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
@@ -155,18 +170,28 @@
     
     }
 
+    // function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag
+    private async Task<string> getImageUrlAdd()
+    {
+        string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "add-fixtureimg");
+
+        // Check if the string is null or empty, return default image if true
+        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
+    }
+
     /*
         The ClearTempFixtureData function clears the data from the fields in the Add Fixture modal.
     */
     [JSInvokable]
-    public void ClearTempFixtureData() {
+    public async Task ClearTempFixtureData() {
         ModalName = "";
         ModalLength = "";
         ModalWidth = "";
         ModalLFCapacity = "";
         ModalHangerStack = "";
         ModalTotalLF = "";
-        ModalFixtureImg = "";
-        StateHasChanged();
+
+        await JS.InvokeVoidAsync("ClearBackgroundImage","add-fixtureimg");
+
     }
 }

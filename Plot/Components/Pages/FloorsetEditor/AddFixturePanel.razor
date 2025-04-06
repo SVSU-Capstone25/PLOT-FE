@@ -32,20 +32,34 @@
                 data-width="@currFixture.Width" data-height="@currFixture.Length" ondragstart="createDraggable(event)">
                 <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="" draggable="false">
                 <p class="fixture-text m-0 disable-select text-truncate">@currFixture.Name</p>
-                <Dropdown
-                    DropdownLinks="@(new List<string> { "#editFixture-" + currFixture.Name.Replace(" ", ""), "#deleteFixture-" + currFixture.Name.Replace(" ", "") })"
-                    DropdownIcons="@icons" DropdownText="@texts" class="fixture-options ms-auto disable-select"
-                    id="@(" fixture-options" + currFixture.Name)" LabelText="Fixture">
+                <Dropdown id="@(" fixture-options" + currFixture.Name)" class="fixture-options ms-auto disable-select" LabelText="Fixture">
+                    <DropdownLink 
+                        @onclick="() => OnEditClick(currFixture)" Icon="@icons[0]">
+                        @texts[0]
+                    </DropdownLink>
+
+                    <DropdownLink Link="@(String.Concat("#deleteFixture-" + currFixture.Name.Replace(" ", "")))" 
+                        @onclick="() => OnDeleteClick(currFixture)" Icon="@icons[1]">
+                        @texts[1]
+                    </DropdownLink>
+                    
+                    
                 </Dropdown>
             </div>
         }
     </div>
 </div>
 
+
+
 @code {
     /* Danielle Smith - 3/24/2025
     added back add fixture stuff & also made it so expansions work properly with it */
     [Parameter] public EventCallback ToggleAddFixture { get; set; }
+
+    public static Fixture? editedFixtureInfo;
+    public static Fixture? selectedFixture;
+    public Fixture? deletingFixture;
 
     /*
     The FilterBtn function calls a JS function to flip the order of the fixture tiles.
@@ -66,4 +80,36 @@
     {
         await JS.InvokeVoidAsync("toggleModal", "addFixture", true);
     }
+
+    /*
+        The OnEditClick function is called when the user clicks the edit button on a fixture.
+    */
+    private async Task OnEditClick(Fixture currFixture)
+    {
+        await JS.InvokeVoidAsync("toggleModal","editFixture",true);
+
+        selectedFixture = currFixture;
+
+        editedFixtureInfo = new Fixture(
+            selectedFixture.Name,
+            selectedFixture.Length,
+            selectedFixture.Width,
+            selectedFixture.HangerStack,
+            selectedFixture.FixtureImg
+        );
+
+        await JS.InvokeVoidAsync("SetBackgroundImage","editFixture",selectedFixture.FixtureImg);
+
+        
+    }
+
+    /*
+        The OnDeleteClick function is called when the user clicks the delete button on a fixture.
+    */
+    private async Task OnDeleteClick(Fixture currFixture) {
+        deletingFixture = currFixture;
+        await JS.InvokeVoidAsync("toggleModal","deleteFixture",true);
+    }
+
+
 }

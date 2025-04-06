@@ -444,20 +444,20 @@ function flipOrder() {
 /*
     The addFixtureClose function adds an event listener to the add button in the Add Fixture modal.
 */
-function addFixtureClose(dotNet) {
-    $("#addFixture").on('hidden.bs.modal', function (e) {
-        // Call the C# function to clear the data from the Add Fixture modal
-        dotNet.invokeMethodAsync("ClearTempFixtureData");
+// function addFixtureClose(dotNet) {
+//     $("#addFixture").on('hidden.bs.modal', function (e) {
+//         // Call the C# function to clear the data from the Add Fixture modal
+//         dotNet.invokeMethodAsync("ClearTempFixtureData");
 
-        // Clear the data from the image input
-        var imgInput = document.querySelector('#addFixture .img-input .ImageInput');
-        imgInput.style.backgroundImage = "";
-        imgInput.classList.add("dashed-border");
+//         // Clear the data from the image input
+//         var imgInput = document.querySelector('#addFixture .img-input .ImageInput');
+//         imgInput.style.backgroundImage = "";
+//         imgInput.classList.add("dashed-border");
 
-        // Remove the modal-backdrop on close
-        document.querySelectorAll('.modal-backdrop')?.forEach(m => m.remove());
-    })
-}
+//         // Remove the modal-backdrop on close
+//         document.querySelectorAll('.modal-backdrop')?.forEach(m => m.remove());
+//     })
+// }
 
 /*
     The searchInputChange function adds an event listener to the fixture search bar.
@@ -486,7 +486,37 @@ function searchInputChange() {
     }, 10);
 }
 
+//method to set the background image of the edit modal imageinput to the fixture's image
+    function SetBackgroundImage(elementId, strUrl) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.style.backgroundImage = strUrl;
+            element.classList.remove("dashed-border");
+        }
+    }
 
+//function used to clear the imageInput background
+    function ClearBackgroundImage(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.style.backgroundImage = "none";
+            element.classList.add("dashed-border");
+        }
+    }
+
+// function to get the URL of the image from the elemebts style tag
+    function getBackgroundImageUrl(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            const style = window.getComputedStyle(element);
+            const backgroundImage = style.backgroundImage;
+            // Extract the URL from the backgroundImage string in the style tag
+            const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+            //return urlMatch[1], which is the data URL string
+            return urlMatch && urlMatch[1] ? urlMatch[1] : null;
+        }
+        return null;
+    }
 
 /*
     The toggleModal function toggles the visibility of a given modal.
