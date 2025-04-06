@@ -20,13 +20,14 @@ const floorsetGrid = (function () {
     let sketchInstance = null;
 
     class Rack {
-        constructor(sketch, x, y, width, height) {
+        constructor(sketch, x, y, width, height, id) {
             this.sketch = sketch;
             this.x = x;
             this.y = y;
             this.width = width;
             this.height = height;
             this.color = this.sketch.color(255, 255, 255);
+            this.id = id;
         }
 
         draw(gridSize) {
@@ -52,6 +53,14 @@ const floorsetGrid = (function () {
 
         get y() {
             return window.gridHeight ?? 10;
+        }
+
+        get nextID() {
+            if (this.racks.length <= 0) {
+                return 0;
+            }
+            //Return the next id in the sequence based on the last ID in the array, plus 1.
+            return this.racks[this.racks.length - 1].id + 1;
         }
 
         toGridCoordinates(x, y) {
@@ -202,7 +211,8 @@ const floorsetGrid = (function () {
                             const { width, height } = window.draggedRack;
                             const { x: gridX, y: gridY } = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
                             if (gridX + width > grid.x || gridY + height > grid.y) return;
-                            mouseRack = new Rack(sketch, gridX * grid.size, gridY * grid.size, width, height);
+                            mouseRack = new Rack(sketch, gridX * grid.size, gridY * grid.size,
+                                width, height, grid.getNextID());
                         }
                     }
                 };
