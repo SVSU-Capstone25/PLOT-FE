@@ -161,7 +161,7 @@
             dotNet = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("imageEventListener", dotNet);
             await JS.InvokeVoidAsync("addFixtureClose", dotNet);
-            //await JS.InvokeVoidAsync("eval", "floorsetGrid.init()");
+            await JS.InvokeVoidAsync("eval", "floorsetGrid.init()");
             await JS.InvokeVoidAsync("setDotNet", dotNet);
         }
     }

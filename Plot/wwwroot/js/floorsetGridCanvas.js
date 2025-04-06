@@ -16,7 +16,7 @@ function setPaint(paint) {
     window.paint = paint;
 }
 
-var floorsetGrid = (function () {
+const floorsetGrid = (function () {
     let sketchInstance = null;
 
     //Flag to make sure rack creation is called only once.
@@ -165,83 +165,73 @@ var floorsetGrid = (function () {
                     grid.resize();
                 }
 
-                sketch.mousePressed = (event) => {
-                    console.log(event)
-                    const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                    const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-
-                    if (rack) {
-                        const index = grid.racks.indexOf(rack);
-                        if (index > -1) {
-                            switch (event.buttons) {
-                                case 1:
-                                    //Place, Erase, Paint modes
-                                    switch (window.gridState) {
-                                        case "place":
-                                            if (mouseRack) return;
-                                            grid.racks.splice(index, 1);
-                                            mouseRack = rack;
-                                            console.log("Clicked " + rack.toString())
-                                            break;
-                                        case "erase":
-                                            grid.racks.splice(index, 1);
-                                            break;
-                                        case "paint":
-                                            rack.color = window.paint;
-                                            break;
-                                    }
-                                    break;
-
-                                case 2:
-                                    //Context Window Mode
-                                    //console.log("Display context window of rack.")
-                                    setSelectedFixture(rack.id);
+                sketch.mousePressed = () => {
+                    if (window.gridState === "place") {
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) {
+                            const index = grid.racks.indexOf(rack);
+                            if (index > -1) {
+                                grid.racks.splice(index, 1);
+                                mouseRack = rack;
                             }
                         }
+                    } else if (window.gridState === "erase") {
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) {
+                            const index = grid.racks.indexOf(rack);
+                            if (index > -1) {
+                                grid.racks.splice(index, 1);
+                            }
+                        }
+                    } else {
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) rack.color = window.paint;
                     }
                 };
 
                 sketch.mouseDragged = () => {
-                    const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                    const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                    switch (window.gridState) {
-                        case "paint":
-                            if (rack) {
-                                rack.color = window.paint;
+                    if (window.gridState === "paint") {
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) rack.color = window.paint;
+                    } else if (window.gridState === "erase") {
+                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                        if (rack) {
+                            const index = grid.racks.indexOf(rack);
+                            if (index > -1) {
+                                grid.racks.splice(index, 1);
                             }
-                            break;
-                        case "erase":
-                            if (rack) {
-                                const index = grid.racks.indexOf(rack);
-                                if (index > -1) {
-                                    grid.racks.splice(index, 1);
-                                }
-                            }
-                            break;
-                        case "place":
-                            // Place mode logic
-                            if (mouseRack) {
-                                if (gridCoords.x < 0 || gridCoords.x + mouseRack.width > grid.x || gridCoords.y < 0 || gridCoords.y + mouseRack.height > grid.y) return;
-                                console.log("Dragging mouse rack: " + mouseRack.x + ", " + mouseRack.y + ", ID " + mouseRack.id);
-                                mouseRack.x = gridCoords.x * grid.size;
-                                mouseRack.y = gridCoords.y * grid.size;
-                            } else if (window.draggedRack && !rackCreated) {
-                                const { width, height, name } = window.draggedRack;
-                                if (gridCoords.x + width > grid.x || gridCoords.y + height > grid.y) return;
+                        }
+                    } else {
+                        // Place mode logic
+                        if (mouseRack) {
+                            const { x: gridX, y: gridY } = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                            if (gridX < 0 || gridX + mouseRack.width > grid.x || gridY < 0 || gridY + mouseRack.height > grid.y) return;
+                            mouseRack.x = gridX * grid.size;
+                            mouseRack.y = gridY * grid.size;
+                        } else if (window.draggedRack) {
+                            const { width, height, name } = window.draggedRack;
+                            const { x: gridX, y: gridY } = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                            if (gridX + width > grid.x || gridY + height > grid.y) return;
 
-                                console.log("Creating a new rack on drag event - coords " + gridCoords.x + ", " + gridCoords.y)
-                                rackCreated = true;
+                            console.log("Creating a new rack on drag event - coords " + gridX + ", " + gridY)
+                            mouseRack = new Rack(sketch, gridX * grid.size, gridY * grid.size,
+                                width, height, grid.getNextID());
 
-                                jsCreateNewFixture(name).then(id => {
-                                    mouseRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size,
-                                        width, height, id);
-                                    console.log("Recieved ID " + id, " gridCoords is " + gridCoords.x + ", " + gridCoords.y)
-                                    console.log(mouseRack.toString());
-                                })
-                            }
-                            break;
+                            //rackCreated = true;
+
+                            jsCreateNewFixture(name).then(id => {
+                                mouseRack.id = id;
+                                console.log("Recieved ID " + id, " gridCoords is " + gridX + ", " + gridY)
+                                console.log(mouseRack.toString());
+                            })
+                        }
                     }
-                }
+                };
 
                 sketch.mouseReleased = () => {
                     if (!mouseRack) return;
@@ -250,7 +240,7 @@ var floorsetGrid = (function () {
                     grid.racks.push(mouseRack);
                     mouseRack = undefined;
                     window.draggedRack = undefined;
-                    rackCreated = false;
+                    //rackCreated = false;
                 };
             }, document.querySelector("div#grid-area"));
         }
@@ -258,6 +248,6 @@ var floorsetGrid = (function () {
 })();
 
 // Initialize when Blazor component loads
-floorsetGrid.init();
+//floorsetGrid.init();
 
 console.log("Floorset Grid Initialized...")
