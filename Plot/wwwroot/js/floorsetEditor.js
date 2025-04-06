@@ -464,25 +464,28 @@ function addFixtureClose(dotNet) {
 */
 function searchInputChange() {
     setTimeout(() => {
-        document.getElementById('search').addEventListener("keyup", function (e) {
-            // Get the text from the search field
-            var searchText = this.value;
+        let searchbar = document.getElementById('search')
+        if (searchbar !== null) {
+            searchbar.addEventListener("keyup", function (e) {
+                // Get the text from the search field
+                var searchText = this.value;
 
-            // Loop through each fixture tile 
-            Array.from(document.getElementsByClassName('fixture')).forEach(function (fixture) {
-                // Get the name of the fixture
-                var nameElement = fixture.firstChild.getElementsByTagName('p')[0];
+                // Loop through each fixture tile 
+                Array.from(document.getElementsByClassName('fixture')).forEach(function (fixture) {
+                    // Get the name of the fixture
+                    var nameElement = fixture.firstChild.getElementsByTagName('p')[0];
 
-                // If any fixture's name contains the search string, display the tile
-                if (nameElement && nameElement.innerText.toLowerCase()
-                    .indexOf(searchText.toLowerCase()) > -1) {
-                    fixture.style.display = 'flex';
-                } else {
-                    // Otherwise, do not display the tile
-                    fixture.style.display = 'none';
-                }
+                    // If any fixture's name contains the search string, display the tile
+                    if (nameElement && nameElement.innerText.toLowerCase()
+                        .indexOf(searchText.toLowerCase()) > -1) {
+                        fixture.style.display = 'flex';
+                    } else {
+                        // Otherwise, do not display the tile
+                        fixture.style.display = 'none';
+                    }
+                })
             })
-        })
+        }
     }, 10);
 }
 
