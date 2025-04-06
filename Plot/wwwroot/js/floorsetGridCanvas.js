@@ -166,7 +166,6 @@ const floorsetGrid = (function () {
                 }
 
                 sketch.mousePressed = (event) => {
-                    console.log(event)
                     const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
                     const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
 
@@ -222,19 +221,16 @@ const floorsetGrid = (function () {
                             // Place mode logic
                             if (mouseRack) {
                                 if (gridCoords.x < 0 || gridCoords.x + mouseRack.width > grid.x || gridCoords.y < 0 || gridCoords.y + mouseRack.height > grid.y) return;
-                                console.log("Dragging mouse rack: " + mouseRack.x + ", " + mouseRack.y + ", ID " + mouseRack.id);
+
                                 mouseRack.x = gridCoords.x * grid.size;
                                 mouseRack.y = gridCoords.y * grid.size;
                             } else if (window.draggedRack) {
                                 const { width, height, name } = window.draggedRack;
                                 if (gridCoords.x + width > grid.x || gridCoords.y + height > grid.y) return;
 
-                                console.log("Creating a new rack on drag event - coords " + gridCoords.x + ", " + gridCoords.y)
-
                                 jsCreateNewFixture(name).then(id => {
                                     mouseRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size,
                                         width, height, id);
-                                    console.log("Recieved ID " + id, " gridCoords is " + gridCoords.x + ", " + gridCoords.y)
                                     console.log(mouseRack.toString());
                                 })
                             }
@@ -244,8 +240,6 @@ const floorsetGrid = (function () {
 
                 sketch.mouseReleased = () => {
                     if (!mouseRack) return;
-
-                    console.log("Pushing mouserack into racks...")
                     grid.racks.push(mouseRack);
                     mouseRack = undefined;
                     window.draggedRack = undefined;
