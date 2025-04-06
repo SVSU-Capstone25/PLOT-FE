@@ -1,6 +1,9 @@
 @*
 File Purpose:
 User dashboard for managing, adding, editing, and deleting users.
+Employee Name, Employee ID, And Role visible on dashboard.
+Editing allows changes to name, role, and stores the user
+can access.
 
 Note:
 Database is not hooked up yet, so a lot of functionality here
@@ -15,6 +18,8 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 Note: A small amount of skeleton code was present before. 
 No author was given.
 
+*/
+
 *@
 
 @page "/user-dashboard"
@@ -23,77 +28,82 @@ No author was given.
 @inject NavigationManager Navigation
 @using System;
 @using System.Collections.Generic;
+@using System.Net.Mail;
 
-<div class="mb-4">
-    @* Users Table *@
-    <table class="table w-100">
-        <tbody>
-            <tr>
-                @* Headers *@
-                <td class="border border-light border-2 name_column">
-                    <div>Employee Name</div>
-                </td>
-                <td class="border border-light border-2 id_column">
-                    <div>Employee Id</div>
-                </td>
-                <td class="border border-light border-2 role_column">
-                    <div>Role</div>
-                </td>
-            </tr>
-
-            @* A row for each user in the list of users *@
-            @foreach (var user in users)
-            {
+<div class="d-flex flex-column align-content-between user-dashboard">
+    <div class="mb-4 table-set">
+        @* Users Table *@
+        <table class="table w-100">
+            <tbody>
                 <tr>
-                    @* Name *@
+                    @* Headers *@
                     <td class="border border-light border-2 name_column">
-                        <span>@user.FirstName @user.LastName</span>
+                        <div>Employee Name</div>
                     </td>
-
-                    @* User Id *@
                     <td class="border border-light border-2 id_column">
-                        <span>@DisplayId(user.Id)</span>
+                        <div>Employee Id</div>
                     </td>
-
-                    @* Role and Dropdown menu for editing or deleting the user *@
                     <td class="border border-light border-2 role_column">
-                        @* Role of User*@
-                        <span class="role-box float-start py-2 px-3">@user.Role</span>
+                        <div>Role</div>
+                    </td>
+                </tr>
 
-                        @* Set selectedUser on click of dropdown menu *@
-                        <div class="float-end" @onclick="(() => SetSelectedUser(user))">
+                @* A row for each user in the list of users *@
+                @foreach (var user in users)
+                {
+                    <tr>
+                        @* Name *@
+                        <td class="border border-light border-2 name_column">
+                            <span>@user.FirstName @user.LastName</span>
+                        </td>
 
-                            @* Role Options Dropdown menu with id 
+                        @* User Id *@
+                        <td class="border border-light border-2 id_column">
+                            <span>@DisplayId(user.Id)</span>
+                        </td>
+
+                        @* Role and Dropdown menu for editing or deleting the user *@
+                        <td class="border border-light border-2 role_column">
+                            @* Role of User*@
+                            <span class="role-box float-start py-2 px-3">@user.Role</span>
+
+                            @* Set selectedUser on click of dropdown menu *@
+                            <div class="float-end" @onclick="(() => SetSelectedUser(user))">
+
+                                @* Role Options Dropdown menu with id 
                             dynamically reflecting the id of the user
                             Provides Edit and Delete options which 
                             open Edit User and Delete User Modals *@
-                            <Dropdown Id="@($"Dropdown-{user.Id}")" DropdownText="@(new List<string> { "Edit", "Delete" })"
-                                DropdownLinks="@(new List<string> { "#UpdateUserModal",
-                                        "#DeleteUserModal" })" LabelText="Role"
-                            DropdownIcons="@(new List<string>
-                                                { "fa-solid fa-pen-to-square",
-                                            "fa-regular fa-trash-can" })" />
-                    </div>
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>
 
-</div>
-<div class="fixed-bottom-right">
-    <Button Class="Button" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary" TextAlignment="center"
-        OnClickFunction="OpenAddUserModal">
-        Add User
-    </Button>
+                                <Dropdown Id="@($"Dropdown-{user.Id}")" LabelText="Role">
+                                    <DropdownLink Link="#UpdateUserModal" Icon="fa-solid fa-pen-to-square"
+                                        data-bs-toggle="modal">Edit</DropdownLink>
+                                    <DropdownLink Link="#DeleteUserModal" Icon="fa-regular fa-trash-can"
+                                        data-bs-toggle="modal">Delete
+                                    </DropdownLink>
+                                </Dropdown>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="add-btn-container">
+        <Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary"
+            TextAlignment="center" OnClickFunction="OpenAddUserModal">
+            Add User
+        </Button>
+    </div>
 </div>
 
 @* Modals *@
 
 @* User Info Modal (Add User or Edit User) *@
 
-<Modal Title="@userModalDetails.Title" Id="UpdateUserModal" Variant="standard" Class="modal-dialog modal-xl user-info-modal"
-    OnCancelFunction="CleanUpUpdateUser">
+<Modal Title="@userModalDetails.Title" Id="UpdateUserModal" Variant="standard"
+    Class="modal-dialog modal-xl user-modal user-info-modal" OnCancelFunction="CleanUpUpdateUser">
     <BodyContent>
         <form>
 
@@ -101,79 +111,81 @@ No author was given.
             <p>@userModalDetails.Description</p>
 
             <div>
-            @* First Name *@
-            <div class="holds-first-name">
-                <TextInput Id="UserFirstNameUser" Label="First Name" Type="Text" LabelOnTop=false
-                    Value="@inEditUser.FirstName" ValueChanged="@ValidateFirstName"/>
+                @* First Name *@
+                <div class="holds-first-name">
+                    <TextInput Id="UserFirstNameUser" Label="First Name" Type="Text" LabelOnTop=false
+                        Value="@inEditUser.FirstName" ValueChanged="@ValidateFirstName" />
 
-                @* Error message *@
-                <p class="error">@firstNameError</p>
-            </div>
-
-            @* Last Name *@
-            <div class="holds-last-name">
-                <TextInput Id="UserLastNameUser" Label="Last Name" Type="Text" LabelOnTop=false 
-                Value="@inEditUser.LastName" ValueChanged="@ValidateLastName"/>
-
-                @* Error message *@
-                <p class="error">@lastNameError</p>
-            </div>
-
-            @* Email *@
-            <div class="holds-email">
-                <TextInput Id="UserEmail" Label="Email" Type="Text" LabelOnTop=false Value="@inEditUser.Email"
-                    ValueChanged="@ValidateEmail" />
-
-                @* Error message *@
-                <p class="error">@emailError</p>
-            </div>
-
-            @* Role and Store Select Options *@
-
-            @* Role Select Option *@
-
-            <OptionInput ID="UserRole" label="Role" optionsValues=userRoles optionsText=userRoles
-                OnSelectFunction="setUserRole" Class="user-option-input user-option-role" />
-
-            @* Store Selection *@
-
-            <p id="StoreSelectHeader">Store Selection</p>
-
-            <p>To select multiple stores use Ctrl-click</p>
-
-            @* Available Stores *@
-            <div id="UserStores" class="d-flex flex-row user-option-store">
-                
-                <div class="user-option-store-half user-option-store-left">
-
-                <OptionInput ID="UserAvailStores" label="Available Stores" optionsValues="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()" 
-                optionsText="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()" 
-                Class="user-option-input user-option-store" AllowEmpty Multiple />
-
-                <div class="btn-container">
-                <Button Class="Button" Id="buttonPickFromAvail" Variant="primary" TextAlignment="center"
-                    OnClickFunction="PickFromAvail" IsDisabled="@isPickFromAvailDisabled"
-                    Icon="fa-solid fa-arrow-right">
-                    Select Store
-                    </Button>
+                    @* Error message *@
+                    <p class="validation-message">@firstNameError</p>
                 </div>
 
+                @* Last Name *@
+                <div class="holds-last-name">
+                    <TextInput Id="UserLastNameUser" Label="Last Name" Type="Text" LabelOnTop=false
+                        Value="@inEditUser.LastName" ValueChanged="@ValidateLastName" />
+
+                    @* Error message *@
+                    <p class="validation-message">@lastNameError</p>
                 </div>
 
-                <div class="user-option-store-half user-option-store-right">
-                @* Selected Stores *@
-                <OptionInput ID="UserSelStores" label="Selected Stores" optionsValues=@inEditUser.Stores optionsText=@inEditUser.Stores
-                    Class="user-option-input user-option-store" AllowEmpty Multiple />
-                
-                <div class="btn-container">
-                <Button Class="Button" Id="buttonUnpickFromSel" Variant="primary" TextAlignment="center"
-                    OnClickFunction="UnpickFromSel" IsDisabled="@isUnpickFromSelDisabled"
-                    Icon="fa-solid fa-arrow-left">
-                    Remove Store
-                    </Button>
+                @* Email *@
+                <div class="holds-email">
+                    <TextInput Id="UserEmail" Label="Email" Type="Text" LabelOnTop=false Value="@inEditUser.Email"
+                        ValueChanged="@ValidateEmail" />
+
+                    @* Error message *@
+                    <p class="validation-message">@emailError</p>
                 </div>
+
+                @* Role and Store Select Options *@
+
+                @* Role Select Option *@
+
+                <OptionInput ID="UserRole" label="Role" optionsValues=userRoles optionsText=userRoles
+                    OnSelectFunction="SetUserRole" Class="user-option-input user-option-role" />
+
+                @* Store Selection *@
+
+                <p id="StoreSelectHeader">Store Selection</p>
+
+                <p>To select multiple stores use Ctrl-click</p>
+
+                @* Available Stores *@
+                <div id="UserStores" class="d-flex flex-row user-option-store">
+
+                    <div class="user-option-store-half user-option-store-left">
+
+                        <OptionInput ID="UserAvailStores" label="Available Stores"
+                            optionsValues="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()"
+                            optionsText="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()"
+                            Class="user-option-input user-option-store" AllowEmpty Multiple />
+
+                        <div class="btn-container">
+                            <Button Class="Button" Id="buttonPickFromAvail" Variant="primary" TextAlignment="center"
+                                OnClickFunction="PickFromAvail" IsDisabled="@isPickFromAvailDisabled"
+                                Icon="fa-solid fa-arrow-right">
+                                Select Store
+                            </Button>
+                        </div>
+
+                    </div>
+
+                    <div class="user-option-store-half user-option-store-right">
+                        @* Selected Stores *@
+                        <OptionInput ID="UserSelStores" label="Selected Stores" optionsValues=@inEditUser.Stores
+                            optionsText=@inEditUser.Stores Class="user-option-input user-option-store" AllowEmpty
+                            Multiple />
+
+                        <div class="btn-container">
+                            <Button Class="Button" Id="buttonUnpickFromSel" Variant="primary" TextAlignment="center"
+                                OnClickFunction="UnpickFromSel" IsDisabled="@isUnpickFromSelDisabled"
+                                Icon="fa-solid fa-arrow-left">
+                                Remove Store
+                            </Button>
+                        </div>
+                    </div>
                 </div>
-            </div>
             </div>
         </form>
 
@@ -194,8 +206,8 @@ No author was given.
 
 @* Delete User Modal *@
 
-<Modal Title="Confirm Deletion" Id="DeleteUserModal" Variant="danger" Class="modal-dialog w-100 h-100"
-    OnCancelFunction="CleanUpDelete" Icon="fa-solid fa-x">
+<Modal Title="Confirm Deletion" Id="DeleteUserModal" Variant="danger" Class="modal-dialog w-100 h-100 user-modal"
+    OnCancelFunction="CleanUpDelete">
 
     @* Confirm delete Question and Textbox *@
     <BodyContent>
@@ -207,7 +219,7 @@ No author was given.
         with EnableDelete function every time the text changes *@
 
         <TextInput Id="deleteTextInput" Label="If so, type DELETE here" Type="Text" Placeholder="Type DELETE here"
-            Value="@confirmDelete" ValueChanged="EnableDelete" />
+            Value="@confirmDelete" ValueChanged="ValidateDelete" />
 
     </BodyContent>
 
@@ -232,7 +244,6 @@ No author was given.
 
     function OpenModal(modal_id) {
         /* Opens Modal of given Id */
-
         bootstrap.Modal.getOrCreateInstance(modal_id).show();
     }
 
@@ -254,9 +265,9 @@ No author was given.
         element.value = option_value;
     }
 
-    function SelectFirst(id){
+    function SelectFirst(id) {
         /* Select first option in list */
-        if(!IsEmptySelect(id)){
+        if (!IsEmptySelect(id)) {
             let optionInput = document.getElementById(id);
             let select = optionInput.getElementsByTagName("select")[0];
             let options = select.getElementsByTagName("option");
@@ -265,14 +276,14 @@ No author was given.
         }
     }
 
-    function IsEmptySelect(id){
+    function IsEmptySelect(id) {
         /* Is the select option box empty? */
         let optionInput = document.getElementById(id);
         let select = optionInput.getElementsByTagName("select");
         return (select[0].options.length == 0);
     }
 
-    function GetSelectedOptions(id){
+    function GetSelectedOptions(id) {
         /* Get all options selected from select-option */
         let optionInput = document.getElementById(id);
         let select = optionInput.getElementsByTagName("select")[0];
@@ -281,7 +292,7 @@ No author was given.
         let selected_options = [];
 
         for (let option of options) {
-            if(option.selected){
+            if (option.selected) {
                 selected_options.push(option.value);
             }
         }
@@ -289,11 +300,11 @@ No author was given.
         return selected_options;
     }
 
-    function UnhighlightStores(){
+    function UnhighlightStores() {
         /* Unhighlight and unselect stores from OptionInputs for stores*/
 
         let ids = ["UserAvailStores", "UserSelStores"];
-        for (let id of ids){
+        for (let id of ids) {
             let optionInput = document.getElementById(id);
             let select = optionInput.getElementsByTagName("select")[0];
             select.selectedIndex = -1; /* Unselects store */
@@ -303,8 +314,16 @@ No author was given.
 </script>
 
 @code {
-
+    // User object for information in edit in update user modal
+    // (add or edit)
     private User inEditUser = new User();
+
+    // Unicode lit Declarations
+    private List<int> hyphen_unicodes = new List<int>();
+
+    private List<int> apostrophe_unicodes = new List<int>();
+
+    private int space_unicode = 0x0020; /*Space unicode */
 
     // Holds details about modal (Id, Title, Header, Description,
     // Button Text)
@@ -313,7 +332,6 @@ No author was given.
     // Modal ids
     private int ADD_MODAL_DETAIL_ID = 0;
     private int EDIT_MODAL_DETAIL_ID = 1;
-
 
     // Headers for OptionInputs in Add user modal
     private string optionHeader = "Select an Option";
@@ -368,58 +386,70 @@ No author was given.
     // User selected when clicking on a row
     private User selectedUser = new User();
 
-    // Id of next user if another is added initialized at 1
-    private int nextUserId = 1;
-
+    /* Controls whether pick from available (left side)
+        and unpick from selected (right side)
+        are enabled or disabled */
     private bool isPickFromAvailDisabled = false;
     private bool isUnpickFromSelDisabled = false;
 
     /* Program runs on initialization */
     protected override void OnInitialized()
     {
+        /* Unicode initializations
+           Given in unicode hexadecimal
+           https://unicodelookup.com/#0x2010/1 <-- To do: Remove or
+           or reposition for reference */
+
+        // hyphen (‐), en dash (–), em dash (—), hyphen-minus (-)
+        hyphen_unicodes.AddRange(new List<int>{0x2010, 0x2013, 0x2014, 0x2D});
+
+        /* apostrophe( ' ), grave accent( ` ), accute accent( ´ ) */
+        apostrophe_unicodes.AddRange(new List<int>{0x0027,0x0060,0x00B4});
+
         // Handling stores
 
         // Example stores - Replace with logic to handle
         // data from database after being hooked up
-        stores = new List<string> { "Store 1", "Store 2", "Store 3", "Store 4", "Store 5", "Store 6", "Store 7", "Store 8", "Store 9" };
+        stores = new List<string> { "Store 1", "Store 2", "Store 3", "Store 4",
+            "Store 5", "Store 6", "Store 7", "Store 8","Store 9" };
 
         // Example data for demo
         users = new List<User>{
             new User {
-                Id = nextUserId++, // Id increments for the next user
-                FirstName = "Clayton",
-                LastName = "Cook",
-                Email = "clayton@company.com",
-                Role = "Owner",
-                Stores = new List<string> { "Store 1", "Store 2", "Store 3" }
+            Id = 1,
+            FirstName = "Clayton",
+            LastName = "Cook",
+            Email = "clayton@company.com",
+            Role = "Owner",
+            Stores = new List<string> { "Store 1", "Store 2", "Store 3" }
 
             },
             new User {
-                Id = nextUserId++, // Id increments for the next user
-                FirstName = "Andrew",
-                LastName = "Miller",
-                Email = "andrew@company.com",
-                Role = "Manager",
-                Stores = new List<string> { "Store 4", "Store 5", "Store 6"}
+            Id = 2,
+            FirstName = "Andrew",
+            LastName = "Miller",
+            Email = "andrew@company.com",
+            Role = "Manager",
+            Stores = new List<string> { "Store 4", "Store 5", "Store 6"}
             },
             new User {
-                Id = nextUserId++, // Id increments for the next user
-                FirstName = "Jane",
-                LastName = "Smith",
-                Email = "jane@company.com",
-                Role = "Employee",
-                Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
+            Id = 3, // Id increments for the next user
+            FirstName = "Jane",
+            LastName = "Smith",
+            Email = "jane@company.com",
+            Role = "Employee",
+            Stores = new List<string> { "Store 7", "Store 8", "Store 9"}
             }
-        };
+            };
 
         // Fill roles with owner, manager, and employee
         roles = new List<string>
-                            {"Owner",
-                            "Manager",
-                            "Employee"};
+                    {"Owner",
+                    "Manager",
+                    "Employee"};
 
         // Set user roles (empty OptionInputs give an error otherwise)
-        userRoles = new List<string>{"Bug - Failed to fill"};
+        userRoles = new List<string> { "Bug - Failed to fill" };
     }
 
     /* Display User Id */
@@ -431,7 +461,9 @@ No author was given.
     /* Opening Add User Modal */
     private async Task OpenAddUserModal()
     {
-        Console.WriteLine("Open add user modal");
+        // Clean update user modal of previous information
+        await CleanUpUpdateUser();
+
         // Initialize roles or add user modal
         userRoles = new List<string> { optionHeader };
         userRoles.AddRange(roles);
@@ -455,7 +487,8 @@ No author was given.
 
         SetStoreBtnDisabled();
 
-        userModalDetails = new ModalDetails(){
+        userModalDetails = new ModalDetails()
+        {
             Id = ADD_MODAL_DETAIL_ID,
             Title = "Add User",
             Header = "Create User",
@@ -477,13 +510,18 @@ No author was given.
         userRoles = new List<string>();
         userRoles.AddRange(roles);
 
-        userModalDetails = new ModalDetails {
+        userModalDetails = new ModalDetails
+        {
             Id = EDIT_MODAL_DETAIL_ID,
-            Title="Edit User",
-            Header="Edit User",
-            Description="Edit the information of the selected user",
-            ButtonText="Update User"
+            Title = "Edit User",
+            Header = "Edit User",
+            Description = "Edit the information of the selected user",
+            ButtonText = "Update User"
         };
+
+        // Copy stores from inEditUser
+        List<string> stores_for_in_edit = new List<string>();
+        stores_for_in_edit.AddRange(selectedUser.Stores);
 
         // Copy user info for editing in case "Edit" is clicked
         inEditUser = new User
@@ -493,7 +531,7 @@ No author was given.
             LastName = selectedUser.LastName,
             Email = selectedUser.Email,
             Role = selectedUser.Role,
-            Stores = selectedUser.Stores
+            Stores = stores_for_in_edit
         };
 
         // Set validity flags for editing
@@ -507,7 +545,7 @@ No author was given.
         SetStoreBtnDisabled(); // Set picking and unpicking buttons to enabled or disabled as appropriate
 
         isUpdateUserDisabled = false; // Initially not disabled
-        
+
         // Select the edited user's role
         await JS.InvokeVoidAsync("SelectOption", "UserRole", inEditUser.Role);
 
@@ -522,11 +560,14 @@ No author was given.
 
     // Update user
 
-    private async Task UpdateUser(){
-        if (userModalDetails.Id == ADD_MODAL_DETAIL_ID){
+    private async Task UpdateUser()
+    {
+        if (userModalDetails.Id == ADD_MODAL_DETAIL_ID)
+        {
             AddUser();
         }
-        else if (userModalDetails.Id == EDIT_MODAL_DETAIL_ID){
+        else if (userModalDetails.Id == EDIT_MODAL_DETAIL_ID)
+        {
             SaveChanges();
         }
 
@@ -545,14 +586,14 @@ No author was given.
 
         users.Add(
         new User
-        {
-            Id = nextUserId++, // Id increments for the next user
-            FirstName = inEditUser.FirstName,
-            LastName = inEditUser.LastName,
-            Email = inEditUser.Email,
-            Role = inEditUser.Role,
-            Stores = inEditUser.Stores
-        }
+            {
+                Id = users.Count + 1, // Id increments for the next user
+                FirstName = inEditUser.FirstName,
+                LastName = inEditUser.LastName,
+                Email = inEditUser.Email,
+                Role = inEditUser.Role,
+                Stores = inEditUser.Stores
+            }
         );
 
         // Reset user for adding new user
@@ -588,8 +629,8 @@ No author was given.
 
     /* Modal data and button-handling functions */
 
-    // Enable delete button
-    private void EnableDelete(string value)
+    // Enable or disable delete button
+    private void ValidateDelete(string value)
     {
         // set confirmDelete variable to value
         confirmDelete = value;
@@ -612,22 +653,19 @@ No author was given.
 
     // Clear error message for variable
     // given by reference parameter
-    private void ClearError(ref string errorMsg)
-    {
-        errorMsg = "";
-    }
+    private void ClearError(ref string errorMsg){ errorMsg = ""; }
 
     // Set update user button to disabled
     private void SetUpdateUserDisabled()
     {
-        Console.WriteLine("Checking if button should be disabled");
-        Console.WriteLine("Store:" + isStoreValid);
+        /* Depends on each field being valid for submission*/
         isUpdateUserDisabled = !(isFirstValid & isLastValid & isEmailValid & isRoleValid & isStoreValid);
 
         StateHasChanged();
     }
 
-    private void SetStoreBtnDisabled(){
+    private void SetStoreBtnDisabled()
+    {
         isPickFromAvailDisabled = (stores.Count == inEditUser.Stores.Count);
         isUnpickFromSelDisabled = (inEditUser.Stores.Count == 0);
         isStoreValid = !isUnpickFromSelDisabled; // Some stores selected
@@ -655,7 +693,7 @@ No author was given.
         StateHasChanged();
     }
 
-    private async Task UnpickFromSel()
+    private async Task UnpickFromSel() /* Unpick stores that were selected */
     {
         Console.WriteLine("unpicking");
         List<string> stores_to_remove = await JS.InvokeAsync<List<string>>("GetSelectedOptions", "UserSelStores");
@@ -663,7 +701,7 @@ No author was given.
         inEditUser.Stores.RemoveAll(store => stores_to_remove.Contains(store));
         inEditUser.Stores.Sort();
 
-        SetStoreBtnDisabled();
+        SetStoreBtnDisabled(); /* Set if store button should be disabled */
 
         StateHasChanged();
 
@@ -678,7 +716,7 @@ No author was given.
     }
 
     // Set role for user being edited
-    private void setUserRole(string role)
+    private void SetUserRole(string role)
     {
         if (role == optionHeader)
         {
@@ -727,128 +765,124 @@ No author was given.
 
     /* Validation and Error-Display methods */
 
-    // Produces Error message if a text field is too long
-    private void ErrorTooLong(string textLocation, ref string errorMsg, int charLimit)
-    {
-        // textLocation: References textbox that has error message
-        // First Name or Last Name or Email
-        // errorMsg: References bound variable to the error paragraph
-        // charLimit: character limit that has been exceeded
-
-        errorMsg = textLocation + " is too long. Limit is " + charLimit + " characters.";
-    }
-
     // Produces Error message if a text field is not alphabetic
-    private void ErrorNotAlpha(string textLocation, ref string errorMsg)
+    private void ErrorInvalidChar(string textLocation, ref string errorMsg)
     {
         // textLocation: References textbox that has error message
         // First Name or Last Name
         // errorMsg: References bound variable to the error paragraph
-        errorMsg = textLocation + " is not alphabetic.";
+        errorMsg = textLocation + " has invalid characters. Valid characters are letters, apostrophes, hyphens, and spaces.";
     }
 
-    // Validates email characters
-    private bool ValidateEmailChar(char c)
-    {
-        return Char.IsLetterOrDigit(c) || c == '.' || c == '@';
+    // Validates email characters - letters, digits, period, or @
+    private bool ValidateEmailChar(char c) { 
+        return (
+        Char.IsLetterOrDigit(c) ||
+        c == '.' ||
+        c == '@' ||
+        "!#$%&'*+-/=?^_`{|}~".Contains(c)
+        );
     }
 
-    private bool IsTextPresent(string text)
+    // Is text present?
+    private bool IsTextPresent(string text) { return (text.Length > 0); }
+
+    // Validate character for validating names
+    private bool ValidateNameChar(char character) {
+        int unicode = character;
+
+        return
+        (hyphen_unicodes.Contains(unicode) ||       /* hyphens */
+        unicode == space_unicode ||                 /* space */
+        apostrophe_unicodes.Contains(unicode) ||    /* apostrophe */
+        Char.IsLetter(character));                  /* letter */
+    }
+
+    private void ValidateName(string text, string textLocation,
+    ref string errorMsg, ref bool isNameValid)
     {
-        // Checks if text is greater than 0
-        if (text.Length > 0)
+        /* text: text from TextInput,
+        textLocation: Refers to text location for use in error message i.e. "first name"
+        or "last name"
+        errorMsg: error message
+        isNameValid: References flag for whether text field is valid
+        */
+
+        if (text.All(c => ValidateNameChar(c)))
         {
-            return true;
+            ClearError(ref errorMsg); // Clear error message
+            isNameValid = IsTextPresent(text); // Referenced flag for name validity
+                                               // depends on if text is present
         }
         else
-        {
-            return false;
+        { // All do not meet the requirements
+            isNameValid = false; // Set referenced flag for name validity to false
+            ErrorInvalidChar(textLocation, ref errorMsg);
         }
     }
 
     private void ValidateFirstName(string text)
     {
-        const int CHAR_LIMIT = 32;
+        inEditUser.FirstName = text; // Set first name parameter to text
 
-        // Set value of first name to text
-        inEditUser.FirstName = text;
+        ValidateName(text, "First Name",
+        ref firstNameError, ref isFirstValid);
 
-        if (text.Length > CHAR_LIMIT)
-        {
-            ErrorTooLong("First Name", ref firstNameError, CHAR_LIMIT);
-            isFirstValid = false;
-        }
-        else if (!text.All(c => Char.IsLetter(c)))
-        {
-            ErrorNotAlpha("First Name", ref firstNameError);
-            isFirstValid = false;
-        }
-        else
-        {
-            // No error message needed
-            ClearError(ref firstNameError);
-            // Is text length greater than 0?
-            isFirstValid = IsTextPresent(text);
-        }
-
-        SetUpdateUserDisabled(); // Determine if button should be disabled
+        SetUpdateUserDisabled();
     }
 
     private void ValidateLastName(string text)
     {
-        const int CHAR_LIMIT = 32;
-
         // Set last name to text
         inEditUser.LastName = text;
 
-        if (text.Length > CHAR_LIMIT)
-        {
-            ErrorTooLong("Last Name", ref lastNameError, CHAR_LIMIT);
-            isLastValid = false;
-        }
-        else if (!text.All(c => Char.IsLetter(c)))
-        {
-            ErrorNotAlpha("Last Name", ref lastNameError);
+        ValidateName(text, "Last Name",
+        ref lastNameError, ref isLastValid);
 
-            isLastValid = false;
-        }
-        else
-        {
-            // No error message needed
-            ClearError(ref lastNameError);
-            isLastValid = IsTextPresent(text);
-        }
-        SetUpdateUserDisabled(); // Determine if button should be disabled
+        SetUpdateUserDisabled();
     }
 
-    private void ValidateEmail(string text)
-    {
-        // character limit
-        const int CHAR_LIMIT = 32;
+    private void ValidateEmail(string email)
+    { /* Validate Email */
+        /* Checks if email is properly formatted using 
+           MailAddress class,
+           Checks if email is unique
+           Checks if text is present in the textbox
+        */
 
-        inEditUser.Email = text; // Set email to text
 
-        // Validate text (non-email) in Add User modal
-        if (text.Length > CHAR_LIMIT)
+        inEditUser.Email = email; /* Set inEditUser parameter to email text */
+
+        /* Attempts to make a mail address object
+        Will fail if the email address is not
+        properly formatted */
+        try
         {
-            ErrorTooLong("Email", ref emailError, CHAR_LIMIT);
+            // If making MailAddress object succeeds, email
+            // is properly formatted
+            var addr = new MailAddress(email);
+
+            // Email's characters and format is valid - Is the email unique?
+            if ((users.FirstOrDefault(user => user.Email == email) != null) &&
+            !(email == selectedUser.Email)) /* Email in users and not the email of the selected user*/
+            {
+                isEmailValid = false;
+                emailError = "Email must be unique.";
+            }
+            else{
+                emailError = ""; // Empty email validation message
+                isEmailValid = IsTextPresent(email); // The isEmailValid flag depends on if text is present
+            }
+        }
+        catch /* Failed - Email address not properly formatted */
+        {
             isEmailValid = false;
-        }
-        else if (!text.All(c => ValidateEmailChar(c)))
-        {
-            // Validate email characters
-            emailError = "Email has invalid characters. characters must be alphanumeric, " +
-            "the period '.' or the at symbol '@'";
-
-            isEmailValid = false;
-        }
-        else
-        {
-            ClearError(ref emailError);
-            isEmailValid = IsTextPresent(text);
+            emailError = "Invalid email address format";
         }
 
-        SetUpdateUserDisabled(); // Determine if button should be disabled
+        /* Check if button to update user (for add/edit) should be disabled */
+        SetUpdateUserDisabled();
+
     }
 
     // User class
@@ -863,25 +897,26 @@ No author was given.
     }
 
     // Details to markup Modal
-    public class ModalDetails {
-        public int? Id {get; set;}
-        public string? Title {get; set;}
-        public string? Header {get; set;}
-        public string? Description {get; set;}
-        public string? ButtonText {get; set;} // Text on submit button
+    public class ModalDetails
+    {
+        public int? Id { get; set; }
+        public string? Title { get; set; }
+        public string? Header { get; set; }
+        public string? Description { get; set; }
+        public string? ButtonText { get; set; } // Text on submit button
     }
 
     // Debug Utilities
     private void printUsers(List<User> users)
     {
-
         // Output information on list of users to the console
         foreach (var user in users)
         {
             Console.WriteLine("ID: " + user.Id + "Name: " +
             user.FirstName + " " + user.LastName + " Email: " +
             user.Email + " Role: " + user.Role + " Stores:");
-            foreach (var store in user.Stores){
+            foreach (var store in user.Stores)
+            {
                 Console.WriteLine(store);
             }
         }

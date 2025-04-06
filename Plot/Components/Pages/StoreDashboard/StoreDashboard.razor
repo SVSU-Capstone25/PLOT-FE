@@ -14,10 +14,12 @@ Author: Andrew Fulton (3/12/2025)
 
 @page "/store-dashboard"
 @inject IJSRuntime JS
-@using Plot.Components.PartialComponents.NumericInput
 @inject NavigationManager Navigation
 @using System.Drawing;
 @using System.IO;
+
+@using Plot.Components.PartialComponents.NumericInput
+@using Plot.Components.PartialComponents.Modal
 
 <PageTitle>Store Dashboard</PageTitle>
 
@@ -27,15 +29,21 @@ Author: Andrew Fulton (3/12/2025)
     @* loop to generate a card for each store that exists *@
     @foreach (var store in stores)
     {
-        <div @onclick="(() => SetSelectedStore(store))">
+        <a href="@($"/floorsets/{store.Id}")">
             <Card CardText="@($"{store.City},{store.State}")" CardImage="@($"{store.Blueprint_Image}")">
-                <Dropdown Class="Test Dropdown" Id="@($"{store.Name}{store.Id}Dropdown")"
-                    DropdownText="@(new List<string> { "Floorsets", "Edit", "Delete" })"
-                    DropdownLinks="@(new List<string> { $"/floorsets/{store.City},{store.State}/{store.Address},{store.City},{store.State} {store.Zip}", "#editStoreModal", "#deleteStoreModal" })"
-                    LabelText="Store"
-                    DropdownIcons="@(new List<string> { "fa-solid fa-note-sticky", "fa-solid fa-pen-to-square", "fa-solid fa-trash-can" })" />
+                <Dropdown Class="Test Dropdown" Id="@($"{store.Name}{store.Id}Dropdown")" LabelText="Store">
+                    <DropdownLink Link="@($"/floorsets/{store.Id}")" Icon="fa-solid fa-note-sticky">Floorsets
+                    </DropdownLink>
+
+                    <DropdownLink @onclick="() => OnEditClick(store)" Link="#editStoreModal"
+                        Icon="fa-solid fa-pen-to-square" data-bs-toggle="modal">
+                        Edit</DropdownLink>
+
+                    <DropdownLink Link="#deleteStoreModal" Icon="fa-solid fa-trash-can" data-bs-toggle="modal">Delete
+                    </DropdownLink>
+                </Dropdown>
             </Card>
-        </div>
+        </a>
     }
 
 
@@ -623,11 +631,6 @@ Author: Andrew Fulton (3/12/2025)
     private string widthErrorEdit = "";
     private string blueprintErrorEdit = "";
 
-    //Variable to keep track of the current ID index
-    private int intNextStoreId = 1;
-    //variable to hold employee Id index
-    private int intNextUserId = 1;
-
     // Deletion confirmation string, initialized as empty
     private string confirmDelete = "";
     // Constant used to confirm deletion
@@ -674,6 +677,26 @@ Author: Andrew Fulton (3/12/2025)
 
 
 
+    private async Task OnEditClick(Store store)
+    {
+        selectedStore = store;
+
+        editedStoreInfo = new Store
+        {
+            Id = selectedStore.Id,
+            Name = selectedStore.Name,
+            Address = selectedStore.Address,
+            City = selectedStore.City,
+            State = selectedStore.State,
+            Zip = selectedStore.Zip,
+            Width = selectedStore.Width,
+            Length = selectedStore.Length,
+            Blueprint_Image = selectedStore.Blueprint_Image
+        };
+        //SetBackgroundImage(elementId, strUrl)
+        await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.Blueprint_Image);
+        StateHasChanged();
+    }
 
 
     //initialize components
@@ -682,94 +705,92 @@ Author: Andrew Fulton (3/12/2025)
         //Get the dotnet into JS
         dotNet = DotNetObjectReference.Create(this);
 
-        users = new List<User>
-{
-new User
-{
-Id = intNextUserId++,
-FirstName = "Homer",
-LastName = "Simpson",
-Email = "homer@email.com",
-Role = "Owner"
-},
-new User
-{
-Id = intNextUserId++,
-FirstName = "Marge",
-LastName = "Simpson",
-Email = "marge@email.com",
-Role = "Manager"
-},new User
-{
-Id = intNextUserId++,
-FirstName = "Bart",
-LastName = "Simpson",
-Email = "Bart@email.com",
-Role = "Employee"
-},
-new User
-{
-Id = intNextUserId++,
-FirstName = "Lisa",
-LastName = "Simpson",
-Email = "lisa@email.com",
-Role = "Employee"
-},new User
-{
-Id = intNextUserId++,
-FirstName = "Sideshow",
-LastName = "Bob",
-Email = "sideshow@email.com",
-Role = "employee"
-}
-}
-        ;
+        users.Add(new User
+        {
+            Id = users.Count + 1,
+            FirstName = "Homer",
+            LastName = "Simpson",
+            Email = "homer@email.com",
+            Role = "Owner"
+        });
 
+        users.Add(new User
+        {
+            Id = users.Count + 1,
+            FirstName = "Marge",
+            LastName = "Simpson",
+            Email = "marge@email.com",
+            Role = "Manager"
+        });
 
+        users.Add(new User
+        {
+            Id = users.Count + 1,
+            FirstName = "Bart",
+            LastName = "Simpson",
+            Email = "Bart@email.com",
+            Role = "Employee"
+        });
 
-        //list of stores
-        stores = new List<Store>
-{
-new Store
-{
-Id=intNextStoreId++,
-Name="Plato's Closet Flint",
-Address="3192 S Linden Rd",
-City="Flint",
-State="MI",
-Zip="48507",
-Width="200",
-Length="300",
-Blueprint_Image = "img/LayoutPhotoExample.png",
-Users = new List<User> { users[0] }
-},
-new Store
-{
-Id=intNextStoreId++,
-Name="Plato's Closet Austin",
-Address="35400 Brodie Ln Ste 240",
-City="Austin",
-State="TX",
-Zip="78745",
-Width="250",
-Length="325",
-Blueprint_Image = "img/LayoutPhotoExample.png",
-Users = new List<User> { users[1] }
-},
-new Store
-{
-Id=intNextStoreId++,
-Name="Plato's Closet Utica",
-Address="13287 Hall Rd",
-City="Utica",
-State="MI",
-Zip="48315",
-Width="375",
-Length="225",
-Blueprint_Image = "img/LayoutPhotoExample.png",
-Users = new List<User> { users[2] }
-}
-};
+        users.Add(new User
+        {
+            Id = users.Count + 1,
+            FirstName = "Lisa",
+            LastName = "Simpson",
+            Email = "lisa@email.com",
+            Role = "Employee"
+        });
+
+        users.Add(new User
+        {
+            Id = users.Count + 1,
+            FirstName = "Sideshow",
+            LastName = "Bob",
+            Email = "sideshow@email.com",
+            Role = "employee"
+        });
+
+        stores.Add(new Store
+        {
+            Id = stores.Count + 1,
+            Name = "Plato's Closet Flint",
+            Address = "3192 S Linden Rd",
+            City = "Flint",
+            State = "MI",
+            Zip = "48507",
+            Width = "200",
+            Length = "300",
+            Blueprint_Image = "img/LayoutPhotoExample.png",
+            Users = new List<User> { users[0] }
+        });
+
+        stores.Add(new Store
+        {
+            Id = stores.Count + 1,
+            Name = "Plato's Closet Austin",
+            Address = "35400 Brodie Ln Ste 240",
+            City = "Austin",
+            State = "TX",
+            Zip = "78745",
+            Width = "250",
+            Length = "325",
+            Blueprint_Image = "img/LayoutPhotoExample.png",
+            Users = new List<User> { users[1] }
+        });
+
+        stores.Add(new Store
+        {
+            Id = stores.Count + 1,
+            Name = "Plato's Closet Utica",
+            Address = "13287 Hall Rd",
+            City = "Utica",
+            State = "MI",
+            Zip = "48315",
+            Width = "375",
+            Length = "225",
+            Blueprint_Image = "img/LayoutPhotoExample.png",
+            Users = new List<User> { users[2] }
+        });
     }
 
 
@@ -981,55 +1002,43 @@ Users = new List<User> { users[2] }
         public List<User> Users { get; set; } = new List<User>();
     }
 
-    // Set selected user to user in row clicked upon
+    @* // Set selected user to user in row clicked upon
     private async Task SetSelectedStore(Store store)
     {
         // Store of block clicked is selected store
         selectedStore = store;
 
-        // Copy store info for editing in case "Edit" is clicked
-        editedStoreInfo = new Store
-        {
-            Id = selectedStore.Id,
-            Name = selectedStore.Name,
-            Address = selectedStore.Address,
-            City = selectedStore.City,
-            State = selectedStore.State,
-            Zip = selectedStore.Zip,
-            Width = selectedStore.Width,
-            Length = selectedStore.Length,
-            Blueprint_Image = selectedStore.Blueprint_Image,
-            Users = selectedStore.Users.Select(user => new User
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                Role = user.Role
-            }).ToList() // Create a new list of users
-        };
+        //Siona Beaudoin - 4/4/2025
+        //If the dropdown is open, then that means 'Edit' was clicked. If the dropdown was not open,
+        // then the card was clicked and the Floorset page for that store should be opened
+        var dropdownMenu = await JS.InvokeAsync<object>("document.querySelector", ".dropdown-menu.show");
+        bool isDropdownMenuVisible = dropdownMenu != null;
+        Console.WriteLine($"Is Dropdown Menu Visible: {isDropdownMenuVisible}");
 
-        //SetBackgroundImage(elementId, strUrl)
-        await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.Blueprint_Image);
-
-        @* set a timeout so the modal can open *@
-        await Task.Delay(500);
-        //clear out the emloyees from the employees section of the edit store div
-        await JS.InvokeVoidAsync("clearDivExceptById", "employeesEdit", "editStoreAddUserDiv");
-        @* check if the modal is open *@
-        bool isOpen = await JS.InvokeAsync<bool>("IsModalOpen", "editStoreModal");
-        if (isOpen)
-        {
-            @* add every employee for that store to the employees section of the modal *@
-            foreach (User user in selectedStore.Users)
-            {
-                string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
-                await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", $"{userValues}", dotNet);
-            }
+        if (!isDropdownMenuVisible) {
+            //redirect to store page
+            Navigation.NavigateTo($"/floorsets/{selectedStore.City},{selectedStore.State}/{selectedStore.Address}, {selectedStore.City}, {selectedStore.State} {selectedStore.Zip}");
         }
-
-        StateHasChanged();
-    }
+        else
+        {
+            // Copy store info for editing in case "Edit" is clicked
+            editedStoreInfo = new Store
+            {
+                Id = selectedStore.Id,
+                Name = selectedStore.Name,
+                Address = selectedStore.Address,
+                City = selectedStore.City,
+                State = selectedStore.State,
+                Zip = selectedStore.Zip,
+                Width = selectedStore.Width,
+                Length = selectedStore.Length,
+                Blueprint_Image = selectedStore.Blueprint_Image
+            };
+            //SetBackgroundImage(elementId, strUrl)
+            await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.Blueprint_Image);
+            StateHasChanged();
+        }
+    } *@
 
 
     // Save edited store as the selected store
@@ -1068,7 +1077,7 @@ Users = new List<User> { users[2] }
         (
         new Store
         {
-            Id = intNextStoreId++,
+            Id = stores.Count + 1,
             Name = storeToAdd.Name,
             Address = storeToAdd.Address,
             City = storeToAdd.City,

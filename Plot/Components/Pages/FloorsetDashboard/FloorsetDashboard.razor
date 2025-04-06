@@ -12,7 +12,7 @@ Author: Andrew Fulton (3/13/2025)  *@
 
 @* /floorsets/Flint, MI/3192 S Linden Rd, Flint, MI 48507 *@
 
-@page "/floorsets/{storeId}/{storeLocation}"
+@page "/floorsets/{storeId}"
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
 
@@ -21,7 +21,7 @@ Author: Andrew Fulton (3/13/2025)  *@
     <div class="left">
         <h1 font-size="3em">Floorsets for @storeId Store</h1>
         <br>
-        <h3>@storeLocation</h3>
+        @* <h3>@storeLocation</h3> *@
     </div>
     <div class="right">
         <img height="auto" width="500px" src="/img/FloorsetPhotoExample.png">
@@ -36,15 +36,36 @@ Author: Andrew Fulton (3/13/2025)  *@
     Iterate over each name and image in the floorsets.
     *@
 
-    @if(storedFloorsets != null){
+    @if (storedFloorsets != null)
+    {
         @foreach (var floorset in storedFloorsets)
         {
             <Card Id=@floorset.ID Class="Card" CardText=@floorset.Name CardImage=@floorset.ImagePath>
-                <Dropdown Class="Dropdown" Id="@floorset.dropdownID" DropdownText="@(new List<string> { "Edit", "Copy", "Delete" })"
-                    DropdownLinks="@(new List<string> { "javascript:window.location.href='/floorset-editor'", "javascript:floorsetDashboardCopyCard('"+@floorset.Name+"')", "#deleteFloorsetModal" })"
-                    LabelText="Floorset"
-                    DropdownIcons="@(new List<string> { "fa-solid fa-pen-to-square", "fa-solid fa-copy", "fa-solid fa-trash-can" })" />
+                <Dropdown Class="Dropdown" Id="@floorset.dropdownID" LabelText="Floorset">
+                    <DropdownLink Link="@($"#editFloorsetTitleModal-{floorset.ID}")" Icon="fa-solid fa-pen-to-square">Edit
+                    </DropdownLink>
+                    <DropdownLink Link="@($"javascript:floorsetDashboardCopyCard('{floorset.Name}')")" Icon="fa-solid fa-copy">
+                        Copy</DropdownLink>
+                    <DropdownLink Link="#deleteFloorsetModal" Icon="fa-solid fa-trash-can" data-bs-toggle="modal">Delete
+                    </DropdownLink>
+                </Dropdown>
             </Card>
+
+            @* + Siona Beaudoin, 4/3/2025, edit the title of floorsets*@
+            <Modal Title="Edit Floorset Title" Id="@("editFloorsetTitleModal-" + floorset.ID)" Class="standard"
+                Variant="standard">
+                <BodyContent>
+                    <TextInput type="text" Id="@("editFloorsetTitleModalTextInput-" + floorset.ID)"
+                        Label="Enter the new name for the floorset:" class="w-100" />
+                </BodyContent>
+
+                <FooterContent>
+                    <p style="margin-left: auto;"></p>
+                    <Button Class="Button" TextAlignment="center" Variant="primary" OnClickFunction="editFloorsetTitle">
+                        Confirm Edit
+                    </Button>
+                </FooterContent>
+            </Modal>
         }
     }
 </div>
@@ -56,6 +77,8 @@ Author: Andrew Fulton (3/13/2025)  *@
         Add Floorset
     </Button>
 </button>
+
+
 
 @* HARD CODED MODAL: Delete Floorset modal *@
 <Modal Title="Confirm Deletion" Id="deleteFloorsetModal" Class="standard" Variant="danger">
@@ -90,6 +113,28 @@ Author: Andrew Fulton (3/13/2025)  *@
         document.querySelector('.modal-backdrop')?.remove();
     }
 
+    function EditFloorsetTitle() {
+        /* Siona Beaudoin - 4/3/2025
+        Function to handle the edit floorset title modal. It retrieves the new title from the input field,
+        checks if it's not empty, and then closes the modal. */
+        let modalId = document.querySelector(".modal.show").id; // Get the ID of the currently shown modal
+        let floorsetID = modalId.replace("editFloorsetTitleModal-", "");
+        let newTitle = document.getElementById("editFloorsetTitleModalTextInput-" + floorsetID).value;
+        if (newTitle.trim() !== "") {
+            console.log("New Floorset Title: " + newTitle);
+
+            // Update the floorset title in the UI (this part may need to be adjusted based on your actual implementation)
+            let floorsetCard = document.getElementById(floorsetID);
+            if (floorsetCard) {
+                floorsetCard.querySelector(".card-content").textContent = newTitle;
+            }
+            document.getElementById("editFloorsetTitleModalTextInput-" + floorsetID).value = "";
+            HideModal(modalId);
+        } else {
+            alert("Please enter a valid title.");
+        }
+    }
+
     function DeleteFloorset() {
         /* Danielle Smith - 3/18/2025
         function that mimics deleting a floorset. still checks if the text equals delete.
@@ -109,7 +154,7 @@ Author: Andrew Fulton (3/13/2025)  *@
         /* Danielle Smith fa-plus 4/1/2025 
         function for dropdown to go to the floorset editor that
         forces a refresh of the cache to correct styles and such */
-        window.location.href="/floorset-editor";
+        window.location.href = "/floorset-editor";
     }
 </script>
 
@@ -120,8 +165,8 @@ Author: Andrew Fulton (3/13/2025)  *@
     [Parameter]
     public string? storeId { get; set; }
 
-    [Parameter]
-    public string? storeLocation { get; set; }
+    @* [Parameter]
+    public string? storeLocation { get; set; } *@
 
     //Tristan Calay - 3/22/25
     //Structure to store retreived database information on floorsets for rendering and local updates without page reload.
@@ -134,25 +179,29 @@ Author: Andrew Fulton (3/13/2025)  *@
             ImagePath = img;
         }
 
-        public string dropdownID {
-            get{
+        public string dropdownID
+        {
+            get
+            {
                 return "Dropdown" + Name;
             }
         }
 
-        public string ID {
-            get{
-                return Name.Replace(" ","");
+        public string ID
+        {
+            get
+            {
+                return Name.Replace(" ", "");
             }
         }
 
-        public string Name {get; set;}
+        public string Name { get; set; }
 
-        public string ImagePath{get; set;}
-    } 
+        public string ImagePath { get; set; }
+    }
 
     //Array of stored floorsets to display. Should be manipulated by copy and delete functions to have local updates.
-    private List<storedFloorset>? storedFloorsets {get; set;}
+    private List<storedFloorset>? storedFloorsets { get; set; }
 
     //function for deleting a store
     private async void deleteFloorset()
@@ -161,6 +210,12 @@ Author: Andrew Fulton (3/13/2025)  *@
         await JS.InvokeVoidAsync("DeleteFloorset");
     }
 
+    //Siona Beaudoin - 4/3/2025
+    private async void editFloorsetTitle()
+    {
+        Console.WriteLine("Edit Floorset Title Function Called");
+        await JS.InvokeVoidAsync("EditFloorsetTitle");
+    }
     //general function to take us to the floorsets editor page for a floorset store
     private void goToFloorsetEditorPage()
     {
@@ -174,20 +229,21 @@ Author: Andrew Fulton (3/13/2025)  *@
     public void CopyFloorset(string originalName)
     {
         Console.WriteLine("Copy Floorset Func");
-        if (storedFloorsets != null){
+        if (storedFloorsets != null)
+        {
             //Search the list for the index where the name property is the same as the original name.
             var index = storedFloorsets.FindIndex(p => p.Name == originalName);
             if (index >= 0)
             {
-                storedFloorsets.Insert(index+1, new storedFloorset(originalName + " Copy"));
+                storedFloorsets.Insert(index + 1, new storedFloorset(originalName + " Copy"));
                 StateHasChanged();
             }
             else
             {
-                Console.WriteLine("Could not find index for name "+originalName);
+                Console.WriteLine("Could not find index for name " + originalName);
             }
         }
-        
+
     }
 
     //Retrieve the floorsets on initialization.
@@ -201,25 +257,27 @@ Author: Andrew Fulton (3/13/2025)  *@
     }
 
     //Function to retrieve floorsets from DB. For now, some hardcoded references.
-    private void getFloorsets(){
-        storedFloorsets = new List<storedFloorset> {};
-        
+    private void getFloorsets()
+    {
+        storedFloorsets = new List<storedFloorset> { };
+
         //This array and following foreach is for default testing floorsets.
         Console.WriteLine("Adding default floorsets to storedFloorsets");
         var floorsetNames = new String[] {
-            "Nov24 Floorset",
-            "Dec24 Floorset",
-            "Jan25 Floorset",
-            "Feb25 Floorset",
-            "Mar25 Floorset",
-            "Apr25 Floorset",
-            "May25 Floorset",
-            "Jun25 Floorset",
-            "Jul25 Floorset",
-            "Aug25 Floorset",
-        };
+"Nov24 Floorset",
+"Dec24 Floorset",
+"Jan25 Floorset",
+"Feb25 Floorset",
+"Mar25 Floorset",
+"Apr25 Floorset",
+"May25 Floorset",
+"Jun25 Floorset",
+"Jul25 Floorset",
+"Aug25 Floorset",
+};
 
-        foreach (String name in floorsetNames){
+        foreach (String name in floorsetNames)
+        {
             storedFloorsets.Add(new storedFloorset(name));
         }
     }
