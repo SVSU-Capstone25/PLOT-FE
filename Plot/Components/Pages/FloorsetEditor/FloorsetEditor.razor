@@ -154,7 +154,7 @@
 
     string id = "";
     
-    <Modal IsStatic=true Class="modal-xl fixture-modal" Id="editFixture" Title="Edit Fixture" OnCancelFunction="CleanUpEdit">
+    <Modal IsStatic=true Class="modal-xl fixture-modal" Id="editFixture" Title="Edit Fixture" OnCancelFunction="@(async()=>{await CleanUpEdit(); await JS.InvokeVoidAsync("toggleModal","editFixture",false);})">
         <BodyContent>
             <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@editedFixtureInfo?.Name" 
                 ValueChanged="@(e=>{if (editedFixtureInfo != null) editedFixtureInfo.Name=e;})" />
@@ -253,7 +253,7 @@
         <FooterContent>
             <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async ()=>{
                     DeleteFixture(id);
-                    await JS.InvokeVoidAsync("toggleModal","deleteFixture"+id,false);
+                    await JS.InvokeVoidAsync("toggleModal","deleteFixture",false);
                 })>
                 Delete
             </Button>
@@ -414,14 +414,17 @@
         if (editedFixtureInfo != null && selectedFixture != null) {
 
             editedFixtureInfo.FixtureImg = await getImageUrlEdit();
-            if (!editedFixtureInfo.HasNullProperties()) {
-                await JS.InvokeVoidAsync("toggleModal","editFixture-"+id,false);
+            if (!editedFixtureInfo.HasNullProperties() && !Fixture.fixtures.ContainsKey(editedFixtureInfo.Name)) {
+                await JS.InvokeVoidAsync("toggleModal","editFixture",false);
                 Fixture.fixtures.Remove(selectedFixture.Name);
                 Fixture.fixtures.Add(editedFixtureInfo.Name,editedFixtureInfo);
-            } else {
+            } else if (editedFixtureInfo.HasNullProperties()){
                 // If not, tell the user to fill out all fields.
                 await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
-            }        
+            } else if (Fixture.fixtures.ContainsKey(editedFixtureInfo.Name)) {
+                // If the user tries to use a name that another fixture already has, alert the user.
+                await JS.InvokeVoidAsync("displayAlert","A fixture already exists with that name.  Please choose another name.");
+            }
         }
 
     }
@@ -429,11 +432,10 @@
     // function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
     private async Task<string> getImageUrlEdit()
     {
-        string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "editFixture");
-        //Console.WriteLine(strImageUrl);
+        string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "EditImageInput");
         //check if a picture has been chosen
         //return the string, or if null, the default store layout photo
-        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
+        return string.IsNullOrEmpty(strImageUrl) ? "" : strImageUrl;
     }
 
     /*
@@ -508,5 +510,4 @@
 
         await JS.InvokeVoidAsync("ClearBackgroundImage","EditImageInput");
     }
-
 }

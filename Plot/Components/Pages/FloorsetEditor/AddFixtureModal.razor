@@ -4,7 +4,12 @@
 
 @* Add Fixture Modal *@
 @{    
-    <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture" IsStatic=true OnCancelFunction="ClearTempFixtureData">
+    <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture" IsStatic=true OnCancelFunction="@(async ()=>
+        {
+            await ClearTempFixtureData(); 
+            await JS.InvokeVoidAsync("toggleModal","addFixture",false);
+        })"
+    >
         <BodyContent>
             <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@ModalName" ValueChanged="@((v)=> ModalName = v)"/>
             <div class="d-flex flex-row align-items-center justify-content-between">
@@ -154,7 +159,7 @@
                 Fixture.fixtures.Add(newFixture.Name, newFixture);
                 await JS.InvokeVoidAsync("toggleModal","addFixture",false);
                 await ClearTempFixtureData();
-                StateHasChanged();
+                
             } else {
                 // If not, tell the user to fill out all fields.
                 await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");

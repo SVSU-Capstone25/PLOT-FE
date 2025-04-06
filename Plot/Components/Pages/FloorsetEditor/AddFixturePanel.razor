@@ -38,7 +38,7 @@
                         @texts[0]
                     </DropdownLink>
 
-                    <DropdownLink Link="@(String.Concat("#deleteFixture-" + currFixture.Name.Replace(" ", "")))" 
+                    <DropdownLink  
                         @onclick="() => OnDeleteClick(currFixture)" Icon="@icons[1]">
                         @texts[1]
                     </DropdownLink>

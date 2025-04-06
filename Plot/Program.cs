@@ -4,6 +4,7 @@ using System.Text;
 using Plot.Components;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,10 @@ builder.WebHost.UseUrls("http://0.0.0.0:8080");
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.Configure<HubOptions>(options =>
+{
+    options.MaximumReceiveMessageSize = 10000 * 1024; // 10MB or use null
+});
 
 // Add HttpClient for server-side Blazor
 builder.Services.AddScoped(sp =>
@@ -39,10 +44,10 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AuthHttpClient>();
 
 // Add JWT authentication and authorization 
-builder.Services.AddAuthentication(options =>   
+builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; 
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; 
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
@@ -81,15 +86,15 @@ builder.Services.AddAuthentication(options =>
             context.Response.Redirect("/login"); // optional — won't work for APIs but works in some SPA cases
             return Task.CompletedTask;
         }
-};
+    };
 });
-     
+
 // Add authorization policies
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("Employee", policy => policy.RequireClaim("Role", "3", "2", "1"))
     .AddPolicy("Manager", policy => policy.RequireClaim("Role", "1", "2"))
     .AddPolicy("Owner", policy => policy.RequireClaim("Role", "1"));
-    
+
 builder.Services.AddCascadingAuthenticationState();
 
 
