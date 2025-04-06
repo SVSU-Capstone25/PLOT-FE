@@ -55,7 +55,7 @@ const floorsetGrid = (function () {
             return window.gridHeight ?? 10;
         }
 
-        get nextID() {
+        getNextID() {
             if (this.racks.length <= 0) {
                 return 0;
             }
@@ -159,31 +159,38 @@ const floorsetGrid = (function () {
                     grid.resize();
                 }
 
-                sketch.mousePressed = () => {
-                    if (window.gridState === "place") {
-                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) {
-                            const index = grid.racks.indexOf(rack);
-                            if (index > -1) {
-                                grid.racks.splice(index, 1);
-                                mouseRack = rack;
+                sketch.mousePressed = (event) => {
+                    const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                    const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+
+                    if (rack) {
+                        const index = grid.racks.indexOf(rack);
+                        if (index > -1) {
+                            switch (event.buttons) {
+                                case 1:
+                                    //Place, Erase, Paint modes
+                                    switch (window.gridState) {
+                                        case "place":
+                                            grid.racks.splice(index, 1);
+                                            mouseRack = rack;
+                                            break;
+                                        case "erase":
+                                            grid.racks.splice(index, 1);
+                                            break;
+                                        case "paint":
+                                            rack.color = window.paint;
+                                            break;
+                                    }
+                                    break;
+
+                                case 2:
+                                    //Context Window Mode
+                                    console.log("Display context window of rack.")
+
                             }
                         }
-                    } else if (window.gridState === "erase") {
-                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) {
-                            const index = grid.racks.indexOf(rack);
-                            if (index > -1) {
-                                grid.racks.splice(index, 1);
-                            }
-                        }
-                    } else {
-                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) rack.color = window.paint;
                     }
+
                 };
 
                 sketch.mouseDragged = () => {
