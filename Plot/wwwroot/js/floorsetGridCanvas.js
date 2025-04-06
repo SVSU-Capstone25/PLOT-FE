@@ -186,43 +186,43 @@ const floorsetGrid = (function () {
                                 case 2:
                                     //Context Window Mode
                                     console.log("Display context window of rack.")
-
                             }
                         }
                     }
-
                 };
 
                 sketch.mouseDragged = () => {
-                    if (window.gridState === "paint") {
-                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) rack.color = window.paint;
-                    } else if (window.gridState === "erase") {
-                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) {
-                            const index = grid.racks.indexOf(rack);
-                            if (index > -1) {
-                                grid.racks.splice(index, 1);
+                    const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
+                    const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
+                    switch (window.gridState) {
+                        case "paint":
+                            if (rack) {
+                                rack.color = window.paint;
                             }
-                        }
-                    } else {
-                        // Place mode logic
-                        if (mouseRack) {
-                            const { x: gridX, y: gridY } = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                            if (gridX < 0 || gridX + mouseRack.width > grid.x || gridY < 0 || gridY + mouseRack.height > grid.y) return;
-                            mouseRack.x = gridX * grid.size;
-                            mouseRack.y = gridY * grid.size;
-                        } else if (window.draggedRack) {
-                            const { width, height } = window.draggedRack;
-                            const { x: gridX, y: gridY } = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                            if (gridX + width > grid.x || gridY + height > grid.y) return;
-                            mouseRack = new Rack(sketch, gridX * grid.size, gridY * grid.size,
-                                width, height, grid.getNextID());
-                        }
+                            break;
+                        case "erase":
+                            if (rack) {
+                                const index = grid.racks.indexOf(rack);
+                                if (index > -1) {
+                                    grid.racks.splice(index, 1);
+                                }
+                            }
+                            break;
+                        case "place":
+                            // Place mode logic
+                            if (mouseRack) {
+                                if (gridCoords.x < 0 || gridCoords.x + mouseRack.width > grid.x || gridCoords.y < 0 || gridCoords.y + mouseRack.height > grid.y) return;
+                                mouseRack.x = gridCoords.x * grid.size;
+                                mouseRack.y = gridCoords.y * grid.size;
+                            } else if (window.draggedRack) {
+                                const { width, height } = window.draggedRack;
+                                if (gridCoords.x + width > grid.x || gridCoords.y + height > grid.y) return;
+                                mouseRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size,
+                                    width, height, grid.getNextID());
+                            }
+                            break;
                     }
-                };
+                }
 
                 sketch.mouseReleased = () => {
                     if (!mouseRack) return;
