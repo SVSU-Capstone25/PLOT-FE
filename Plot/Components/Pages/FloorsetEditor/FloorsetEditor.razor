@@ -414,7 +414,7 @@
         if (editedFixtureInfo != null && selectedFixture != null) {
 
             editedFixtureInfo.FixtureImg = await getImageUrlEdit();
-            if (!editedFixtureInfo.HasNullProperties() && !Fixture.fixtures.ContainsKey(editedFixtureInfo.Name)) {
+            if (!editedFixtureInfo.HasNullProperties() && (!Fixture.fixtures.ContainsKey(editedFixtureInfo.Name) || editedFixtureInfo.Name == selectedFixture.Name)) {
                 await JS.InvokeVoidAsync("toggleModal","editFixture",false);
                 Fixture.fixtures.Remove(selectedFixture.Name);
                 Fixture.fixtures.Add(editedFixtureInfo.Name,editedFixtureInfo);
