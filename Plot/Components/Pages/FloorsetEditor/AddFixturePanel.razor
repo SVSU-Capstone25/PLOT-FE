@@ -32,10 +32,16 @@
                 data-width="@currFixture.Width" data-height="@currFixture.Length" ondragstart="createDraggable(event)">
                 <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="" draggable="false">
                 <p class="fixture-text m-0 disable-select text-truncate">@currFixture.Name</p>
-                <Dropdown
-                    DropdownLinks="@(new List<string> { "#editFixture-" + currFixture.Name.Replace(" ", ""), "#deleteFixture-" + currFixture.Name.Replace(" ", "") })"
-                    DropdownIcons="@icons" DropdownText="@texts" class="fixture-options ms-auto disable-select"
-                    id="@(" fixture-options" + currFixture.Name)" LabelText="Fixture">
+                <Dropdown class="fixture-options ms-auto disable-select" id="@(" fixture-options" + currFixture.Name)"
+                    LabelText="Fixture">
+                    <DropdownLink Link=@("#editFixture-" + currFixture.Name.Replace(" ", ""))
+                        Icon="fa-regular fa-pen-to-square">
+                        Edit
+                    </DropdownLink>
+                    <DropdownLink Link=@("#deleteFixture-" + currFixture.Name.Replace(" ", ""))
+                        Icon="fa-regular fa-trash-can">
+                        Delete
+                    </DropdownLink>
                 </Dropdown>
             </div>
         }
@@ -54,10 +60,6 @@
     {
         await JS.InvokeVoidAsync("flipOrder");
     }
-
-    // Lists for holding icons and texts for the Dropdown component
-    private List<string> icons = new List<string> { "fa-regular fa-pen-to-square", "fa-regular fa-trash-can" };
-    private List<string> texts = new List<string> { "Edit", "Delete" };
 
     /*
     The OnFixtureAddClick function calls a JS function to toggle the add fixture modal.
