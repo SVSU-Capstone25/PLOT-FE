@@ -21,6 +21,7 @@ Author: Andrew Fulton (3/12/2025)
 @inject UsersHttpClient userClient;
 @using Plot.Components.PartialComponents.NumericInput
 @using Plot.Components.PartialComponents.Modal
+@using Plot.Data.Models.Users
 
 <PageTitle>Store Dashboard</PageTitle>
 
@@ -30,10 +31,10 @@ Author: Andrew Fulton (3/12/2025)
     @* loop to generate a card for each store that exists *@
     @foreach (var store in stores)
     {
-        <a href="@($"/floorsets/{store.Id}")">
-            <Card CardText="@($"{store.City},{store.State}")" CardImage="@($"{store.Blueprint_Image}")">
+        <a href="@($"/floorsets/{store.TUID}")">
+            <Card CardText="@($"{store.CITY},{store.STATE}")" CardImage="@($"{store.BLUEPRINT_IMAGE}")">
                 <Dropdown Class="Test Dropdown" Id="@($"{store.Name}{store.Id}Dropdown")" LabelText="Store">
-                    <DropdownLink Link="@($"/floorsets/{store.Id}")" Icon="fa-solid fa-note-sticky">Floorsets
+                    <DropdownLink Link="@($"/floorsets/{store.TUID}")" Icon="fa-solid fa-note-sticky">Floorsets
                     </DropdownLink>
 
                     <DropdownLink @onclick="() => OnEditClick(store)" Link="#editStoreModal"
@@ -88,21 +89,21 @@ Author: Andrew Fulton (3/12/2025)
                     @* name *@
                     <div class="row">
                         <TextInput Class="w-100" LabelOnTop="true" Id="addModalStoreName" Label="Name"
-                            Placeholder="Name" Type="Text" Value="@storeToAdd.Name" ValueChanged="@ValidateNameAdd" />
+                            Placeholder="Name" Type="Text" Value="@storeToAdd.NAME" ValueChanged="@ValidateNameAdd" />
                         <p class="error">@nameErrorAdd</p>
                     </div>
 
                     @* address *@
                     <div class="row">
                         <TextInput Class="w-100" LabelOnTop="true" Id="addModalStoreAddress" Label="Address"
-                            Placeholder="Address" Value="@storeToAdd.Address" ValueChanged="@ValidateAddressAdd" />
+                            Placeholder="Address" Value="@storeToAdd.ADDRESS" ValueChanged="@ValidateAddressAdd" />
                         <p class="error">@addressErrorAdd</p>
                     </div>
 
                     @* city *@
                     <div class="row">
                         <TextInput Class="w-100" LabelOnTop="true" Id="addModalStoreCity" Label="City"
-                            Placeholder="City" Value="@storeToAdd.City" ValueChanged="@ValidateCityAdd" />
+                            Placeholder="City" Value="@storeToAdd.CITY" ValueChanged="@ValidateCityAdd" />
                         <p class="error">@cityErrorAdd</p>
                     </div>
 
@@ -111,7 +112,7 @@ Author: Andrew Fulton (3/12/2025)
                         <div class="col">
                             @* holds the store state *@
                             <TextInput Class="w-100 small-textInput" LabelOnTop="true" Id="addModalStoreState"
-                                Label="State" Placeholder="State" Value="@storeToAdd.State"
+                                Label="State" Placeholder="State" Value="@storeToAdd.STATE"
                                 ValueChanged="@ValidateStateAdd" Max=25 />
                             <p class="error">@stateErrorAdd</p>
                         </div>
@@ -119,7 +120,7 @@ Author: Andrew Fulton (3/12/2025)
                         <div class="col">
                             @* holds the store zip *@
                             <TextInput Class="w-100 small-textInput" LabelOnTop="true" Id="addModalStoreZip" Label="Zip"
-                                Placeholder="Zip" Value="@storeToAdd.Zip" ValueChanged="@ValidateZipAdd" Max=5 />
+                                Placeholder="Zip" Value="@storeToAdd.ZIP" ValueChanged="@ValidateZipAdd" Max=5 />
                             <p class="error">@zipErrorAdd</p>
                         </div>
 
@@ -136,14 +137,14 @@ Author: Andrew Fulton (3/12/2025)
                     <div class="row">
                         <div class="col">
                             <NumericInput Class="w-100 small-textInput" Id="addModalStoreLength" Label="Length"
-                                Placeholder="20ft" Description="" Value="@storeToAdd.Length"
+                                Placeholder="20ft" Description="" Value="@storeToAdd.LENGTH"
                                 ValueChanged="@ValidateLengthAdd" />
                             <p class="error">@heightErrorAdd</p>
                         </div>
 
                         <div class="col">
                             <NumericInput Class="w-100 small-textInput" Id="addModalStoreWidth" Label="Width"
-                                Placeholder="50ft" Description="" Value="@storeToAdd.Width"
+                                Placeholder="50ft" Description="" Value="@storeToAdd.WIDTH"
                                 ValueChanged="@ValidateWidthAdd" />
                             <p class="error">@widthErrorAdd</p>
                         </div>
@@ -151,6 +152,9 @@ Author: Andrew Fulton (3/12/2025)
 
                 </div>
 
+    using Plot.Data.Models.Stores;
+    using Plot.Data.Models.Stores;
+    using Plot.Data.Models.Stores;
                 @* right side of the modal *@
                 <div class="col d-flex justify-content-center">
                     @* holds store image *@
@@ -198,21 +202,21 @@ Author: Andrew Fulton (3/12/2025)
                 @* Name *@
                 <div class="row">
                     <TextInput Class="w-100" LabelOnTop="true" Id="editModalStoreName" Label="Name" Placeholder="Name"
-                        Type="Text" Value="@editedStoreInfo.Name" ValueChanged="@ValidateNameEdit" />
+                        Type="Text" Value="@editedStoreInfo.NAME" ValueChanged="@ValidateNameEdit" />
                     <p class="error">@nameErrorEdit</p>
                 </div>
 
                 @* address *@
                 <div class="row">
                     <TextInput Class="w-100" LabelOnTop="true" Id="editModalStoreAddress" Label="Address"
-                        Placeholder="Address" Value="@editedStoreInfo.Address" ValueChanged="@ValidateAddressEdit" />
+                        Placeholder="Address" Value="@editedStoreInfo.ADDRESS" ValueChanged="@ValidateAddressEdit" />
                     <p class="error">@addressErrorEdit</p>
                 </div>
 
                 @* city *@
                 <div class="row">
                     <TextInput Class="w-100" LabelOnTop="true" Id="editModalStoreCity" Label="City" Placeholder="City"
-                        Value="@editedStoreInfo.City" ValueChanged="@ValidateCityEdit" />
+                        Value="@editedStoreInfo.CITY" ValueChanged="@ValidateCityEdit" />
                     <p class="error">@cityErrorEdit</p>
                 </div>
 
@@ -221,14 +225,14 @@ Author: Andrew Fulton (3/12/2025)
                     @* state *@
                     <div class="col">
                         <TextInput Class="w-100 small-textInput" LabelOnTop="true" Id="editModalStoreState"
-                            Label="State" Placeholder="State" Value="@editedStoreInfo.State"
+                            Label="State" Placeholder="State" Value="@editedStoreInfo.STATE"
                             ValueChanged="@ValidateStateEdit" />
                     </div>
 
                     @* zip *@
                     <div class="col">
                         <TextInput Class="w-100 small-textInput" LabelOnTop="true" Id="editModalStoreZip" Label="Zip"
-                            Placeholder="Zip" Value="@editedStoreInfo.Zip" ValueChanged="@ValidateZipEdit" />
+                            Placeholder="Zip" Value="@editedStoreInfo.ZIP" ValueChanged="@ValidateZipEdit" />
                     </div>
                 </div>
 
@@ -243,7 +247,7 @@ Author: Andrew Fulton (3/12/2025)
                     @* Length *@
                     <div class="col">
                         <NumericInput Class="w-100 small-textInput" Id="editModalStoreLength" Label="Length"
-                            Placeholder="20ft" Description="" Value="@editedStoreInfo.Length"
+                            Placeholder="20ft" Description="" Value="@editedStoreInfo.LENGTH"
                             ValueChanged="@ValidateLengthEdit" />
                         <p class="error">@heightErrorEdit</p>
                     </div>
@@ -251,7 +255,7 @@ Author: Andrew Fulton (3/12/2025)
                     @* width *@
                     <div class="col">
                         <NumericInput Class="w-100 small-textInput" Id="editModalStoreWidth" Label="Width"
-                            Placeholder="50ft" Description="" Value="@editedStoreInfo.Width"
+                            Placeholder="50ft" Description="" Value="@editedStoreInfo.WIDTH"
                             ValueChanged="@ValidateWidthEdit" />
                         <p class="error">@widthErrorEdit</p>
                     </div>
@@ -600,18 +604,27 @@ Author: Andrew Fulton (3/12/2025)
     DotNetObjectReference<StoreDashboard>? dotNet;
 
     //list to hold all of the stores
-    private List<Store> stores = new List<Store>();
+    private List<Data.Models.Stores.Store> stores = new List<Data.Models.Stores.Store>();
     //list to hold all of the available employees
-    private List<User> users = new List<User>();
+    private List<UserDTO> users = new List<UserDTO>();
     //list to hold the user that might be added to a store
-    private List<User> usersToAdd = new List<User>();
+    private List<UserDTO> usersToAdd = new List<UserDTO>();
 
     //store variable that will be updated to when a store is being made
-    private Store storeToAdd = new Store();
+    private Data.Models.Stores.CreateStore storeToAdd = new Data.Models.Stores.CreateStore
+    {
+        NAME="",ADDRESS="",CITY="",STATE="",ZIP=""
+    };
     //used to hold/grab the info of the store that is being targeted
-    private Store selectedStore = new Store();
+    private Data.Models.Stores.Store selectedStore = new Data.Models.Stores.Store
+    {
+        NAME="",ADDRESS="",CITY="",STATE="",ZIP=""
+    };
     //used to display and change the info of the store being changed
-    private Store editedStoreInfo = new Store();
+    private Data.Models.Stores.Store editedStoreInfo = new Data.Models.Stores.Store
+    {
+        NAME="",ADDRESS="",CITY="",STATE="",ZIP=""
+    };
 
     // Error messages for adding stores
     private string nameErrorAdd = "";
@@ -667,8 +680,10 @@ Author: Andrew Fulton (3/12/2025)
 
 
 
+    //need to get userid from cookie/session on load
+    [Parameter] public int userid {get;set;}
+    [Parameter] public int? storeid {get;set;}
     //lists to hold the value and names of users for the options inputs used to add employees to a store
-    //Test
     private List<string> UserOptionsText { get; set; } = new List<string> { "init" };
     private List<string> UserOptionsValues { get; set; } = new List<string> { "init" };
     //variable to hold the string of the currently selected user when adding a user to a store (value will ve received from
@@ -678,131 +693,38 @@ Author: Andrew Fulton (3/12/2025)
 
 
 
-    private async Task OnEditClick(Store store)
+    private async Task OnEditClick(Data.Models.Stores.Store store)
     {
         selectedStore = store;
+        storeid=store.TUID;
 
-        editedStoreInfo = new Store
-        {
-            Id = selectedStore.Id,
-            Name = selectedStore.Name,
-            Address = selectedStore.Address,
-            City = selectedStore.City,
-            State = selectedStore.State,
-            Zip = selectedStore.Zip,
-            Width = selectedStore.Width,
-            Length = selectedStore.Length,
-            Blueprint_Image = selectedStore.Blueprint_Image
-        };
+
+        editedStoreInfo = store;
         //SetBackgroundImage(elementId, strUrl)
-        await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.Blueprint_Image);
+        await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.BLUEPRINT_IMAGE);
         StateHasChanged();
     }
 
-
-    //initialize components
-    protected async override void OnInitialized()
-    {
-        //Get the dotnet into JS
-        dotNet = DotNetObjectReference.Create(this);
-
+    private async Task UpdateStore(){
         // Call the Store service to get all the stores for a user
-        var result = await storeClient.GetStoreAccessByUserId();
-
-       
-
-        users.Add(new User
+        
+        var result = await storeClient.GetStoreAccessByUserId(userid);
+        if (!(result == null))
         {
-            Id = users.Count + 1,
-            FirstName = "Homer",
-            LastName = "Simpson",
-            Email = "homer@email.com",
-            Role = "Owner"
-        });
-
-        users.Add(new User
-        {
-            Id = users.Count + 1,
-            FirstName = "Marge",
-            LastName = "Simpson",
-            Email = "marge@email.com",
-            Role = "Manager"
-        });
-
-        users.Add(new User
-        {
-            Id = users.Count + 1,
-            FirstName = "Bart",
-            LastName = "Simpson",
-            Email = "Bart@email.com",
-            Role = "Employee"
-        });
-
-        users.Add(new User
-        {
-            Id = users.Count + 1,
-            FirstName = "Lisa",
-            LastName = "Simpson",
-            Email = "lisa@email.com",
-            Role = "Employee"
-        });
-
-        users.Add(new User
-        {
-            Id = users.Count + 1,
-            FirstName = "Sideshow",
-            LastName = "Bob",
-            Email = "sideshow@email.com",
-            Role = "employee"
-        });
-
-        stores.Add(new Store
-        {
-            Id = stores.Count + 1,
-            Name = "Plato's Closet Flint",
-            Address = "3192 S Linden Rd",
-            City = "Flint",
-            State = "MI",
-            Zip = "48507",
-            Width = "200",
-            Length = "300",
-            Blueprint_Image = "img/LayoutPhotoExample.png",
-            Users = new List<User> { users[0] }
-        });
-
-        stores.Add(new Store
-        {
-            Id = stores.Count + 1,
-            Name = "Plato's Closet Austin",
-            Address = "35400 Brodie Ln Ste 240",
-            City = "Austin",
-            State = "TX",
-            Zip = "78745",
-            Width = "250",
-            Length = "325",
-            Blueprint_Image = "img/LayoutPhotoExample.png",
-            Users = new List<User> { users[1] }
-        });
-
-        stores.Add(new Store
-        {
-            Id = stores.Count + 1,
-            Name = "Plato's Closet Utica",
-            Address = "13287 Hall Rd",
-            City = "Utica",
-            State = "MI",
-            Zip = "48315",
-            Width = "375",
-            Length = "225",
-            Blueprint_Image = "img/LayoutPhotoExample.png",
-            Users = new List<User> { users[2] }
-        });
+            stores = result;
+        }
+        
+    }
+    //initialize components
+    protected async override Task OnInitializedAsync()
+    {
+        await UpdateStore();
     }
 
 
 
     //function to update the optionsInput lists to display the users available to add to a store
-    private void UpdateUserOptions()
+    private async void UpdateUserOptions()
     {
         //clear the dropdown values and text
         UserOptionsText.Clear();
@@ -811,16 +733,17 @@ Author: Andrew Fulton (3/12/2025)
         //add the available users into the dropdown
         //this only shows the employees that aren't already in the store user list
         //and also the users that havent already been marked to be added
-        foreach (User user in users)
+        foreach (UserDTO user in users)
         {
-            bool isInEditedStore = editedStoreInfo.Users.Any(su => su.Id == user.Id);
-            bool isInUsersToAdd = usersToAdd.Any(u => u.Id == user.Id);
+            //need to add Select_Users_Not_Assigned_To_Store
+            List<UserDTO> isInEditedStore = await userClient.GetUsersNotInStore(storeid);
+            bool isInUsersToAdd = usersToAdd.Any(u => u.TUID == user.TUID);
 
             //if user is no associated with the store, add them to the dropdown text and values
             if (!isInEditedStore & !isInUsersToAdd)
             {
-                UserOptionsText.Add(user.FirstName + " " + user.LastName);
-                UserOptionsValues.Add($"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}");
+                UserOptionsText.Add(user.FIRST_NAME + " " + user.LAST_NAME);
+                UserOptionsValues.Add($"{user.TUID},{user.FIRST_NAME},{user.LAST_NAME},{user.EMAIL},{user.ROLE}");
             }
         }
 
@@ -919,13 +842,13 @@ Author: Andrew Fulton (3/12/2025)
             //add the user to the employee section of the modal
             await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", strUserValueToAdd, dotNet);
             //add the user to list of users that will potentially be added
-            usersToAdd.Add(new User
+            usersToAdd.Add(new Data.Models.Users.UserDTO
             {
-                Id = int.Parse(arrSplitUserValues[0]),
-                FirstName = arrSplitUserValues[1],
-                LastName = arrSplitUserValues[2],
-                Email = arrSplitUserValues[3],
-                Role = arrSplitUserValues[4]
+                TUID = int.Parse(arrSplitUserValues[0]),
+                FIRST_NAME = arrSplitUserValues[1],
+                LAST_NAME = arrSplitUserValues[2],
+                EMAIL = arrSplitUserValues[3],
+                ROLE = arrSplitUserValues[4]
             });
             //mark that there was a change and make the store updatable
             SetEditDisabled();
@@ -947,13 +870,13 @@ Author: Andrew Fulton (3/12/2025)
             //add the employee to the modals employee section
             await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesAdd", strUserValueToAdd, dotNet);
             //add the user to the list of users to be added
-            usersToAdd.Add(new User
+            usersToAdd.Add(new Data.Models.Users.UserDTO
             {
-                Id = int.Parse(arrSplitUserValues[0]),
-                FirstName = arrSplitUserValues[1],
-                LastName = arrSplitUserValues[2],
-                Email = arrSplitUserValues[3],
-                Role = arrSplitUserValues[4]
+                TUID = int.Parse(arrSplitUserValues[0]),
+                FIRST_NAME = arrSplitUserValues[1],
+                LAST_NAME = arrSplitUserValues[2],
+                EMAIL = arrSplitUserValues[3],
+                ROLE = arrSplitUserValues[4]
             });
         }
         //update the list of available users to add
@@ -982,30 +905,6 @@ Author: Andrew Fulton (3/12/2025)
     private void ClosingAddUserModalForEditStore()
     {
         ResetZIndexOfComponent("editStoreModal");
-    }
-
-
-
-
-
-
-
-    //Store class
-    public class Store
-    {
-        public int? Id { get; set; }
-        public string? Name { get; set; }
-        public string? Address { get; set; }
-        public string? City { get; set; }
-        public string? State { get; set; }
-        public string? Zip { get; set; }
-        public string? Width { get; set; }
-        public string? Length { get; set; }
-        //byte[] is for the varbinary type that the DB is using to store the image
-        //public byte[] Blueprint_Image { get; set; }
-        public string? Blueprint_Image { get; set; }
-
-        public List<User> Users { get; set; } = new List<User>();
     }
 
     @* // Set selected user to user in row clicked upon
@@ -1050,21 +949,21 @@ Author: Andrew Fulton (3/12/2025)
     // Save edited store as the selected store
     private async Task SaveChanges()
     {
-        var index = stores.FindIndex(s => s.Id == selectedStore.Id);
+        var index = stores.FindIndex(s => s.TUID == selectedStore.TUID);
         stores[index] = editedStoreInfo;
         //get the image for the store
-        stores[index].Blueprint_Image = await getImageUrlEdit();
+        stores[index].BLUEPRINT_IMAGE = await getImageUrlEdit();
 
         //add the users that shoukld be added to the store to the edited store list
         editedStoreInfo.Users.AddRange(usersToAdd);
         //add the updated list of users to the selected store
         stores[index].Users = editedStoreInfo.Users;
-
+        var update = await storeClient.UpdatePublicInfo(storeid,editedStoreInfo);
 
 
         @* Click the edit button again for the store. This lets it be a single click after updating the store 
         instead of a double. I have no idea why it was happening, but this is the only fix I could find. *@
-        await JS.InvokeVoidAsync("ClickDropdownLink", $"{stores[index].Name}{stores[index].Id}");
+        await JS.InvokeVoidAsync("ClickDropdownLink", $"{stores[index].NAME}{stores[index].TUID}");
 
         //clear information in edit modal and close it
         await CleanUpEdit();
@@ -1077,28 +976,14 @@ Author: Andrew Fulton (3/12/2025)
     private async Task AddStore()
     {
         //add the users that were selected to be added to the store
-        storeToAdd.Users.AddRange(usersToAdd);
-
-        stores.Add
-        (
-        new Store
-        {
-            Id = stores.Count + 1,
-            Name = storeToAdd.Name,
-            Address = storeToAdd.Address,
-            City = storeToAdd.City,
-            State = storeToAdd.State,
-            Zip = storeToAdd.Zip,
-            Width = storeToAdd.Width,
-            Length = storeToAdd.Length,
-            Blueprint_Image = await getImageUrlAdd(),
-            Users = storeToAdd.Users
-            //Blueprint_Image = "img/LayoutPhotoExample.png"
-        }
-        );
+        usersToAdd = await userClient.get
+        var result = await storeClient.CreateStore(storeToAdd); 
+        
 
         //reset storeToAdd
-        storeToAdd = new Store();
+        storeToAdd = new Data.Models.Stores.CreateStore{
+        NAME="",ADDRESS="",CITY="",STATE="",ZIP=""
+        };
 
         //clear the add store modal fields and close it
         await CleanUpAdd();
@@ -1144,7 +1029,7 @@ Author: Andrew Fulton (3/12/2025)
     private async Task DeleteStore()
     {
         // Get user and remove
-        var index = stores.FindIndex(s => s.Id == selectedStore.Id);
+        var index = stores.FindIndex(s => s.TUID == selectedStore.TUID);
         stores.RemoveAt(index);
 
         // Clean up Delete Modal and close it
@@ -1180,7 +1065,9 @@ Author: Andrew Fulton (3/12/2025)
     private async Task CleanUpAdd()
     {
         //reset storeToAdd
-        storeToAdd = new Store();
+        storeToAdd = new Data.Models.Stores.CreateStore{
+        NAME="",ADDRESS="",CITY="",STATE="",ZIP=""
+        };
 
         //clear out the users that were added to the last store
         usersToAdd.Clear();
@@ -1220,7 +1107,9 @@ Author: Andrew Fulton (3/12/2025)
     private async Task CleanUpEdit()
     {
         // Selected Store no longer selected
-        selectedStore = new Store();
+        selectedStore = new Data.Models.Stores.Store{
+        NAME="",ADDRESS="",CITY="",STATE="",ZIP=""
+        };
 
         //clear the users to be added to the editied store
         usersToAdd.Clear();
@@ -1261,7 +1150,9 @@ Author: Andrew Fulton (3/12/2025)
     // Clean Up - Cleans up Delete Store Modal
     private async Task CleanUpDelete()
     {
-        selectedStore = new Store(); // Selected User no longer selected
+        selectedStore = new Data.Models.Stores.Store{
+        NAME="",ADDRESS="",CITY="",STATE="",ZIP=""
+        }; // Selected User no longer selected
         confirmDelete = ""; // Delete textbox should now be empty
         isDeleteDisabled = false; // Delete enabled
 
@@ -1321,7 +1212,7 @@ Author: Andrew Fulton (3/12/2025)
         const int CHAR_LIMIT = 100;
 
         // Set value of first name to text
-        storeToAdd.Name = text;
+        storeToAdd.NAME = text;
 
         //check the length of the text
         if (text.Length > CHAR_LIMIT)
@@ -1356,7 +1247,7 @@ Author: Andrew Fulton (3/12/2025)
         //address in DB is varchar(100)
         const int CHAR_LIMIT = 100;
 
-        storeToAdd.Address = text;
+        storeToAdd.ADDRESS = text;
 
         //check the length of the text
         if (text.Length > CHAR_LIMIT)
@@ -1383,7 +1274,7 @@ Author: Andrew Fulton (3/12/2025)
         //City in DB is varchar(100)
         const int CHAR_LIMIT = 100;
 
-        storeToAdd.City = text;
+        storeToAdd.CITY = text;
 
         //check the length of the text
         if (text.Length > CHAR_LIMIT)
@@ -1417,7 +1308,7 @@ Author: Andrew Fulton (3/12/2025)
         //City in DB is varchar(25)
         const int CHAR_LIMIT = 25;
 
-        storeToAdd.State = text;
+        storeToAdd.STATE = text;
 
         //check the length of the text
         if (text.Length > CHAR_LIMIT)
@@ -1450,7 +1341,7 @@ Author: Andrew Fulton (3/12/2025)
     {
         //Zip in DB is varchar(10)
         const int CHAR_LIMIT = 10;
-        storeToAdd.Zip = text;
+        storeToAdd.ZIP = text;
 
         //check the lenght of the text
         if (text.Length > CHAR_LIMIT)
@@ -1477,23 +1368,6 @@ Author: Andrew Fulton (3/12/2025)
         SetAddDisabled();
     }
 
-    @* vmethod used to validate the width of the store being added *@
-    private void ValidateWidthAdd(string text)
-    {
-        storeToAdd.Width = text;
-
-        isWidthValidAdd = IsTextPresent(text);
-        SetAddDisabled();
-    }
-    @* method used to validate the height of the store being added *@
-    private void ValidateLengthAdd(string text)
-    {
-        storeToAdd.Length = text;
-
-        isLengthValidAdd = IsTextPresent(text);
-        SetAddDisabled();
-    }
-
     @* private async Task ValidateBlueprintAdd(InputFileChangeEventArgs e)
     {
         var file = e.File;
@@ -1516,7 +1390,7 @@ Author: Andrew Fulton (3/12/2025)
         const int CHAR_LIMIT = 100;
 
         // Set value of first name to text
-        editedStoreInfo.Name = text;
+        editedStoreInfo.NAME = text;
 
         //check the length of the text
         if (text.Length > CHAR_LIMIT)
@@ -1551,7 +1425,7 @@ Author: Andrew Fulton (3/12/2025)
         //address in DB is varchar(100)
         const int CHAR_LIMIT = 100;
 
-        editedStoreInfo.Address = text;
+        editedStoreInfo.ADDRESS = text;
 
         //check the length of the text
         if (text.Length > CHAR_LIMIT)
@@ -1578,7 +1452,7 @@ Author: Andrew Fulton (3/12/2025)
         //City in DB is varchar(100)
         const int CHAR_LIMIT = 100;
 
-        editedStoreInfo.City = text;
+        editedStoreInfo.CITY = text;
 
         //check the length of the text
         if (text.Length > CHAR_LIMIT)
@@ -1612,7 +1486,7 @@ Author: Andrew Fulton (3/12/2025)
         //City in DB is varchar(25)
         const int CHAR_LIMIT = 25;
 
-        editedStoreInfo.State = text;
+        editedStoreInfo.STATE = text;
 
         //check the length of the text
         if (text.Length > CHAR_LIMIT)
@@ -1644,7 +1518,7 @@ Author: Andrew Fulton (3/12/2025)
     {
         //Zip in DB is varchar(10)
         const int CHAR_LIMIT = 10;
-        editedStoreInfo.Zip = text;
+        editedStoreInfo.ZIP = text;
 
         //check the lenght of the text
         if (text.Length > CHAR_LIMIT)
@@ -1673,7 +1547,7 @@ Author: Andrew Fulton (3/12/2025)
     @* vmethod used to validate the width of the store being added *@
     private void ValidateWidthEdit(string text)
     {
-        editedStoreInfo.Width = text;
+        editedStoreInfo.WIDTH = text;
 
         isWidthValidEdit = IsTextPresent(text);
         SetEditDisabled();
@@ -1711,14 +1585,14 @@ Author: Andrew Fulton (3/12/2025)
 
 
     @* user class for managing/addingh employees to a store *@
-    public class User
+    @* public class User
     {
         public int? Id { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public string? Role { get; set; }
-    }
+    } *@
 
     [JSInvokable]
     public async Task OnCircleClicked(string Id)
@@ -1727,7 +1601,7 @@ Author: Andrew Fulton (3/12/2025)
         int ID = int.Parse(Id);
 
         //find the user to remove from the usersToAddlist
-        var userToRemove = usersToAdd.Find(user => user.Id == ID);
+        var userToRemove = usersToAdd.Find(user => user.TUID == ID);
         if (userToRemove != null)
         {
             usersToAdd.Remove(userToRemove);
@@ -1738,9 +1612,9 @@ Author: Andrew Fulton (3/12/2025)
         if (isAddOpen)
         {
             await JS.InvokeVoidAsync("clearDivExceptById", "employeesAdd", "addStoreAddUserDiv");
-            foreach (User user in usersToAdd)
+            foreach (UserDTO user in usersToAdd)
             {
-                string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
+                string userValues = $"{user.TUID},{user.FIRST_NAME},{user.LAST_NAME},{user.EMAIL},{user.ROLE}";
                 await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesAdd", $"{userValues}", dotNet);
             }
 
@@ -1752,7 +1626,7 @@ Author: Andrew Fulton (3/12/2025)
         if (isEditOpen)
         {
             //remove the user from the copied version of the selected store
-            userToRemove = editedStoreInfo.Users.Find(user => user.Id == ID);
+            userToRemove = editedStoreInfo.Users.Find(user => user.TUID == ID);
             if (userToRemove != null)
             {
                 editedStoreInfo.Users.Remove(userToRemove);
@@ -1761,9 +1635,9 @@ Author: Andrew Fulton (3/12/2025)
             //clear the employees section of the store
             await JS.InvokeVoidAsync("clearDivExceptById", "employeesEdit", "editStoreAddUserDiv");
             //add in the users that will be a part of the store
-            foreach (User user in editedStoreInfo.Users)
+            foreach (User user in editedStoreInfo)
             {
-                string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
+                string userValues = $"{user.Id},{user.FirstName},{user.LAST_NAME},{user.EMAIL},{user.Role}";
                 await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", $"{userValues}", dotNet);
             }
             foreach (User user in usersToAdd)

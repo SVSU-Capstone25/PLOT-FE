@@ -3,21 +3,21 @@
     Part of Project: PLOT/PLOT-BE/Plot/Data/Models/Stores
 
     File Purpose:
-    This file contains the store object model.
+    This file contains the store object model with users.
     
     Class Purpose:
     This record is used as the main model
     for stores in the application. This will
-    look the same as the schema in the database.
+    look the same as the schema in the database, but with a list of added users in that store.
 
-    Written by: Jordan Houlihan
+    Written by: Krzysztof Hejno
 */
 
 using System.ComponentModel.DataAnnotations;
 using Plot.Data.Models.Users;
 namespace Plot.Data.Models.Stores;
 
-public class Store
+public class StoreWithUsers
 {
     [Required]
     [Range(1, int.MaxValue, ErrorMessage = "TUID must be an integer")]
@@ -51,4 +51,5 @@ public class Store
     [Range(int.MinValue, int.MaxValue, ErrorMessage = "Length must be an integer.")]
     public int LENGTH { get; set; }
     public byte[]? BLUEPRINT_IMAGE { get; set; }
+    public List<UserDTO>? Users {get;set;}
 }

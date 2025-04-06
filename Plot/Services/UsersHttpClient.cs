@@ -108,4 +108,33 @@ public class UsersHttpClient
 
         return await response.Content.ReadFromJsonAsync<Store>();
     }
+    public async Task<List<UserDTO>?> GetUsersByStore(int storeId){
+        string endpoint = $"/get-users-by-store/{storeId}";
+        HttpMethod httpMethod = HttpMethod.Get;
+        JsonContent jsonBody = JsonContent.Create("");
+
+        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        return await response.Content.ReadFromJsonAsync<List<UserDTO>>();
+    }
+
+    public async Task<List<UserDTO>?> GetUsersNotInStore(int storeId){
+        string endpoint = $"/get-users-not-in-store/{storeId}";
+        HttpMethod httpMethod = HttpMethod.Get;
+        JsonContent jsonBody = JsonContent.Create("");
+
+        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        return await response.Content.ReadFromJsonAsync<List<UserDTO>>();
+    }
 }
