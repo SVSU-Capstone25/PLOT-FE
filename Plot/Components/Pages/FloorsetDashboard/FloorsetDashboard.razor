@@ -46,7 +46,8 @@ Author: Andrew Fulton (3/13/2025)  *@
                     </DropdownLink>
                     <DropdownLink Link="@($"javascript:floorsetDashboardCopyCard('{floorset.Name}')")" Icon="fa-solid fa-copy">
                         Copy</DropdownLink>
-                    <DropdownLink Link="#deleteFloorsetModal" Icon="fa-solid fa-trash-can" data-bs-toggle="modal">Delete
+                    <DropdownLink @onclick="() => OnDeleteClick(floorset)" Link="#deleteFloorsetModal"
+                        Icon="fa-solid fa-trash-can" data-bs-toggle="modal">Delete
                     </DropdownLink>
                 </Dropdown>
             </Card>
@@ -86,12 +87,14 @@ Author: Andrew Fulton (3/13/2025)  *@
 
     <BodyContent>
         <h5>Are you SURE you want to delete this Floorset?</h5>
-        <TextInput type="text" Id="deleteModalTextInput" Label="If so, type DELETE below" />
+        <TextInput Class="w-100" Id="deleteModalTextInput" Label="If so, type DELETE below" Value="@confirmDelete"
+            ValueChanged="EnableDelete" />
     </BodyContent>
 
     <FooterContent>
         <p style="margin-left: auto;"></p>
-        <Button Class="Button" TextAlignment="center" Variant="primary" OnClickFunction="deleteFloorset">
+        <Button Class="Button" TextAlignment="center" Variant="primary" IsDisabled="@isDeleteDisabled"
+            OnClickFunction="DeleteFloorset">
             Yes, Delete
         </Button>
     </FooterContent>
@@ -221,6 +224,21 @@ Author: Andrew Fulton (3/13/2025)  *@
 <script src="js/copyFloorsetCard.js"></script>
 
 @code {
+
+    //the targeted floorset for operatins to happen on
+    private storedFloorset selectedFloorset = new storedFloorset();
+
+
+
+
+    // Is delete button disabled?
+    private bool isDeleteDisabled = true;
+    // Deletion confirmation string, initialized as empty
+    private string confirmDelete = "";
+    // Constant used to confirm deletion
+    private const string DELETE_CONFIRM = "DELETE";
+
+
     [Parameter]
     public string? storeId { get; set; }
 
@@ -254,10 +272,15 @@ Author: Andrew Fulton (3/13/2025)  *@
             }
         }
 
+
         public string Name { get; set; }
 
         public string ImagePath { get; set; }
     }
+
+
+
+
 
     //Array of stored floorsets to display. Should be manipulated by copy and delete functions to have local updates.
     private List<storedFloorset>? storedFloorsets { get; set; }
@@ -290,7 +313,7 @@ Author: Andrew Fulton (3/13/2025)  *@
         if (storedFloorsets != null)
         {
             //Search the list for the index where the name property is the same as the original name.
-            var index = storedFloorsets.FindIndex(p => p.Name == originalName);
+            var index = storedFloorsets.FindIndex(p => p.Name.Equals(originalName));
             if (index >= 0)
             {
                 storedFloorsets.Insert(index + 1, new storedFloorset(originalName + " Copy"));
@@ -312,6 +335,10 @@ Author: Andrew Fulton (3/13/2025)  *@
         var dotNetReference = DotNetObjectReference.Create(this);
         JS.InvokeVoidAsync("floorsetDashboardSetDotNet", dotNetReference);
         base.OnInitialized();
+
+
+
+
     }
 
     //Function to retrieve floorsets from DB. For now, some hardcoded references.
@@ -340,6 +367,59 @@ Author: Andrew Fulton (3/13/2025)  *@
         }
     }
 
+
+    private void OnDeleteClick(storedFloorset floorset)
+    {
+        selectedFloorset = floorset;
+    }
+
+    // Enable delete button
+    private void EnableDelete(string value)
+    {
+        // set confirmDelete variable to value
+        confirmDelete = value;
+
+        // Check if confirmDelete is equal to
+        // Delete confirmation string
+        if (confirmDelete.Equals(DELETE_CONFIRM))
+        {
+            // Set isDelete disabled to false
+            isDeleteDisabled = false;
+        }
+        else
+        {
+            // Set isDelete disabled to true
+            isDeleteDisabled = true;
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task CleanUpDelete()
+    {
+        selectedFloorset = new storedFloorset();
+        confirmDelete = "";
+        isDeleteDisabled = false; // Delete enabled
+                                  //close the delete modal
+        await JS.InvokeVoidAsync("ForceCloseModal", "deleteFloorsetModal");
+        StateHasChanged();
+    }
+
+    // Delete selected Floorset
+    private async Task DeleteFloorset()
+    {
+
+        if (storedFloorsets != null)
+        {
+            var index = storedFloorsets.FindIndex(p => p.Name.Equals(selectedFloorset.Name));
+            storedFloorsets.RemoveAt(index);
+        }
+
+        // Clean up Delete Modal and close it
+        await CleanUpDelete();
+
+        StateHasChanged(); // Table is updated to reflected changes
+    }
 
     //function that calls the JS function to clear the text from the Delete store modal textbox
     private async void ClearDeleteStoreModalTextbox()

@@ -39,7 +39,8 @@ Author: Andrew Fulton (3/12/2025)
                         Icon="fa-solid fa-pen-to-square" data-bs-toggle="modal">
                         Edit</DropdownLink>
 
-                    <DropdownLink Link="#deleteStoreModal" Icon="fa-solid fa-trash-can" data-bs-toggle="modal">Delete
+                    <DropdownLink @onclick="() => OnDeleteClick(store)" Link="#deleteStoreModal"
+                        Icon="fa-solid fa-trash-can" data-bs-toggle="modal">Delete
                     </DropdownLink>
                 </Dropdown>
             </Card>
@@ -260,9 +261,11 @@ Author: Andrew Fulton (3/12/2025)
 
             @* right side of modal *@
             <div class="col d-flex justify-content-center">
-                @* holds store image *@
-                <ImageInput Label="Upload Image" Id="editModalStoreBlueprint" Width="330px" Height="300px" />
-                <p class="error">@blueprintErrorEdit</p>
+                <div @onclick="ValidateBlueprintEdit">
+                    @* holds store image *@
+                    <ImageInput Label="Upload Image" Id="editModalStoreBlueprint" Width="330px" Height="300px" />
+                    <p class="error">@blueprintErrorEdit</p>
+                </div>
             </div>
         </div>
 
@@ -333,9 +336,6 @@ Author: Andrew Fulton (3/12/2025)
     </FooterContent>
 
 </Modal>
-
-
-
 
 <script>
 
@@ -510,18 +510,28 @@ Author: Andrew Fulton (3/12/2025)
             }
         }
 
-    @* function to get the URL of the image from the elemebts style tag *@
-        function getBackgroundImageUrl(elementId) {
+    @* function to get the URL of the image from the elements style tag *@
+
+        async function getBackgroundImageUrl(elementId) {
             const element = document.getElementById(elementId);
-            if (element) {
-                const style = window.getComputedStyle(element);
-                const backgroundImage = style.backgroundImage;
-                // Extract the URL from the backgroundImage string in the style tag
-                const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
-                //return urlMatch[1], which is the data URL string
-                return urlMatch && urlMatch[1] ? urlMatch[1] : null;
-            }
-            return null;
+
+            const style = window.getComputedStyle(element);
+            const backgroundImage = style.backgroundImage;
+
+            // Extract the URL from the backgroundImage property
+            const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+
+            // Set imageURL to valid url match
+            const imageUrl = urlMatch[1];
+
+            // Fetch image url
+            const response = await fetch(imageUrl);
+            if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
+
+            const blob = await response.blob(); // Convert response to Blob
+            const objectUrl = URL.createObjectURL(blob); // Create Object URL
+
+            return objectUrl; // Return Object URL
         }
 
     @* function used to clear the imageInput background *@
@@ -534,12 +544,20 @@ Author: Andrew Fulton (3/12/2025)
         }
 
     @* method to set the background image of the edit modal imageinput to the stores BP image *@
-        function SetBackgroundImage(elementId, strUrl) {
+        async function SetBackgroundImage(elementId, imageUrl) {
             const element = document.getElementById(elementId);
-            if (element) {
-                element.style.backgroundImage = strUrl;
-                element.classList.remove("dashed-border");
-            }
+
+            // Fetch the image url
+            const response = await fetch(imageUrl);
+            if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
+
+            const blob = await response.blob(); // Convert response to Blob
+            const objectURL = URL.createObjectURL(blob); // Create Object URL
+
+            element.style.backgroundImage = `url("${objectURL}")`;
+            element.style.backgroundSize = "cover";   // Image is sized just enough to cover the upload
+            element.style.backgroundPosition = "center";
+            element.classList.remove("dashed-border");
         }
 
     @* force close the modal. This was needed because modal elements were invisable after closing the modal,
@@ -693,11 +711,26 @@ Author: Andrew Fulton (3/12/2025)
             Zip = selectedStore.Zip,
             Width = selectedStore.Width,
             Length = selectedStore.Length,
-            Blueprint_Image = selectedStore.Blueprint_Image
+            Blueprint_Image = selectedStore.Blueprint_Image,
+            Users = selectedStore.Users.Select(user => new User
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Role = user.Role
+            }).ToList() // Create a new list of users
         };
         //SetBackgroundImage(elementId, strUrl)
         await JS.InvokeVoidAsync("SetBackgroundImage", "editModalStoreBlueprint", selectedStore.Blueprint_Image);
+
+        await PopulateEmployeesSectionEdit();
         StateHasChanged();
+    }
+
+    private void OnDeleteClick(Store store)
+    {
+        selectedStore = store;
     }
 
 
@@ -1267,10 +1300,6 @@ Author: Andrew Fulton (3/12/2025)
         StateHasChanged();
     }
 
-
-
-
-
     // Clear error message for variable
     // given by reference parameter
     private void ClearError(ref string errorMsg)
@@ -1292,23 +1321,7 @@ Author: Andrew Fulton (3/12/2025)
         errorMsg = textLocation + " is too long. Limit is " + charLimit + " characters.";
     }
     //make sure there is text in the textbox
-    private bool IsTextPresent(string text)
-    {
-        // Checks if text is greater than 0
-        if (text.Length > 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-
-
-
-
+    private bool IsTextPresent(string text) { return (text.Length > 0); }
 
     @* method used to validate the name of the store being added *@
     private void ValidateNameAdd(string text)
@@ -1499,12 +1512,6 @@ Author: Andrew Fulton (3/12/2025)
         Console.WriteLine($"Uploaded image size: {storeToAdd.Blueprint_Image.Length} bytes");
     } *@
 
-
-
-
-
-
-
     @* method used to validate the name of the store being added *@
     private void ValidateNameEdit(string text)
     {
@@ -1683,28 +1690,28 @@ Author: Andrew Fulton (3/12/2025)
         SetEditDisabled();
     }
 
+    private void ValidateBlueprintEdit()
+    {
+        SetEditDisabled();
+    }
+
     @* function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
     private async Task<string> getImageUrlAdd()
     {
         string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "addModalStoreBlueprint");
-
-        // Check if the string is null or empty, return default image if true
-        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
+        return strImageUrl;
     }
 
     @* function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
     private async Task<string> getImageUrlEdit()
     {
         string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "editModalStoreBlueprint");
-        //Console.WriteLine(strImageUrl);
-        //check if a picture has been chosen
+
         isBlueprintValidEdit = true;
         SetEditDisabled();
-        //return the string, or if null, the default store layout photo
-        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
+
+        return strImageUrl;
     }
-
-
 
     @* user class for managing/addingh employees to a store *@
     public class User
@@ -1770,8 +1777,23 @@ Author: Andrew Fulton (3/12/2025)
             //check if changes happened and enable the update button
             SetEditDisabled();
         }
-
-
     }
 
+    //
+    private async Task PopulateEmployeesSectionEdit()
+    {
+        //clear the employees section of the store
+        await JS.InvokeVoidAsync("clearDivExceptById", "employeesEdit", "editStoreAddUserDiv");
+        //add in the users that will be a part of the store
+        foreach (User user in editedStoreInfo.Users)
+        {
+            string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
+            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", $"{userValues}", dotNet);
+        }
+        foreach (User user in usersToAdd)
+        {
+            string userValues = $"{user.Id},{user.FirstName},{user.LastName},{user.Email},{user.Role}";
+            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", "employeesEdit", $"{userValues}", dotNet);
+        }
+    }
 }
