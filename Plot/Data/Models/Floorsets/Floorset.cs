@@ -20,7 +20,7 @@ namespace Plot.Data.Models.Floorsets;
 public class Floorset
 {
     [Required]
-    public int? TUID { get; set; }
+    public int TUID { get; set; }
     [Required]
     [StringLength(100, ErrorMessage = "Floorset name cannot exceed 100 characters.")]
     public string? NAME { get; set; }
