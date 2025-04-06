@@ -242,7 +242,7 @@ h1:focus {
 
 .user-info-modal .OptionInput #UserRole select{
     margin:0px;
-    padding:0px;
+    padding:calc(3/16 * 1rem);
 }
 
 /*  Consistent font between labels
@@ -261,7 +261,7 @@ h1:focus {
 .user-modal .modal-footer {
     display: flex;
     justify-content: space-between;
-=======
+}
 a,
 .btn-link {
     color: #006bb7;
@@ -380,11 +380,11 @@ h1:focus {
 }
 
 .user-info-modal .user-option-store-left .OptionInput select {
-    margin-left: calc(4/ 16*1rem);
+    margin-left: calc(4/16 * 1rem);
 }
 
 .user-info-modal .user-option-store-right .OptionInput select {
-    margin-right: calc(4/ 16*1rem);
+    margin-right: calc(4/16 * 1rem);
 }
 
 .user-info-modal .user-option-store-right {
@@ -396,7 +396,7 @@ h1:focus {
 }
 
 .user-info-modal .user-option-store.right .OptionInput h5 p {
-    padding-left: calc(14/16*1rem);
+    padding-left: calc(14/16 * 1rem);
 }
 
 .user-info-modal .user-option-store-right .btn-container {
