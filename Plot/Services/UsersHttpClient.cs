@@ -8,7 +8,7 @@ using Plot.Data.Models.Users;
 //NEED TO FINISH
 public class UsersHttpClient
 {
-    private const string BASE_CONTROLLER_ADDRESS="/users" ;
+    private const string BASE_CONTROLLER_ADDRESS = "/users";
 
     private readonly AuthHeaderHttpClient _authHeaderHttpClient;
 
@@ -20,7 +20,7 @@ public class UsersHttpClient
         _authHeaderHttpClient.AppendBaseAddress(BASE_CONTROLLER_ADDRESS);
     }
 
-    
+
     // [HttpGet("get-all")]
     // 
     public async Task<List<UserDTO>?> GetAllUsers()
@@ -81,7 +81,7 @@ public class UsersHttpClient
     }
 
 
-    public async Task<HttpResponseMessage> DeleteFromStore(DeleteUserFromStoreRequest deleteUserFromStoreRequest)
+    public async Task<HttpResponseMessage> DeleteFromStore(AccessModel deleteUserFromStoreRequest)
     {
         string endpoint = $"/delete-user-from-store";
         HttpMethod httpMethod = HttpMethod.Delete;
