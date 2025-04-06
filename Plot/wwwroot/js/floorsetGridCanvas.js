@@ -16,7 +16,7 @@ function setPaint(paint) {
     window.paint = paint;
 }
 
-const floorsetGrid = (function () {
+var floorsetGrid = (function () {
     let sketchInstance = null;
 
     //Flag to make sure rack creation is called only once.
@@ -230,16 +230,14 @@ const floorsetGrid = (function () {
                                 if (gridCoords.x + width > grid.x || gridCoords.y + height > grid.y) return;
 
                                 console.log("Creating a new rack on drag event - coords " + gridCoords.x + ", " + gridCoords.y)
+                                rackCreated = true;
 
-                                mouseRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size,
-                                    width, height, -1);
-
-                                // jsCreateNewFixture(name).then(id => {
-                                //     console.log("Recieved ID " + id, " gridCoords is " + gridCoords.x + ", " + gridCoords.y)
-                                //     console.log(mouseRack.toString());
-                                //     mouseRack.id = id;
-                                // })
-                                //rackCreated = true;
+                                jsCreateNewFixture(name).then(id => {
+                                    mouseRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size,
+                                        width, height, id);
+                                    console.log("Recieved ID " + id, " gridCoords is " + gridCoords.x + ", " + gridCoords.y)
+                                    console.log(mouseRack.toString());
+                                })
                             }
                             break;
                     }

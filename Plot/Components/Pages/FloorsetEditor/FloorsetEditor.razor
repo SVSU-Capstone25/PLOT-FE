@@ -28,6 +28,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/jsToDotNetManager.js"></script>
+
 <FloorsetGrid />
 
 @* Sidebar *@
@@ -160,7 +161,7 @@
             dotNet = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("imageEventListener", dotNet);
             await JS.InvokeVoidAsync("addFixtureClose", dotNet);
-            await JS.InvokeVoidAsync("eval", "floorsetGrid.init()");
+            //await JS.InvokeVoidAsync("eval", "floorsetGrid.init()");
             await JS.InvokeVoidAsync("setDotNet", dotNet);
         }
     }
