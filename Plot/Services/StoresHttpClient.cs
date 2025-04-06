@@ -58,11 +58,12 @@ public class StoresHttpClient
 
 
     // [HttpPost]
-    public async Task<Store?> CreateStore(CreateStore store) //WORKING just need to change API endpoint return
+    public async Task<Store?> CreateStore(CreateStore store, string userTUIDs) //WORKING 
     {
-        string endpoint ="";
+        string endpoint =$"create-store/{userTUIDs}";
         HttpMethod httpMethod = HttpMethod.Post;
         JsonContent jsonBody = JsonContent.Create(store);
+        
 
         var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
 

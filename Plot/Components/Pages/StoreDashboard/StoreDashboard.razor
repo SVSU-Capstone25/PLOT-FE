@@ -19,6 +19,7 @@ Author: Andrew Fulton (3/12/2025)
 @using System.IO;
 @inject StoresHttpClient storeClient;
 @inject UsersHttpClient userClient;
+@using Plot.Data.Models.Stores;
 @using Plot.Components.PartialComponents.NumericInput
 @using Plot.Components.PartialComponents.Modal
 @using Plot.Data.Models.Users
@@ -33,7 +34,7 @@ Author: Andrew Fulton (3/12/2025)
     {
         <a href="@($"/floorsets/{store.TUID}")">
             <Card CardText="@($"{store.CITY},{store.STATE}")" CardImage="@($"{store.BLUEPRINT_IMAGE}")">
-                <Dropdown Class="Test Dropdown" Id="@($"{store.Name}{store.Id}Dropdown")" LabelText="Store">
+                <Dropdown Class="Test Dropdown" Id="@($"{store.NAME}{store.TUID}Dropdown")" LabelText="Store">
                     <DropdownLink Link="@($"/floorsets/{store.TUID}")" Icon="fa-solid fa-note-sticky">Floorsets
                     </DropdownLink>
 
@@ -138,23 +139,20 @@ Author: Andrew Fulton (3/12/2025)
                         <div class="col">
                             <NumericInput Class="w-100 small-textInput" Id="addModalStoreLength" Label="Length"
                                 Placeholder="20ft" Description="" Value="@storeToAdd.LENGTH"
-                                ValueChanged="@ValidateLengthAdd" />
+                            />
                             <p class="error">@heightErrorAdd</p>
                         </div>
 
                         <div class="col">
                             <NumericInput Class="w-100 small-textInput" Id="addModalStoreWidth" Label="Width"
                                 Placeholder="50ft" Description="" Value="@storeToAdd.WIDTH"
-                                ValueChanged="@ValidateWidthAdd" />
+                            />
                             <p class="error">@widthErrorAdd</p>
                         </div>
                     </div>
 
                 </div>
 
-    using Plot.Data.Models.Stores;
-    using Plot.Data.Models.Stores;
-    using Plot.Data.Models.Stores;
                 @* right side of the modal *@
                 <div class="col d-flex justify-content-center">
                     @* holds store image *@
@@ -682,7 +680,7 @@ Author: Andrew Fulton (3/12/2025)
 
     //need to get userid from cookie/session on load
     [Parameter] public int userid {get;set;}
-    [Parameter] public int? storeid {get;set;}
+    [Parameter] public int storeid {get;set;}
     //lists to hold the value and names of users for the options inputs used to add employees to a store
     private List<string> UserOptionsText { get; set; } = new List<string> { "init" };
     private List<string> UserOptionsValues { get; set; } = new List<string> { "init" };
@@ -735,16 +733,25 @@ Author: Andrew Fulton (3/12/2025)
         //and also the users that havent already been marked to be added
         foreach (UserDTO user in users)
         {
-            //need to add Select_Users_Not_Assigned_To_Store
-            List<UserDTO> isInEditedStore = await userClient.GetUsersNotInStore(storeid);
-            bool isInUsersToAdd = usersToAdd.Any(u => u.TUID == user.TUID);
-
-            //if user is no associated with the store, add them to the dropdown text and values
-            if (!isInEditedStore & !isInUsersToAdd)
+            //get all users not in that store
+            List<UserDTO>? UsersInEditedStore = await userClient.GetUsersNotInStore(storeid);
+            
+            //check if there are users that are not in the store yet
+            if (UsersInEditedStore != null)
             {
-                UserOptionsText.Add(user.FIRST_NAME + " " + user.LAST_NAME);
-                UserOptionsValues.Add($"{user.TUID},{user.FIRST_NAME},{user.LAST_NAME},{user.EMAIL},{user.ROLE}");
+                foreach (UserDTO user1 in UsersInEditedStore)
+                {
+                    bool isInUsersToAdd = usersToAdd.Any(u => u.TUID == user.TUID);
+                    //if user is not associated with the store, add them to the dropdown text and values
+                    if (!isInUsersToAdd)
+                    {
+                        UserOptionsText.Add(user.FIRST_NAME + " " + user.LAST_NAME);
+                        UserOptionsValues.Add($"{user.TUID},{user.FIRST_NAME},{user.LAST_NAME},{user.EMAIL},{user.ROLE}");
+                    }
+                }
             }
+            
+            
         }
 
         @* set the content of the lists of users
@@ -976,7 +983,7 @@ Author: Andrew Fulton (3/12/2025)
     private async Task AddStore()
     {
         //add the users that were selected to be added to the store
-        usersToAdd = await userClient.get
+        usersToAdd = await storeClient.
         var result = await storeClient.CreateStore(storeToAdd); 
         
 
