@@ -546,30 +546,3 @@ function createDraggable(event) {
     const height = Number(event.target.getAttribute("data-height"));
     window.draggedRack = { width, height };
 }
-
-/* Andrew Miller - 4/5/2025 */
-
-/**Andrew Miller TEST -  4/5/2025 - Disable zoom - see if it works */
-/*
-const sidebar = document.getElementById("FloorsetSlideOut");
-
-sidebar.addEventListener("gesturestart", function () {
-    /* Prevents pinch-to-zoom *//*
-e.preventDefault();
-});
-
-sidebar.addEventListener("gesturechange", function () {
-/* Prevents pinch-to-zoom *//*
-e.preventDefault();
-});
-*/
-
-/*TODO: This didn't work - Tried to disable touch action in relation to this issue */
-const sidebar = document.querySelector('aside');
-
-// Prevent zooming on touchpads (multi-finger scroll zooming) in the sidebar
-sidebar.addEventListener('wheel', (e) => {
-    if (e.ctrlKey || e.deltaMode === 1) {  // Check if Ctrl is pressed or if delta is being used for zooming
-        e.preventDefault();  // Prevent zooming
-    }
-}, { passive: false });

@@ -16,6 +16,21 @@ function setPaint(paint) {
     window.paint = paint;
 }
 
+function isOverScrollable() {
+    // Is the side bar over a scroll area
+    // (Andrew Miller - 4/6/2025)
+
+    // Checks if the user is hovering over a scrollable component.
+
+    let scrollables = document.querySelectorAll('.scrollable');
+
+    for (let scrollable of scrollables) {
+        if (scrollable.matches(':hover')) { return true; }
+    }
+
+    return false;
+}
+
 const floorsetGrid = (function () {
     let sketchInstance = null;
 
@@ -139,15 +154,20 @@ const floorsetGrid = (function () {
                     grid.resize();
                 }
 
+                // Zooms the floorset by going up or down
+                // as long as it's not over scrollable
+                // component (Andrew Miller - 4/6/2025)
                 sketch.mouseWheel = (event) => {
-                    if (event.delta > 0) {
-                        grid.scale += 0.1;
-                    } else {
-                        grid.scale -= 0.1;
-                    }
+                    if (!isOverScrollable()) {
+                        if (event.delta > 0) {
+                            grid.scale += 0.1;
+                        } else {
+                            grid.scale -= 0.1;
+                        }
 
-                    grid.scale = Math.max(0.1, grid.scale);
-                    grid.resize();
+                        grid.scale = Math.max(0.1, grid.scale);
+                        grid.resize();
+                    }
                 }
 
                 sketch.mousePressed = () => {
