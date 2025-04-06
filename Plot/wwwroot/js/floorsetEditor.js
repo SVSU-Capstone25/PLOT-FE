@@ -547,5 +547,7 @@ function UpdateGridDimensions(passedLength, passedWidth) {
 function createDraggable(event) {
     const width = Number(event.target.getAttribute("data-width"));
     const height = Number(event.target.getAttribute("data-height"));
-    window.draggedRack = { width, height };
+    const name = String(event.target.getAttribute("data-value"));
+    //console.log("Create Draggable: " + name);
+    window.draggedRack = { width, height, name };
 }

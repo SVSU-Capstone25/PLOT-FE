@@ -19,6 +19,8 @@ function setPaint(paint) {
 const floorsetGrid = (function () {
     let sketchInstance = null;
 
+    //Flag to make sure rack creation is called only once.
+    let rackCreated = false;
     class Rack {
         constructor(sketch, x, y, width, height, id) {
             this.sketch = sketch;
@@ -35,6 +37,10 @@ const floorsetGrid = (function () {
             this.sketch.stroke(0);
             this.sketch.strokeWeight(3);
             this.sketch.rect(this.x, this.y, this.width * gridSize, this.height * gridSize);
+        }
+
+        toString() {
+            return "Rack " + this.id + ", W " + this.width + " / H " + this.height;
         }
     }
 
@@ -160,6 +166,7 @@ const floorsetGrid = (function () {
                 }
 
                 sketch.mousePressed = (event) => {
+                    console.log(event)
                     const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
                     const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
 
@@ -171,8 +178,10 @@ const floorsetGrid = (function () {
                                     //Place, Erase, Paint modes
                                     switch (window.gridState) {
                                         case "place":
+                                            if (mouseRack) return;
                                             grid.racks.splice(index, 1);
                                             mouseRack = rack;
+                                            console.log("Clicked " + rack.toString())
                                             break;
                                         case "erase":
                                             grid.racks.splice(index, 1);
@@ -185,7 +194,8 @@ const floorsetGrid = (function () {
 
                                 case 2:
                                     //Context Window Mode
-                                    console.log("Display context window of rack.")
+                                    //console.log("Display context window of rack.")
+                                    setSelectedFixture(rack.id);
                             }
                         }
                     }
@@ -212,13 +222,24 @@ const floorsetGrid = (function () {
                             // Place mode logic
                             if (mouseRack) {
                                 if (gridCoords.x < 0 || gridCoords.x + mouseRack.width > grid.x || gridCoords.y < 0 || gridCoords.y + mouseRack.height > grid.y) return;
+                                console.log("Dragging mouse rack: " + mouseRack.x + ", " + mouseRack.y + ", ID " + mouseRack.id);
                                 mouseRack.x = gridCoords.x * grid.size;
                                 mouseRack.y = gridCoords.y * grid.size;
-                            } else if (window.draggedRack) {
-                                const { width, height } = window.draggedRack;
+                            } else if (window.draggedRack && !rackCreated) {
+                                const { width, height, name } = window.draggedRack;
                                 if (gridCoords.x + width > grid.x || gridCoords.y + height > grid.y) return;
+
+                                console.log("Creating a new rack on drag event - coords " + gridCoords.x + ", " + gridCoords.y)
+
                                 mouseRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size,
-                                    width, height, grid.getNextID());
+                                    width, height, -1);
+
+                                // jsCreateNewFixture(name).then(id => {
+                                //     console.log("Recieved ID " + id, " gridCoords is " + gridCoords.x + ", " + gridCoords.y)
+                                //     console.log(mouseRack.toString());
+                                //     mouseRack.id = id;
+                                // })
+                                //rackCreated = true;
                             }
                             break;
                     }
@@ -227,9 +248,11 @@ const floorsetGrid = (function () {
                 sketch.mouseReleased = () => {
                     if (!mouseRack) return;
 
+                    console.log("Pushing mouserack into racks...")
                     grid.racks.push(mouseRack);
                     mouseRack = undefined;
                     window.draggedRack = undefined;
+                    rackCreated = false;
                 };
             }, document.querySelector("div#grid-area"));
         }
@@ -238,3 +261,5 @@ const floorsetGrid = (function () {
 
 // Initialize when Blazor component loads
 floorsetGrid.init();
+
+console.log("Floorset Grid Initialized...")

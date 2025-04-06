@@ -27,7 +27,7 @@
 @using Plot.Components.PartialComponents.FileInput
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-
+<script src="js/jsToDotNetManager.js"></script>
 <FloorsetGrid />
 
 @* Sidebar *@
@@ -113,6 +113,7 @@
     Int to track the current selected fixture
     config modal reference to call functions*@
     private Dictionary<int, Fixture> fixturesDict = new Dictionary<int, Fixture>();
+    private int fixturesCount = 0;
     private int? selectedFixtureID;
     private FixtureConfigModal? configModal;
 
@@ -160,6 +161,7 @@
             await JS.InvokeVoidAsync("imageEventListener", dotNet);
             await JS.InvokeVoidAsync("addFixtureClose", dotNet);
             await JS.InvokeVoidAsync("eval", "floorsetGrid.init()");
+            await JS.InvokeVoidAsync("setDotNet", dotNet);
         }
     }
 
@@ -263,8 +265,34 @@
         Console.WriteLine("Edit Layout Function");
     }
 
+    @* Tristan Calay 4/6/25
+    Add a new fixture when a fixture is dragged into the grid. *@
+    [JSInvokable]
+    public int dictAddNewFixture(String fixtureName)
+    {
+        @* if (fixturesDict.ContainsKey(id))
+        {
+            return; //Don't add if the ID already exists. The JS backend calls multiple times before it catches up to itself.
+        } *@
+        Console.WriteLine("DotNet adding new fixture - Fixture Name: " + fixtureName);
+        int newID = fixturesCount + 1;
+        foreach (Fixture fixture in Fixture.fixtures.Values)
+        {
+            if (fixture.Name == fixtureName)
+            {
+                fixturesDict.Add(newID, fixture);
+                fixturesCount += 1;
+                Console.WriteLine("Created new fixture! Returning ID " + newID);
+                return newID;
+            }
+        }
+
+        return -1;
+    }
+
     @* Tristan Calay 4/4/25
     Select fixture from cache by ID. *@
+    [JSInvokable]
     public void selectFixtureByID(int fixtureID)
     {
         selectedFixtureID = fixtureID;
