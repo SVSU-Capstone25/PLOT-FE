@@ -1,3 +1,5 @@
+@inject IJSRuntime JS
+
 @* Add fixture edit modal to the floorset editor. *@
 <Modal Title="Fixture Configuration" Id="fixtureConfig" Class="modal-dialog">
     <BodyContent>
@@ -28,8 +30,8 @@
 
     private String notesText = "";
 
-    private Fixture? currentFixture;
-    public void selectFixture(Fixture selectedFixture)
+    private FixtureInstance? currentFixture;
+    public void selectFixture(FixtureInstance selectedFixture)
     {
         currentFixture = selectedFixture;
         if (selectedFixture == null)
@@ -45,15 +47,24 @@
         StateHasChanged();
     }
 
+    [Parameter] public required EventCallback<int> fixtureDeleted { get; set; }
+
     public void deleteCurrentFixture()
     {
-        Console.WriteLine("Delete Current Selected Fixture...");
+        if (currentFixture != null)
+        {
+            Console.WriteLine("Delete Current Selected Fixture...");
+            fixtureDeleted.InvokeAsync(currentFixture.editorID);
+            JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
+        }
     }
 
     private void saveChangesToCurrentFixture()
     {
         //TODO: Send data to DB and fixture object.
         //currentFixture....
+        //Need data from DB to exist in the fixture object first!
         Console.WriteLine("Save Changes Function...");
+        JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
     }
 }

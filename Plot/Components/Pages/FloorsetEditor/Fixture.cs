@@ -13,11 +13,6 @@ public class Fixture
     public string HangerStack { get; set; } = string.Empty;
     public string? TotalLF { get; set; } = string.Empty;
     public string FixtureImg { get; set; } = string.Empty;
-    // Tristan Calay 4/4/25
-    // Added tracking for notes and category.
-    public string selectedSuperCategory { get; set; } = string.Empty;
-    public string selectedSubCategory { get; set; } = string.Empty;
-    public string notes { get; set; } = string.Empty;
 
     public static SortedDictionary<string, Fixture> fixtures = new()
     {
@@ -101,8 +96,6 @@ public class Fixture
                 LFCapacity + ", " +
                 HangerStack + ", " +
                 TotalLF + ", " +
-                selectedSuperCategory + " " + selectedSubCategory + ", " +
-                notes + ", " +
                 FixtureImg;
     }
 }

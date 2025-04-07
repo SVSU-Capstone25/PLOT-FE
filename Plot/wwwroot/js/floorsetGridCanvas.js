@@ -251,6 +251,7 @@ const floorsetGrid = (function () {
                 sketch.mouseReleased = () => {
                     if (!mouseRack) return;
                     grid.racks.push(mouseRack);
+                    moveFixtureByID(mouseRack.id, mouseRack.x, mouseRack.y);
                     mouseRack = undefined;
                     window.draggedRack = undefined;
                     //rackCreated = false;

@@ -113,7 +113,7 @@
     Dictionary to cache fixture data from DB by TUID 
     Int to track the current selected fixture
     config modal reference to call functions*@
-    private Dictionary<int, Fixture> fixturesDict = new Dictionary<int, Fixture>();
+    private Dictionary<int, FixtureInstance> fixturesDict = new Dictionary<int, FixtureInstance>();
     private int fixturesCount = 0;
     private int? selectedFixtureID;
     private FixtureConfigModal? configModal;
@@ -281,7 +281,8 @@
         {
             if (fixture.Name == fixtureName)
             {
-                fixturesDict.Add(newID, fixture);
+                FixtureInstance newFixture = new FixtureInstance(fixture, newID);
+                fixturesDict.Add(newFixture.editorID, newFixture);
                 fixturesCount += 1;
                 Console.WriteLine("Created new fixture! Returning ID " + newID);
                 return newID;
@@ -289,6 +290,27 @@
         }
 
         return -1;
+    }
+
+    @* Tristan Calay 4/5/25 
+    Update the position of a floorset fixture by id, and new position.
+    Called in the JS on move to update the data here.*@
+    [JSInvokable]
+    public void moveFixtureByID(int fixtureID, int newX, int newY)
+    {
+        if (fixturesDict.ContainsKey(fixtureID))
+        {
+            fixturesDict[fixtureID].setNewPosition(newX, newY);
+        }
+    }
+
+    @* Tristan Calay 4/6/25
+    Delete from the fixtures instance dict and the canvas when the delete button is clicked
+    In the fixture config modal. *@
+    private void deleteFixtureByID(int fixtureID)
+    {
+        Console.WriteLine("Removing Fixture at ID " + fixtureID);
+        fixturesDict.Remove(fixtureID);
     }
 
     @* Tristan Calay 4/4/25
@@ -299,8 +321,11 @@
         selectedFixtureID = fixtureID;
         if (configModal != null)
         {
-            configModal.selectFixture(fixturesDict[fixtureID]);
-            JS.InvokeVoidAsync("toggleModal", "fixtureConfig", true);
+            if (fixturesDict.ContainsKey(fixtureID))
+            {
+                configModal.selectFixture(fixturesDict[fixtureID]);
+                JS.InvokeVoidAsync("toggleModal", "fixtureConfig", true);
+            }
         }
     }
 }

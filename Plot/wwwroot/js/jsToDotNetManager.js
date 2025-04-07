@@ -31,6 +31,10 @@ function selectFixtureByID(fixtureID) {
     dotNet.invokeMethodAsync("selectFixtureByID", parseInt(fixtureID))
 }
 
+function moveFixtureByID(fixtureID, newX, newY) {
+    dotNet.invokeMethodAsync("moveFixtureByID", fixtureID, newX, newY)
+}
+
 //Call the DotNet method to add a duplicate floorset card.
 function floorsetDashboardCopyCard(floorsetName) {
     //console.log("Floorset Copy Card!");
