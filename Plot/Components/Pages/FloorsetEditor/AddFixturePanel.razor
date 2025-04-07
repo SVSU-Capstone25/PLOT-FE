@@ -28,16 +28,16 @@
         @* Create fixture tile for each fixture in dictionary *@
         @foreach (Fixture currFixture in Fixture.fixtures.Values)
         {
-            <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-value="@currFixture.Name" draggable="true"
-                data-width="@currFixture.Width" data-height="@currFixture.Length" ondragstart="createDraggable(event)">
-                <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="" draggable="false">
-                <p class="fixture-text m-0 disable-select text-truncate">@currFixture.Name</p>
-                <Dropdown
+                <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-value="@currFixture.Name" draggable="true"
+                    data-width="@currFixture.Width" data-height="@currFixture.Length" ondragstart="createDraggable(event)">
+                    <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="" draggable="false">
+                    <p class="fixture-text m-0 disable-select text-truncate">@currFixture.Name</p>
+                    @* <Dropdown
                     DropdownLinks="@(new List<string> { "#editFixture-" + currFixture.Name.Replace(" ", ""), "#deleteFixture-" + currFixture.Name.Replace(" ", "") })"
                     DropdownIcons="@icons" DropdownText="@texts" class="fixture-options ms-auto disable-select"
                     id="@(" fixture-options" + currFixture.Name)" LabelText="Fixture">
-                </Dropdown>
-            </div>
+                </Dropdown> *@
+                </div>
         }
     </div>
 </div>

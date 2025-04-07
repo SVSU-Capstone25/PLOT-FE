@@ -112,21 +112,6 @@
      *@
     private AllocationsSidebar? allocationsSidebar;
 
-    @* Tristan Calay 3/30/25
-    The paint mode button adds the return of getPaintClass() to its class when clicked.
-    Track paint mode here.*@
-
-    private bool paintModeEnabled = false;
-    private String getPaintClass()
-    {
-        if (paintModeEnabled)
-        {
-            //TODO - Somehow, apply styling to the buttons when they get clicked! Adding a class here does not work.
-            return "";
-        }
-        return "";
-    }
-
     DotNetObjectReference<FloorsetEditor>? dotNet; // Reference to .NET functions in JS
 
     /*
@@ -223,12 +208,12 @@
         allocationsOpen = false;
     }
 
-    //The paintCategory button toggles the paint mode of the floorset editor.
+    @* //The paintCategory button toggles the paint mode of the floorset editor.
     //It passes that information to the javascript.
     private async Task togglePaintClicked()
     {
         await JS.InvokeVoidAsync("togglePaint");
-    }
+    } *@
 
     private async Task eraseCategoryClicked()
     {
