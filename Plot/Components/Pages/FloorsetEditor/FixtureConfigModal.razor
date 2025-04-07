@@ -12,8 +12,12 @@
     </BodyContent>
 
     <FooterContent>
-        <button type="button" class="btn btn-success text-white" @onclick="saveChangesToCurrentFixture">Save
-            changes</button>
+        <Button Variant="danger" OnClickFunction="deleteCurrentFixture">
+            Delete Fixture
+        </Button>
+        <Button Variant="primary" OnClickFunction="saveChangesToCurrentFixture">
+            Save Changes
+        </Button>
     </FooterContent>
 </Modal>
 
@@ -41,9 +45,15 @@
         StateHasChanged();
     }
 
+    public void deleteCurrentFixture()
+    {
+        Console.WriteLine("Delete Current Selected Fixture...");
+    }
+
     private void saveChangesToCurrentFixture()
     {
         //TODO: Send data to DB and fixture object.
         //currentFixture....
+        Console.WriteLine("Save Changes Function...");
     }
 }
