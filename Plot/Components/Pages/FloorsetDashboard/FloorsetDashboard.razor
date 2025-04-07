@@ -30,7 +30,7 @@ Author: Andrew Fulton (3/13/2025)  *@
 </div>
 
 @* Div to hold the floorset cards *@
-<div id="floorsetCards" class="horizontal-items">
+<div class="d-flex flex-wrap gap-4">
 
     @* Tristan Calay - 3/22/25
     Dynamically geenrate cards from stored floorsets.
@@ -39,20 +39,32 @@ Author: Andrew Fulton (3/13/2025)  *@
 
     @foreach (var floorset in floorsets)
     {
-    <a href="@($"/floorset-editor/{floorset.TUID}")">
-        <Card Id="@floorset.TUID.ToString()" Class="Card" CardText="@floorset.NAME">
+    <Card>
+        <a href="@($"/floorset-editor/{floorset.TUID}")">
+            <CardImage Image="https://placecats.com/300/200" />
+        </a>
+        <CardBody>
+            <CardTitle class="over-hidden" style="width: 100%;">
+                <a href="@($"/floorset-editor/{floorset.TUID}")">
+                    <span class="d-inline-block text-truncate" style="max-width: 100%;">@floorset.NAME</span>
+                </a>
+            </CardTitle>
             <Dropdown Class="Dropdown" Id="@floorset.TUID.ToString()" LabelText="Floorset">
-                <DropdownLink Link="@($"#edit-floorset-{floorset.TUID}")" data-bs-toggle="modal"
-                    Icon="fa-solid fa-pen-to-square" @onclick="() => SelectFloorset(floorset)">Edit
+                <DropdownLink data-bs-toggle="modal" data-bs-target="@($"#edit-floorset-{floorset.TUID}")"
+                    Icon="fa-solid fa-pen-to-square">
+                    Edit
                 </DropdownLink>
-                <DropdownLink Link="@($"javascript:floorsetDashboardCopyCard('{floorset.NAME}')")"
-                    Icon="fa-solid fa-copy">
-                    Copy</DropdownLink>
-                <DropdownLink Link="#deleteFloorsetModal" Icon="fa-solid fa-trash-can" data-bs-toggle="modal">Delete
+                <DropdownLink Icon="fa-solid fa-copy" @onclick="async () => await OnCopyFloorsetClick(floorset)">
+                    Copy
+                </DropdownLink>
+                <DropdownLink Icon="fa-solid fa-trash-can" data-bs-toggle="modal"
+                    data-bs-target="@($"#delete-floorset-{floorset.TUID}")">
+                    Delete
                 </DropdownLink>
             </Dropdown>
-        </Card>
-    </a>
+        </CardBody>
+        @* <a href="@($"/floorset-editor/{floorset.TUID}")"></a> *@
+    </Card>
 
         @* + Siona Beaudoin, 4/3/2025, edit the title of floorsets*@
         <Modal id="@($"edit-floorset-{floorset.TUID}")" class="standard">
@@ -73,7 +85,7 @@ Author: Andrew Fulton (3/13/2025)  *@
             </EditForm>
         </Modal>
 
-        <Modal id="deleteFloorsetModal" class="standard">
+        <Modal id="@($"delete-floorset-{floorset.TUID}")" class="standard">
             <ModalHeader Title="Confirm Deletion" Variant="danger" />
             <form @onsubmit="async () => await OnDeleteFloorsetSubmit(floorset.TUID)">
             @code {
@@ -172,14 +184,6 @@ Author: Andrew Fulton (3/13/2025)  *@
         await UpdateFloorsets();
     }
 
-    private void SelectFloorset(Data.Models.Floorsets.Floorset floorset)
-    {
-        if (EditFloorsetModel != null)
-        {
-            EditFloorsetModel.NAME = floorset.NAME;
-        }
-    }
-
     private async Task OnDeleteFloorsetSubmit(int floorsetId)
     {
         await FloorsetsHttpClient.DeleteFloorset(floorsetId);
@@ -203,5 +207,21 @@ Author: Andrew Fulton (3/13/2025)  *@
             await FloorsetsHttpClient.CreateFloorset(CreateFloorsetModel);
             await UpdateFloorsets();
         }
+    }
+
+    private async Task OnCopyFloorsetClick(Data.Models.Floorsets.Floorset Floorset)
+    {
+        Data.Models.Floorsets.CreateFloorset createFloorset = new Data.Models.Floorsets.CreateFloorset
+        {
+            NAME = Floorset.NAME,
+            CREATED_BY = -1,
+            DATE_CREATED = DateTime.Now,
+            DATE_MODIFIED = DateTime.Now,
+            MODIFIED_BY = -1,
+            STORE_TUID = Int32.Parse(storeId)
+        };
+
+        await FloorsetsHttpClient.CreateFloorset(createFloorset);
+        await UpdateFloorsets();
     }
 }

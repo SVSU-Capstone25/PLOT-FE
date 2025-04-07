@@ -15,36 +15,45 @@ Updated: Danielle Smith (3/29/2025)-->
 @inject NavigationManager Navigation
 @inject ICookie cookie
 
-<div class="NavBar @Class" id="@Id">
-    <nav class="nav flex-row">
-        <div class="nav-item px-3">
-            <a class="nav-link" href="/store-dashboard">
-                Stores <i class="fa-solid fa-bag-shopping"></i>
-            </a>
-       </div>
+@* 
+TODO: Change to use ul with li
+    Make sure they're styled in a row and remove the list styling from
 
-        <div class="nav-item px-3">
-            <a class="nav-link" href="/user-dashboard">
-                Users <i class="fa-solid fa-shirt"></i>
+    Delete everything in the CSS, only thing that should be kept in there is setting the navbar background to the brand teal color.
+
+    Everything should use Blazor Utility classes 
+    Delete extra classes
+*@
+<nav class="navbar platos-blue">
+    <ul class="navbar-nav flex-row w-100">
+    <li class="nav-item px-3">
+        <a class="nav-link text-white" href="/store-dashboard">
+            Stores <i class="fa-solid fa-bag-shopping"></i>
+        </a>
+    </li>
+
+    <li class="nav-item px-3">
+        <a class="nav-link text-white" href="/user-dashboard">
+            Users <i class="fa-solid fa-shirt"></i>
+        </a>
+    </li>
+    @* Danielle Smith - 3/29/2025
+    Make it so help modal only shows on the floorset editor *@
+    @if (Navigation.Uri.Contains("/floorset-editor"))
+    {
+        <li class="nav-item px-3">
+            <a class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#helpModal">
+                Help <i class="fa-solid fa-question"></i>
             </a>
-        </div>
-        @* Danielle Smith - 3/29/2025
-        Make it so help modal only shows on the floorset editor *@
-        @if (Navigation.Uri.Contains("/floorset-editor"))
-        {
-            <div class="nav-item px-3">
-                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#helpModal">
-                    Help <i class="fa-solid fa-question"></i>
-                </a>
-            </div>
-        }
-        <div class="nav-item px-3 ml-auto">
-            <a class="nav-link" @onclick="async () => await OnLogoutClick()">
-                Logout
-            </a>
-        </div>
-    </nav>
-</div>
+        </li>
+    }
+    <li class="nav-item px-3 ms-auto">
+        <a class="nav-link text-white" @onclick="async () => await OnLogoutClick()">
+            Logout
+        </a>
+    </li>
+    </ul>
+</nav>
 
 @code {
     [Parameter]

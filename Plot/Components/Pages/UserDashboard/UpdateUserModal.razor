@@ -41,6 +41,7 @@
     {
         if (UpdateUserModel != null)
         {
+            Console.WriteLine(UpdateUserModel);
             var response = await UsersHttpClient.UpdateUserPublicInfo(User.TUID, UpdateUserModel);
             Console.WriteLine(response);
             await UpdateUsers.InvokeAsync();

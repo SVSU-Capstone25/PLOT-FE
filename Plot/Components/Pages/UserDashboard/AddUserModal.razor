@@ -27,7 +27,7 @@
     {
         if (AddUserModel != null)
         {
-            Data.Models.Auth.Registration.UserRegistration userRegistration = new Data.Models.Auth.Registration.UserRegistration
+            Data.Models.Auth.Registration.UserRegistration UserRegistration = new Data.Models.Auth.Registration.UserRegistration
             {
                 EMAIL = AddUserModel.EMAIL,
                 FIRST_NAME = AddUserModel.FIRST_NAME,
@@ -35,7 +35,11 @@
                 ROLE_NAME = AddUserModel.ROLE_NAME
             };
 
-            await AuthHttpClient.Register(userRegistration);
+            Console.WriteLine(UserRegistration);
+
+            var response = await AuthHttpClient.Register(UserRegistration);
+
+            Console.WriteLine(response);
         }
     }
 }

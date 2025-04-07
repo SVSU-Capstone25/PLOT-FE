@@ -1,136 +1,77 @@
 @inject IJSRuntime JS
 
-@using Plot.Components.PartialComponents.NumericInput
-
 @* Edit Fixture Modal *@
-<Modal Class="modal-xl fixture-modal">
-    <ModalHeader Title="Edit Fixture" />
-    <ModalBody>
-        <label>
-            Name
-            @* <InputText placeholder="Three Way Rack" type="text" @bind-value="name" /> *@
-        </label>
-        <div class="d-flex flex-row align-items-center justify-content-between">
-            @* <div class="dimension">
-                    <NumericInput Id="@(id + "-edit-length")" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
-                    Value="@currFixture.Length" ValueChanged="(v) => {
-                            currFixture.Length = v;
-                            // If the length and the width have values, calculate LF capacity
-                            if (!currFixture.Length.Equals(string.Empty) && !currFixture.Width.Equals(string.Empty)) {
-                                currFixture.UpdateLFCapacity();
-                                currFixture.UpdateTotalLF();
-                            } else {
-                                currFixture.TotalLF = string.Empty;
-                            }
-                        }" />
-                </div> *@
-            @* The X to separate the two inputs *
-                    @* Making X clickable to swap dimensions (Width -> Length; Length -> Width) -- Zach Ventimiglia *
-                    Edited by Danielle Smith to use different implementation*@
-            @* <i onclick="SwapDimensions('@(id + "-edit-length-number-input")','@(id + "-edit-width-number-input")')"
-                class="fa-solid fa-xmark" style="cursor: pointer;"></i> *@
+@{
+    <Modal class="modal-xl fixture-modal" id="EditFixture">
+        <ModalHeader Title="Edit Fixture" />
+        <EditForm Model="EditFixtureModel" OnValidSubmit="OnEditFixtureSubmit">
+            <ModalBody>
+                <label>
+                    Name
+                    <InputText @bind-value="EditFixtureModel!.NAME">Three Way Rack</InputText>
+                </label>
+                <div class="row">
+                    <div class="col-md-5">
+                        <label>
+                            Length
+                            <InputNumber @bind-Value="EditFixtureModel!.HEIGHT" class="dimension" step=1 />
+                        </label>
+                    </div>
+                    <div class="col-md-auto my-auto">
+                        <i class="fa-solid fa-xmark mx-auto mt-4 ms-3"></i>
+                    </div>
+                    <div class="col-md-5">
+                        <label>
+                            Width
+                            <InputNumber @bind-Value="EditFixtureModel!.WIDTH" class="dimension" step=1 />
+                        </label>
+                    </div>
+                </div>
 
-            @* <div class="dimension">
-                    <NumericInput Id="@(id + "-edit-width")" Class="dimension" Label="Width" Placeholder="2ft" Description="Enter the width in feet"
-                    Value="@currFixture.Width" ValueChanged="(v) => {
-                            currFixture.Width = v;
-                            // If the length and the width have values, calculate LF capacity
-                            if (!currFixture.Length.Equals(string.Empty) && !currFixture.Width.Equals(string.Empty)) {
-                                currFixture.UpdateLFCapacity();
-                                currFixture.UpdateTotalLF();
-                            } else {
-                                currFixture.TotalLF = string.Empty;
-                            }
-                        }" />
-                </div> *@
-        </div>
+                <label>
+                    Linear Feet Capacity
+                    <InputNumber @bind-Value="EditFixtureModel!.LF_CAP" />
+                </label>
 
-        @* <NumericInput Id="@(id + "-edit-LFCapacity")" Label="Linear Feet Capacity" Placeholder="2ft"
-            Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
-            Value="@currFixture.LFCapacity" ValueChanged="(v) => {
-                        currFixture.LFCapacity = v;
-                        // If the LF capacity and the hanger stack have values, calculate total LF
-                        if (!currFixture.LFCapacity.Equals(string.Empty) && !currFixture.HangerStack.Equals(string.Empty)) {
-                            currFixture.UpdateTotalLF();
-                        } else {
-                            currFixture.TotalLF = string.Empty;
-                        }
-                    }" />
+                <label>
+                    Total Linear Feet
+                    @EditFixtureModel!.WIDTH * @EditFixtureModel!.HEIGHT
+                    @* <InputNumber @bind-Value="TotalLinearFeet" disabled /> *@
+                </label>
 
-            <NumericInput Id="@(id + "-edit-HangerStack")" Label="Hanger Stack" Placeholder="2" Description="Enter the number of vertically stacked racks"
-            Value="@currFixture.HangerStack" ValueChanged="(v) => {
-                        currFixture.HangerStack = v;
-                        // If the LF capacity and the hanger stack have values, calculate total LF
-                        if (currFixture.LFCapacity != null && !currFixture.LFCapacity.Equals(string.Empty) && !currFixture.HangerStack.Equals(string.Empty)) {
-                            currFixture.UpdateTotalLF();
-                        } else {
-                            currFixture.TotalLF = string.Empty;
-                        }
-                    }" /> *@
-
-        @* <NumericInput Id="@(id + "-edit-TotalLF")" Label="Total Linear Feet" Placeholder="4"
-            Description="The final calculation of linear feet (LF capacity x hanger stack)" @bind-Value="@currFixture.TotalLF"
-            ReadOnly="true" />
-
-            <div class="img-input">
-                <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
-                Id="@("ImageInput-" + currFixture.Name)"/>
-            </div> *@
-    </ModalBody>
-    <ModalFooter>
-        @* <Button class="btn add-btn ms-auto" Variant="primary" @onclick="@(async () => {
-                    await UpdateFixture(currFixture, new Fixture(currFixture.Name,len,wth,hst,img),id);
-                    
-                })">
-                Update
-            </Button> *@
-    </ModalFooter>
-</Modal>
-
-@* <Modal id="@("deleteFixture-" + id)">
-        <ModalHeader Title="Delete Fixture" />
-        <ModalBody>
-            Are you sure you want to delete "@(currFixture.Name)" ?
-        </ModalBody>
-        <ModalFooter>
-            <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async ()=>{
-                    DeleteFixture(currFixture, id);
-                })>
-                Delete
-            </Button>
-        </ModalFooter>
-    </Modal> *@
-
+                <div class="img-input">
+                    <ImageInput Height="400px" Width="400px" Label="Fixture Image" Id="Edit-fixtureimg" />
+                </div>
+            </ModalBody>
+            <ModalFooter>
+                <Button class="btn Edit-btn ms-auto" Variant="primary" type="submit">Edit</Button>
+            </ModalFooter>
+        </EditForm>
+    </Modal>
+}
 
 @code {
 
-    @* [SupplyParameterFromForm]
-    private Data.Models.Fixtures.UpdateFixtureModel UpdateFixtureModel; *@
-    @* string id = ""; *@
-    /*
-    The UpdateFixture function refreshes the current fixture and closes the Edit Fixture modal.
-    */
-    @* public async Task UpdateFixture( Fixture currFixture, Fixture newFixture,string id)
-    {
-        // If the fixture has valid values, remove and readd the fixture with the new name, 
-        // since the dictionary key is the fixture name.
-        if (!currFixture.HasNullProperties()) {
-            await JS.InvokeVoidAsync("toggleModal","editFixture-"+id,false);
-            Fixture.fixtures.Remove(currFixture.Name);
-            Fixture.fixtures.Add(newFixture.Name,newFixture);
-        } else {
-            // If not, tell the user to fill out all fields.
-            await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
-        }        
+    @* [Parameter] public EventCallback UpdateFixtures { get; set; } *@
 
-    } *@
+    // private int TotalLinearFeet = 0;
 
-    /*
-    The DeleteFixture function removes the fixture from the dictionary,
-    removing it from the fixture area in the sidebar.
-    */
-    @* public void DeleteFixture(Fixture currFixture,string id) 
+    [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; }
+
+    protected override void OnInitialized()
     {
-        Fixture.fixtures.Remove(currFixture.Name);
-    } *@
+        EditFixtureModel ??= new();
+    }
+
+    public async Task OnEditFixtureSubmit()
+    {
+        await Task.Run(() => Console.WriteLine("Edit Fixture"));
+
+        // TODO: Change User.TUID to store ID
+        /* if (EditFixtureModel != null)
+        {
+            var response = await FixturesHttpClient.UpdateFixtureModel(User.TUID, EditFixtureModel);
+            await UpdateFixtures.InvokeAsync();
+        } */
+    }
 }

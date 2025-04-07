@@ -8,10 +8,13 @@ public class SalesHttpClient : PlotHttpClient
     { }
 
 
-    public async Task<HttpStatusCode> UploadSales(int floorsetId, IFormFile excelFile)
+    public async Task<HttpStatusCode> UploadSales(int floorsetId, MultipartFormDataContent excelFile)
     {
+
+        //return await SendPostAsync<HttpStatusCode>($"/upload-sales/{floorsetId}", excelFile);
+        
         JsonContent body = JsonContent.Create(excelFile);
 
-        return await SendPostAsync<HttpStatusCode>("", body);
+        return await SendPostAsync<HttpStatusCode>("",body);
     }
 }

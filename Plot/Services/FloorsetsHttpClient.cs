@@ -20,7 +20,7 @@ public class FloorsetsHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(newFloorset);
 
-        return await SendPostAsync<int>("", body);
+        return await SendPostAsync<int>("/create-floorset", body);
     }
 
     public async Task<int?> UpdatePublicInfo(int floorsetId, UpdatePublicInfoFloorset floorset)

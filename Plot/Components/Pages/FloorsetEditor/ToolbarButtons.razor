@@ -1,3 +1,4 @@
+@* Toolbar Buttons.razor *@
 @inject IJSRuntime JS
 
 @using Plot.Components.PartialComponents.Button
@@ -8,16 +9,17 @@
         TextAlignment="center" />
 
     @*Paint Category Button *@
-    <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush" OnClickFunction="togglePaintClicked"
-        TextAlignment="center" />
+    <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush"
+        OnClickFunction="togglePaintClicked" TextAlignment="center" />
 
     @*Erase Category Button *@
-    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategoryClicked"
+    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="onEraseClicked"
         TextAlignment="center" />
 </div>
 
 @code {
     [Parameter] public required EventCallback ToggleAllocationsOpen { get; set; }
+    [Parameter] public required EventCallback EraseClicked { get; set; }
 
     @* Tristan Calay 3/30/25
     The paint mode button adds the return of getPaintClass() to its class when clicked.
@@ -28,9 +30,9 @@
     {
         if (paintModeEnabled)
         {
-            return "primary";
+            return "secondary";
         }
-        return "secondary";
+        return "primary";
     }
 
     private async Task editFixture()
@@ -54,15 +56,10 @@
         @* StateHasChanged(); *@
     }
 
-    private async Task eraseCategoryClicked()
+    private async Task onEraseClicked()
     {
-        Console.WriteLine("Erase Category Function");
-        await JS.InvokeVoidAsync("setErase");
-        //Call the func in AllocationsSidebar to remove the styling of the selected category.
-        @* if (allocationsSidebar != null)
-        {
-            allocationsSidebar.clearSelectedCategory();
-        } *@
+        Console.WriteLine("Erase Clicked!");
+        await EraseClicked.InvokeAsync();
     }
 
     private void viewFulfillment()

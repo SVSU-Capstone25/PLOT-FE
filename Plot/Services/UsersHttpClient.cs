@@ -39,6 +39,21 @@ public class UsersHttpClient : PlotHttpClient
         return await SendPostAsync<HttpStatusCode>($"/delete-user-from-store", body);
     }
 
+    public async Task<HttpStatusCode> AddUserToStore(AddUserToStoreRequest addUserToStoreRequest)
+    {
+        JsonContent body = JsonContent.Create(addUserToStoreRequest);
+
+        return await SendPostAsync<HttpStatusCode>($"/add-user-to-store", body);
+    }
+
+    // TODO: Change to be a PUT request
+    public async Task<HttpStatusCode> UpdateAccessList(UpdateAccessListRequest updateAccessListRequest)
+    {
+        JsonContent body = JsonContent.Create(updateAccessListRequest);
+
+        return await SendPostAsync<HttpStatusCode>($"/update-access-list", body);
+    }
+
     public async Task<Store?> GetStoreOfUserById(int userId)
     {
         return await SendGetAsync<Store>($"/stores/{userId}");

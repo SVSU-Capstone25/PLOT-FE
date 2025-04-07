@@ -1,0 +1,11 @@
+<p class="card-title" @attributes="Attributes">@ChildContent</p>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    //dropdown component should be passed through this childcontent
+    //parameter
+    [Parameter]
+    public required RenderFragment ChildContent { get; set; }
+
+}

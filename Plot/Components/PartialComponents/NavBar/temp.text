@@ -1,0 +1,30 @@
+<nav class="nav flex-row platos-blue">
+    <ul>
+    <li class="nav-item px-3">
+        <a class="nav-link" href="/store-dashboard">
+            Stores <i class="fa-solid fa-bag-shopping"></i>
+        </a>
+    </li>
+
+    <li class="nav-item px-3">
+        <a class="nav-link" href="/user-dashboard">
+            Users <i class="fa-solid fa-shirt"></i>
+        </a>
+    </li>
+    @* Danielle Smith - 3/29/2025
+    Make it so help modal only shows on the floorset editor *@
+    @if (Navigation.Uri.Contains("/floorset-editor"))
+    {
+        <li class="nav-item px-3">
+            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#helpModal">
+                Help <i class="fa-solid fa-question"></i>
+            </a>
+        </li>
+    }
+    <li class="nav-item px-3 ml-auto">
+        <a class="nav-link" @onclick="async () => await OnLogoutClick()">
+            Logout
+        </a>
+    </li>
+    </ul>
+</nav>

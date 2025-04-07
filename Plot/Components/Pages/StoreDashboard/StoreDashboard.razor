@@ -25,55 +25,97 @@ Author: Andrew Fulton (3/12/2025)
 <PageTitle>Store Dashboard</PageTitle>
 
 @* Div to hold the stores *@
-<div id="MainStoresDiv" class="horizontal-items">
+<div class="d-flex flex-wrap gap-4">
 
     @* loop to generate a card for each store that exists *@
     @foreach (var store in stores)
     {
+    <Card>
         <a href="@($"/floorsets/{store.TUID}")">
-            <Card CardText="@($"{store.CITY},{store.STATE}")">
-                <Dropdown Class="Test Dropdown" Id="@($"{store.NAME}{store.TUID}Dropdown")" LabelText="Store">
-                    <DropdownLink Link="@($"/floorsets/{store.TUID}")" Icon="fa-solid fa-note-sticky">Floorsets
-                    </DropdownLink>
+            <CardImage Image="https://placecats.com/300/200" />
+        </a>
+        <CardBody>
+            <CardTitle>
+                <a class="text-truncate" href="@($"/floorsets/{store.TUID}")">
+                    @store.CITY , @store.STATE
+                </a>
+            </CardTitle>
+            <Dropdown Class="Test Dropdown" Id="@($"{store.NAME}{store.TUID}Dropdown")" LabelText="Store">
+                <DropdownLink href="@($"/floorsets/{store.TUID}")" Icon="fa-solid fa-note-sticky">Floorsets
+                </DropdownLink>
 
-                    <DropdownLink @onclick="async () => await OnEditClick(store)" Link="#editStoreModal"
+                    <DropdownLink @onclick="async () => await OnEditClick(store)" href="#editStoreModal"
                         Icon="fa-solid fa-pen-to-square" data-bs-toggle="modal">
                         Edit</DropdownLink>
 
-                    <DropdownLink Link="@($"#delete-store-{store.TUID}")" Icon="fa-solid fa-trash-can"
-                        data-bs-toggle="modal">Delete
+                    <DropdownLink Icon="fa-solid fa-trash-can" data-bs-target="@($"#delete-store-{store.TUID}")"
+                        data-bs-toggle="modal">
+                        Delete
                     </DropdownLink>
                 </Dropdown>
-            </Card>
-        </a>
+            </CardBody>
+        </Card>
 
+        @* TODO: Edit Store Modal *@
 
         @* Delete store modal *@
-        @* <Modal id="@($"#delete-store-{store.TUID}")" class="modal-dialog">
+        <Modal id="@($"delete-store-{store.TUID}")" class="standard">
             <ModalHeader Title="Confirm Deletion" Variant="danger" />
             <form @onsubmit="async () => await OnDeleteStoreSubmit(store.TUID)">
-                <ModalBody>
-                    <h5>Are you SURE you want to delete this store?</h5>
-                    <input class="w-100" placeholder="If so, type DELETE below" required pattern="DELETE" />
-                </ModalBody>
+            @code {
+                private string? deleteTextInput;
+                private bool isDisabled => deleteTextInput != "DELETE";
+            }
+            <ModalBody>
+                <h5>Are you SURE you want to delete this Store?</h5>
+                <input type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
+                    @bind-value="deleteTextInput" @bind-value:event="oninput" />
+            </ModalBody>
 
-                <ModalFooter>
-                    <Button Class="Test Button" TextAlignment="center" Variant="primary" Type="submit">Yes,
-                        Delete
-                    </Button>
-                </ModalFooter>
-            </form>
-        </Modal> *@
+            <ModalFooter>
+                <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
+                    data-bs-dismiss="modal">
+                    Yes, Delete
+                </Button>
+            </ModalFooter>
+        </form>
+    </Modal>
 
-    }
+        }
+
+    <Modal id="create-store" class="standard">
+        <ModalHeader Title="Create Store" Variant="standard" />
+        <EditForm Model="CreateStoreModel" OnSubmit="async () => await OnCreateStoreSubmit()">
+            <ModalBody>
+                <label>
+                    Title:
+                    <InputText @bind-Value="CreateStoreModel!.NAME">Name</InputText>
+                </label>
+            </ModalBody>
+            <ModalFooter>
+                <Button TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
+                    Create
+                </Button>
+            </ModalFooter>
+        </EditForm>
+    </Modal>
+
+    <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary" Icon="fa-solid fa-plus"
+        data-bs-toggle="modal" data-bs-target="#create-store">
+        Add Floorset
+    </Button>
 </div>
 
 @code {
     private List<Data.Models.Stores.Store> stores = new List<Data.Models.Stores.Store>();
-    [SupplyParameterFromForm]
-    private Data.Models.Stores.CreateStore? createStore { get; set; }
-    [SupplyParameterFromForm]
-    private Data.Models.Stores.UpdatePublicInfoStore? editStore { get; set; }
+
+    [SupplyParameterFromForm] private Data.Models.Stores.CreateStore? CreateStoreModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        CreateStoreModel ??= new();
+    }
+
     private async Task UpdateStores()
     {
         var response = await StoresHttpClient.GetListOfStores();
@@ -89,6 +131,12 @@ Author: Andrew Fulton (3/12/2025)
         await UpdateStores();
     }
 
+    private async Task OnCreateStoreSubmit()
+    {
+        await Task.Run(() => Console.WriteLine("Create"));
+
+    }
+
     private async Task OnEditClick(Data.Models.Stores.Store store)
     {
         await Task.Run(() => Console.WriteLine("Edit store"));
@@ -97,8 +145,7 @@ Author: Andrew Fulton (3/12/2025)
 
     private async Task OnDeleteStoreSubmit(int storeId)
     {
-        Console.WriteLine("Delete Store" + storeId);
-        @* await StoresHttpClient.DeleteStore(storeId); *@
+        await StoresHttpClient.DeleteStore(storeId);
         await UpdateStores();
     }
 }

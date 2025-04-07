@@ -18,7 +18,7 @@
 
 @rendermode InteractiveServer
 @inject IJSRuntime JS
-@page "/floorset-editor"
+@page "/floorset-editor/{storeId}"
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
 @using Plot.Components.PartialComponents.OptionInput
@@ -39,7 +39,7 @@
     {
         <AllocationsSidebar @ref="allocationsSidebar" />
 
-        <ToolbarButtons ToggleAllocationsOpen="@ToggleAllocations" />
+        <ToolbarButtons ToggleAllocationsOpen="@ToggleAllocations" EraseClicked="@eraseCategoryClicked" />
     }
     else
     {
@@ -54,7 +54,7 @@
 
                 @if (buildingWallsExpanded)
                 {
-                    <BuildingWallsPanel />
+                    <BuildingWallsPanel StoreId="storeId" />
                 }
             </div>
         }
@@ -111,6 +111,8 @@
 <script src="js/floorsetEditor.js"></script>
 
 @code {
+    [Parameter] public required string storeId { get; set; }
+
     /* Tristan Calay 4/4/25
     Dictionary to cache fixture data from DB by TUID
     Int to track the current selected fixture
@@ -128,25 +130,50 @@
 
     /*Tristan Calay 4/7/25
     Compute the totals for each category in the allocation sidebar, based on the fixtures dict*/
-    private async Task ComputeAllocationTotals()
+    private void ComputeAllocationTotals()
     {
+        //Break if the allocations sidebar reference is null.
+        if (allocationsSidebar == null)
+        {
+            return;
+        }
 
-        await Task.Run(() => Console.WriteLine("Compute Allocation Totals"));
+        Console.WriteLine("Compute Allocation Totals");
 
+        List<Category> categories = allocationsSidebar.getAllCategories();
+        //Set all start values to zero. They are computed by adding the fixture LF to the categories.
+
+        foreach (Category category in categories)
+        {
+            category.currentValue = 0;
+        }
         foreach (FixtureInstance fixture in fixturesDict.Values)
         {
-            //Find the progress bar representing the category, and add the current hanging capacity to it.
-            foreach (Category cat in allocationsSidebar.getAllCategories())
+            if (fixture.TotalLF == null)
             {
-                //= fixture.selectedSuperCategory;
-                if (fixture.selectedSubCategory != null)
-                {
-                    //int linearfeet = Int32.Parse(fixture!.LFCapacity);
-                }
+                continue; //Skip this fixture.
             }
+            int linearfeet = Int32.Parse(fixture.TotalLF);
+            //Find the progress bar representing the category, and add the current hanging capacity to it.
+            foreach (Category category in categories)
+            {
+                if (category.isHeader)
+                {
+                    if (category.headerCategory == fixture.selectedSuperCategory)
+                    {
+                        category.currentValue += linearfeet;
+                    }
+                }
+                else if (category.headerCategory == fixture.selectedSuperCategory && category.text == fixture.selectedSubCategory)
+                {
+                    category.currentValue += linearfeet;
+                }
 
-            
+
+            }
         }
+
+        allocationsSidebar.notifyCategoryUpdates();
     }
 
 
@@ -248,15 +275,14 @@
         allocationsOpen = false;
     }
 
-    private async Task eraseCategoryClicked()
+    private void eraseCategoryClicked()
     {
         Console.WriteLine("Erase Category Function");
-        await JS.InvokeVoidAsync("setErase");
-
+        JS.InvokeVoidAsync("setErase");
         //Call the func in AllocationsSidebar to remove the styling of the selected category.
         if (allocationsSidebar != null)
         {
-            await allocationsSidebar.clearSelectedCategory();
+            InvokeAsync(allocationsSidebar.clearSelectedCategory);
         }
     }
 
@@ -306,12 +332,34 @@ Called in the JS on move to update the data here.*@
 
     /*Tristan Calay 4/7/25
     Function to update the selected category of a fixture.
-    Passes the ID of the clicked fixture and optionally a paint category.
+    Passes the ID of a fixture and optionally a category.
     If no category is defined, this is to be an onclick from the floorsetGridCanvas JS, to paint
-    the currently selected category in AllocationsSidebar. */
-    private void paintFixtureByID(int fixtureID)
+    the currently selected category in AllocationsSidebar onto a fixture ID on the grid */
+    [JSInvokable]
+    public void paintFixtureByID(int fixtureID, Category? category = null)
     {
-
+        Console.WriteLine("Fixture Paint Called... " + fixtureID);
+        if (fixturesDict.ContainsKey(fixtureID))
+        {
+            if (category == null)
+            {
+                if (allocationsSidebar != null)
+                {
+                    category = allocationsSidebar.getSelectedCategory();
+                    fixturesDict[fixtureID].selectedSuperCategory = category.headerCategory;
+                    fixturesDict[fixtureID].selectedSubCategory = category.text;
+                    Console.WriteLine("Painted fixture " + fixtureID);
+                    ComputeAllocationTotals();
+                }
+            }
+            else
+            {
+                fixturesDict[fixtureID].selectedSuperCategory = category.headerCategory;
+                fixturesDict[fixtureID].selectedSubCategory = category.text;
+                Console.WriteLine("Painted fixture " + fixtureID);
+                ComputeAllocationTotals();
+            }
+        }
     }
 
 

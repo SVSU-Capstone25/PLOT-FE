@@ -19,8 +19,7 @@
 
         To fix: File persists when cancel button is pressed.
         *@
-        <Button Class="Button" Id="buttonConfirmImport" Variant="primary" OnClickFunction="HandleExcelFile"
-            IsDisabled=false TextAlignment="center">
+        <Button Variant="primary" @onclick="HandleExcelFile" TextAlignment="center">
             Import
         </Button>
     </ModalFooter>
@@ -41,7 +40,17 @@
     // Processes it
     private void ProcessExcelFile(IBrowserFile file)
     {
-        // Processing of excel file
+        //var floorsetId = 1;
+        //var bufferSize = 1024 * 1024 * 10; // 10 MB
+        //var content = new MultipartFormDataContent();
+
+        //var fileStreamContent = new StreamContent(file.OpenReadStream(maxAllowedSize: bufferSize));
+
+        //fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+        //content.Add(fileStreamContent, "file", file.Name);
+
+        //var response = await SalesHttpClient.UploadSales(floorsetId, content);
     }
 
     // Runs when import button is pressed inside modal

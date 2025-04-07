@@ -98,76 +98,17 @@ Author: Tristan Calay (3/15/2025)-->
 {
     private String categorySearch = ""; //Default storage of the category search textbox.
 
-    /*
-    //Tristan Calay 3/29/25
-    //Create progress bar category data and store here.
-    private struct categoryData
-    {
-        public bool isHeader {get;set;} = false;
-        public String headerCategory = "";
-        public String text {get;set;} = "";
-        public String color {get;set;} = "red";
-        public int maxValue {get;set;} = 100;
-        public int currentValue {get;set;} = 0;
-
-        @* Tristan Calay 4/2/25
-        Added selection tracking to this struct, for state persistence. *@
-        public bool isSelected {get;set;} = false;
-
-        //Returns "Transparent" or the green selected color for the bar,
-        // depending on isSelected.
-        public String getStyle()
-        {
-            if(isSelected)
-            {
-                Console.WriteLine("A selected style is being applied...");
-                return "background-color: rgba(0,255,0,.3);";
-            }
-            return "background-color: transparent;";
-        }
-
-        public categoryData(String _headerCategory, String _text, String _color, int _maxValue, int _currentValue, bool _header = false)
-        {
-            headerCategory = _headerCategory;
-            text = _text;
-            color = _color;
-            maxValue = _maxValue;
-            currentValue = _currentValue;
-            isHeader = _header;
-
-            Console.WriteLine("Header is " + isHeader.ToString());
-        }
-
-        public String getLinearFeet()
-        {
-            return currentValue + "/" + maxValue + " LF";
-        }
-
-        public bool isInSearch(String searchText)
-        {
-            if (searchText == ""){
-                return true;
-            }
-            return (headerCategory + " " + text).ToLower().Contains(searchText.ToLower());
-        }
-
-        public Double getPercent()
-        {
-            return Convert.ToDouble(currentValue) / Convert.ToDouble(maxValue);
-        }
-
-        override public String ToString()
-        {
-            return String.Format("{0} {1} ({2}): {3} of {4}. Header : {5}. Selected : {6}",headerCategory,text,color,currentValue,maxValue,isHeader,isSelected);
-        }
-    } */
-
     @* Tristan Calay 4/2/25
     Moved category on click/selection logic into C# @onclick functionality *@
 
     private static Category nullCategory = new Category("null", "null", "transparent", 0, 0, false);
     private Category lastSelectedCategory = nullCategory;
-    
+
+    //Getter for the selected category
+    public Category getSelectedCategory()
+    {
+        return lastSelectedCategory;
+    }
 
     //Func to find data in the three reference lists.
     private void findListAndIndex(ref String list, ref int index, Category category)
@@ -194,95 +135,19 @@ Author: Tristan Calay (3/15/2025)-->
            
     //categoryOnClick takes the ID of the list item and highlights that item for noting the selected category.
     //A reference is stored to the last selected item, if there is one, and it is unselected.
-    private async Task categoryOnClick(Category category)
+    private async void categoryOnClick(Category category)
     {
         Console.WriteLine("Category Onclick " + category.ToString());
         //Don't do anything if we click the current selection.
+
         if (lastSelectedCategory.Equals(category))
         {
             return;
         }
-        if (!lastSelectedCategory.Equals(nullCategory))
-        {
-            lastSelectedCategory.isSelected = false;
-            /*
-            //Since we cannot pass a reference to a struct, find index and set.
-            int index = -1;
-            String list = "null";
 
-            try
-            {
-                Console.WriteLine("Finding last category " + lastSelectedCategory.ToString());
-                findListAndIndex(ref list, ref index, lastSelectedCategory);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return;
-            }
-
-            //Deselect the last category.
-            switch(list)
-            {
-                case "mens":
-                    lastSelectedCategory = progressCategoriesMen[index]; //It would be good to put these ops in a lambda func.
-                    lastSelectedCategory.isSelected = false;
-                    progressCategoriesMen[index] = lastSelectedCategory;
-                    break;
-                case "womens":
-                    lastSelectedCategory = progressCategoriesWomen[index];
-                    lastSelectedCategory.isSelected = false;
-                    progressCategoriesWomen[index] = lastSelectedCategory;
-                    break;
-                case "accessories":
-                    lastSelectedCategory = progressCategoriesAccessories[index];
-                    lastSelectedCategory.isSelected = false;
-                    progressCategoriesAccessories[index] = lastSelectedCategory;
-                    break;
-            } */
-        }
-        
-        if (!category.Equals(nullCategory))
-        {
-            category.isSelected = true;
-            /*
-            //Find again for the new category.
-            int index = -1;
-            String list = "null";
-
-            try
-            {
-                Console.WriteLine("Finding new category " + category.ToString());
-                findListAndIndex(ref list, ref index, category);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return;
-            }
-
-            //Store the reference in lastSelectedCategory and select the index.
-            switch(list)
-            {
-                case "mens":
-                    lastSelectedCategory = progressCategoriesMen[index];
-                    lastSelectedCategory.isSelected = true;
-                    progressCategoriesMen[index] = lastSelectedCategory;
-                    break;
-                case "womens":
-                    lastSelectedCategory = progressCategoriesWomen[index];
-                    lastSelectedCategory.isSelected = true;
-                    progressCategoriesWomen[index] = lastSelectedCategory;
-                    break;
-                case "accessories":
-                    lastSelectedCategory = progressCategoriesAccessories[index];
-                    lastSelectedCategory.isSelected = true;
-                    progressCategoriesAccessories[index] = lastSelectedCategory;
-                    break;
-            }
-            */
-        }
-        
+        lastSelectedCategory.isSelected = false;
+        category.isSelected = true;
+        lastSelectedCategory = category;
         
         //Update the UI.
         StateHasChanged();
@@ -293,13 +158,13 @@ Author: Tristan Calay (3/15/2025)-->
     }
 
     //Function to clear the styling and last selected ID for the category list.
-    public async Task clearSelectedCategory()
+    public void clearSelectedCategory()
     {
         if (!lastSelectedCategory.Equals(nullCategory))
         {
             //Unselect current category
             Console.WriteLine("Removing selection of painting category");
-            await categoryOnClick(nullCategory);
+            categoryOnClick(nullCategory);
         }
     }
 
@@ -409,6 +274,13 @@ Author: Tristan Calay (3/15/2025)-->
         progressCategoriesWomen.Sort((a, b) => Category.compareCategories(a, b, sort));
         progressCategoriesAccessories.Sort((a, b) => Category.compareCategories(a, b, sort));
 
+        StateHasChanged();
+    }
+
+    //Tristan Calay
+    //Call when progress values have been updated
+    public void notifyCategoryUpdates()
+    {
         StateHasChanged();
     }
 

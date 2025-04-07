@@ -1,3 +1,5 @@
+//floorsetGridCanvas.js
+
 function setPaintMode(enabled) {
     console.log("Setting paint mode " + enabled)
     //Translate true/false to "paint" / "place"
@@ -269,7 +271,10 @@ const floorsetGrid = (function () {
                                             grid.racks.splice(index, 1);
                                             break;
                                         case "paint":
-                                            if (!rack.isEmployee) rack.color = window.paint;
+                                            if (!rack.isEmployee) {
+                                                rack.color = window.paint;
+                                                paintFixtureByID(rack.id);
+                                            }
                                             break;
                                     }
                                     break;
@@ -301,6 +306,7 @@ const floorsetGrid = (function () {
                         case "paint":
                             if (rack && !rack.isEmployee) {
                                 rack.color = window.paint;
+                                paintFixtureByID(rack.id);
                             }
                             break;
                         case "erase":

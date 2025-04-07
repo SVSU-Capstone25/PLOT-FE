@@ -44,9 +44,9 @@
                             open Edit User and Delete User Modals *@
 
                                 <Dropdown Id="@($"Dropdown-{user.Id}")" LabelText="Role">
-                                    <DropdownLink Link="#UpdateUserModal" Icon="fa-solid fa-pen-to-square"
+                                    <DropdownLink href="#UpdateUserModal" Icon="fa-solid fa-pen-to-square"
                                         data-bs-toggle="modal">Edit</DropdownLink>
-                                    <DropdownLink Link="#DeleteUserModal" Icon="fa-regular fa-trash-can"
+                                    <DropdownLink href="#DeleteUserModal" Icon="fa-regular fa-trash-can"
                                         data-bs-toggle="modal">Delete
                                     </DropdownLink>
                                 </Dropdown>
