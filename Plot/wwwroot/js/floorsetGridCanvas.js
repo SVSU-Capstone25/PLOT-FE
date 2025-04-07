@@ -1,5 +1,13 @@
-function togglePaint() {
-    window.gridState = window.gridState === 'paint' ? 'place' : 'paint';
+function setPaintMode(enabled) {
+    console.log("Setting paint mode " + enabled)
+    //Translate true/false to "paint" / "place"
+    if (enabled) {
+        window.gridState = 'paint'
+    }
+    else {
+        window.gridState = 'place'
+    }
+    console.log("window gridstate now: " + window.gridState);
 }
 
 function setErase() {

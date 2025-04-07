@@ -8,8 +8,8 @@
         TextAlignment="center" />
 
     @*Paint Category Button *@
-    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="togglePaintClicked"
-        TextAlignment="center" />
+    <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush"
+        OnClickFunction="togglePaintClicked" TextAlignment="center" />
 
     @*Erase Category Button *@
     <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategoryClicked"
@@ -27,6 +27,20 @@
 @code {
     [Parameter] public required EventCallback ToggleAllocationsOpen { get; set; }
 
+    @* Tristan Calay 3/30/25
+    The paint mode button adds the return of getPaintClass() to its class when clicked.
+    Track paint mode here.*@
+
+    private bool paintModeEnabled = false;
+    private String getPaintVariant()
+    {
+        if (paintModeEnabled)
+        {
+            return "primary";
+        }
+        return "secondary";
+    }
+
     private async Task editFixture()
     {
         Console.WriteLine("Edit Fixture Function");
@@ -39,8 +53,9 @@
     //It passes that information to the javascript.
     private async Task togglePaintClicked()
     {
-        Console.WriteLine("Toggle Paint Clicked");
-        await JS.InvokeVoidAsync("togglePaint");
+        paintModeEnabled = !paintModeEnabled;
+        Console.WriteLine("Toggle Paint Clicked: Now " + paintModeEnabled);
+        await JS.InvokeVoidAsync("setPaintMode", paintModeEnabled);
         @* paintModeEnabled = !paintModeEnabled;
         Console.WriteLine("Paint Category Function - set paint mode to " + paintModeEnabled); *@
         @* await JS.InvokeVoidAsync("setPaintEnabled", paintModeEnabled); *@
