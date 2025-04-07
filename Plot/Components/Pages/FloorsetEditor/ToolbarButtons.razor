@@ -47,6 +47,8 @@
         @* StateHasChanged(); *@
     }
 
+    [Parameter] public EventCallback EraseButtonClicked { get; set; }
+
     private async Task eraseCategoryClicked()
     {
         Console.WriteLine("Erase Category Function");
@@ -56,6 +58,8 @@
         {
             allocationsSidebar.clearSelectedCategory();
         } *@
+
+        await EraseButtonClicked.InvokeAsync();
     }
 
     private void viewFulfillment()

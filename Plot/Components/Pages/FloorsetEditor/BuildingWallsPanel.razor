@@ -19,7 +19,7 @@
     </div>
     <label>Enter the Dimensions (length and width) in feet</label>
 
-    <div class="fixture-area p-3 mt-3 d-flex mb-2">
+    @* <div class="fixture-area p-3 mt-3 d-flex mb-2">
         <div class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStartEmployee(e, "1x1", "red"))"
             draggable="true" @ondragstart:preventDefault="true">
             <div class="drag-start-area d-flex flex-row">
@@ -27,17 +27,55 @@
                 <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
             </div>
         </div>
+    </div> *@
+
+    @* Tristan Calay 4/2/25 - Added new employee area controls *@
+
+    <div style="display: flex; flex-direction: column; row-gap: 16px;">
+        <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+            Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
+            Apply
+        </Button>
+
+        <Button Class="button-green" IsDisabled="false" Variant=@getEmployeePaintVariant() Icon="fa-solid fa-brush"
+            OnClickFunction="toggleEmployeePaint" TextAlignment="center">
+            Toggle Paint Employee Area
+        </Button>
+
+        <Button Class="button-green" IsDisabled="false" Variant=@getEmployeeEraseVariant() Icon="fa-solid fa-eraser"
+            OnClickFunction="toggleEmployeeErase" TextAlignment="center">
+            Toggle Erase Employee Area
+        </Button>
     </div>
-    <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
-        Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
-        Apply
-    </Button>
+
 </div>
 
 @code {
 
     private double width { get; set; }
     private double length { get; set; }
+
+    @* Track state for the two buttons so that bootstrap classes can be applied to them. *@
+    private bool employeePaintEnabled = false;
+    private bool employeeEraseEnabled = false;
+
+    private String getEmployeePaintVariant()
+    {
+        if (employeePaintEnabled)
+        {
+            return "primary";
+        }
+        return "secondary";
+    }
+
+    private String getEmployeeEraseVariant()
+    {
+        if (employeeEraseEnabled)
+        {
+            return "primary";
+        }
+        return "secondary";
+    }
 
     /* This function is called when the number is changed */
     private async Task NumberChanged(string strNumber, Action<double> setValue)
@@ -61,8 +99,26 @@
         await JS.InvokeVoidAsync("UpdateGridDimensions", length, width);
     }
 
-    private async Task OnDragStartEmployee(DragEventArgs e, string size, string color)
+    @* private async Task OnDragStartEmployee(DragEventArgs e, string size, string color)
     {
         await JS.InvokeVoidAsync("createDraggableEmployee", e, size, color);
+    } *@
+
+    @* Tristan Calay 4/2/25
+    Start and Stop employee paint toggle a JS variable which enables or
+    disables event listeners for click/drag on the grid. *@
+    private async Task toggleEmployeePaint()
+    {
+        employeePaintEnabled = !employeePaintEnabled;
+        employeeEraseEnabled = false;
+        await JS.InvokeVoidAsync("setEmployeePaint", employeePaintEnabled);
+        await JS.InvokeVoidAsync("setEmployeeErase", employeeEraseEnabled);
+    }
+    private async Task toggleEmployeeErase()
+    {
+        employeeEraseEnabled = !employeeEraseEnabled;
+        employeePaintEnabled = false;
+        await JS.InvokeVoidAsync("setEmployeePaint", employeePaintEnabled);
+        await JS.InvokeVoidAsync("setEmployeeErase", employeeEraseEnabled);
     }
 }
