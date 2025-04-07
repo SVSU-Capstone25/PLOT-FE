@@ -1,5 +1,8 @@
 @inject IJSRuntime JS
-
+<!-- Author: Tristan Calay
+The floorset fixture config modal allows right-click editing of a fixture on the floorset grid.
+It allows changing the category, hanging, and notes of a fixture.
+It also allows you to delete a fixture on the grid. -->
 @* Add fixture edit modal to the floorset editor. - Tristan Calay *@
 <Modal id="fixtureConfig" class="modal-dialog modal-lg">
     <ModalHeader Title="Fixture Configuration" Variant="standard" />
@@ -52,14 +55,14 @@
         StateHasChanged();
     }
 
-    [Parameter] public required EventCallback<int> fixtureDeleted { get; set; }
+    [Parameter] public required EventCallback<int> FixtureDeleted { get; set; }
 
-    public void deleteCurrentFixture()
+    private void deleteCurrentFixture()
     {
         if (currentFixture != null)
         {
             Console.WriteLine("Delete Current Selected Fixture...");
-            fixtureDeleted.InvokeAsync(currentFixture.editorID);
+            FixtureDeleted.InvokeAsync(currentFixture.editorID);
             JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
         }
     }

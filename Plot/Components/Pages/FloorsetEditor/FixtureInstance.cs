@@ -8,10 +8,12 @@ public class FixtureInstance : Fixture
     // Added tracking for notes and category.
     public string selectedSuperCategory { get; set; } = string.Empty;
     public string selectedSubCategory { get; set; } = string.Empty;
+
     public string notes { get; set; } = string.Empty;
 
     public int gridX { get; set; } = -1;
     public int gridY { get; set; } = -1;
+
 
     public FixtureInstance(Fixture fixture, int id) : base(fixture.Name, fixture.Length, fixture.Width, fixture.HangerStack, fixture.FixtureImg)
     {

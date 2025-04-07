@@ -31,7 +31,7 @@
 <FloorsetGrid />
 
 
-<FixtureConfigModal @ref=configModal />
+<FixtureConfigModal @ref=configModal FixtureDeleted="deleteFixtureByID" />
 
 @* Sidebar *@
 <SlideOut Id="FloorsetSlideOut" Class="d-flex flex-column p-2">
@@ -49,7 +49,7 @@
                 @if (addFixtureExpanded)
                 {
 
-                    <AddFixturePanel ToggleAddFixture="@ToggleAddFixture" />
+                    <AddFixturePanel OnFixtureClicked="TriggerStateChange" ToggleAddFixture="@ToggleAddFixture" />
                 }
 
                 @if (buildingWallsExpanded)
@@ -120,13 +120,36 @@
     private int? selectedFixtureID;
     private FixtureConfigModal? configModal;
 
-
-
     /* Tristan Calay 3/28/25
     The allocations sidebar reference allows methods to be called from here to the sidebar.
     It should be set by @ref in the page layout above.
     */
     private AllocationsSidebar? allocationsSidebar;
+
+    /*Tristan Calay 4/7/25
+    Compute the totals for each category in the allocation sidebar, based on the fixtures dict*/
+    private async Task ComputeAllocationTotals()
+    {
+
+        await Task.Run(() => Console.WriteLine("Compute Allocation Totals"));
+
+        foreach (FixtureInstance fixture in fixturesDict.Values)
+        {
+            //Find the progress bar representing the category, and add the current hanging capacity to it.
+            foreach (Category cat in allocationsSidebar.getAllCategories())
+            {
+                //= fixture.selectedSuperCategory;
+                if (fixture.selectedSubCategory != null)
+                {
+                    //int linearfeet = Int32.Parse(fixture!.LFCapacity);
+                }
+            }
+
+            
+        }
+    }
+
+
 
     DotNetObjectReference<FloorsetEditor>? dotNet; // Reference to .NET functions in JS
 
@@ -281,6 +304,17 @@ Called in the JS on move to update the data here.*@
         }
     }
 
+    /*Tristan Calay 4/7/25
+    Function to update the selected category of a fixture.
+    Passes the ID of the clicked fixture and optionally a paint category.
+    If no category is defined, this is to be an onclick from the floorsetGridCanvas JS, to paint
+    the currently selected category in AllocationsSidebar. */
+    private void paintFixtureByID(int fixtureID)
+    {
+
+    }
+
+
     @* Tristan Calay 4/6/25
 Delete from the fixtures instance dict and the canvas when the delete button is clicked
 In the fixture config modal. *@
@@ -288,6 +322,7 @@ In the fixture config modal. *@
     {
         Console.WriteLine("Removing Fixture at ID " + fixtureID);
         fixturesDict.Remove(fixtureID);
+        JS.InvokeVoidAsync("deleteRackByID", fixtureID);
     }
 
     @* Tristan Calay 4/4/25
@@ -304,6 +339,15 @@ Select fixture from cache by ID. *@
                 JS.InvokeVoidAsync("toggleModal", "fixtureConfig", true);
             }
         }
+    }
+
+    @*  Andrew Kennedy 4/7/25
+        This function triggers a state change for the whole page, 
+        used for updating the fixture list and fixture data.
+    *@
+    public void TriggerStateChange()
+    {
+        StateHasChanged();
     }
 }
 }

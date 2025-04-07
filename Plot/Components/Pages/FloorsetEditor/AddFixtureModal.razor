@@ -111,7 +111,7 @@
         </ModalBody>
         <ModalFooter>
             <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async (e) => {
-                await AddFixture(new Fixture(ModalName,ModalLength,ModalWidth,ModalHangerStack,ModalFixtureImg));
+                await AddFixture();
                 
             })>Add</Button>
         </ModalFooter>
@@ -119,6 +119,10 @@
 }
 
 @code {
+
+    [Parameter]
+    public EventCallback FixtureAdded { get; set; }
+
     // Temporary fields for the Add Fixture modal.
     string ModalName = "";
     string ModalLength = "";
@@ -131,14 +135,24 @@
     /*
         The AddFixture function adds the fixture to the dictionary and clears the temporary fields.
     */
-    public async Task AddFixture(Fixture currFixture)
+    public async Task AddFixture()
     {
         try {
+            Fixture newFixture = new Fixture(
+                ModalName,
+                ModalLength,
+                ModalWidth,
+                ModalHangerStack,
+                await getImageUrlAdd()
+            );
+
             // If the fixture has valid values, add to the dictionary and close the modal.
-            if (!currFixture.HasNullProperties()) {
-                Fixture.fixtures.Add(currFixture.Name, currFixture);
+            if (!newFixture.HasNullProperties()) {
+                Fixture.fixtures.Add(newFixture.Name, newFixture);
                 await JS.InvokeVoidAsync("toggleModal","addFixture",false);
-                ClearTempFixtureData();
+                await ClearTempFixtureData();
+                await FixtureAdded.InvokeAsync();
+                
             } else {
                 // If not, tell the user to fill out all fields.
                 await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
@@ -154,11 +168,20 @@
     
     }
 
+    // function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag
+    private async Task<string> getImageUrlAdd()
+    {
+        string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "add-fixtureimg");
+
+        // Check if the string is null or empty, return default image if true
+        return string.IsNullOrEmpty(strImageUrl) ? "/img/LayoutPhotoExample.png" : strImageUrl;
+    }
+
     /*
         The ClearTempFixtureData function clears the data from the fields in the Add Fixture modal.
     */
     [JSInvokable]
-    public void ClearTempFixtureData() {
+    public async Task ClearTempFixtureData() {
         ModalName = "";
         ModalLength = "";
         ModalWidth = "";
@@ -166,6 +189,7 @@
         ModalHangerStack = "";
         ModalTotalLF = "";
         ModalFixtureImg = "";
-        StateHasChanged();
+        
+        await JS.InvokeVoidAsync("ClearBackgroundImage","add-fixtureimg");
     }
 }

@@ -501,7 +501,41 @@ function searchInputChange() {
     }, 10);
 }
 
+//method to set the background image of the edit modal imageinput to the fixture's image
+function SetBackgroundImage(elementId, strUrl) {
+    const element = document.getElementById(elementId);
+    console.log("here");
+    if (element) {
+        console.log(strUrl.includes("url"));
+        element.style.backgroundImage = "url("+strUrl+")";
+        element.style.backgroundSize = "cover";
+        element.style.backgroundPosition = "center";
+        element.classList.remove("dashed-border");
+    }
+}
 
+//function used to clear the imageInput background
+function ClearBackgroundImage(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.style.backgroundImage = "none";
+        element.classList.add("dashed-border");
+    }
+}
+
+// function to get the URL of the image from the elemebts style tag
+function getBackgroundImageUrl(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        const style = window.getComputedStyle(element);
+        const backgroundImage = style.backgroundImage;
+        // Extract the URL from the backgroundImage string in the style tag
+        const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+        //return urlMatch[1], which is the data URL string
+        return urlMatch && urlMatch[1] ? urlMatch[1] : null;
+    }
+    return null;
+}
 
 /*
     The toggleModal function toggles the visibility of a given modal.

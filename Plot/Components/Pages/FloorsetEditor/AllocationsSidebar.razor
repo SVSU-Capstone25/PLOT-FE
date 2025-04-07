@@ -58,25 +58,25 @@ Author: Tristan Calay (3/15/2025)-->
             Added UL / LI with onclick to set the painting color. *@
             <ul style="list-style: none;">
             
-            @foreach(var bar in getAllCategories())
+            @foreach (var bar in getAllCategories())
             {
-                //Continue to next category if the search filter is active
-                //  and the search filter is not in the bar text.
-                //  Exclude headers from being skipped.
-                @if (bar.isHeader)
-                {
-                    <hr class="category-separator">
-                    <li><ProgressBar iconString="fa-solid fa-chevron-down" mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
-                        barValue=@bar.currentValue barLabel=@bar.getLinearFeet() /></li>
-                }
-                else 
-                { 
-                    @if (bar.isInSearch(categorySearch))
+                    //Continue to next category if the search filter is active
+                    //  and the search filter is not in the bar text.
+                    //  Exclude headers from being skipped.
+                    @if (bar.isHeader)
                     {
-                        <li @onclick=@(e => categoryOnClick(bar)) style=@bar.getStyle()><ProgressBar mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
-                            barValue=@bar.currentValue barLabel=@bar.getLinearFeet() /></li>     
+                            <hr class="category-separator">
+                            <li><ProgressBar iconString="fa-solid fa-chevron-down" mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
+                                barValue=@bar.currentValue barLabel=@bar.getLinearFeet() /></li>
                     }
-                }
+                    else
+                    {
+                            @if (bar.isInSearch(categorySearch))
+                            {
+                                    <li @onclick=@(e => categoryOnClick(bar)) style=@bar.getStyle()><ProgressBar mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
+                                        barValue=@bar.currentValue barLabel=@bar.getLinearFeet() /></li>     
+                            }
+                    }
             }
             </ul>
         </div>
@@ -98,6 +98,7 @@ Author: Tristan Calay (3/15/2025)-->
 {
     private String categorySearch = ""; //Default storage of the category search textbox.
 
+    /*
     //Tristan Calay 3/29/25
     //Create progress bar category data and store here.
     private struct categoryData
@@ -159,17 +160,17 @@ Author: Tristan Calay (3/15/2025)-->
         {
             return String.Format("{0} {1} ({2}): {3} of {4}. Header : {5}. Selected : {6}",headerCategory,text,color,currentValue,maxValue,isHeader,isSelected);
         }
-    }
+    } */
 
     @* Tristan Calay 4/2/25
     Moved category on click/selection logic into C# @onclick functionality *@
 
-    private static categoryData nullCategory = new categoryData("null","null","transparent",0,0,false);
-    private categoryData lastSelectedCategory = nullCategory;
+    private static Category nullCategory = new Category("null", "null", "transparent", 0, 0, false);
+    private Category lastSelectedCategory = nullCategory;
     
 
     //Func to find data in the three reference lists.
-    private void findListAndIndex(ref String list, ref int index, categoryData category)
+    private void findListAndIndex(ref String list, ref int index, Category category)
     {
         index = progressCategoriesMen.FindIndex(x => x.Equals(category));
         list = "mens";
@@ -188,12 +189,12 @@ Author: Tristan Calay (3/15/2025)-->
             throw new IndexOutOfRangeException("Could not find selected category reference in men's, women's or accessories.");
         }
 
-        Console.WriteLine("Selected index: " + index + " in list "+list);
+        Console.WriteLine("Selected index: " + index + " in list " + list);
     }
            
     //categoryOnClick takes the ID of the list item and highlights that item for noting the selected category.
     //A reference is stored to the last selected item, if there is one, and it is unselected.
-    private async Task categoryOnClick(categoryData category)
+    private async Task categoryOnClick(Category category)
     {
         Console.WriteLine("Category Onclick " + category.ToString());
         //Don't do anything if we click the current selection.
@@ -203,6 +204,8 @@ Author: Tristan Calay (3/15/2025)-->
         }
         if (!lastSelectedCategory.Equals(nullCategory))
         {
+            lastSelectedCategory.isSelected = false;
+            /*
             //Since we cannot pass a reference to a struct, find index and set.
             int index = -1;
             String list = "null";
@@ -236,11 +239,13 @@ Author: Tristan Calay (3/15/2025)-->
                     lastSelectedCategory.isSelected = false;
                     progressCategoriesAccessories[index] = lastSelectedCategory;
                     break;
-            }        
+            } */
         }
         
         if (!category.Equals(nullCategory))
         {
+            category.isSelected = true;
+            /*
             //Find again for the new category.
             int index = -1;
             String list = "null";
@@ -275,14 +280,16 @@ Author: Tristan Calay (3/15/2025)-->
                     progressCategoriesAccessories[index] = lastSelectedCategory;
                     break;
             }
+            */
         }
+        
         
         //Update the UI.
         StateHasChanged();
 
         //Call into the FloorsetEditor script for setting the paint color.
         //This requires the general category, specific category, and category color split by | characters.
-        await JS.InvokeVoidAsync("setPaint",category.color);
+        await JS.InvokeVoidAsync("setPaint", category.color);
     }
 
     //Function to clear the styling and last selected ID for the category list.
@@ -297,9 +304,9 @@ Author: Tristan Calay (3/15/2025)-->
     }
 
     //Add one list for each super category
-    private List<categoryData> progressCategoriesMen = [];
-    private List<categoryData> progressCategoriesWomen = [];
-    private List<categoryData> progressCategoriesAccessories = [];
+    private List<Category> progressCategoriesMen = [];
+    private List<Category> progressCategoriesWomen = [];
+    private List<Category> progressCategoriesAccessories = [];
 
     
     //When the component is initialized, retrieve info from database about categories.
@@ -314,48 +321,48 @@ Author: Tristan Calay (3/15/2025)-->
         @* Men's *@
         var currentColor = "#AAD9FF";
         var currentCategory = "Men\'s";
-        progressCategoriesMen.Add(new categoryData(currentCategory,currentCategory,currentColor,480,290,true));
-        progressCategoriesMen.Add(new categoryData(currentCategory,"Pants",currentColor,100,20,false));
-        progressCategoriesMen.Add(new categoryData(currentCategory,"Shirts",currentColor,100,30,false));
-        progressCategoriesMen.Add(new categoryData(currentCategory,"Shoes",currentColor,100,60,false));
-        progressCategoriesMen.Add(new categoryData(currentCategory,"Jeans",currentColor,100,20,false));
-        progressCategoriesMen.Add(new categoryData(currentCategory,"Jackets",currentColor,100,120,false));
-        progressCategoriesMen.Add(new categoryData(currentCategory,"Shorts",currentColor,100,20,false));
-        progressCategoriesMen.Add(new categoryData(currentCategory,"Sports",currentColor,100,20,false));
-        progressCategoriesMen.Add(new categoryData(currentCategory,"Suits",currentColor,100,10,false));
+        progressCategoriesMen.Add(new Category(currentCategory, currentCategory, currentColor, 480, 290, true));
+        progressCategoriesMen.Add(new Category(currentCategory, "Pants", currentColor, 100, 20, false));
+        progressCategoriesMen.Add(new Category(currentCategory, "Shirts", currentColor, 100, 30, false));
+        progressCategoriesMen.Add(new Category(currentCategory, "Shoes", currentColor, 100, 60, false));
+        progressCategoriesMen.Add(new Category(currentCategory, "Jeans", currentColor, 100, 20, false));
+        progressCategoriesMen.Add(new Category(currentCategory, "Jackets", currentColor, 100, 120, false));
+        progressCategoriesMen.Add(new Category(currentCategory, "Shorts", currentColor, 100, 20, false));
+        progressCategoriesMen.Add(new Category(currentCategory, "Sports", currentColor, 100, 20, false));
+        progressCategoriesMen.Add(new Category(currentCategory, "Suits", currentColor, 100, 10, false));
 
         @* Women's *@
         currentColor = "#FFAAD6";
         currentCategory = "Women\'s";
-        progressCategoriesWomen.Add(new categoryData(currentCategory,currentCategory,currentColor,800,300,true));
-        progressCategoriesWomen.Add(new categoryData(currentCategory,"Dresses",currentColor,100,120,false));
-        progressCategoriesWomen.Add(new categoryData(currentCategory,"Skirts",currentColor,100,120,false));
-        progressCategoriesWomen.Add(new categoryData(currentCategory,"Sports",currentColor,100,20,false));
-        progressCategoriesWomen.Add(new categoryData(currentCategory,"Suits",currentColor,100,100,false));
-        progressCategoriesWomen.Add(new categoryData(currentCategory,"Jackets",currentColor,100,120,false));
-        progressCategoriesWomen.Add(new categoryData(currentCategory,"Jeans",currentColor,100,20,false));
-        progressCategoriesWomen.Add(new categoryData(currentCategory,"Pants",currentColor,40,20,false));
-        progressCategoriesWomen.Add(new categoryData(currentCategory,"Shirts",currentColor,100,30,false));
-        progressCategoriesWomen.Add(new categoryData(currentCategory,"Shoes",currentColor,100,60,false));
-        progressCategoriesWomen.Add(new categoryData(currentCategory,"Shorts",currentColor,100,20,false));
+        progressCategoriesWomen.Add(new Category(currentCategory, currentCategory, currentColor, 800, 300, true));
+        progressCategoriesWomen.Add(new Category(currentCategory, "Dresses", currentColor, 100, 120, false));
+        progressCategoriesWomen.Add(new Category(currentCategory, "Skirts", currentColor, 100, 120, false));
+        progressCategoriesWomen.Add(new Category(currentCategory, "Sports", currentColor, 100, 20, false));
+        progressCategoriesWomen.Add(new Category(currentCategory, "Suits", currentColor, 100, 100, false));
+        progressCategoriesWomen.Add(new Category(currentCategory, "Jackets", currentColor, 100, 120, false));
+        progressCategoriesWomen.Add(new Category(currentCategory, "Jeans", currentColor, 100, 20, false));
+        progressCategoriesWomen.Add(new Category(currentCategory, "Pants", currentColor, 40, 20, false));
+        progressCategoriesWomen.Add(new Category(currentCategory, "Shirts", currentColor, 100, 30, false));
+        progressCategoriesWomen.Add(new Category(currentCategory, "Shoes", currentColor, 100, 60, false));
+        progressCategoriesWomen.Add(new Category(currentCategory, "Shorts", currentColor, 100, 20, false));
         
         @* Accessories *@
         currentColor = "#5FBD6A";
         currentCategory = "Accessories";
-        progressCategoriesAccessories.Add(new categoryData(currentCategory,currentCategory,currentColor,40,80,true));
-        progressCategoriesAccessories.Add(new categoryData(currentCategory,"Belts",currentColor,10,20,false));
-        progressCategoriesAccessories.Add(new categoryData(currentCategory,"Hats",currentColor,10,20,false));
-        progressCategoriesAccessories.Add(new categoryData(currentCategory,"Purses",currentColor,10,20,false));
-        progressCategoriesAccessories.Add(new categoryData(currentCategory,"Jewelry",currentColor,10,20,false));
+        progressCategoriesAccessories.Add(new Category(currentCategory, currentCategory, currentColor, 40, 80, true));
+        progressCategoriesAccessories.Add(new Category(currentCategory, "Belts", currentColor, 10, 20, false));
+        progressCategoriesAccessories.Add(new Category(currentCategory, "Hats", currentColor, 10, 20, false));
+        progressCategoriesAccessories.Add(new Category(currentCategory, "Purses", currentColor, 10, 20, false));
+        progressCategoriesAccessories.Add(new Category(currentCategory, "Jewelry", currentColor, 10, 20, false));
         
-    } 
+    }
     
     //Tristan Calay 3/29/25
     //Return a joined list of all the super categories.
     //The super categories can be sorted individually before they are retrieved.
-    private List<categoryData> getAllCategories()
+    public List<Category> getAllCategories()
     {
-        var joinedList = new List<categoryData>();
+        var joinedList = new List<Category>();
         joinedList = [];
         joinedList.AddRange(progressCategoriesMen);
         joinedList.AddRange(progressCategoriesWomen);
@@ -380,78 +387,30 @@ Author: Tristan Calay (3/15/2025)-->
     //Tristan Calay 3/29/25
     //Generic sort - Sort by alphabetical with headers first.
 
-    enum SORTTYPE {ASCENDING, DESCENDING};
-
     @* Create functions for sorting in different ways here. 
         They should invoke swapSortButtons with the 
         corresponding ID of the button that called the sort func.*@
     private void sortAscending()
     {
-        sortCategory(SORTTYPE.ASCENDING);
-        JS.InvokeVoidAsync("swapSortButtons",0);
+        sortCategory(Category.SORTTYPE.ASCENDING);
+        JS.InvokeVoidAsync("swapSortButtons", 0);
     }
     private void sortDescending()
     {
-        sortCategory(SORTTYPE.DESCENDING);
-        JS.InvokeVoidAsync("swapSortButtons",1);
+        sortCategory(Category.SORTTYPE.DESCENDING);
+        JS.InvokeVoidAsync("swapSortButtons", 1);
     }
 
     @* Sort each sub category of items by the sorttype value. *@
-    private void sortCategory(SORTTYPE sort)
+    private void sortCategory(Category.SORTTYPE sort)
     {
         Console.WriteLine("Sort Category Search Function");
-        progressCategoriesMen.Sort((a,b) => compareCategories(a,b,sort));
-        progressCategoriesWomen.Sort((a,b) => compareCategories(a,b,sort));
-        progressCategoriesAccessories.Sort((a,b) => compareCategories(a,b,sort));
+        progressCategoriesMen.Sort((a, b) => Category.compareCategories(a, b, sort));
+        progressCategoriesWomen.Sort((a, b) => Category.compareCategories(a, b, sort));
+        progressCategoriesAccessories.Sort((a, b) => Category.compareCategories(a, b, sort));
 
         StateHasChanged();
     }
 
-    //Sorting function for category data.
-    private int compareCategories(categoryData a, categoryData b, SORTTYPE sort)
-    {
-        //Both are null, return equivalent
-        if (a.Equals(null) && b.Equals(null))
-        {
-            //Console.WriteLine("Both are null!");
-            return 0;
-        }
-
-        //Neither null, return header first, else sort by fullfillment percentage.
-        if (!a.Equals(null) && !b.Equals(null))
-        {
-            if (a.isHeader)
-            {
-                //Console.WriteLine("A is header! Keep A first.");
-                return -1;
-            }
-            if (b.isHeader)
-            {
-                //Console.WriteLine("B is header! Should swap.");
-                return 1;
-            }
-            //Console.WriteLine("Standard Sort!");
-            //Sort here by percent complete. To do different sort methods, add them here.
-            switch(sort)
-            {
-                case SORTTYPE.ASCENDING:
-                    return (a.getPercent()).CompareTo(b.getPercent());
-                case SORTTYPE.DESCENDING:
-                    return (b.getPercent()).CompareTo(a.getPercent());
-            }
-            
-        }
-
-        //First not null, return first
-        if (!a.Equals(null))
-        {
-            //Console.WriteLine("First is only non null item!");
-            return -1;
-        }
-
-        //Return second.
-        //Console.WriteLine("Default to second : only non null item!");
-        return 1;
     
-    }    
 }

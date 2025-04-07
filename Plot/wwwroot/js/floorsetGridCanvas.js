@@ -51,125 +51,141 @@ function setEmployeeErase(newErase) {
     }
 }
 
+//Tristan Calay 4/7/25
+//Remove a rack from the racks array by ID
+function deleteRackByID(id) {
+    const racks = grid.racks;
+    console.log("Called delete rack with ID: " + id)
+    console.log("Racks: " + racks)
+    for (var i = 0; i < racks.length; i++) {
+        console.log("Checking index " + i)
+        const rack = grid.racks[i]
+        if (rack.id === id) {
+            console.log("Rack deleted: " + id)
+            grid.racks.splice(i, 1);
+            return;
+        }
+    }
+}
+class Rack {
+    constructor(sketch, x, y, width, height, id, isEmployee = false) {
+        this.sketch = sketch;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.color = this.sketch.color(255, 255, 255);
+        this.id = id;
+        this.isEmployee = isEmployee;
+        if (isEmployee) {
+            this.color = this.sketch.color(255, 0, 0, 100);
+        }
+        else {
+            this.color = this.sketch.color(255, 255, 255);
+        }
+    }
+
+    draw(gridSize) {
+        this.sketch.fill(this.color);
+        this.sketch.stroke(0);
+        this.sketch.strokeWeight(3);
+        this.sketch.rect(this.x, this.y, this.width * gridSize, this.height * gridSize);
+        this.sketch.push();
+        this.sketch.fill(this.color);
+        this.sketch.stroke(0);
+        if (!this.isEmployee) {
+            this.sketch.strokeWeight(3);
+        }
+        this.sketch.rect(this.x, this.y, this.width * gridSize, this.height * gridSize);
+        this.sketch.pop();
+    }
+}
+
+class Grid {
+    constructor(sketch) {
+        this.sketch = sketch;
+        this.size = 30;
+        this.racks = [];
+        this.scale = 1;
+        this.resize();
+    }
+
+    get x() {
+        return window.gridWidth ?? 10;
+    }
+
+    get y() {
+        return window.gridHeight ?? 10;
+    }
+
+    toGridCoordinates(x, y) {
+        return {
+            x: Math.floor((x - this.translate.x) / (this.size * this.scale)),
+            y: Math.floor((y - this.translate.y) / (this.size * this.scale)),
+        };
+    }
+
+    isOnGrid(gridX, gridY) {
+        if (gridX >= 0 && gridX < this.x && gridY >= 0 && gridY < this.y) {
+            return true;
+        }
+        return false;
+    }
+
+    getRackAt(gridX, gridY) {
+        for (const rack of this.racks) {
+            const rackGridX = Math.floor(rack.x / this.size);
+            const rackGridY = Math.floor(rack.y / this.size);
+            if (
+                gridX >= rackGridX &&
+                gridX < rackGridX + rack.width &&
+                gridY >= rackGridY &&
+                gridY < rackGridY + rack.height
+            ) {
+                return rack;
+            }
+        }
+        return null;
+    }
+
+    resize() {
+        this.translate = {
+            x: this.sketch.width / 2 - (this.size * this.x * this.scale) / 2,
+            y: this.sketch.height / 2 - (this.size * this.y * this.scale) / 2,
+        };
+    }
+
+    draw() {
+        this.sketch.fill(255, 255, 255);
+        this.sketch.stroke(0, 100);
+        this.sketch.strokeWeight(1);
+        this.sketch.translate(this.translate.x, this.translate.y);
+        this.sketch.scale(this.scale);
+        for (let y = 0; y < this.y; y++) {
+            for (let x = 0; x < this.x; x++) {
+                const x1 = x * this.size,
+                    y1 = y * this.size;
+                this.sketch.rect(x1, y1, this.size, this.size);
+            }
+        }
+
+        for (const rack of this.racks) {
+            rack.draw(this.size);
+        }
+    }
+}
+
+var grid, mouseRack;
+
 const floorsetGrid = (function () {
     let sketchInstance = null;
 
     // Flag to make sure rack creation is called only once
     let rackCreated = undefined;
 
-    class Rack {
-        constructor(sketch, x, y, width, height, id, isEmployee = false) {
-            this.sketch = sketch;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.color = this.sketch.color(255, 255, 255);
-            this.id = id;
-            this.isEmployee = isEmployee;
-            if (isEmployee) {
-                this.color = this.sketch.color(255, 0, 0, 100);
-            }
-            else {
-                this.color = this.sketch.color(255, 255, 255);
-            }
-        }
-
-        draw(gridSize) {
-            this.sketch.fill(this.color);
-            this.sketch.stroke(0);
-            this.sketch.strokeWeight(3);
-            this.sketch.rect(this.x, this.y, this.width * gridSize, this.height * gridSize);
-            this.sketch.push();
-            this.sketch.fill(this.color);
-            this.sketch.stroke(0);
-            if (!this.isEmployee) {
-                this.sketch.strokeWeight(3);
-            }
-            this.sketch.rect(this.x, this.y, this.width * gridSize, this.height * gridSize);
-            this.sketch.pop();
-        }
-    }
-
-    class Grid {
-        constructor(sketch) {
-            this.sketch = sketch;
-            this.size = 30;
-            this.racks = [];
-            this.scale = 1;
-            this.resize();
-        }
-
-        get x() {
-            return window.gridWidth ?? 10;
-        }
-
-        get y() {
-            return window.gridHeight ?? 10;
-        }
-
-        toGridCoordinates(x, y) {
-            return {
-                x: Math.floor((x - this.translate.x) / (this.size * this.scale)),
-                y: Math.floor((y - this.translate.y) / (this.size * this.scale)),
-            };
-        }
-
-        isOnGrid(gridX, gridY) {
-            if (gridX >= 0 && gridX < this.x && gridY >= 0 && gridY < this.y) {
-                return true;
-            }
-            return false;
-        }
-
-        getRackAt(gridX, gridY) {
-            for (const rack of this.racks) {
-                const rackGridX = Math.floor(rack.x / this.size);
-                const rackGridY = Math.floor(rack.y / this.size);
-                if (
-                    gridX >= rackGridX &&
-                    gridX < rackGridX + rack.width &&
-                    gridY >= rackGridY &&
-                    gridY < rackGridY + rack.height
-                ) {
-                    return rack;
-                }
-            }
-            return null;
-        }
-
-        resize() {
-            this.translate = {
-                x: this.sketch.width / 2 - (this.size * this.x * this.scale) / 2,
-                y: this.sketch.height / 2 - (this.size * this.y * this.scale) / 2,
-            };
-        }
-
-        draw() {
-            this.sketch.fill(255, 255, 255);
-            this.sketch.stroke(0, 100);
-            this.sketch.strokeWeight(1);
-            this.sketch.translate(this.translate.x, this.translate.y);
-            this.sketch.scale(this.scale);
-            for (let y = 0; y < this.y; y++) {
-                for (let x = 0; x < this.x; x++) {
-                    const x1 = x * this.size,
-                        y1 = y * this.size;
-                    this.sketch.rect(x1, y1, this.size, this.size);
-                }
-            }
-
-            for (const rack of this.racks) {
-                rack.draw(this.size);
-            }
-        }
-    }
-
     return {
         init() {
             sketchInstance = new p5((sketch) => {
-                let grid, mouseRack;
-
                 sketch.setup = () => {
                     const $GRIDAREA = document.querySelector("div#grid-area");
                     if (!$GRIDAREA) return;
@@ -359,4 +375,4 @@ const floorsetGrid = (function () {
 })();
 
 // Initialize when Blazor component loads
-floorsetGrid.init();
+//floorsetGrid.init();

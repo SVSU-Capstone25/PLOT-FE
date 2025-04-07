@@ -1,7 +1,7 @@
 /*
         The Fixture class stores data for a fixture.
 
-        Author: 
+        Author: Andrew Kennedy
     */
 public class Fixture
 {
@@ -13,6 +13,8 @@ public class Fixture
     public string HangerStack { get; set; } = string.Empty;
     public string? TotalLF { get; set; } = string.Empty;
     public string FixtureImg { get; set; } = string.Empty;
+
+    
 
     public static SortedDictionary<string, Fixture> fixtures = new()
     {

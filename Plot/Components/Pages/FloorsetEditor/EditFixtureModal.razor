@@ -3,29 +3,15 @@
 @using Plot.Components.PartialComponents.NumericInput
 
 @* Edit Fixture Modal *@
-@foreach (Fixture currFixture in Fixture.fixtures.Values)
-{
-    string name = currFixture.Name;
-    string len = currFixture.Length;
-    string wth = currFixture.Width;
-    string? lfc = currFixture.LFCapacity;
-    string hst = currFixture.HangerStack;
-    string? tlf = currFixture.TotalLF;
-    string img = currFixture.FixtureImg;
-
-    string id = currFixture.Name.Replace(" ", "");
-    List<string> links = new List<string> { "#editFixture-" + id, "#deleteFixture-" + id };
-
-
-    <Modal class="modal-xl fixture-modal" id="@("editFixture-" + id)">
-        <ModalHeader Title="Edit Fixture" />
-        <ModalBody>
-            <label>
-                Name
-                <InputText placeholder="Three Way Rack" type="text" @bind-value="name" />
-            </label>
-            <div class="d-flex flex-row align-items-center justify-content-between">
-                <div class="dimension">
+<Modal Class="modal-xl fixture-modal">
+    <ModalHeader Title="Edit Fixture" />
+    <ModalBody>
+        <label>
+            Name
+            @* <InputText placeholder="Three Way Rack" type="text" @bind-value="name" /> *@
+        </label>
+        <div class="d-flex flex-row align-items-center justify-content-between">
+            @* <div class="dimension">
                     <NumericInput Id="@(id + "-edit-length")" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
                     Value="@currFixture.Length" ValueChanged="(v) => {
                             currFixture.Length = v;
@@ -37,14 +23,14 @@
                                 currFixture.TotalLF = string.Empty;
                             }
                         }" />
-                </div>
-                @* The X to separate the two inputs *
+                </div> *@
+            @* The X to separate the two inputs *
                     @* Making X clickable to swap dimensions (Width -> Length; Length -> Width) -- Zach Ventimiglia *
                     Edited by Danielle Smith to use different implementation*@
-                <i onclick="SwapDimensions('@(id + "-edit-length-number-input")','@(id + "-edit-width-number-input")')"
-                class="fa-solid fa-xmark" style="cursor: pointer;"></i>
+            @* <i onclick="SwapDimensions('@(id + "-edit-length-number-input")','@(id + "-edit-width-number-input")')"
+                class="fa-solid fa-xmark" style="cursor: pointer;"></i> *@
 
-                <div class="dimension">
+            @* <div class="dimension">
                     <NumericInput Id="@(id + "-edit-width")" Class="dimension" Label="Width" Placeholder="2ft" Description="Enter the width in feet"
                     Value="@currFixture.Width" ValueChanged="(v) => {
                             currFixture.Width = v;
@@ -56,10 +42,10 @@
                                 currFixture.TotalLF = string.Empty;
                             }
                         }" />
-                </div>
-            </div>
+                </div> *@
+        </div>
 
-            <NumericInput Id="@(id + "-edit-LFCapacity")" Label="Linear Feet Capacity" Placeholder="2ft"
+        @* <NumericInput Id="@(id + "-edit-LFCapacity")" Label="Linear Feet Capacity" Placeholder="2ft"
             Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
             Value="@currFixture.LFCapacity" ValueChanged="(v) => {
                         currFixture.LFCapacity = v;
@@ -80,28 +66,28 @@
                         } else {
                             currFixture.TotalLF = string.Empty;
                         }
-                    }" />
+                    }" /> *@
 
-            <NumericInput Id="@(id + "-edit-TotalLF")" Label="Total Linear Feet" Placeholder="4"
+        @* <NumericInput Id="@(id + "-edit-TotalLF")" Label="Total Linear Feet" Placeholder="4"
             Description="The final calculation of linear feet (LF capacity x hanger stack)" @bind-Value="@currFixture.TotalLF"
             ReadOnly="true" />
 
             <div class="img-input">
                 <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
                 Id="@("ImageInput-" + currFixture.Name)"/>
-            </div>
-        </ModalBody>
-        <ModalFooter>
-            <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async () => {
+            </div> *@
+    </ModalBody>
+    <ModalFooter>
+        @* <Button class="btn add-btn ms-auto" Variant="primary" @onclick="@(async () => {
                     await UpdateFixture(currFixture, new Fixture(currFixture.Name,len,wth,hst,img),id);
                     
-                })>
+                })">
                 Update
-            </Button>
-        </ModalFooter>
-    </Modal>
+            </Button> *@
+    </ModalFooter>
+</Modal>
 
-    <Modal id=@("deleteFixture-" + id)>
+@* <Modal id="@("deleteFixture-" + id)">
         <ModalHeader Title="Delete Fixture" />
         <ModalBody>
             Are you sure you want to delete "@(currFixture.Name)" ?
@@ -109,19 +95,22 @@
         <ModalFooter>
             <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async ()=>{
                     DeleteFixture(currFixture, id);
-                    await JS.InvokeVoidAsync("toggleModal","deleteFixture-"+id,false);
                 })>
                 Delete
             </Button>
         </ModalFooter>
-    </Modal>
-}
+    </Modal> *@
+
 
 @code {
+
+    @* [SupplyParameterFromForm]
+    private Data.Models.Fixtures.UpdateFixtureModel UpdateFixtureModel; *@
+    @* string id = ""; *@
     /*
-        The UpdateFixture function refreshes the current fixture and closes the Edit Fixture modal.
+    The UpdateFixture function refreshes the current fixture and closes the Edit Fixture modal.
     */
-    public async Task UpdateFixture( Fixture currFixture, Fixture newFixture,string id)
+    @* public async Task UpdateFixture( Fixture currFixture, Fixture newFixture,string id)
     {
         // If the fixture has valid values, remove and readd the fixture with the new name, 
         // since the dictionary key is the fixture name.
@@ -134,14 +123,14 @@
             await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
         }        
 
-    }
+    } *@
 
     /*
-        The DeleteFixture function removes the fixture from the dictionary, 
-        removing it from the fixture area in the sidebar.
+    The DeleteFixture function removes the fixture from the dictionary,
+    removing it from the fixture area in the sidebar.
     */
-    public void DeleteFixture(Fixture currFixture,string id) 
+    @* public void DeleteFixture(Fixture currFixture,string id) 
     {
         Fixture.fixtures.Remove(currFixture.Name);
-    }
+    } *@
 }
