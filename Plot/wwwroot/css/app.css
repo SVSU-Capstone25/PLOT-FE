@@ -251,3 +251,10 @@ h1:focus {
     font-size: 1rem;
     font-weight: bold;
 }
+
+.color-indicator {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    margin: auto;
+}
