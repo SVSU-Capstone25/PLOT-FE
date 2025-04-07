@@ -300,6 +300,7 @@
         if (configModal != null)
         {
             configModal.selectFixture(fixturesDict[fixtureID]);
+            JS.InvokeVoidAsync("toggleModal", "fixtureConfig", true);
         }
     }
 }

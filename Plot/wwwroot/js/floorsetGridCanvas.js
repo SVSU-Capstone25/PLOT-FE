@@ -76,6 +76,13 @@ const floorsetGrid = (function () {
             };
         }
 
+        isInGrid(x, y) {
+            var gridCoords = this.toGridCoordinates(x, y);
+            if (gridCoords.x >= 0 && gridCoords.x < this.x && gridCoords.y >= 0 && gridCoords.y < this.y) {
+                return true;
+            }
+            return false;
+        }
         getRackAt(gridX, gridY) {
             for (const rack of this.racks) {
                 const rackGridX = Math.floor(rack.x / this.size);
@@ -139,6 +146,11 @@ const floorsetGrid = (function () {
 
                     grid = new Grid(sketch);
                     window.paint = '#fff';
+
+                    document.oncontextmenu = function () {
+                        if (grid.isInGrid(sketch.mouseX, sketch.mouseY))
+                            return false;
+                    }
                 };
 
                 sketch.draw = () => {
@@ -180,7 +192,6 @@ const floorsetGrid = (function () {
                                             if (mouseRack) return;
                                             grid.racks.splice(index, 1);
                                             mouseRack = rack;
-                                            console.log("Clicked " + rack.toString())
                                             break;
                                         case "erase":
                                             grid.racks.splice(index, 1);
@@ -194,7 +205,7 @@ const floorsetGrid = (function () {
                                 case 2:
                                     //Context Window Mode
                                     //console.log("Display context window of rack.")
-                                    setSelectedFixture(rack.id);
+                                    selectFixtureByID(rack.id);
                             }
                         }
                     }
@@ -231,7 +242,6 @@ const floorsetGrid = (function () {
                                 jsCreateNewFixture(name).then(id => {
                                     mouseRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size,
                                         width, height, id);
-                                    console.log(mouseRack.toString());
                                 })
                             }
                             break;
