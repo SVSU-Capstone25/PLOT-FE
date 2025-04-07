@@ -132,6 +132,8 @@
 
 
 @code {
+    [Parameter]
+    public EventCallback FixtureAdded { get; set; }
     // Temporary fields for the Add Fixture modal.
     string ModalName = "";
     string ModalLength = "";
@@ -159,6 +161,7 @@
                 Fixture.fixtures.Add(newFixture.Name, newFixture);
                 await JS.InvokeVoidAsync("toggleModal","addFixture",false);
                 await ClearTempFixtureData();
+                await FixtureAdded.InvokeAsync();
                 
             } else {
                 // If not, tell the user to fill out all fields.

@@ -1,5 +1,6 @@
 @inject IJSRuntime JS
 
+
 <div class="inner-container add-fixture-panel">
     <h3 class="header pt-3" @onclick="ToggleAddFixture">
         <i class="fas fa-couch"></i> Add Fixture
@@ -56,10 +57,7 @@
     /* Danielle Smith - 3/24/2025
     added back add fixture stuff & also made it so expansions work properly with it */
     [Parameter] public EventCallback ToggleAddFixture { get; set; }
-
-    public static Fixture? editedFixtureInfo;
-    public static Fixture? selectedFixture;
-    public Fixture? deletingFixture;
+    [Parameter] public EventCallback OnFixtureClicked { get; set; } 
 
     /*
     The FilterBtn function calls a JS function to flip the order of the fixture tiles.
@@ -86,20 +84,22 @@
     */
     private async Task OnEditClick(Fixture currFixture)
     {
-        await JS.InvokeVoidAsync("toggleModal","editFixture",true);
+        
+        Console.WriteLine(currFixture.Name);
+        Fixture.selectedFixture = currFixture;
 
-        selectedFixture = currFixture;
-
-        editedFixtureInfo = new Fixture(
-            selectedFixture.Name,
-            selectedFixture.Length,
-            selectedFixture.Width,
-            selectedFixture.HangerStack,
-            selectedFixture.FixtureImg
+        Fixture.editedFixtureInfo = new Fixture(
+            Fixture.selectedFixture.Name,
+            Fixture.selectedFixture.Length,
+            Fixture.selectedFixture.Width,
+            Fixture.selectedFixture.HangerStack,
+            Fixture.selectedFixture.FixtureImg
         );
-
-        await JS.InvokeVoidAsync("SetBackgroundImage","editFixture",selectedFixture.FixtureImg);
-
+        
+        await OnFixtureClicked.InvokeAsync();
+        await JS.InvokeVoidAsync("toggleModal","editFixture",true);
+        await JS.InvokeVoidAsync("SetBackgroundImage","EditImageInput",Fixture.selectedFixture.FixtureImg);
+        
         
     }
 
@@ -107,7 +107,8 @@
         The OnDeleteClick function is called when the user clicks the delete button on a fixture.
     */
     private async Task OnDeleteClick(Fixture currFixture) {
-        deletingFixture = currFixture;
+        Fixture.deletingFixture = currFixture;
+        await OnFixtureClicked.InvokeAsync();
         await JS.InvokeVoidAsync("toggleModal","deleteFixture",true);
     }
 

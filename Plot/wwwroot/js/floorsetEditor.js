@@ -489,8 +489,12 @@ function searchInputChange() {
 //method to set the background image of the edit modal imageinput to the fixture's image
     function SetBackgroundImage(elementId, strUrl) {
         const element = document.getElementById(elementId);
+        console.log("here");
         if (element) {
-            element.style.backgroundImage = strUrl;
+            console.log(strUrl.includes("url"));
+            element.style.backgroundImage = "url("+strUrl+")";
+            element.style.backgroundSize = "cover";
+            element.style.backgroundPosition = "center";
             element.classList.remove("dashed-border");
         }
     }

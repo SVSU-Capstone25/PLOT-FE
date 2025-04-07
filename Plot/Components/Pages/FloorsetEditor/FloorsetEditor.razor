@@ -27,6 +27,7 @@
 @using Plot.Components.PartialComponents.FileInput
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<link rel="stylesheet" href="AddFixtureModal.razor.css">
 
 <FloorsetGrid />
 
@@ -46,55 +47,7 @@
                 @if (addFixtureExpanded)
                 {
 
-                    <div class="inner-container add-fixture-panel">
-                        <h3 class="header pt-3" @onclick="ToggleAddFixture">
-                            <i class="fas fa-couch"></i> Add Fixture
-                        </h3>
-                        <hr style="opacity:1">
-
-                        <!-- Search Bar -->
-                        <div class="p-3 mb-2 border-bottom">
-                            <div class="d-flex align-items-center m-0">
-                                <div class="w-100 search-text">
-                                    <TextInput class="form-control p-2 " Id="search" Label="" Type="search" placeholder="Search" />
-                                </div>
-                                <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
-                            </div>
-                            <div class="align-items-center mt-3 d-flex">
-                                <Button class="btn add-fixture btn-lg w-100 p-0" Variant="primary" OnClickFunction="OnFixtureAddClick">
-                                    <i class="fa-solid fa-plus" style="margin-right: .5rem;"></i>
-                                    Add Fixture
-                                </Button>
-                            </div>
-                        </div>
-
-
-                        @* Fixture Area *@
-                        <div class="fixture-area p-3 mt-3 d-flex gap-4 mb-2">
-                            @* Create fixture tile for each fixture in dictionary *@
-                            @foreach (Fixture currFixture in Fixture.fixtures.Values)
-                            {
-                                <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-value="@currFixture.Name" draggable="true"
-                                    data-width="@currFixture.Width" data-height="@currFixture.Length" ondragstart="createDraggable(event)">
-                                    <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="" draggable="false">
-                                    <p class="fixture-text m-0 disable-select text-truncate">@currFixture.Name</p>
-                                    <Dropdown id="@(" fixture-options" + currFixture.Name)" class="fixture-options ms-auto disable-select" LabelText="Fixture">
-                                        <DropdownLink 
-                                            @onclick="() => OnEditClick(currFixture)" Icon="@icons[0]">
-                                            @texts[0]
-                                        </DropdownLink>
-
-                                        <DropdownLink Link="@(String.Concat("#deleteFixture-" + currFixture.Name.Replace(" ", "")))" 
-                                            @onclick="() => OnDeleteClick(currFixture)" Icon="@icons[1]">
-                                            @texts[1]
-                                        </DropdownLink>
-                                        
-                                        
-                                    </Dropdown>
-                                </div>
-                            }
-                        </div>
-                    </div>
+                    <AddFixturePanel OnFixtureClicked="TriggerStateChange" />
                 }
 
                 @if (buildingWallsExpanded)
@@ -147,118 +100,12 @@
 
 <PrintModal />
 
-<AddFixtureModal />
+<AddFixtureModal FixtureAdded="TriggerStateChange" />
 
-@* Edit Fixture Modal *@  
-@{
+<EditFixtureModal FixtureEdited="TriggerStateChange" />
 
-    string id = "";
-    
-    <Modal IsStatic=true Class="modal-xl fixture-modal" Id="editFixture" Title="Edit Fixture" OnCancelFunction="@(async()=>{await CleanUpEdit(); await JS.InvokeVoidAsync("toggleModal","editFixture",false);})">
-        <BodyContent>
-            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@editedFixtureInfo?.Name" 
-                ValueChanged="@(e=>{if (editedFixtureInfo != null) editedFixtureInfo.Name=e;})" />
-            <div class="d-flex flex-row align-items-center justify-content-between">
-                <div class="dimension">
-                    <NumericInput Id="@(id + "-edit-length")" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
-                    Value="@editedFixtureInfo?.Length" ValueChanged="(v) => {
-                            if (editedFixtureInfo != null) {
-                                editedFixtureInfo.Length = v;
-                                // If the length and the width have values, calculate LF capacity
-                                if (!editedFixtureInfo.Length.Equals(string.Empty) && !editedFixtureInfo.Width.Equals(string.Empty)) {
-                                    editedFixtureInfo.UpdateLFCapacity();
-                                    editedFixtureInfo.UpdateTotalLF();
-                                } else {
-                                    editedFixtureInfo.TotalLF = string.Empty;
-                                }
-                            }
-                        }" />
-                </div>
-                @* The X to separate the two inputs *
-                    @* Making X clickable to swap dimensions (Width -> Length; Length -> Width) -- Zach Ventimiglia *
-                    Edited by Danielle Smith to use different implementation*@
-                <i onclick="SwapDimensions('@(id + "-edit-length-number-input")','@(id + "-edit-width-number-input")')"
-                class="fa-solid fa-xmark" style="cursor: pointer;"></i>
 
-                <div class="dimension">
-                    <NumericInput Id="@(id + "-edit-width")" Class="dimension" Label="Width" Placeholder="2ft" Description="Enter the width in feet"
-                    Value="@editedFixtureInfo?.Width" ValueChanged="(v) => {
-                            if (editedFixtureInfo != null) {
-                                editedFixtureInfo.Width = v;
-                                // If the length and the width have values, calculate LF capacity
-                                if (!editedFixtureInfo.Length.Equals(string.Empty) && !editedFixtureInfo.Width.Equals(string.Empty)) {
-                                    editedFixtureInfo.UpdateLFCapacity();
-                                    editedFixtureInfo.UpdateTotalLF();
-                                } else {
-                                    editedFixtureInfo.TotalLF = string.Empty;
-                                }
-                            }
-                        }" />
-                </div>
-            </div>
 
-            <NumericInput Id="@(id + "-edit-LFCapacity")" Label="Linear Feet Capacity" Placeholder="2ft"
-            Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
-            Value="@editedFixtureInfo?.LFCapacity" ValueChanged="(v) => {
-                        if (editedFixtureInfo != null) {
-                            editedFixtureInfo.LFCapacity = v;
-                            // If the LF capacity and the hanger stack have values, calculate total LF
-                            if (!editedFixtureInfo.LFCapacity.Equals(string.Empty) && !editedFixtureInfo.HangerStack.Equals(string.Empty)) {
-                                editedFixtureInfo.UpdateTotalLF();
-                            } else {
-                                editedFixtureInfo.TotalLF = string.Empty;
-                            }
-                        }
-                    }" />
-
-            <NumericInput Id="@(id + "-edit-HangerStack")" Label="Hanger Stack" Placeholder="2" Description="Enter the number of vertically stacked racks"
-            Value="@editedFixtureInfo?.HangerStack" ValueChanged="(v) => {
-                        if (editedFixtureInfo != null) {
-                            editedFixtureInfo.HangerStack = v;
-                            // If the LF capacity and the hanger stack have values, calculate total LF
-                            if (editedFixtureInfo.LFCapacity != null && !editedFixtureInfo.LFCapacity.Equals(string.Empty) && !editedFixtureInfo.HangerStack.Equals(string.Empty)) {
-                                editedFixtureInfo.UpdateTotalLF();
-                            } else {
-                                editedFixtureInfo.TotalLF = string.Empty;
-                            }
-                        }
-                    }" />
-
-            <NumericInput Id="@(id + "-edit-TotalLF")" Label="Total Linear Feet" Placeholder="4"
-            Description="The final calculation of linear feet (LF capacity x hanger stack)" Value="@editedFixtureInfo?.TotalLF"
-            ValueChanged="(v)=>{if (editedFixtureInfo != null) editedFixtureInfo.TotalLF = v;}"
-            ReadOnly="true" />
-
-            <div class="img-input">
-                <ImageInput Height="400px" Width="400px" Label="Fixture Ifsmage" 
-                Id="EditImageInput"/>
-            </div>
-        </BodyContent>
-
-        <FooterContent>
-            <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async () => {
-                    await UpdateFixture(id);                    
-                })>
-                Update
-            </Button>
-        </FooterContent>
-    </Modal>
-
-    <Modal Title="Delete Fixture"  Id="deleteFixture">
-
-        <BodyContent>
-            Are you sure you want to delete "@(deletingFixture?.Name ?? "")" ?
-        </BodyContent>
-
-        <FooterContent>
-            <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async ()=>{
-                    DeleteFixture(id);
-                    await JS.InvokeVoidAsync("toggleModal","deleteFixture",false);
-                })>
-                Delete
-            </Button>
-        </FooterContent>
-    </Modal>
 }
 
 <script src="js/floorsetEditor.js"></script>
@@ -273,6 +120,11 @@
     @* Tristan Calay 3/30/25
     The paint mode button adds the return of getPaintClass() to its class when clicked.
     Track paint mode here.*@
+
+    protected override void OnParametersSet() 
+    {
+        
+    }
 
     private bool paintModeEnabled = false;
     private String getPaintClass()
@@ -300,6 +152,7 @@
             await JS.InvokeVoidAsync("eval", "floorsetGrid.init()");
         }
     }
+        
 
     /*
     The SetSearchEvent function calls a JS function to create a search input event listener.
@@ -401,52 +254,7 @@
         Console.WriteLine("Edit Layout Function");
     }
 
-    public Fixture? selectedFixture;
-    public Fixture? editedFixtureInfo;
-    public Fixture? deletingFixture;
-    /*
-        The UpdateFixture function refreshes the current fixture and closes the Edit Fixture modal.
-    */
-    public async Task UpdateFixture(string id)
-    {
-        // If the fixture has valid values, remove and readd the fixture with the new name, 
-        // since the dictionary key is the fixture name.
-        if (editedFixtureInfo != null && selectedFixture != null) {
-
-            editedFixtureInfo.FixtureImg = await getImageUrlEdit();
-            if (!editedFixtureInfo.HasNullProperties() && (!Fixture.fixtures.ContainsKey(editedFixtureInfo.Name) || editedFixtureInfo.Name == selectedFixture.Name)) {
-                await JS.InvokeVoidAsync("toggleModal","editFixture",false);
-                Fixture.fixtures.Remove(selectedFixture.Name);
-                Fixture.fixtures.Add(editedFixtureInfo.Name,editedFixtureInfo);
-            } else if (editedFixtureInfo.HasNullProperties()){
-                // If not, tell the user to fill out all fields.
-                await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
-            } else if (Fixture.fixtures.ContainsKey(editedFixtureInfo.Name)) {
-                // If the user tries to use a name that another fixture already has, alert the user.
-                await JS.InvokeVoidAsync("displayAlert","A fixture already exists with that name.  Please choose another name.");
-            }
-        }
-
-    }
-
-    // function to get the url of the image. This calls the JS method getBackgroundImageUrl that grabs the URL form the imageInput style tag *@
-    private async Task<string> getImageUrlEdit()
-    {
-        string strImageUrl = await JS.InvokeAsync<string>("getBackgroundImageUrl", "EditImageInput");
-        //check if a picture has been chosen
-        //return the string, or if null, the default store layout photo
-        return string.IsNullOrEmpty(strImageUrl) ? "" : strImageUrl;
-    }
-
-    /*
-        The DeleteFixture function removes the fixture from the dictionary, 
-        removing it from the fixture area in the sidebar.
-    */
-    public void DeleteFixture(string id) 
-    {
-
-        Fixture.fixtures.Remove(deletingFixture?.Name ?? "");
-    }
+    
 
     /*
     The FilterBtn function calls a JS function to flip the order of the fixture tiles.
@@ -475,39 +283,28 @@
     {
         await JS.InvokeVoidAsync("toggleModal","editFixture",true);
 
-        selectedFixture = currFixture;
+        Fixture.selectedFixture = currFixture;
 
-        editedFixtureInfo = new Fixture(
-            selectedFixture.Name,
-            selectedFixture.Length,
-            selectedFixture.Width,
-            selectedFixture.HangerStack,
-            selectedFixture.FixtureImg
+        Fixture.editedFixtureInfo = new Fixture(
+            Fixture.selectedFixture.Name,
+            Fixture.selectedFixture.Length,
+            Fixture.selectedFixture.Width,
+            Fixture.selectedFixture.HangerStack,
+            Fixture.selectedFixture.FixtureImg
         );
-        if (selectedFixture.FixtureImg.Contains("base64"))
+        if (Fixture.selectedFixture.FixtureImg.Contains("base64"))
         {
-            await JS.InvokeVoidAsync("SetBackgroundImage","EditImageInput","url("+selectedFixture.FixtureImg+")");
+            await JS.InvokeVoidAsync("SetBackgroundImage","EditImageInput","url("+Fixture.selectedFixture.FixtureImg+")");
         }
         else
         {
-            await JS.InvokeVoidAsync("SetBackgroundImage","EditImageInput",selectedFixture.FixtureImg);
+            await JS.InvokeVoidAsync("SetBackgroundImage","EditImageInput",Fixture.selectedFixture.FixtureImg);
         }
-        
+                
+    }    
 
-        
-    }
-
-    /*
-        The OnDeleteClick function is called when the user clicks the delete button on a fixture.
-    */
-    private async Task OnDeleteClick(Fixture currFixture) {
-        deletingFixture = currFixture;
-        await JS.InvokeVoidAsync("toggleModal","deleteFixture",true);
-    }
-
-    public async Task CleanUpEdit() {
-        selectedFixture = new Fixture("","","","","");
-
-        await JS.InvokeVoidAsync("ClearBackgroundImage","EditImageInput");
+    public void TriggerStateChange() 
+    {
+        StateHasChanged();
     }
 }
