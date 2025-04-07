@@ -1,0 +1,56 @@
+<ModalBody>
+
+    @* <h3>@userModalDetails.Header</h3>
+                <p>@userModalDetails.Description</p> *@
+    <label>
+        First Name:
+        <InputText type="Text" @bind-value="AddUpdateUserModel!.FIRST_NAME" />
+        <div class="text-danger">
+            <ValidationMessage For=@(() => AddUpdateUserModel.FIRST_NAME) />
+        </div>
+    </label>
+    <label>
+        Last Name:
+        <InputText type="Text" @bind-value="AddUpdateUserModel!.LAST_NAME" />
+        <div class="text-danger">
+            <ValidationMessage For=@(() => AddUpdateUserModel.LAST_NAME) />
+        </div>
+    </label>
+
+    <label>
+        Email:
+        <InputText type="Text" @bind-value="AddUpdateUserModel!.EMAIL" />
+        <div class="text-danger">
+            <ValidationMessage For=@(() => AddUpdateUserModel.EMAIL) />
+        </div>
+    </label>
+
+    <label>
+        Role:
+        <InputSelect @bind-value="AddUpdateUserModel!.ROLE_NAME">
+            <option value="Owner">Owner</option>
+            <option value="Manager">Manager</option>
+            <option value="Employee">Employee</option>
+        </InputSelect>
+        <div class="text-danger">
+            <ValidationMessage For=@(() => AddUpdateUserModel.EMAIL) />
+        </div>
+    </label>
+
+    @* Store Selection *@
+
+    <p id="StoreSelectHeader">Store Selection</p>
+
+    <p>To select multiple stores use Ctrl-click</p>
+
+    <label>
+        Available Stores:
+
+    </label>
+
+</ModalBody>
+
+@code {
+    [Parameter]
+    public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; }
+}

@@ -4,9 +4,13 @@
 
 @* Add Fixture Modal *@
 @{    
-    <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture">
-        <BodyContent>
-            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@ModalName" ValueChanged="@((v)=> ModalName = v)"/>
+    <Modal class="modal-xl fixture-modal" id="addFixture">
+        <ModalHeader Title="Add Fixture"></ModalHeader>
+        <ModalBody>
+            <label>
+                Name
+                <InputText placeholder="Three Way Rack" type="text" @bind-value="ModalName" />
+            </label>
             <div class="d-flex flex-row align-items-center justify-content-between">
 
                 <div class="dimension">
@@ -104,18 +108,13 @@
                 <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
                 Id="add-fixtureimg" />
             </div>
-
-
-
-
-        </BodyContent>
-
-        <FooterContent>
+        </ModalBody>
+        <ModalFooter>
             <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async (e) => {
                 await AddFixture(new Fixture(ModalName,ModalLength,ModalWidth,ModalHangerStack,ModalFixtureImg));
                 
             })>Add</Button>
-        </FooterContent>
+        </ModalFooter>
     </Modal>
 }
 

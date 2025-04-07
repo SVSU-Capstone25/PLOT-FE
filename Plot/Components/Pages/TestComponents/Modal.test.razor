@@ -10,7 +10,7 @@ and allocate floorsets for Platos Closet.
 
 Author: Danielle Smith (2/9/2025)  *@
 
-@page "/test/modal"
+@* @page "/test/modal"
 
 <PageTitle>Modal</PageTitle>
 
@@ -37,15 +37,13 @@ any buttons in the final application will be using the button component made by 
 </button>
 
 <!-- Standard Modal -->
-<Modal Title="Test Modal" Id="standardModal" Class="modal-dialog" OnCancelFunction="HandleModalCancel">
-    <BodyContent>
+<Modal id="standardModal" class="modal-dialog">
+    <ModalHeader Title="Test Modal" />
+    <ModalBody>
         <h4>Modal content 1</h4>
         <img src="/img/platos_closet_logo.png">
-    </BodyContent>
-
-    <FooterContent>
-        <button type="button" class="btn btn-success text-white">Save changes</button>
-    </FooterContent>
+    </ModalBody>
+    <ModalFooter></ModalFooter>
 </Modal>
 
 <!-- Danger Modal -->
@@ -95,12 +93,12 @@ any buttons in the final application will be using the button component made by 
 
     <FooterContent>
     </FooterContent>
-</Modal>
-
+</Modal> *@
+@* 
 @code {
     private void HandleModalCancel()
     {
         // Should show for all but the Success modal
         Console.WriteLine("Cancel button or 'x' button pressed");
     }
-}
+} *@

@@ -18,7 +18,7 @@ Added code to turn off disabled icon when button is re-enabled.
 @rendermode InteractiveServer
 
 <!--Button Component-->
-<div class="Button @Class" id="@Id">
+
     <!--
     If Statement to set alignment for
     icons and text for The button
@@ -47,8 +47,8 @@ Added code to turn off disabled icon when button is re-enabled.
     <!--Button class, adds classes based on data passed icon
     via parameters
     -->
-    <button @onclick="OnClickFunc" class="btn btn-@Variant @alignment @disabledClass w-100" disabled="@IsDisabled"
-        type="@Type">
+    <button @onclick="OnClickFunc" class="btn btn-@Variant  @Class @alignment @disabledClass" disabled="@IsDisabled" id="@Id"
+        type="@Type" @attributes="Attributes">
         <!--Button content-->
         @if (Icon != null)
         {
@@ -62,7 +62,6 @@ Added code to turn off disabled icon when button is re-enabled.
             <span>@ChildContent</span>
         }
     </button>
-</div>
 
 @code {
     // all of these are parameters to set up the button dynamically
@@ -92,6 +91,8 @@ Added code to turn off disabled icon when button is re-enabled.
     //Parameter to pass in the method from the parent component dynamically
     [Parameter]
     public EventCallback OnClickFunction { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
     //string to hold alignment class
     public string alignment = "text-start";

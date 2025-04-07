@@ -12,7 +12,7 @@ Author: Tristan Calay (3/15/2025)-->
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 
-<div class="AllocationsSidebar">
+<div class="AllocationsSidebar scrollable">
     <div class="inner-container">
         <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
         <hr style="opacity: 1.0; color:black;">
@@ -22,9 +22,9 @@ Author: Tristan Calay (3/15/2025)-->
         added params to help text input take up proper width *@
         <div class="row">
             <div class="col-md-8">
-                <TextInput Id="category-search" Label="" Type="search" Placeholder="Category Search..."
-                    Value="@categorySearch" ValueChanged="@(e => categorySearchChanged(e))" LabelOnTop="false"
-                    Class="w-100" />
+                <InputText id="category-search" type="search" placeholder="Category Search..."
+                    @bind-value="categorySearch"
+                    class="w-100"/>
             </div>
 
             @* id of sorting button follows the style "sortButton" + num, from 0 to n, where n is num sort buttons - 1.
@@ -190,21 +190,33 @@ Author: Tristan Calay (3/15/2025)-->
 
         Console.WriteLine("Selected index: " + index + " in list "+list);
     }
-    
-
            
     //categoryOnClick takes the ID of the list item and highlights that item for noting the selected category.
     //A reference is stored to the last selected item, if there is one, and it is unselected.
     private async Task categoryOnClick(categoryData category)
     {
         Console.WriteLine("Category Onclick " + category.ToString());
+        //Don't do anything if we click the current selection.
+        if (lastSelectedCategory.Equals(category))
+        {
+            return;
+        }
         if (!lastSelectedCategory.Equals(nullCategory))
         {
             //Since we cannot pass a reference to a struct, find index and set.
             int index = -1;
             String list = "null";
 
-            findListAndIndex(ref list, ref index, lastSelectedCategory);
+            try
+            {
+                Console.WriteLine("Finding last category " + lastSelectedCategory.ToString());
+                findListAndIndex(ref list, ref index, lastSelectedCategory);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return;
+            }
 
             //Deselect the last category.
             switch(list)
@@ -233,7 +245,16 @@ Author: Tristan Calay (3/15/2025)-->
             int index = -1;
             String list = "null";
 
-            findListAndIndex(ref list, ref index, category);
+            try
+            {
+                Console.WriteLine("Finding new category " + category.ToString());
+                findListAndIndex(ref list, ref index, category);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return;
+            }
 
             //Store the reference in lastSelectedCategory and select the index.
             switch(list)

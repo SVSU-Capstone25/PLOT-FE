@@ -23,46 +23,28 @@ Author: Josh Rodack (2/10/2025) */
 
 /* Table columns */
 
-.user-dashboard{
+.user-dashboard {
     display: flex;
     flex-direction: column;
     height: 90vh;
     box-sizing: border-box;
 }
 
-.table-set{
-    flex-grow:1;
+.table-set {
+    flex-grow: 1;
     height: 95%;
-    overflow:auto;
+    overflow: auto;
 }
 
-.add-btn-container{
+.add-btn-container {
     align-self: flex-end;
     display: flex;
-    margin:0px;
+    margin: 0px;
 }
 
 .add-btn {
     align-self: flex-end;
     width: calc(50/16 * 1rem);
-    margin:0px;
-    padding:0px;
-}
-
-.name_column {
-    width: 20%;
-}
-
-.id_column {
-    width: 20%;
-}
-
-.role_column {
-    width: 60%;
-}
-
-/* Behind role lable in table*/
-.role-box {
-    background-color: lightgray;
-    border-radius: 5px;
+    margin: 0px;
+    padding: 0px;
 }

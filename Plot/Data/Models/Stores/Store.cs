@@ -20,7 +20,7 @@ public class Store
 {
     [Required]
     [Range(1, int.MaxValue, ErrorMessage = "TUID must be an integer")]
-    public int? TUID { get; set; }
+    public int TUID { get; set; }
 
     [Required]
     [StringLength(100, ErrorMessage = "Store name cannot exceed 100 characters.")]

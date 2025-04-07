@@ -1,0 +1,41 @@
+@inject AuthHttpClient AuthHttpClient
+
+<Modal class="modal-dialog modal-xl user-modal user-info-modal" @attributes="Attributes">
+    <ModalHeader Title="Add User" />
+    <EditForm Model="AddUserModel" OnValidSubmit="OnAddUserSubmit">
+        <DataAnnotationsValidator />
+
+        <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" />
+
+        <ModalFooter>
+            <Button Variant="primary" TextAlignment="center" type="submit">
+                Submit
+            </Button>
+        </ModalFooter>
+    </EditForm>
+
+</Modal>
+
+@code {
+    [Parameter] public required EventCallback UpdateUsers { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+    [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? AddUserModel { get; set; }
+
+    protected override void OnInitialized() => AddUserModel ??= new();
+
+    private async Task OnAddUserSubmit()
+    {
+        if (AddUserModel != null)
+        {
+            Data.Models.Auth.Registration.UserRegistration userRegistration = new Data.Models.Auth.Registration.UserRegistration
+            {
+                EMAIL = AddUserModel.EMAIL,
+                FIRST_NAME = AddUserModel.FIRST_NAME,
+                LAST_NAME = AddUserModel.LAST_NAME,
+                ROLE_NAME = AddUserModel.ROLE_NAME
+            };
+
+            await AuthHttpClient.Register(userRegistration);
+        }
+    }
+}

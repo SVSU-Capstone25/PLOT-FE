@@ -1,0 +1,153 @@
+@* Help Modal - Blake Pearsall 4-5-25 *@
+<Modal id="helpModal" class="modal-dialog modal-lg">
+    <ModalHeader Title="Help" Variant="standard" />
+    <ModalBody>
+        <h4>Welcome to the Floorset Editor Page!</h4>
+        <p>Here’s a quick guide to help you navigate and use the tools available on this page!</p>
+        <p>Use this help modal for guidance on floorset tools and features. For further assistance, please consult the
+            user manual.</p>
+
+        <h4>Sidebar Options</h4>
+        <p>
+            Clicking on the arrow shape <img src="img/sidebar_button.png" alt="Sidebar Button" class="img-fluid mb-3" />
+            opens a sidebar with the following tools:
+        </p>
+
+        <h5>Add Fixture</h5>
+        <img src="img/add_fixture_button.png" alt="Add Fixture Example" class="img-fluid mb-3" />
+        <h6>A tool to add fixtures to your floorset</h6>
+        <ul>
+            <li>Create a fixture by specifying:
+                <ul>
+                    <li>Name</li>
+                    <li>Dimensions (width × length in linear feet (LF))</li>
+                    <li>Hanger stack</li>
+                    <li>Linear feet capacity</li>
+                    <li>Total linear feet</li>
+                    <li>Image</li>
+                </ul>
+            </li>
+            <li>Fixtures can be dragged and dropped or clicked to appear on the floorset working area</li>
+            <li>On the working area, fixtures can be:</li>
+            <ul>
+                <li>Moved by clicking on them and dragging them where desired within the grid</li>
+                <li>Assigned notes by right clicking on them. At the bottom there is a pencil icon, clicking on that
+                    allows the ability to add notes</li>
+                <li>Categorized by navigating to the allocations page, clicking on the desired category, clicking the
+                    paint icon and painting the desired category onto the fixture. Alternatively you can click on the
+                    fixture and select the category right under the name of the fixture</li>
+            </ul>
+            <li>Includes a search box and filter button to organize fixtures by name in ascending or descending order
+            </li>
+            <img src="img/add_fixture_search.png" alt="Add Fixture Search" class="img-fluid mb-3" />
+        </ul>
+
+        <h5>Edit Building Walls</h5>
+        <img src="img/edit_walls_button.png" alt="Edit Walls Example" class="img-fluid mb-3" />
+        <h6>Customize the building layout</h6>
+        <ul>
+            <li>Set building dimensions (width × length in feet) using the associated width and length boxes</li>
+            <li>Define Employee-only areas</li>
+            <ul>
+                <li>Once clicked on, you have the ability to paint the floor of what will be an employee-only area</li>
+            </ul>
+            <li>Click <em>Apply</em> to save changes to the floorset</li>
+        </ul>
+
+        <h5>View Allocations</h5>
+        <img src="img/view_allocations_button.png" alt="View Allocations Example" class="img-fluid mb-3" />
+        <h6>Displays all categories and subcategories on the floorset.</h6>
+        <ul>
+            <li>The following options are included at the top of the tool:</li>
+            <img src="img/category_fulfillment_header.png" alt="Fulfillment Header" class="img-fluid mb-3" />
+            <ul>
+                <li>Search box: Allows you to search for a specific category or subcategory</li>
+                <li>Sort icon: Sorts the fixtures by name in ascending or descending order</li>
+                <li>Filter: Allows you to filter the view by category or subcategory</li>
+            </ul>
+            <li>Color indicators are included for each category:
+                <ul>
+                    <li>Men – Blue <span class="color-indicator align-left" style="background-color: #AAD9FF"></span>
+                    </li>
+                    <li>Women – Pink <span class="color-indicator align-left" style="background-color: #FFAAD6"></span>
+                    </li>
+                    <li>Accessories – Green <span class="color-indicator align-left"
+                            style="background-color: #5FBD6A"></span></li>
+                </ul>
+            </li>
+            <li>A selected category has a check mark</li>
+            <li>Assign a category or subcategory by dragging and dropping from category fulfillment to the floorset
+                working area</li>
+            <li>Clicking a fixture shows detailed info</li>
+            <li>Red highlighted categories indicate that the category is under or over the target allocation based on
+                data from the Excel file</li>
+            <li>Numbers are represented in linear feet (LF) and indicate the following:
+                <ul>
+                    <li>1st Number: Assigned allocation</li>
+                    <li>2nd Number: Target allocation</li>
+                </ul>
+            </li>
+        </ul>
+        <img src="img/category_fulfillment_body.png" alt="Fulfillment Body" class="img-fluid mb-3" />
+
+        <h5>Toolbar</h5>
+        <img src="img/toolbar_buttons.png" alt="Toolbar Buttons" class="img-fluid mb-3" />
+        <h6>A collection of tools within Category Fulfillment</h6>
+        <ul>
+            <li>Close tool: Close the Category Fulfillment tool</li>
+            <img src="img/close_cat_button.png" alt="Paint Example" class="img-fluid mb-3" />
+            <li>Painting tool: Assign categories to fixtures</li>
+            <img src="img/paint_button.png" alt="Paint Example" class="img-fluid mb-3" />
+            <li>Eraser tool: Remove category assignments from fixtures</li>
+            <img src="img/erase_button.png" alt="Erase Example" class="img-fluid mb-3" />
+        </ul>
+
+        <h5>Import Excel File</h5>
+        <img src="img/import_excel_button.png" alt="Import Excel Example" class="img-fluid mb-3" />
+        <h6>A modal used to import an Excel file to populate the floorset with category allocations</h6>
+        <ul>
+            <li>Browsing files from your computer</li>
+            <ul>
+                <li>This is done by clicking <em>Select File</em> and using the File Selection Dialog</li>
+            </ul>
+            <li>Dragging and dropping into the Import modal</li>
+            <ul>
+                <li>This is done by dragging an Excel file into the drag and drop box</li>
+            </ul>
+            <li>Clicking import generates a new floorset from the Excel file</li>
+            <img src="img/import_excel.png" alt="Import Excel Tool" class="img-fluid mb-3" />
+        </ul>
+
+        <h5>Print Layout</h5>
+        <img src="img/print_layout_button.png" alt="Print Layout Example" class="img-fluid mb-3" />
+        <h6>A modal to help format your printed document</h6>
+        <ul>
+            <li>You may choose the printer, page size, and options to include:</li>
+            <ul>
+                <li>Allocations</li>
+                <ul>
+                    <li>Prints what fixtures belong to what categories</li>
+                </ul>
+                <li>Notes</li>
+                <ul>
+                    <li>Prints any associated notes for each fixture</li>
+                </ul>
+            </ul>
+            <img src="img/print_layout.png" alt="Print Layout Tool" class="img-fluid mb-3" />
+        </ul>
+
+        <h5>Save</h5>
+        <img src="img/save_button.png" alt="Save Example" class="img-fluid mb-3" />
+        <h6>Save your current floorset layout</h6>
+        <ul>
+            <li>Click <em>Save</em> to retain your changes</li>
+            <li><strong>Tip:</strong> Save regularly to avoid losing work</li>
+        </ul>
+    </ModalBody>
+
+    <ModalFooter>
+        <Button TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
+            Create
+        </Button>
+    </ModalFooter>
+</Modal>

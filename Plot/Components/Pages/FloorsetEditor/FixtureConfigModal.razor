@@ -1,0 +1,75 @@
+@inject IJSRuntime JS
+
+@* Add fixture edit modal to the floorset editor. - Tristan Calay *@
+<Modal id="fixtureConfig" class="modal-dialog modal-lg">
+    <ModalHeader Title="Fixture Configuration" Variant="standard" />
+    <ModalBody>
+        <h4>@fixtureName</h4>
+        <OptionInput ID="categoryOption" Class="optionInput" iconString="fa-solid fa-bars" label="Select Category"
+            optionsText=@categoryInputValues optionsValues=@categoryInputValues />
+
+        <OptionInput ID="hangingOption" Class="optionInput" iconString="fa-solid fa-sign-hanging" label="Select Hanging"
+            optionsText=@hangingInputValues optionsValues=@hangingInputValues />
+        <hr>
+
+        <label>
+            Add Notes
+            <InputText placeholder="Notes text..." id="fixtureNotes" type="text" @bind-value="notesText" />
+        </label>
+    </ModalBody>
+
+    <ModalFooter>
+        <Button Variant="danger" OnClickFunction="deleteCurrentFixture">
+            Delete Fixture
+        </Button>
+        <Button Variant="primary" OnClickFunction="saveChangesToCurrentFixture">
+            Save Changes
+        </Button>
+    </ModalFooter>
+</Modal>
+
+@code {
+    private String fixtureName = "Default Fixture Title";
+    private List<String> categoryInputValues = new List<String> { "Default Category" };
+    private List<String> hangingInputValues = new List<String> { "Default Hanging" };
+
+    private String notesText = "";
+
+    private FixtureInstance? currentFixture;
+    public void selectFixture(FixtureInstance selectedFixture)
+    {
+        currentFixture = selectedFixture;
+        if (selectedFixture == null)
+        {
+            return;
+        }
+        else
+        {
+            fixtureName = selectedFixture.Name;
+            //TODO: Change hanging, notes and category components here.
+            Console.WriteLine("Fixture Selected: " + fixtureName);
+        }
+        StateHasChanged();
+    }
+
+    [Parameter] public required EventCallback<int> fixtureDeleted { get; set; }
+
+    public void deleteCurrentFixture()
+    {
+        if (currentFixture != null)
+        {
+            Console.WriteLine("Delete Current Selected Fixture...");
+            fixtureDeleted.InvokeAsync(currentFixture.editorID);
+            JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
+        }
+    }
+
+    private void saveChangesToCurrentFixture()
+    {
+        //TODO: Send data to DB and fixture object.
+        //currentFixture....
+        //Need data from DB to exist in the fixture object first!
+        Console.WriteLine("Save Changes Function...");
+        JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
+    }
+}

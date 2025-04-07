@@ -21,68 +21,25 @@ Author: Andrew Kennedy (4/4/2025) - Added IsStatic parameter
 when true, modal does not close when user clickes outside or presses esc
 -->
 
-<div class="modal fade" id="@Id" tabindex="-1" data-bs-backdrop="true" data-bs-focus="false"
-    data-bs-keyboard="@(IsStatic == true ? "false" : "true")" aria-labelledby="@Id + 'Label'">
-    <div class="modal-dialog Modal @Class">
+<div class="modal fade @Class" tabindex="-1" data-bs-backdrop="true" data-bs-focus="false" data-bs-keyboard="true"
+    @attributes="Attributes">
+    <div class="modal-dialog Modal">
         <div class="modal-content border-0">
-            <div class="modal-header @Variant">
-                <h5 class="modal-title" id="@Id + 'Label'"><i class="@Icon"></i> @Title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                    @onclick="OnCancelFunc"></button>
-            </div>
-            <div class="modal-body">
-                @BodyContent
-            </div>
-            <div class="modal-footer">
-                <!-- cancel buttons for all modals -->
-                <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal"
-                    @onclick="OnCancelFunc">Cancel</button>
-                @FooterContent
-            </div>
+            @ChildContent
         </div>
     </div>
 </div>
 
 @code {
-    [Parameter, EditorRequired]
-    public string? Title { get; set; } // modal title
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    [Parameter]
-    public string? Id { get; set; } // modal ID (nullable)
+    [Parameter(CaptureUnmatchedValues = true)]
+    public required Dictionary<string, object> Attributes { get; set; }
 
-    [Parameter]
-    // modal icon (font awesome icon - nullable)
-    public string? Icon { get; set; }
+    private string? Class => Attributes.TryGetValue("class", out var val) ? val.ToString() : string.Empty;
 
-    [Parameter]
-    // modal color - defaults to "standard" if none is passed
-    public string? Variant { get; set; } = "standard";
-
-    [Parameter]
-    public string? Class { get; set; } // classes for the modal (nullable)
-
-    [Parameter]
-    // Method that runs when clicking cancel or clicking the x button in the upper right corner
-    public EventCallback OnCancelFunction { get; set; }
-    [Parameter]
-    // When true, the modal doesnt close when the user clickes outside or presses esc
-    public bool? IsStatic { get; set; } = false;
-
-    [Parameter, EditorRequired]
-    public required RenderFragment BodyContent { get; set; } // body content of the modal
-
-    [Parameter, EditorRequired]
-    public RenderFragment? FooterContent { get; set; } // footer buttons for the modal
-
-    //When cancel button is clicked this
-    //task is called which then calls
-    //the method invoked in the parent component
-    private async Task OnCancelFunc()
+    protected override void OnParametersSet()
     {
-        // Checks that it points to an actual method
-        if (OnCancelFunction.HasDelegate)
-        {
-            await OnCancelFunction.InvokeAsync(); // Enables handling asynchronous methods
-        }
+        Attributes.Remove("class");
     }
 }

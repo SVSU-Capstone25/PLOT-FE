@@ -1,127 +1,46 @@
-using Plot.Data.Models.Auth.Registration;
-using Plot.Data.Models.Auth.ResetPassword;
-using Plot.Data.Models.Fixtures;
+using System.Net;
 using Plot.Data.Models.Stores;
+using Plot.Services;
 
-public class StoresHttpClient
+public class StoresHttpClient : PlotHttpClient
 {
-    private const string BASE_CONTROLLER_ADDRESS = "/stores";
+    public StoresHttpClient(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, "/stores")
+    { }
 
-    private readonly AuthHeaderHttpClient _authHeaderHttpClient;
-
-
-
-    public StoresHttpClient(AuthHeaderHttpClient authHeaderHttpClient)
+    public async Task<List<Store>?> GetListOfStores()
     {
-        _authHeaderHttpClient = authHeaderHttpClient;
-        _authHeaderHttpClient.AppendBaseAddress(BASE_CONTROLLER_ADDRESS);
+        return await SendGetAsync<List<Store>>("/get-all");
+    }
+
+    public async Task<List<Store>?> GetStoreAccessByUserId(int userId)
+    {
+        return await SendGetAsync<List<Store>>($"/access/{userId}");
+    }
+
+    public async Task<Store?> CreateStore(CreateStore store)
+    {
+        JsonContent body = JsonContent.Create(store);
+
+        return await SendPostAsync<Store>($"create-store", body);
     }
 
 
-    // [HttpGet]
-    // 
-    public async Task<List<Store>?> GetListOfStores()//WORKING 
+    public async Task<Store?> UpdatePublicInfo(int storeId, UpdatePublicInfoStore store)
     {
-        string endpoint = "get-all";
-        HttpMethod httpMethod = HttpMethod.Get;
-        JsonContent jsonBody = JsonContent.Create("");
+        JsonContent body = JsonContent.Create(store);
 
-        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
-
-        return await response.Content.ReadFromJsonAsync<List<Store>>();
+        return await SendPatchAsync<Store>($"/public-info/{storeId}", body);
     }
 
-
-
-    // [HttpGet("access/{userId:int}")] 
-    public async Task<List<Store>?> GetStoreAccessByUserId(int userId)//WORKING just need to change API endpoint return
+    public async Task<Store?> UpdateStoreSize(int storeId, UpdateSizeStore store)
     {
-        string endpoint = $"/access/{userId}";
-        HttpMethod httpMethod = HttpMethod.Get;
-        JsonContent jsonBody = JsonContent.Create("");
+        JsonContent body = JsonContent.Create(store);
 
-        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
-
-        return await response.Content.ReadFromJsonAsync<List<Store>>();
+        return await SendPatchAsync<Store>($"/size/{storeId}", body);
     }
 
-
-
-    // [HttpPost]
-    public async Task<Store?> CreateStore(CreateStore store) //WORKING just need to change API endpoint return
+    public async Task<HttpStatusCode> DeleteStore(int storeId)
     {
-        string endpoint = "";
-        HttpMethod httpMethod = HttpMethod.Post;
-        JsonContent jsonBody = JsonContent.Create(store);
-
-        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
-
-        return await response.Content.ReadFromJsonAsync<Store>();
-    }
-
-
-    //[HttpPatch("public-info/{storeId:int}")]
-    public async Task<Store?> UpdatePublicInfo(int storeId, UpdatePublicInfoStore store)//NOT tested but assumed working
-    {
-        string endpoint = $"/public-info/{storeId}";
-        HttpMethod httpMethod = HttpMethod.Patch;
-        JsonContent jsonBody = JsonContent.Create(store);
-
-        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
-
-
-        return await response.Content.ReadFromJsonAsync<Store>();
-    }
-
-    //[HttpPatch("size/{storeId:int}")]
-    public async Task<Store?> UpdateStoreSize(int storeId, UpdateSizeStore store)//NOT tested but assumed working
-    {
-        string endpoint = $"/size/{storeId}";
-        HttpMethod httpMethod = HttpMethod.Patch;
-        JsonContent jsonBody = JsonContent.Create(store);
-
-        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
-
-
-        return await response.Content.ReadFromJsonAsync<Store>();
-    }
-
-
-
-    //[HttpDelete("{storeId:int}")]
-    public async Task<HttpResponseMessage> DeleteStore(int storeId)//Working
-    {
-        string endpoint = $"/{storeId}";
-        HttpMethod httpMethod = HttpMethod.Delete;
-        JsonContent jsonBody = JsonContent.Create("");
-
-        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
-
-        return response;
+        return await SendDeleteAsync($"/{storeId}");
     }
 }

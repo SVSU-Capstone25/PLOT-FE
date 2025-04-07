@@ -13,10 +13,15 @@
     Written by: Jordan Houlihan
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Plot.Data.Models.Auth.Login;
 
 public record LoginRequest
 {
-    public required string? EMAIL { get; set; }
-    public required string? PASSWORD { get; set; }
+    [Required(ErrorMessage = "An email is required!")]
+    [EmailAddress(ErrorMessage = "Invalid Email Address")]
+    public string? EMAIL { get; set; }
+    [Required(ErrorMessage = "A password is required!")]
+    public string? PASSWORD { get; set; }
 }

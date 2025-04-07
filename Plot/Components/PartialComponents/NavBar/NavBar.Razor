@@ -10,19 +10,21 @@ and allocate floorsets for Platos Closet.
 
 Author: Luke Wollenweber (3/13/2025)
 Updated: Danielle Smith (3/29/2025)-->
-@inject IJSRuntime JS
+@using Plot.Services
+
 @inject NavigationManager Navigation
+@inject ICookie cookie
 
 <div class="NavBar @Class" id="@Id">
     <nav class="nav flex-row">
         <div class="nav-item px-3">
-            <a class="nav-link" onclick="window.location.href='/store-dashboard'">
+            <a class="nav-link" href="/store-dashboard">
                 Stores <i class="fa-solid fa-bag-shopping"></i>
             </a>
        </div>
 
         <div class="nav-item px-3">
-            <a class="nav-link" onclick="window.location.href='/user-dashboard'">
+            <a class="nav-link" href="/user-dashboard">
                 Users <i class="fa-solid fa-shirt"></i>
             </a>
         </div>
@@ -36,11 +38,9 @@ Updated: Danielle Smith (3/29/2025)-->
                 </a>
             </div>
         }
-        @* Danielle Smith - 3/29/2025
-        Make it so logout goes back to login *@
         <div class="nav-item px-3 ml-auto">
-            <a class="nav-link" onclick="window.location.href='/login'">
-                Logout 
+            <a class="nav-link" @onclick="async () => await OnLogoutClick()">
+                Logout
             </a>
         </div>
     </nav>
@@ -52,4 +52,9 @@ Updated: Danielle Smith (3/29/2025)-->
 
     [Parameter]
     public string? Class { get; set; }
+
+    private async Task OnLogoutClick() {
+        await cookie.SetValue("Auth", string.Empty);
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
 }

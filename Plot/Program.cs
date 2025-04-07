@@ -3,7 +3,7 @@ using Plot.Data.Models.Env;
 using System.Text;
 using Plot.Components;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Components.Authorization;
+using Plot.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,34 +21,36 @@ builder.Services.AddRazorComponents()
 
 
 // Add HttpClient for server-side Blazor
-builder.Services.AddScoped(sp =>
-{
-    var handler = new HttpClientHandler
-    {   //Allows manipulating cookies in the request
-        UseCookies = false,
-        AllowAutoRedirect = true
-    };
-    return new HttpClient(handler)
-    {
-        BaseAddress = new Uri(builder.Configuration["BACKEND_URL"] ?? "http://backend:8085/api")
-    };
-});
+// builder.Services.AddScoped(sp =>
+// {
+//     var handler = new HttpClientHandler
+//     {   //Allows manipulating cookies in the request
+//         UseCookies = false,
+//         AllowAutoRedirect = true
+//     };
+//     return new HttpClient(handler)
+//     {
+//         BaseAddress = new Uri(builder.Configuration["BACKEND_URL"] ?? "http://backend:8085/api")
+//     };
+// });
 
 // Add services for authentication and authorization
 builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<AuthHeaderHttpClient>();
+// builder.Services.AddScoped<AuthHeaderHttpClient>();
 builder.Services.AddScoped<AuthHttpClient>();
 builder.Services.AddScoped<FixturesHttpClient>();
 builder.Services.AddScoped<FloorsetsHttpClient>();
 builder.Services.AddScoped<StoresHttpClient>();
 builder.Services.AddScoped<UsersHttpClient>();
+builder.Services.AddScoped<ICookie, Cookie>();
+
 
 
 // Add JWT authentication and authorization 
-builder.Services.AddAuthentication(options =>   
+builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; 
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; 
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
@@ -87,15 +89,15 @@ builder.Services.AddAuthentication(options =>
             context.Response.Redirect("/login"); // optional — won't work for APIs but works in some SPA cases
             return Task.CompletedTask;
         }
-};
+    };
 });
-     
+
 // Add authorization policies
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("Employee", policy => policy.RequireClaim("Role", "3", "2", "1"))
     .AddPolicy("Manager", policy => policy.RequireClaim("Role", "1", "2"))
     .AddPolicy("Owner", policy => policy.RequireClaim("Role", "1"));
-    
+
 builder.Services.AddCascadingAuthenticationState();
 
 

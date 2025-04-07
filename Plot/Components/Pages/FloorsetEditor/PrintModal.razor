@@ -2,8 +2,9 @@
 
 @*Print Modal *@
 @*Tristan Calay *@
-<Modal Title="Print Layout" Id="printModal" Class="modal-dialog">
-    <BodyContent>
+<Modal id="printModal" class="modal-dialog">
+    <ModalHeader Title="Print Layout" />
+    <ModalBody>
         <h6 style="opacity: 0.5;">Select print options for how you would like your printed document to be formatted.
         </h6>
         <img class="w-100" src="/img/printpreviewexample.png">
@@ -26,13 +27,13 @@
 
         <Checkbox id="checkWithAllocations" Text="With Allocations" />
         <Checkbox id="checkWithNotes" Text="With Notes" />
-    </BodyContent>
+    </ModalBody>
 
-    <FooterContent>
+    <ModalFooter>
         <Button Variant="primary" isDisabled="false" OnClickFunction="printLayout">
             Print
         </Button>
-    </FooterContent>
+    </ModalFooter>
 </Modal>
 
 @code {

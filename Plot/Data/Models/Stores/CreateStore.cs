@@ -47,4 +47,5 @@ public record CreateStore
     [Range(int.MinValue, int.MaxValue, ErrorMessage = "Length must be an integer.")]
     public int LENGTH { get; set; }
     public IFormFile? BLUEPRINT_IMAGE { get; set; }
+    public required string USER_TUIDS {get; set;}
 }

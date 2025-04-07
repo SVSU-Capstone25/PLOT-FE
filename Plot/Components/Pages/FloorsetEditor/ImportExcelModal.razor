@@ -2,15 +2,14 @@
 @using Plot.Components.PartialComponents.FileInput
 
 @*Import Excel File Modal Andrew Miller *@
-<Modal Title="Import Excel File" Id="importExcelModal" Class="modal-dialog">
-
-    @*Body content includes file to upload*@
-    <BodyContent>
+<Modal id="importExcelModal" class="modal-dialog">
+    <ModalHeader Title="Import Excel File" />
+    <ModalBody>
         <p>Import an Excel File</p>
         <FileInput Id="ImportFile" OnFileSelected="HandleFileSelected"></FileInput>
-    </BodyContent>
+    </ModalBody>
 
-    <FooterContent>
+    <ModalFooter>
         @*To fix: Cancel button is included in PartialComponents/Modal/Modal.razor
          but appropriate alignment still needs to be handled 
          *@
@@ -24,7 +23,7 @@
             IsDisabled=false TextAlignment="center">
             Import
         </Button>
-    </FooterContent>
+    </ModalFooter>
 </Modal>
 
 @code {

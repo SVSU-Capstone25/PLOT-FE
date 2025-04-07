@@ -17,9 +17,13 @@
     List<string> links = new List<string> { "#editFixture-" + id, "#deleteFixture-" + id };
 
 
-    <Modal Class="modal-xl fixture-modal" Id="@("editFixture-" + id)" Title="Edit Fixture">
-        <BodyContent>
-            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@name" ValueChanged="@(e=>name=e)" />
+    <Modal class="modal-xl fixture-modal" id="@("editFixture-" + id)">
+        <ModalHeader Title="Edit Fixture" />
+        <ModalBody>
+            <label>
+                Name
+                <InputText placeholder="Three Way Rack" type="text" @bind-value="name" />
+            </label>
             <div class="d-flex flex-row align-items-center justify-content-between">
                 <div class="dimension">
                     <NumericInput Id="@(id + "-edit-length")" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
@@ -86,32 +90,30 @@
                 <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
                 Id="@("ImageInput-" + currFixture.Name)"/>
             </div>
-        </BodyContent>
-
-        <FooterContent>
+        </ModalBody>
+        <ModalFooter>
             <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async () => {
                     await UpdateFixture(currFixture, new Fixture(currFixture.Name,len,wth,hst,img),id);
                     
                 })>
                 Update
             </Button>
-        </FooterContent>
+        </ModalFooter>
     </Modal>
 
-    <Modal Title="Delete Fixture"  Id=@("deleteFixture-" + id)>
-
-        <BodyContent>
+    <Modal id=@("deleteFixture-" + id)>
+        <ModalHeader Title="Delete Fixture" />
+        <ModalBody>
             Are you sure you want to delete "@(currFixture.Name)" ?
-        </BodyContent>
-
-        <FooterContent>
+        </ModalBody>
+        <ModalFooter>
             <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async ()=>{
                     DeleteFixture(currFixture, id);
                     await JS.InvokeVoidAsync("toggleModal","deleteFixture-"+id,false);
                 })>
                 Delete
             </Button>
-        </FooterContent>
+        </ModalFooter>
     </Modal>
 }
 

@@ -1,0 +1,49 @@
+@inject UsersHttpClient UsersHttpClient
+
+<Modal class="modal-dialog modal-xl user-modal user-info-modal" @attributes="Attributes">
+    <ModalHeader Title="Update User" />
+    <EditForm Model="UpdateUserModel" OnValidSubmit="OnUpdateUserSubmit">
+        <DataAnnotationsValidator />
+
+        <AddUpdateUserModalBody AddUpdateUserModel="UpdateUserModel" />
+
+        <ModalFooter>
+            <Button Variant="primary" TextAlignment="center" type="submit">
+                Submit
+            </Button>
+        </ModalFooter>
+    </EditForm>
+
+</Modal>
+
+@code {
+    [Parameter] public required Data.Models.Users.UserDTO User { get; set; }
+
+    [Parameter] public required EventCallback UpdateUsers { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? UpdateUserModel { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        UpdateUserModel ??= new Data.Models.Users.UpdatePublicInfoUser
+        {
+            FIRST_NAME = User.FIRST_NAME,
+            LAST_NAME = User.LAST_NAME,
+            EMAIL = User.EMAIL,
+            ROLE_NAME = User.ROLE
+        };
+    }
+
+    private async Task OnUpdateUserSubmit()
+    {
+        if (UpdateUserModel != null)
+        {
+            var response = await UsersHttpClient.UpdateUserPublicInfo(User.TUID, UpdateUserModel);
+            Console.WriteLine(response);
+            await UpdateUsers.InvokeAsync();
+        }
+    }
+}

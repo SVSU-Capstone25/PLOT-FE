@@ -459,6 +459,21 @@ function addFixtureClose(dotNet) {
     })
 }
 
+function isOverScrollable() {
+    // Is the side bar over a scroll area
+    // (Andrew Miller - 4/6/2025)
+
+    // Checks if the user is hovering over a scrollable component.
+
+    let scrollables = document.querySelectorAll('.scrollable');
+
+    for (let scrollable of scrollables) {
+        if (scrollable.matches(':hover')) { return true; }
+    }
+
+    return false;
+}
+
 /*
     The searchInputChange function adds an event listener to the fixture search bar.
 */
@@ -544,5 +559,6 @@ function UpdateGridDimensions(passedLength, passedWidth) {
 function createDraggable(event) {
     const width = Number(event.target.getAttribute("data-width"));
     const height = Number(event.target.getAttribute("data-height"));
-    window.draggedRack = { width, height };
+    const name = String(event.target.getAttribute("data-value"));
+    window.draggedRack = { width, height, name };
 }
