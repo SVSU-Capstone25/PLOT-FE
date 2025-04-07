@@ -20,29 +20,30 @@ function setPaint(paint) {
 var isEmployeePaintEnabled = false;
 var isEmployeeEraseEnabled = false;
 
-function toggleEmployeePaint() {
-    isEmployeePaintEnabled = !isEmployeePaintEnabled;
+function setEmployeePaint(newPaint) {
+    isEmployeePaintEnabled = newPaint;
     console.log("Employee paint mode is " + isEmployeePaintEnabled);
     //var marker = document.getElementById("employeePaintEnabledMarker");
     if (isEmployeePaintEnabled) {
         console.log("Setting marker green...")
-        marker.style.color = "green";
-        //window.gridState = 'employeePaint';
+        //marker.style.color = "green";
+        window.gridState = 'employeeMode';
     }
     else {
         console.log("Setting marker black...")
-        marker.style.color = "black";
-        //window.gridState = 'place';
+        //marker.style.color = "black";
+        window.gridState = 'place';
     }
 }
 
-function toggleEmployeeErase() {
-    isEmployeeEraseEnabled = !isEmployeeEraseEnabled;
+function setEmployeeErase(newErase) {
+    isEmployeeEraseEnabled = newErase;
     console.log("Employee Erase mode is " + isEmployeeEraseEnabled);
     //var marker = document.getElementById("employeeEraseEnabledMarker");
     if (isEmployeeEraseEnabled) {
         console.log("Setting marker green...")
         //marker.style.color = "green";
+        window.gridState = 'employeeMode';
     }
     else {
         console.log("Setting marker black...")
@@ -224,7 +225,7 @@ const floorsetGrid = (function () {
                                 grid.racks.splice(index, 1);
                             }
                         }
-                    } else if (window.gridState === "employeePaint") {
+                    } else if (window.gridState === "employeeMode") {
                         //Handle drawing employee boxes on the grid.
                         const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
                         const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
@@ -271,7 +272,7 @@ const floorsetGrid = (function () {
                                 grid.racks.splice(index, 1);
                             }
                         }
-                    } else if (window.gridState === "employeePaint") {
+                    } else if (window.gridState === "employeeMode") {
                         //Handle drawing employee boxes on the grid.
                         const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
                         const rack = grid.getRackAt(gridCoords.x, gridCoords.y);

@@ -31,26 +31,51 @@
 
     @* Tristan Calay 4/2/25 - Added new employee area controls *@
 
-    <Button Class="button-green" IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush"
-        OnClickFunction="toggleEmployeePaint" TextAlignment="center">
-        Toggle Paint Employee Area
-    </Button>
+    <div style="display: flex; flex-direction: column; row-gap: 16px;">
+        <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
+            Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
+            Apply
+        </Button>
 
-    <Button Class="button-green" IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser"
-        OnClickFunction="toggleEmployeeErase" TextAlignment="center">
-        Toggle Erase Employee Area
-    </Button>
+        <Button Class="button-green" IsDisabled="false" Variant=@getEmployeePaintVariant() Icon="fa-solid fa-brush"
+            OnClickFunction="toggleEmployeePaint" TextAlignment="center">
+            Toggle Paint Employee Area
+        </Button>
 
-    <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
-        Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
-        Apply
-    </Button>
+        <Button Class="button-green" IsDisabled="false" Variant=@getEmployeeEraseVariant() Icon="fa-solid fa-eraser"
+            OnClickFunction="toggleEmployeeErase" TextAlignment="center">
+            Toggle Erase Employee Area
+        </Button>
+    </div>
+
 </div>
 
 @code {
 
     private double width { get; set; }
     private double length { get; set; }
+
+    @* Track state for the two buttons so that bootstrap classes can be applied to them. *@
+    private bool employeePaintEnabled = false;
+    private bool employeeEraseEnabled = false;
+
+    private String getEmployeePaintVariant()
+    {
+        if (employeePaintEnabled)
+        {
+            return "primary";
+        }
+        return "secondary";
+    }
+
+    private String getEmployeeEraseVariant()
+    {
+        if (employeeEraseEnabled)
+        {
+            return "primary";
+        }
+        return "secondary";
+    }
 
     /* This function is called when the number is changed */
     private async Task NumberChanged(string strNumber, Action<double> setValue)
@@ -84,10 +109,16 @@
     disables event listeners for click/drag on the grid. *@
     private async Task toggleEmployeePaint()
     {
-        await JS.InvokeVoidAsync("toggleEmployeePaint");
+        employeePaintEnabled = !employeePaintEnabled;
+        employeeEraseEnabled = false;
+        await JS.InvokeVoidAsync("setEmployeePaint", employeePaintEnabled);
+        await JS.InvokeVoidAsync("setEmployeeErase", employeeEraseEnabled);
     }
     private async Task toggleEmployeeErase()
     {
-        await JS.InvokeVoidAsync("toggleEmployeeErase");
+        employeeEraseEnabled = !employeeEraseEnabled;
+        employeePaintEnabled = false;
+        await JS.InvokeVoidAsync("setEmployeePaint", employeePaintEnabled);
+        await JS.InvokeVoidAsync("setEmployeeErase", employeeEraseEnabled);
     }
 }
