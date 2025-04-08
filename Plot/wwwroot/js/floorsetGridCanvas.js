@@ -163,25 +163,37 @@ class Grid {
         this.sketch.strokeWeight(1);
         this.sketch.translate(this.translate.x, this.translate.y);
         this.sketch.scale(this.scale);
-        for (let y = 0; y < this.y; y++) {
-            for (let x = 0; x < this.x; x++) {
-                const x1 = x * this.size,
-                    y1 = y * this.size;
-                this.sketch.rect(x1, y1, this.size, this.size);
-            }
+
+        // for (let y = 0; y < this.y; y++) {
+        //     for (let x = 0; x < this.x; x++) {
+        //         const x1 = x * this.size,
+        //             y1 = y * this.size;
+        //         this.sketch.rect(x1, y1, this.size, this.size);
+        //     }
+        // }
+
+        //Tristan Calay - rework this to be much more efficient (lines instead of each cell)
+
+        this.sketch.rect(0, 0, this.x * this.size, this.y * this.size);
+
+        for (let x = 1; x < this.x; x++) {
+            this.sketch.line(x * this.size, 0, x * this.size, this.y * this.size);
         }
 
+        for (let y = 1; y < this.y; y++) {
+            this.sketch.line(0, y * this.size, this.x * this.size, y * this.size);
+        }
+
+        // Draw the individual racks
         for (const rack of this.racks) {
             rack.draw(this.size);
         }
     }
 }
 
-var grid, mouseRack;
+var grid, mouseRack, sketchInstance;
 
 const floorsetGrid = (function () {
-    let sketchInstance = null;
-
     // Flag to make sure rack creation is called only once
     let rackCreated = undefined;
 
@@ -363,13 +375,20 @@ const floorsetGrid = (function () {
 
                 sketch.mouseReleased = () => {
                     if (!mouseRack) return;
+
                     if (rackCreated) {
-                        addedRack = mouseRack;
+                        let addedRack = mouseRack;
                         jsCreateNewFixture(rackCreated).then(id => {
+                            console.log("Recieved ID: " + id);
                             addedRack.id = id
                             rackCreated = undefined;
+                            moveFixtureByID(addedRack.id, addedRack.x, addedRack.y)
                         })
                     }
+                    else {
+                        moveFixtureByID(mouseRack.id, mouseRack.x, mouseRack.y)
+                    }
+
                     grid.racks.push(mouseRack);
                     mouseRack = undefined;
                     window.draggedRack = undefined;
@@ -379,6 +398,14 @@ const floorsetGrid = (function () {
         }
     };
 })();
+
+//Test function to save the canvas as an image
+document.addEventListener('keypress', event => {
+    if (event.keyCode == 83) { // "S" Key
+        sketchInstance.saveCanvas('floorsetGrid', 'jpg');
+        console.log("Saving Image!");
+    }
+})
 
 // Initialize when Blazor component loads
 //floorsetGrid.init();

@@ -20,11 +20,11 @@ public class UsersHttpClient : PlotHttpClient
         return await SendGetAsync<UserDTO>($"/get-users-by-id/{userId}");
     }
 
-    public async Task<HttpResponseMessage?> UpdateUserPublicInfo(int userId, UpdatePublicInfoUser user)
+    public async Task<HttpStatusCode> UpdateUserPublicInfo(int userId, UpdatePublicInfoUser user)
     {
         JsonContent body = JsonContent.Create(user);
 
-        return await SendPatchAsync<HttpResponseMessage>($"/public-info/{userId}", body);
+        return await SendPatchAsync($"/public-info/{userId}", body);
     }
 
     public async Task<HttpStatusCode> DeleteUserById(int userId)

@@ -14,7 +14,7 @@
                     <div class="col-md-5">
                         <label>
                             Length
-                            <InputNumber @bind-Value="EditFixtureModel!.HEIGHT" class="dimension" step=1 />
+                            <InputNumber @bind-Value="EditFixtureModel!.LENGTH" />
                         </label>
                     </div>
                     <div class="col-md-auto my-auto">
@@ -23,7 +23,7 @@
                     <div class="col-md-5">
                         <label>
                             Width
-                            <InputNumber @bind-Value="EditFixtureModel!.WIDTH" class="dimension" step=1 />
+                            <InputNumber @bind-Value="EditFixtureModel!.WIDTH" />
                         </label>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
 
                 <label>
                     Total Linear Feet
-                    @EditFixtureModel!.WIDTH * @EditFixtureModel!.HEIGHT
+                    @EditFixtureModel!.WIDTH * @EditFixtureModel!.LENGTH
                     @* <InputNumber @bind-Value="TotalLinearFeet" disabled /> *@
                 </label>
 
@@ -70,8 +70,8 @@
         // TODO: Change User.TUID to store ID
         /* if (EditFixtureModel != null)
         {
-            var response = await FixturesHttpClient.UpdateFixtureModel(User.TUID, EditFixtureModel);
-            await UpdateFixtures.InvokeAsync();
+        var response = await FixturesHttpClient.UpdateFixtureModel(User.TUID, EditFixtureModel);
+        await UpdateFixtures.InvokeAsync();
         } */
     }
 }

@@ -1,7 +1,5 @@
 
 using System.Net;
-using Plot.Data.Models.Auth.Registration;
-using Plot.Data.Models.Auth.ResetPassword;
 using Plot.Data.Models.Fixtures;
 using Plot.Services;
 
@@ -23,6 +21,10 @@ public class FixturesHttpClient : PlotHttpClient
         return await SendGetAsync<List<FixtureInstance>>($"/get-fixtures/{floorsetId}");
     }
 
+    public async Task<List<FixtureModel>?> GetFixtureModelsByStore(int storeId)
+    {
+        return await SendGetAsync<List<FixtureModel>>($"/get-fixture-models/{storeId}");
+    }
 
     /// <summary>
     /// This sends updates to a floorsets fixture information to the back end api.
@@ -31,11 +33,11 @@ public class FixturesHttpClient : PlotHttpClient
     /// <param name="floorsetId"> Current floorset</param>
     /// <param name="fixtures">A floorsets entire fixture information</param>
     /// <returns>Http response</returns>
-    public async Task<HttpResponseMessage?> UpdateFixtureInformation(int floorsetId, Fixtures_State fixtures)
+    public async Task<HttpStatusCode> UpdateFixtureInformation(int floorsetId, Fixtures_State fixtures)
     {
         JsonContent body = JsonContent.Create(fixtures);
 
-        return await SendPatchAsync<HttpResponseMessage>($"/update-fixture/{floorsetId}", body);
+        return await SendPatchAsync($"/update-fixture/{floorsetId}", body);
     }
 
 
@@ -47,12 +49,11 @@ public class FixturesHttpClient : PlotHttpClient
     /// <param name="storeId">Fixtures store</param>
     /// <param name="FixtureModel information"> </param>
     /// <returns>New fixture</returns>
-    public async Task<Select_Fixtures?> CreateFixtureModel(int storeId, CreateFixtureModel fixtureModel)
+    public async Task<HttpStatusCode> CreateFixtureModel(int storeId, CreateFixtureModel fixtureModel)
     {
         JsonContent body = JsonContent.Create(fixtureModel);
 
-        //Return the new fixture.
-        return await SendPostAsync<Select_Fixtures>($"/create-fixture/{storeId}", body);
+        return await SendPostAsync<HttpStatusCode>($"/create-fixture/{storeId}", body);
     }
 
     /// <summary>
@@ -74,10 +75,10 @@ public class FixturesHttpClient : PlotHttpClient
     /// <param name="storeId"></param>
     /// <param name="update"></param>
     /// <returns></returns>
-    public async Task<HttpResponseMessage?> UpdateFixtureModel(int storeId, Select_Fixtures update)
+    public async Task<HttpStatusCode> UpdateFixtureModel(int storeId, Select_Fixtures update)
     {
         JsonContent body = JsonContent.Create(update);
 
-        return await SendPatchAsync<HttpResponseMessage>($"/update-model/{storeId}", body);
+        return await SendPatchAsync($"/update-model/{storeId}", body);
     }
 }

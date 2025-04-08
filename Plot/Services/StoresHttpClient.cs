@@ -12,6 +12,11 @@ public class StoresHttpClient : PlotHttpClient
         return await SendGetAsync<List<Store>>("/get-all");
     }
 
+    public async Task<Store?> GetStore(int storeId)
+    {
+        return await SendGetAsync<Store>($"/get-store/{storeId}");
+    }
+
     public async Task<List<Store>?> GetStoreAccessByUserId(int userId)
     {
         return await SendGetAsync<List<Store>>($"/access/{userId}");
@@ -21,22 +26,22 @@ public class StoresHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(store);
 
-        return await SendPostAsync<Store>($"create-store", body);
+        return await SendPostAsync<Store>($"/create-store", body);
     }
 
 
-    public async Task<Store?> UpdatePublicInfo(int storeId, UpdatePublicInfoStore store)
+    public async Task<HttpStatusCode> UpdatePublicInfo(int storeId, UpdatePublicInfoStore store)
     {
         JsonContent body = JsonContent.Create(store);
 
-        return await SendPatchAsync<Store>($"/public-info/{storeId}", body);
+        return await SendPatchAsync($"/public-info/{storeId}", body);
     }
 
-    public async Task<Store?> UpdateStoreSize(int storeId, UpdateSizeStore store)
+    public async Task<HttpStatusCode> UpdateStoreSize(int storeId, UpdateSizeStore store)
     {
         JsonContent body = JsonContent.Create(store);
 
-        return await SendPatchAsync<Store>($"/size/{storeId}", body);
+        return await SendPatchAsync($"/size/{storeId}", body);
     }
 
     public async Task<HttpStatusCode> DeleteStore(int storeId)

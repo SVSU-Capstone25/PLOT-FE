@@ -4,32 +4,13 @@ The floorset fixture config modal allows right-click editing of a fixture on the
 It allows changing the category, hanging, and notes of a fixture.
 It also allows you to delete a fixture on the grid. -->
 @* Add fixture edit modal to the floorset editor. - Tristan Calay *@
-<Modal id="fixtureConfig" class="modal-dialog modal-lg">
-    <ModalHeader Title="Fixture Configuration" Variant="standard" />
-    <ModalBody>
-        <h4>@fixtureName</h4>
-        <OptionInput ID="categoryOption" Class="optionInput" iconString="fa-solid fa-bars" label="Select Category"
-            optionsText=@categoryInputValues optionsValues=@categoryInputValues />
-
-        <OptionInput ID="hangingOption" Class="optionInput" iconString="fa-solid fa-sign-hanging" label="Select Hanging"
-            optionsText=@hangingInputValues optionsValues=@hangingInputValues />
-        <hr>
-
-        <label>
-            Add Notes
-            <InputText placeholder="Notes text..." id="fixtureNotes" type="text" @bind-value="notesText" />
-        </label>
-    </ModalBody>
-
-    <ModalFooter>
-        <Button Variant="danger" OnClickFunction="deleteCurrentFixture">
-            Delete Fixture
-        </Button>
-        <Button Variant="primary" OnClickFunction="saveChangesToCurrentFixture">
-            Save Changes
-        </Button>
-    </ModalFooter>
-</Modal>
+<div class="dropdown-menu">
+  <a class="dropdown-item" href="#">Action</a>
+  <a class="dropdown-item" href="#">Another action</a>
+  <a class="dropdown-item" href="#">Something else here</a>
+  <div class="dropdown-divider"></div>
+  <a class="dropdown-item" href="#">Separated link</a>
+</div>
 
 @code {
     private String fixtureName = "Default Fixture Title";
@@ -38,20 +19,20 @@ It also allows you to delete a fixture on the grid. -->
 
     private String notesText = "";
 
-    private FixtureInstance? currentFixture;
-    public void selectFixture(FixtureInstance selectedFixture)
+    private Data.Models.Fixtures.FixtureInstance? currentFixture;
+    public void selectFixture(Data.Models.Fixtures.FixtureInstance selectedFixture)
     {
         currentFixture = selectedFixture;
         if (selectedFixture == null)
         {
             return;
         }
-        else
+        @* else
         {
-            fixtureName = selectedFixture.Name;
+            fixtureName = selectedFixture.;
             //TODO: Change hanging, notes and category components here.
             Console.WriteLine("Fixture Selected: " + fixtureName);
-        }
+        } *@
         StateHasChanged();
     }
 
@@ -62,7 +43,7 @@ It also allows you to delete a fixture on the grid. -->
         if (currentFixture != null)
         {
             Console.WriteLine("Delete Current Selected Fixture...");
-            FixtureDeleted.InvokeAsync(currentFixture.editorID);
+            @* FixtureDeleted.InvokeAsync(currentFixture.editorID); *@
             JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
         }
     }

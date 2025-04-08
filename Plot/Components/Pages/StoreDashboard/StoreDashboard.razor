@@ -19,8 +19,6 @@ Author: Andrew Fulton (3/12/2025)
 
 @using System.Drawing;
 @using System.IO;
-@using Plot.Components.PartialComponents.NumericInput
-@using Plot.Components.PartialComponents.Modal
 
 <PageTitle>Store Dashboard</PageTitle>
 
@@ -40,31 +38,33 @@ Author: Andrew Fulton (3/12/2025)
                     @store.CITY , @store.STATE
                 </a>
             </CardTitle>
-            <Dropdown Class="Test Dropdown" Id="@($"{store.NAME}{store.TUID}Dropdown")" LabelText="Store">
+            <Dropdown Class="Dropdown" Id="@($"{store.NAME}{store.TUID}Dropdown")" LabelText="Store">
                 <DropdownLink href="@($"/floorsets/{store.TUID}")" Icon="fa-solid fa-note-sticky">Floorsets
                 </DropdownLink>
 
-                    <DropdownLink @onclick="async () => await OnEditClick(store)" href="#editStoreModal"
-                        Icon="fa-solid fa-pen-to-square" data-bs-toggle="modal">
-                        Edit</DropdownLink>
+                                <DropdownLink @onclick="async () => await OnEditClick(store)" href="#editStoreModal"
+                                    Icon="fa-solid fa-pen-to-square" data-bs-target="@($"#edit-store-{store.TUID}")"
+                                    data-bs-toggle="modal">
+                                    Edit</DropdownLink>
 
-                    <DropdownLink Icon="fa-solid fa-trash-can" data-bs-target="@($"#delete-store-{store.TUID}")"
-                        data-bs-toggle="modal">
-                        Delete
-                    </DropdownLink>
-                </Dropdown>
-            </CardBody>
-        </Card>
+                                <DropdownLink Icon="fa-solid fa-trash-can" data-bs-target="@($"#delete-store-{store.TUID}")"
+                                    data-bs-toggle="modal">
+                                    Delete
+                                </DropdownLink>
+                            </Dropdown>
+                        </CardBody>
+                    </Card>
 
-        @* TODO: Edit Store Modal *@
+                    <EditStoreModal id="@($"update-user-modal-{store.TUID}")" User="store" UpdateStores="UpdateStores" />
+                
 
-        @* Delete store modal *@
-        <Modal id="@($"delete-store-{store.TUID}")" class="standard">
-            <ModalHeader Title="Confirm Deletion" Variant="danger" />
-            <form @onsubmit="async () => await OnDeleteStoreSubmit(store.TUID)">
+                    @* Delete store modal *@
+                    <Modal id="@($"delete-store-{store.TUID}")" class="standard">
+                        <ModalHeader Title="Confirm Deletion" Variant="danger" />
+                        <form @onsubmit="async () => await OnDeleteStoreSubmit(store.TUID)">
             @code {
-                private string? deleteTextInput;
-                private bool isDisabled => deleteTextInput != "DELETE";
+                            private string? deleteTextInput;
+                            private bool isDisabled => deleteTextInput != "DELETE";
             }
             <ModalBody>
                 <h5>Are you SURE you want to delete this Store?</h5>
@@ -81,16 +81,49 @@ Author: Andrew Fulton (3/12/2025)
         </form>
     </Modal>
 
-        }
+                                                                }
 
     <Modal id="create-store" class="standard">
         <ModalHeader Title="Create Store" Variant="standard" />
-        <EditForm Model="CreateStoreModel" OnSubmit="async () => await OnCreateStoreSubmit()">
+        <EditForm Model="CreateStoreModel" OnValidSubmit="async () => await OnCreateStoreSubmit()">
             <ModalBody>
+
                 <label>
-                    Title:
+                    Name:
                     <InputText @bind-Value="CreateStoreModel!.NAME">Name</InputText>
                 </label>
+
+                <label>
+                    Address:
+                    <InputText @bind-Value="CreateStoreModel!.ADDRESS">Address</InputText>
+                </label>
+
+                <label>
+                    City:
+                    <InputText @bind-Value="CreateStoreModel!.CITY">City</InputText>
+                </label>
+
+                <label>
+                    State:
+                    <InputText @bind-Value="CreateStoreModel!.STATE">State</InputText>
+                </label>
+
+                <label>
+                    Zip:
+                    <InputText @bind-Value="CreateStoreModel!.ZIP">Zip</InputText>
+                </label>
+
+                <label>
+                    Width:
+                    <InputNumber @bind-Value="CreateStoreModel!.WIDTH" />
+                </label>
+
+                <label>
+                    Length:
+                    <InputNumber @bind-Value="CreateStoreModel!.LENGTH" />
+                </label>
+
+                <InputFile OnChange="OnImageUpload" />
             </ModalBody>
             <ModalFooter>
                 <Button TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
@@ -102,7 +135,7 @@ Author: Andrew Fulton (3/12/2025)
 
     <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary" Icon="fa-solid fa-plus"
         data-bs-toggle="modal" data-bs-target="#create-store">
-        Add Floorset
+        Add Store
     </Button>
 </div>
 
@@ -110,10 +143,12 @@ Author: Andrew Fulton (3/12/2025)
     private List<Data.Models.Stores.Store> stores = new List<Data.Models.Stores.Store>();
 
     [SupplyParameterFromForm] private Data.Models.Stores.CreateStore? CreateStoreModel { get; set; }
+    [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? EditStoreModel { get; set; }
 
     protected override void OnInitialized()
     {
         CreateStoreModel ??= new();
+        EditStoreModel ??= new();
     }
 
     private async Task UpdateStores()
@@ -133,13 +168,19 @@ Author: Andrew Fulton (3/12/2025)
 
     private async Task OnCreateStoreSubmit()
     {
-        await Task.Run(() => Console.WriteLine("Create"));
+
+        if (CreateStoreModel != null)
+        {
+            await StoresHttpClient.CreateStore(CreateStoreModel);
+            await UpdateStores();
+        }
 
     }
 
     private async Task OnEditClick(Data.Models.Stores.Store store)
     {
         await Task.Run(() => Console.WriteLine("Edit store"));
+        await UpdateStores();
 
     }
 
@@ -147,5 +188,32 @@ Author: Andrew Fulton (3/12/2025)
     {
         await StoresHttpClient.DeleteStore(storeId);
         await UpdateStores();
+    }
+
+    private async Task OnEditStoreSubmit(int storeId)
+    {
+        await Task.Run(() => Console.WriteLine("Update store: " + storeId));
+
+        if (EditStoreModel != null)
+        {
+            await StoresHttpClient.UpdatePublicInfo(storeId, EditStoreModel);
+            await UpdateStores();
+        }
+    }
+
+    private async Task OnImageUpload(InputFileChangeEventArgs e)
+    {
+        MemoryStream ms = new MemoryStream();
+        await e.File.OpenReadStream().CopyToAsync(ms);
+        var bytes = ms.ToArray();
+
+        if (CreateStoreModel != null)
+        {
+            CreateStoreModel!.BLUEPRINT_IMAGE = bytes;
+        }
+        else if (EditStoreModel != null)
+        {
+            EditStoreModel!.BLUEPRINT_IMAGE = bytes;
+        }
     }
 }

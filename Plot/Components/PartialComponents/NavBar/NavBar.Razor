@@ -9,46 +9,40 @@ The purpose of PLOT is to allow users to easily create, manage,
 and allocate floorsets for Platos Closet. 
 
 Author: Luke Wollenweber (3/13/2025)
-Updated: Danielle Smith (3/29/2025)-->
+Updated: Danielle Smith (3/29/2025)
+Updated: Andrew Miller (4/7/2025)
+
+-->
 @using Plot.Services
 
-@inject NavigationManager Navigation
+@implements IDisposable
+@inject NavigationManager NavigationManager
 @inject ICookie cookie
 
-@* 
-TODO: Change to use ul with li
-    Make sure they're styled in a row and remove the list styling from
-
-    Delete everything in the CSS, only thing that should be kept in there is setting the navbar background to the brand teal color.
-
-    Everything should use Blazor Utility classes 
-    Delete extra classes
-*@
-<nav class="navbar platos-blue">
+<nav class="navbar platos-blue w-100">
     <ul class="navbar-nav flex-row w-100">
     <li class="nav-item px-3">
-        <a class="nav-link text-white" href="/store-dashboard">
+        <a class="nav-link link-light" href="/store-dashboard">
             Stores <i class="fa-solid fa-bag-shopping"></i>
         </a>
     </li>
 
     <li class="nav-item px-3">
-        <a class="nav-link text-white" href="/user-dashboard">
+        <a class="nav-link link-light" href="/user-dashboard">
             Users <i class="fa-solid fa-shirt"></i>
         </a>
     </li>
     @* Danielle Smith - 3/29/2025
     Make it so help modal only shows on the floorset editor *@
-    @if (Navigation.Uri.Contains("/floorset-editor"))
-    {
-        <li class="nav-item px-3">
-            <a class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#helpModal">
+
+        <li class="nav-item px-3" hidden="@(!ShowHelpLink)">
+            <a class="nav-link link-light" data-bs-toggle="modal" data-bs-target="#helpModal" href="#">
                 Help <i class="fa-solid fa-question"></i>
             </a>
         </li>
-    }
+
     <li class="nav-item px-3 ms-auto">
-        <a class="nav-link text-white" @onclick="async () => await OnLogoutClick()">
+        <a class="nav-link link-light" @onclick="async () => await OnLogoutClick()" href="#">
             Logout
         </a>
     </li>
@@ -62,8 +56,35 @@ TODO: Change to use ul with li
     [Parameter]
     public string? Class { get; set; }
 
+    private bool ShowHelpLink;
+
     private async Task OnLogoutClick() {
         await cookie.SetValue("Auth", string.Empty);
-        Navigation.NavigateTo("/login", forceLoad: true);
+        NavigationManager.NavigateTo("/login", forceLoad: true);
     }
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+        UpdateHelpVisibility(NavigationManager.Uri);
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdateHelpVisibility(e.Location);
+        StateHasChanged();
+    }
+
+    private void UpdateHelpVisibility(string uri)
+    {
+        ShowHelpLink = uri.Contains("/floorset-editor", StringComparison.OrdinalIgnoreCase);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+
+
 }

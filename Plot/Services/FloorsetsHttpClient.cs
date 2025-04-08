@@ -23,11 +23,11 @@ public class FloorsetsHttpClient : PlotHttpClient
         return await SendPostAsync<int>("/create-floorset", body);
     }
 
-    public async Task<int?> UpdatePublicInfo(int floorsetId, UpdatePublicInfoFloorset floorset)
+    public async Task<HttpStatusCode> UpdatePublicInfo(int floorsetId, UpdatePublicInfoFloorset floorset)
     {
         JsonContent body = JsonContent.Create(floorset);
 
-        return await SendPatchAsync<int>($"/public-info/{floorsetId}", body);
+        return await SendPatchAsync($"/public-info/{floorsetId}", body);
     }
 
     public async Task<HttpStatusCode> DeleteFloorset(int floorsetId)

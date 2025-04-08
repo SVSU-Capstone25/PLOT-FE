@@ -69,8 +69,6 @@ public class PlotHttpClient : HttpClient
         }
 
 
-        
-
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
             response.Content.Headers.TryGetValues("Content-Type", out var headers);
@@ -88,57 +86,11 @@ public class PlotHttpClient : HttpClient
         return default;
     }
 
-
-    // public async Task<T?> SendPostAsync<T>(string endpoint, JsonContent body)
-    // {
-    //     var response = await SendAsync(endpoint, HttpMethod.Post, body);
-
-    //     Console.WriteLine(response);
-
-    //     if (response.IsSuccessStatusCode)
-    //     {
-    //         response.Content.Headers.TryGetValues("Content-Type", out var headers);
-    //         var contentType = headers?.FirstOrDefault();
-
-    //         switch (contentType)
-    //         {
-    //             case "application/json; charset=utf-8":
-    //                 return await response.Content.ReadFromJsonAsync<T>();
-    //             default:
-    //                 return default;
-    //         }
-    //     }
-
-
-        
-
-    //     if (response.StatusCode == HttpStatusCode.BadRequest)
-    //     {
-    //         response.Content.Headers.TryGetValues("Content-Type", out var headers);
-    //         var contentType = headers?.FirstOrDefault();
-
-    //         switch (contentType)
-    //         {
-    //             case "application/json; charset=utf-8":
-    //                 return await response.Content.ReadFromJsonAsync<T>();
-    //             default:
-    //                 return default;
-    //         }
-    //     }
-
-    //     return default;
-    // }
-
-    public async Task<T?> SendPatchAsync<T>(string endpoint, JsonContent body)
+    public async Task<HttpStatusCode> SendPatchAsync(string endpoint, JsonContent body)
     {
         var response = await SendAsync(endpoint, HttpMethod.Patch, body);
 
-        if (response.IsSuccessStatusCode)
-        {
-            return await response.Content.ReadFromJsonAsync<T>();
-        }
-
-        return default;
+        return response.StatusCode;
     }
 
     public async Task<HttpStatusCode> SendDeleteAsync(string endpoint)

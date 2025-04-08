@@ -1,0 +1,83 @@
+@inject StoresHttpClient StoresHttpClient
+
+<Modal @attributes="Attributes">
+    <ModalHeader Title="Update Store Information" />
+    <EditForm Model="EditStoreModel" OnValidSubmit="async () => await OnEditStoreSubmit(StoreId)">
+
+        <ModalBody>
+            <label>
+                Name:
+                <InputText @bind-Value="EditStoreModel!.NAME">Name</InputText>
+            </label>
+
+            <label>
+                Address:
+                <InputText @bind-Value="EditStoreModel!.ADDRESS">Address</InputText>
+            </label>
+
+            <label>
+                City:
+                <InputText @bind-Value="EditStoreModel!.CITY">City</InputText>
+            </label>
+
+            <label>
+                State:
+                <InputText @bind-Value="EditStoreModel!.STATE">State</InputText>
+            </label>
+
+            <label>
+                Zip:
+                <InputText @bind-Value="EditStoreModel!.ZIP">Zip</InputText>
+            </label>
+
+            <InputFile OnChange="OnImageUpload" />
+        </ModalBody>
+
+        <ModalFooter>
+            <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
+                Update Store
+            </Button>
+        </ModalFooter>
+    </EditForm>
+</Modal>
+
+@code {
+    [Parameter] public required EventCallback UpdateStores { get; set; }
+    [Parameter] public int StoreId { get; set; }
+
+    [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? EditStoreModel { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    protected override void OnInitialized()
+    {
+        EditStoreModel ??= new();
+    }
+
+    private async Task OnEditStoreSubmit(int StoreId)
+    {
+        await Task.Run(() => Console.WriteLine("Update store: " + StoreId));
+
+        if (EditStoreModel != null)
+        {
+            await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
+            await UpdateStores.InvokeAsync();
+        }
+    }
+
+    private async Task OnImageUpload(InputFileChangeEventArgs e)
+    {
+        MemoryStream ms = new MemoryStream();
+        await e.File.OpenReadStream().CopyToAsync(ms);
+        var bytes = ms.ToArray();
+
+        if (EditStoreModel != null)
+        {
+            EditStoreModel!.BLUEPRINT_IMAGE = bytes;
+        }
+        else if (EditStoreModel != null)
+        {
+            EditStoreModel!.BLUEPRINT_IMAGE = bytes;
+        }
+    }
+}

@@ -498,7 +498,7 @@ function searchInputChange() {
                 }
             })
         })
-    }, 10);
+    }, 500);
 }
 
 //method to set the background image of the edit modal imageinput to the fixture's image

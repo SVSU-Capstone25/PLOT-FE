@@ -1,62 +1,57 @@
 @inject IJSRuntime JS
+@inject FixturesHttpClient FixturesHttpClient
 
 @* Add Fixture Modal *@
-@{
-    <Modal class="modal-xl fixture-modal" id="addFixture">
-        <ModalHeader Title="Add Fixture" />
-        <EditForm Model="AddFixtureModel" OnValidSubmit="OnAddFixtureSubmit">
-            <ModalBody>
-                <label>
-                    Name
-                    <InputText @bind-value="AddFixtureModel!.NAME">Three Way Rack</InputText>
-                </label>
-                <div class="row">
-                    <div class="col-md-5">
-                        <label>
-                            Length
-                            <InputNumber @bind-Value="AddFixtureModel!.HEIGHT" class="dimension" step=1 />
-                        </label>
-                    </div>
-                    <div class="col-md-auto my-auto">
-                        <i class="fa-solid fa-xmark mx-auto mt-4 ms-3"></i>
-                    </div>
-                    <div class="col-md-5">
-                        <label>
-                            Width
-                            <InputNumber @bind-Value="AddFixtureModel!.WIDTH" class="dimension" step=1 />
-                        </label>
-                    </div>
+
+<Modal class="modal-xl fixture-modal" id="addFixture">
+    <ModalHeader Title="Add Fixture" />
+    <EditForm Model="AddFixtureModel" OnValidSubmit="OnAddFixtureSubmit">
+        <ModalBody>
+            <label>
+                Name
+                <InputText @bind-value="AddFixtureModel!.NAME">Three Way Rack</InputText>
+            </label>
+            <div class="row">
+                <div class="col-md-5">
+                    <label>
+                        Length
+                        <InputNumber @bind-Value="AddFixtureModel!.LENGTH" />
+                    </label>
                 </div>
+                <div class="col-md-auto my-auto">
+                    <i class="fa-solid fa-xmark mx-auto mt-4 ms-3"></i>
+                </div>
+                <div class="col-md-5">
+                    <label>
+                        Width
+                        <InputNumber @bind-Value="AddFixtureModel!.WIDTH" />
+                    </label>
+                </div>
+            </div>
 
-                <label>
-                    Linear Feet Capacity
-                    <InputNumber @bind-Value="AddFixtureModel!.LF_CAP" />
-                </label>
+            <label>
+                Linear Feet Capacity
+                <InputNumber @bind-Value="AddFixtureModel!.LF_CAP" />
+            </label>
 
-                <label>
-                    Total Linear Feet
-                    @AddFixtureModel!.WIDTH * @AddFixtureModel!.HEIGHT
-                    @* <InputNumber @bind-Value="TotalLinearFeet" disabled /> *@
-                </label>
+            <label>
+                Total Linear Feet
+                @AddFixtureModel!.WIDTH * @AddFixtureModel!.LENGTH
+            </label>
 
-                @* <div class="img-input">
-                    <ImageInput Height="400px" Width="400px" Label="Fixture Image" Id="add-fixtureimg" />
-                </div> *@
-
-                <InputFile />
-            </ModalBody>
-            <ModalFooter>
-                <Button class="btn add-btn ms-auto" Variant="primary" type="submit">Add</Button>
-            </ModalFooter>
-        </EditForm>
-    </Modal>
-}
+            <InputFile OnChange="OnImageUpload" />
+        </ModalBody>
+        <ModalFooter>
+            <Button class="btn add-btn ms-auto" Variant="primary" type="submit">Add</Button>
+        </ModalFooter>
+    </EditForm>
+</Modal>
 
 @code {
 
-    @* [Parameter] public EventCallback UpdateFixtures { get; set; } *@
+    [Parameter] public EventCallback UpdateFixtureModels { get; set; }
 
-    // private int TotalLinearFeet = 0;
+    [Parameter] public required int StoreId { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? AddFixtureModel { get; set; }
 
@@ -69,11 +64,24 @@
     {
         await Task.Run(() => Console.WriteLine("Add Fixture"));
 
-        // TODO: Change User.TUID to store ID
-        @* if (AddFixtureModel != null)
+        if (AddFixtureModel != null)
         {
-            var response = await FixturesHttpClient.CreateFixtureModel(User.TUID, AddFixtureModel);
-            await UpdateFixtures.InvokeAsync();
-        } *@
+            AddFixtureModel.STORE_TUID = StoreId;
+            Console.WriteLine(AddFixtureModel);
+            var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
+            Console.WriteLine(response);
+
+            await UpdateFixtureModels.InvokeAsync();
+        }
+    }
+
+
+    private async Task OnImageUpload(InputFileChangeEventArgs e)
+    {
+        MemoryStream ms = new MemoryStream();
+        await e.File.OpenReadStream().CopyToAsync(ms);
+        var bytes = ms.ToArray();
+
+        AddFixtureModel!.ICON = bytes;
     }
 }

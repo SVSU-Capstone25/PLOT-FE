@@ -40,12 +40,12 @@ Author: Andrew Fulton (3/13/2025)  *@
     @foreach (var floorset in floorsets)
     {
     <Card>
-        <a href="@($"/floorset-editor/{floorset.TUID}")">
+        <a href="@($"/floorset-editor/{storeId}/{floorset.TUID}")">
             <CardImage Image="https://placecats.com/300/200" />
         </a>
         <CardBody>
             <CardTitle class="over-hidden" style="width: 100%;">
-                <a href="@($"/floorset-editor/{floorset.TUID}")">
+                <a href="@($"/floorset-editor/{storeId}/{floorset.TUID}")">
                     <span class="d-inline-block text-truncate" style="max-width: 100%;">@floorset.NAME</span>
                 </a>
             </CardTitle>

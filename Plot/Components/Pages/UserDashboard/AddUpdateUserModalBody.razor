@@ -2,24 +2,24 @@
 
     @* <h3>@userModalDetails.Header</h3>
                 <p>@userModalDetails.Description</p> *@
-    <label>
+    <label class="w-100 d-flex">
         First Name:
-        <InputText type="Text" @bind-value="AddUpdateUserModel!.FIRST_NAME" />
+        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.FIRST_NAME" />
         <div class="text-danger">
             <ValidationMessage For=@(() => AddUpdateUserModel.FIRST_NAME) />
         </div>
     </label>
-    <label>
+    <label class="w-100 d-flex">
         Last Name:
-        <InputText type="Text" @bind-value="AddUpdateUserModel!.LAST_NAME" />
+        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.LAST_NAME" />
         <div class="text-danger">
             <ValidationMessage For=@(() => AddUpdateUserModel.LAST_NAME) />
         </div>
     </label>
 
-    <label>
+    <label class="w-100 d-flex">
         Email:
-        <InputText type="Text" @bind-value="AddUpdateUserModel!.EMAIL" />
+        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.EMAIL" />
         <div class="text-danger">
             <ValidationMessage For=@(() => AddUpdateUserModel.EMAIL) />
         </div>

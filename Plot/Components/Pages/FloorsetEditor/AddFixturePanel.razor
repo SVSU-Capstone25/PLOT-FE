@@ -1,4 +1,5 @@
 @inject IJSRuntime JS
+@inject FixturesHttpClient FixturesHttpClient
 
 <div class="inner-container add-fixture-panel">
     <h3 class="header pt-3" @onclick="ToggleAddFixture">
@@ -27,20 +28,24 @@
     @* Fixture Area *@
     <div class="fixture-area p-3 mt-3 d-flex gap-4 mb-2">
         @* Create fixture tile for each fixture in dictionary *@
-        @foreach (Fixture currFixture in Fixture.fixtures.Values)
+        @foreach (Data.Models.Fixtures.FixtureModel currFixture in FixtureModels)
         {
-            <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-value="@currFixture.Name" draggable="true"
-                data-width="@currFixture.Width" data-height="@currFixture.Length" ondragstart="createDraggable(event)">
-                <img class="fixture-img disable-select grab-cursor" src="@currFixture.FixtureImg" alt="" draggable="false">
-                <p class="fixture-text m-0 disable-select text-truncate">@currFixture.Name</p>
-                <Dropdown class="fixture-options ms-auto disable-select" id="@(" fixture-options" + currFixture.Name)"
+            var ImageSrc = currFixture.ICON != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(currFixture.ICON)}" :
+            "https://placecats.com/200/200";
+
+            <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-value="@currFixture.NAME" draggable="true"
+                data-width="@currFixture.WIDTH" data-height="@currFixture.LENGTH" ondragstart="createDraggable(event)"
+                @ondragenter="() => FixtureDragged(currFixture)">
+                <img class="fixture-img disable-select grab-cursor" src="@ImageSrc" alt="" draggable="false" />
+                <p class="fixture-text m-0 disable-select text-truncate">@currFixture.NAME</p>
+                <Dropdown class="fixture-options ms-auto disable-select" id="@($"fixture-options{currFixture.NAME}")"
                     LabelText="Fixture">
-                    <DropdownLink href=@("#editFixture-" + currFixture.Name.Replace(" ", ""))
-                        @onclick="() => OnEditClick(currFixture)" Icon="fa-regular fa-pen-to-square">
+                    <DropdownLink href="@($"#editFixture-{currFixture.NAME}")" @onclick="() => OnEditClick(currFixture)"
+                        Icon="fa-regular fa-pen-to-square">
                         Edit
                     </DropdownLink>
-                    <DropdownLink href=@("#deleteFixture-" + currFixture.Name.Replace(" ", ""))
-                        @onclick="() => OnDeleteClick(currFixture)" Icon="fa-regular fa-trash-can">
+                    <DropdownLink href="@($"#deleteFixture-{currFixture.NAME}")" @onclick="() => OnDeleteClick(currFixture)"
+                        Icon="fa-regular fa-trash-can">
                         Delete
                     </DropdownLink>
                 </Dropdown>
@@ -50,10 +55,12 @@
 </div>
 
 @code {
-    private string? FixtureSearch;
+    private string FixtureSearch = "";
 
-    [SupplyParameterFromForm]
-    private Data.Models.Fixtures.CreateFixtureModel? CreateFixtureModel { get; set; }
+    [Parameter] public required int StoreId { get; set; }
+    [Parameter] public required List<Data.Models.Fixtures.FixtureModel> FixtureModels { get; set; }
+
+    [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? CreateFixtureModel { get; set; }
 
     /* Danielle Smith - 3/24/2025
     added back add fixture stuff & also made it so expansions work properly with it */
@@ -61,53 +68,52 @@
 
     [Parameter] public EventCallback OnFixtureClicked { get; set; }
 
-    /*
+    [Parameter] public EventCallback UpdateFixtureModels { get; set; }
+
+    [Parameter] public EventCallback<Data.Models.Fixtures.FixtureModel> FixtureDraggedEvent { get; set; }
+
+    private void FixtureDragged(Data.Models.Fixtures.FixtureModel currFixture)
+    {
+        FixtureDraggedEvent.InvokeAsync(currFixture);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateFixtureModels.InvokeAsync();
+    }
+
+
+    @*
     The FilterBtn function calls a JS function to flip the order of the fixture tiles.
-    */
+    *@
     private async Task FilterBtn()
     {
         await JS.InvokeVoidAsync("flipOrder");
     }
 
-    /*
+
+    @*
     The OnFixtureAddClick function calls a JS function to toggle the add fixture modal.
-    */
+    *@
     private async Task OnFixtureAddClick()
     {
         await JS.InvokeVoidAsync("toggleModal", "addFixture", true);
     }
 
-    /*
+    @*
     The OnEditClick function is called when the user clicks the edit button on a fixture.
-    */
-    private async Task OnEditClick(Fixture currFixture)
+    *@
+    private async Task OnEditClick(Data.Models.Fixtures.FixtureModel currFixture)
     {
 
-        await Task.Run(() => Console.WriteLine(currFixture.Name));
-        @* Fixture.selectedFixture = currFixture;
-
-        Fixture.editedFixtureInfo = new Fixture(
-        Fixture.selectedFixture.Name,
-        Fixture.selectedFixture.Length,
-        Fixture.selectedFixture.Width,
-        Fixture.selectedFixture.HangerStack,
-        Fixture.selectedFixture.FixtureImg
-        );
-
-        await OnFixtureClicked.InvokeAsync();
-        await JS.InvokeVoidAsync("toggleModal", "editFixture", true);
-        await JS.InvokeVoidAsync("SetBackgroundImage", "EditImageInput", Fixture.selectedFixture.FixtureImg); *@
-
-
+        await Task.Run(() => Console.WriteLine(currFixture.NAME));
     }
 
-    /*
+    @*
     The OnDeleteClick function is called when the user clicks the delete button on a fixture.
-    */
-    private async Task OnDeleteClick(Fixture currFixture)
+    *@
+    private async Task OnDeleteClick(Data.Models.Fixtures.FixtureModel currFixture)
     {
-        @* Fixture.deletingFixture = currFixture; *@
-        await OnFixtureClicked.InvokeAsync();
+        @* await OnFixtureClicked.InvokeAsync(); *@
         await JS.InvokeVoidAsync("toggleModal", "deleteFixture", true);
     }
 

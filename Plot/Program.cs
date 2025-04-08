@@ -42,6 +42,7 @@ builder.Services.AddScoped<FixturesHttpClient>();
 builder.Services.AddScoped<FloorsetsHttpClient>();
 builder.Services.AddScoped<StoresHttpClient>();
 builder.Services.AddScoped<UsersHttpClient>();
+builder.Services.AddScoped<SalesHttpClient>();
 builder.Services.AddScoped<ICookie, Cookie>();
 
 
@@ -86,7 +87,7 @@ builder.Services.AddAuthentication(options =>
 
             // Return 401 or redirect to frontend login page
             context.Response.StatusCode = 401;
-            context.Response.Redirect("/login"); // optional — won't work for APIs but works in some SPA cases
+            context.Response.Redirect("/login");
             return Task.CompletedTask;
         }
     };
@@ -94,9 +95,9 @@ builder.Services.AddAuthentication(options =>
 
 // Add authorization policies
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("Employee", policy => policy.RequireClaim("Role", "3", "2", "1"))
-    .AddPolicy("Manager", policy => policy.RequireClaim("Role", "1", "2"))
-    .AddPolicy("Owner", policy => policy.RequireClaim("Role", "1"));
+    .AddPolicy("Employee", policy => policy.RequireClaim("Role", "Owner", "Manager", "Employee"))
+    .AddPolicy("Manager", policy => policy.RequireClaim("Role", "Owner", "Manager"))
+    .AddPolicy("Owner", policy => policy.RequireClaim("Role", "Owner"));
 
 builder.Services.AddCascadingAuthenticationState();
 

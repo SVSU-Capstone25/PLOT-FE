@@ -4,15 +4,15 @@
 
 <EditForm Model="UpdateSizeStoreModel" class="walls-container" OnValidSubmit="OnUpdateSizeStoreSubmit">
 
-    <h3 class="header pt-3">
+    <h3 class="header pt-3" onclick="ToggleBuildingWalls">
         <i class="fas fa-edit"></i>
         Edit Building Walls
     </h3>
     <hr />
     <label>
         Dimensions
-        <InputNumber @bind-value="UpdateSizeStoreModel!.LENGTH" />
-        <InputNumber @bind-value="UpdateSizeStoreModel!.WIDTH" />
+        <InputNumber @bind-value="UpdateSizeStoreModel!.LENGTH" min="1"/>
+        <InputNumber @bind-value="UpdateSizeStoreModel!.WIDTH" min="1"/>
     </label>
     <label>Enter the Dimensions (length and width) in feet</label>
 
@@ -35,7 +35,10 @@
 
 @code {
 
-    [Parameter] public required string StoreId { get; set; }
+    [Parameter] public required int StoreId { get; set; }
+    [Parameter] public EventCallback ToggleBuildingWalls { get; set; }
+
+    [Parameter] public EventCallback UpdateStore { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Stores.UpdateSizeStore? UpdateSizeStoreModel { get; set; }
 
@@ -43,11 +46,23 @@
     {
         if (UpdateSizeStoreModel != null)
         {
+
             await Task.Run(() => Console.WriteLine(UpdateSizeStoreModel));
 
-            var response = await StoresHttpClient.UpdateStoreSize(Int32.Parse(StoreId), UpdateSizeStoreModel);
+            var response = await StoresHttpClient.UpdateStoreSize(StoreId, UpdateSizeStoreModel);
 
             Console.WriteLine(response);
+
+            if (response == System.Net.HttpStatusCode.OK)
+            {
+                await UpdateStore.InvokeAsync();
+            }
         }
     }
+
+    protected override void OnInitialized()
+    {
+        UpdateSizeStoreModel ??= new();
+    }
+
 }
