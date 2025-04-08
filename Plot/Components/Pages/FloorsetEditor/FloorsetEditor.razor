@@ -30,78 +30,75 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/copyFloorsetCard.js"></script>
-<FloorsetGrid />
-
-
-<FixtureConfigModal @ref=configModal FixtureDeleted="deleteFixtureByID" />
+<FloorsetCanvas />
 
 @* Sidebar *@
-<SlideOut Id="FloorsetSlideOut" Class="d-flex flex-column p-2">
+<SlideOut>
     @if (allocationsOpen)
     {
-                            <AllocationsSidebar @ref="allocationsSidebar" />
+        <AllocationsSidebar @ref="allocationsSidebar" />
 
-                            <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations" EraseClicked="EraseCategoryClicked" />
+        <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations" EraseClicked="EraseCategoryClicked" />
     }
     else
     {
-                            @if (addFixtureExpanded || buildingWallsExpanded)
-                            {
-                                                    <div class="expanded flex-grow-1">
-                                                        @if (addFixtureExpanded)
-                                                        {
-                                                                                <AddFixturePanel StoreId="StoreId" OnFixtureClicked="TriggerStateChange" ToggleAddFixture="ToggleAddFixture"
-                                                                                    FixtureDraggedEvent="OnFixtureDragged" FixtureModels="FixtureModels" />
-                                                        }
-                                                        @if (buildingWallsExpanded)
-                                                        {
-                                                                                <BuildingWallsPanel StoreId="StoreId" UpdateStore="UpdateStore" ToggleBuildingWalls="ToggleBuildingWalls" />
-                                                        }
-                                                    </div>
-                            }
+        @if (addFixtureExpanded || buildingWallsExpanded)
+        {
+            @if (addFixtureExpanded)
+            {
+                <AddFixturePanel StoreId="StoreId" OnFixtureClicked="TriggerStateChange" ToggleAddFixture="ToggleAddFixture"
+                    FixtureDraggedEvent="OnFixtureDragged" FixtureModels="FixtureModels" />
+            }
+            @if (buildingWallsExpanded)
+            {
+                <BuildingWallsPanel StoreId="StoreId" Store="Store" UpdateStore="UpdateStore"
+                    ToggleBuildingWalls="ToggleBuildingWalls" />
+            }
 
-                            <div class="vertical-sidebar-buttons">
-                                @if (!addFixtureExpanded)
-                                {
-                                                        <Button Class="Button button-with-spacing" Id="buttonAddFixture" Variant="primary"
-                                                            OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
-                                                            Add Fixture
-                                                        </Button>
-                                }
+        }
 
-                                @if (!buildingWallsExpanded)
-                                {
-                                                        <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
-                                                            OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
-                                                            Edit Building Walls
-                                                        </Button>
-                                }
+        <div class="d-flex flex-column gap-2">
+            @if (!addFixtureExpanded)
+            {
+                <Button Class="Button button-with-spacing" Id="buttonAddFixture" Variant="primary"
+                    OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+                    Add Fixture
+                </Button>
+            }
 
-                                <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="ToggleAllocations"
-                                    Icon="fa-solid fa-eye" IsDisabled=false TextAlignment="center">
-                                    View Allocations
-                                </Button>
+            @if (!buildingWallsExpanded)
+            {
+                <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
+                    OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+                    Edit Building Walls
+                </Button>
+            }
 
-                                <Button Class="Button" Id="buttonImportFile" Variant="primary" @onclick="OpenImportModal"
-                                    Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
-                                    Import Excel File
-                                </Button>
+            <Button Class="Button" Id="buttonViewAllocations" Variant="primary" OnClickFunction="ToggleAllocations"
+                Icon="fa-solid fa-eye" IsDisabled=false TextAlignment="center">
+                View Allocations
+            </Button>
 
-                                <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
-                                    @onclick="OpenPrint">
-                                    Print Layout
-                                </Button>
+            <Button Class="Button" Id="buttonImportFile" Variant="primary" data-bs-target="importExcelModal"
+                data-bs-toggle="modal" Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
+                Import Excel File
+            </Button>
 
-                                <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
-                                    Save
-                                </Button>
+            <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
+                data-bs-target="printModal" data-bs-toggle="modal">
+                Print Layout
+            </Button>
 
-                                <FixtureConfigModal />
-                            </div>
+            <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
+                Save
+            </Button>
+
+            <FixtureConfigModal />
+        </div>
     }
 </SlideOut>
 
-@* <ImportExcelModal FloorsetId="floorsetId" /> *@
+<ImportExcelModal FloorsetId="floorsetId" />
 
 <PrintModal />
 
@@ -111,24 +108,9 @@
 
 <HelpModal />
 
-<script src="js/floorsetEditor.js"></script>
-
 @code {
     [Parameter] public int StoreId { get; set; }
     [Parameter] public int FloorsetId { get; set; }
-
-    private List<Data.Models.Fixtures.FixtureInstance> fixtureInstances = new List<Data.Models.Fixtures.FixtureInstance>();
-
-    private async Task UpdateFixtureInstances()
-    {
-        var response = await FixturesHttpClient.GetFloorsetFixtureInformation(FloorsetId);
-
-        if (response != null)
-        {
-            fixtureInstances = response;
-        }
-
-    }
 
     private List<Data.Models.Fixtures.FixtureModel> FixtureModels = new List<Data.Models.Fixtures.FixtureModel>();
 
@@ -143,7 +125,7 @@
 
     }
 
-    private Data.Models.Stores.Store? store;
+    private Data.Models.Stores.Store? Store;
 
     private async Task UpdateStore()
     {
@@ -151,13 +133,11 @@
 
         if (response != null)
         {
-            store = response;
-        }
+            Store = response;
 
-        if (store != null)
-        {
-            Console.WriteLine($"Update grid dimensions {store.LENGTH} {store.WIDTH}");
-            await JS.InvokeVoidAsync("UpdateGridDimensions", store.LENGTH, store.WIDTH);
+            Console.WriteLine(response.LENGTH);
+
+            await JS.InvokeVoidAsync("window.updateStoreSize", response.LENGTH, response.WIDTH);
         }
 
     }
@@ -169,31 +149,37 @@
 
         if (response != null)
         {
-            store = response;
+            Store = response;
         }
 
-        await UpdateFixtureInstances();
         await UpdateFixtureModels();
+
+        @* addFixtureInstanceToGrid *@
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        Console.WriteLine("render");
+        await UpdateStore();
         if (firstRender)
         {
-            dotNet = DotNetObjectReference.Create(this);
-            await JS.InvokeVoidAsync("eval", "floorsetGrid.init()");
-            await JS.InvokeVoidAsync("floorsetDashboardSetDotNet", dotNet);
+
+            var response = await FixturesHttpClient.GetFloorsetFixtureInformation(FloorsetId);
+
+            if (response != null)
+            {
+                response.ForEach(async (fixtureInstance) =>
+                {
+                    Console.WriteLine(fixtureInstance.EDITOR_ID);
+                    await JS.InvokeVoidAsync("window.addFixture", fixtureInstance.EDITOR_ID, fixtureInstance.X_POS,
+    fixtureInstance.Y_POS, 1, 1);
+                });
+            }
         }
     }
 
-    /* Tristan Calay 4/4/25
-    Dictionary to cache fixture data from DB by TUID
-    Int to track the current selected fixture
-    config modal reference to call functions*/
-    private Dictionary<int, Data.Models.Fixtures.FixtureInstance> fixturesDict = new Dictionary<int,
-    Data.Models.Fixtures.FixtureInstance>();
-    private int? selectedFixtureID;
-    private FixtureConfigModal? configModal;
+    @* private int? selectedFixtureID; *@
+    @* private FixtureConfigModal? configModal; *@
 
     @* Tristan Calay 4/7/25
     Hold a reference to the fixture model that gets dragged onto the grid, so that when the JS 
@@ -236,7 +222,7 @@
         {
             category.currentValue = 0;
         }
-        foreach (Data.Models.Fixtures.FixtureInstance fixture in fixturesDict.Values)
+        @* foreach (Data.Models.Fixtures.FixtureInstance fixture in fixturesDict.Values)
         {
             //Find the progress bar representing the category, and add the current hanging capacity to it.
             foreach (Category category in categories)
@@ -255,30 +241,11 @@
 
 
             }
-        }
+        } *@
 
         allocationsSidebar.notifyCategoryUpdates();
     }
 
-
-
-    DotNetObjectReference<FloorsetEditor>? dotNet; // Reference to .NET functions in JS
-
-    /*
-    The OnAddFixture function calls a JS function to show the AddFixture modal.
-    */
-    public async Task OnAddFixture()
-    {
-        await JS.InvokeVoidAsync("toggleModal", "addFixture", true);
-    }
-
-    /*
-    The SetSearchEvent function calls a JS function to create a search input event listener.
-    */
-    public async Task SetSearchEvent()
-    {
-        await JS.InvokeVoidAsync("searchInputChange");
-    }
 
     /*
     The UpdateImage function updates the image data in a fixture.
@@ -304,12 +271,11 @@
 
     /* Danielle Smith - 3/24/2025
     added back add fixture stuff & also made it so expansions work properly with it */
-    private async Task ToggleAddFixture()
+    private void ToggleAddFixture()
     {
         addFixtureExpanded = !addFixtureExpanded;
         if (addFixtureExpanded == true)
         {
-            await SetSearchEvent();
             buildingWallsExpanded = false;
         }
     }
@@ -353,7 +319,7 @@
     /* Tristan Calay 4/6/25
     Add a new fixture when a fixture is dragged into the grid. */
     [JSInvokable]
-    public int dictAddNewFixture(String fixtureName)
+    public async Task<int> dictAddNewFixture(String fixtureName)
     {
         Console.WriteLine("DotNet adding new fixture - Fixture Name: " + fixtureName);
         @* int newID = fixturesCount + 1;
@@ -376,9 +342,10 @@
         *@
         if (currentDraggedFixture == null)
         {
+            Console.WriteLine("currentDraggedFixture is null! Somewhing went wrong.");
             return -1;
         }
-        
+
         int newEditorID = fixturesCount + 1;
         Data.Models.Fixtures.FixtureInstance newFixture = new Data.Models.Fixtures.FixtureInstance();
         newFixture.EDITOR_ID = newEditorID;
@@ -388,83 +355,15 @@
         {
             newFixture.TOT_LF = (int)currentDraggedFixture.LF_CAP;
         }
-        fixturesDict.Add(newEditorID, newFixture);
+        @* fixturesDict.Add(newEditorID, newFixture); *@
         fixturesCount += 1;
+        //AddFixtureModel.STORE_TUID = StoreId;
+        Data.Models.Fixtures.Fixtures_State state = new Data.Models.Fixtures.Fixtures_State();
+        @* state.CurrentFixtures = fixturesDict.Values; *@
+        var response = await FixturesHttpClient.UpdateFixtureInformation(FloorsetId, state);
+        Console.WriteLine(response);
         Console.WriteLine("Created new fixture! Returning ID " + newEditorID);
         return newEditorID;
-    }
-
-    @* Tristan Calay 4/5/25
-Update the position of a floorset fixture by id, and new position.
-Called in the JS on move to update the data here.*@
-    [JSInvokable]
-    public void moveFixtureByID(int fixtureID, int newX, int newY)
-    {
-        if (fixturesDict.ContainsKey(fixtureID))
-        {
-            fixturesDict[fixtureID].X_POS = newX;
-            fixturesDict[fixtureID].Y_POS = newY;
-        }
-    }
-
-    @* Tristan Calay 4/7/25
-    Function to update the selected category of a fixture.
-    Passes the ID of a fixture and optionally a category.
-    If no category is defined, this is to be an onclick from the floorsetGridCanvas JS, to paint
-    the currently selected category in AllocationsSidebar onto a fixture ID on the grid *@
-    [JSInvokable]
-    public void paintFixtureByID(int fixtureID, Category? category = null)
-    {
-        Console.WriteLine("Fixture Paint Called... " + fixtureID);
-        if (fixturesDict.ContainsKey(fixtureID))
-        {
-            if (category == null)
-            {
-                if (allocationsSidebar != null)
-                {
-                    category = allocationsSidebar.getSelectedCategory();
-                    fixturesDict[fixtureID].CATEGORY = category.headerCategory;
-                    fixturesDict[fixtureID].CATEGORY = category.text;
-                    Console.WriteLine("Painted fixture " + fixtureID);
-                    ComputeAllocationTotals();
-                }
-            }
-            else
-            {
-                fixturesDict[fixtureID].CATEGORY = category.headerCategory;
-                fixturesDict[fixtureID].CATEGORY = category.text;
-                Console.WriteLine("Painted fixture " + fixtureID);
-                ComputeAllocationTotals();
-            }
-        }
-    }
-
-
-    @* Tristan Calay 4/6/25
-Delete from the fixtures instance dict and the canvas when the delete button is clicked
-In the fixture config modal. *@
-    private void deleteFixtureByID(int fixtureID)
-    {
-        Console.WriteLine("Removing Fixture at ID " + fixtureID);
-        fixturesDict.Remove(fixtureID);
-        JS.InvokeVoidAsync("deleteRackByID", fixtureID);
-    }
-
-    @* Tristan Calay 4/4/25
-Select fixture from cache by ID. *@
-    [JSInvokable]
-    public void selectFixtureByID(int fixtureID)
-    {
-        selectedFixtureID = fixtureID;
-        if (configModal != null)
-        {
-            if (fixturesDict.ContainsKey(fixtureID))
-            {
-                //TODO: Replace this segment with "Show dropdown" logic.
-                //configModal.selectFixture(fixturesDict[fixtureID]);
-                //JS.InvokeVoidAsync("toggleModal", "fixtureConfig", true);
-            }
-        }
     }
 
     @*  Andrew Kennedy 4/7/25

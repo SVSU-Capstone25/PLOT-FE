@@ -1,46 +1,85 @@
 @inject StoresHttpClient StoresHttpClient
 
 @using Plot.Components.PartialComponents.NumericInput
+@using Plot.Components.PartialComponents.SlideOut
 
-<EditForm Model="UpdateSizeStoreModel" class="walls-container" OnValidSubmit="OnUpdateSizeStoreSubmit">
-
+<SlideOutHeader>
     <h3 class="header pt-3" onclick="ToggleBuildingWalls">
         <i class="fas fa-edit"></i>
         Edit Building Walls
     </h3>
-    <hr />
-    <label>
-        Dimensions
-        <InputNumber @bind-value="UpdateSizeStoreModel!.LENGTH" min="1"/>
-        <InputNumber @bind-value="UpdateSizeStoreModel!.WIDTH" min="1"/>
-    </label>
-    <label>Enter the Dimensions (length and width) in feet</label>
+</SlideOutHeader>
 
-    @* Tristan Calay 4/2/25 - Added new employee area controls *@
+<SlideOutBody>
+    <EditForm Model="UpdateSizeStoreModel" class="walls-container flex-grow-1 d-flex flex-column gap-2"
+        OnValidSubmit="OnUpdateSizeStoreSubmit">
+        <label>
+            Dimensions
+            <div class="d-flex flex-row gap-2 align-items-center">
+                <div class="input-group">
+                    <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.LENGTH" min="1" />
+                    <span class="input-group-text">ft</span>
+                </div>
+                <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Swap Dimensions" @onclick="OnSwapDimensionsClick">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+                <div class="input-group">
+                    <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.WIDTH" min="1" />
+                    <span class="input-group-text">ft</span>
+                </div>
+            </div>
+            <div class="form-text">Enter the Dimensions (length and width) in feet</div>
+        </label>
 
-    <div style="display: flex; flex-direction: column; row-gap: 16px;">
-        <Button type="submit" Class="button-green" Variant="primary" Icon="fa-solid fa-check" TextAlignment="center">
-            Apply
-        </Button>
+        @* Tristan Calay 4/2/25 - Added new employee area controls *@
 
-        <Button Class="button-green" Icon="fa-solid fa-brush" TextAlignment="center">
-            Toggle Paint Employee Area
-        </Button>
+        <div style="display: flex; flex-direction: column; row-gap: 16px;">
+            <Button type="submit" Class="button-green" Variant="primary" Icon="fa-solid fa-check"
+                TextAlignment="center">
+                Apply
+            </Button>
 
-        <Button Class="button-green" Icon="fa-solid fa-eraser" TextAlignment="center">
-            Toggle Erase Employee Area
-        </Button>
-    </div>
-</EditForm>
+            <Button Class="button-green" Icon="fa-solid fa-brush" TextAlignment="center">
+                Toggle Paint Employee Area
+            </Button>
+
+            <Button Class="button-green" Icon="fa-solid fa-eraser" TextAlignment="center">
+                Toggle Erase Employee Area
+            </Button>
+        </div>
+    </EditForm>
+
+</SlideOutBody>
 
 @code {
 
     [Parameter] public required int StoreId { get; set; }
+    [Parameter] public required Data.Models.Stores.Store Store { get; set; }
     [Parameter] public EventCallback ToggleBuildingWalls { get; set; }
 
     [Parameter] public EventCallback UpdateStore { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Stores.UpdateSizeStore? UpdateSizeStoreModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        UpdateSizeStoreModel ??= new()
+        {
+            LENGTH = Store.LENGTH,
+            WIDTH = Store.WIDTH
+        };
+    }
+
+    private void OnSwapDimensionsClick()
+    {
+        if (UpdateSizeStoreModel != null)
+        {
+            var temp = UpdateSizeStoreModel.LENGTH;
+            UpdateSizeStoreModel.LENGTH = UpdateSizeStoreModel.WIDTH;
+            UpdateSizeStoreModel.WIDTH = temp;
+        }
+    }
 
     private async Task OnUpdateSizeStoreSubmit()
     {
@@ -59,10 +98,4 @@
             }
         }
     }
-
-    protected override void OnInitialized()
-    {
-        UpdateSizeStoreModel ??= new();
-    }
-
 }

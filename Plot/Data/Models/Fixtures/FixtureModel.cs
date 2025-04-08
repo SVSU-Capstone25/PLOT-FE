@@ -18,7 +18,7 @@ namespace Plot.Data.Models.Fixtures;
 
 public class FixtureModel
 {
-    public int? TUID { get; set; }
+    public required int TUID { get; set; }
     public string? NAME { get; set; }
     public int? WIDTH { get; set; }
     public int? LENGTH { get; set; }

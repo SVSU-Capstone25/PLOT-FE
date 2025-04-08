@@ -1,33 +1,30 @@
 <ModalBody>
-
-    @* <h3>@userModalDetails.Header</h3>
-                <p>@userModalDetails.Description</p> *@
-    <label class="w-100 d-flex">
-        First Name:
-        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.FIRST_NAME" />
+    <label class="w-100 d-flex mt-2">
+        <span class="mt-2 fw-bold">First Name</span>
+        <InputText class="w-85 form-control ms-auto" type="Text" @bind-value="AddUpdateUserModel!.FIRST_NAME" />
         <div class="text-danger">
             <ValidationMessage For=@(() => AddUpdateUserModel.FIRST_NAME) />
         </div>
     </label>
-    <label class="w-100 d-flex">
-        Last Name:
-        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.LAST_NAME" />
+    <label class="w-100 d-flex my-2">
+        <span class="mt-2 fw-bold">Last Name</span>
+        <InputText class="w-85 form-control ms-auto" type="Text" @bind-value="AddUpdateUserModel!.LAST_NAME" />
         <div class="text-danger">
             <ValidationMessage For=@(() => AddUpdateUserModel.LAST_NAME) />
         </div>
     </label>
 
-    <label class="w-100 d-flex">
-        Email:
-        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.EMAIL" />
+    <label class="w-100 d-flex my-2">
+        <span class="mt-2 fw-bold">Email</span>
+        <InputText class="w-85 form-control ms-auto" type="Text" @bind-value="AddUpdateUserModel!.EMAIL" />
         <div class="text-danger">
             <ValidationMessage For=@(() => AddUpdateUserModel.EMAIL) />
         </div>
     </label>
 
-    <label>
-        Role:
-        <InputSelect @bind-value="AddUpdateUserModel!.ROLE_NAME">
+    <label class="w-100 d-flex my-2">
+        <span class="mt-2 fw-bold">Role</span>
+        <InputSelect class="w-85 form-select ms-auto" @bind-value="AddUpdateUserModel!.ROLE_NAME">
             <option value="Owner">Owner</option>
             <option value="Manager">Manager</option>
             <option value="Employee">Employee</option>

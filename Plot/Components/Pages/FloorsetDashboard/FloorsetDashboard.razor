@@ -12,20 +12,21 @@ Author: Andrew Fulton (3/13/2025)  *@
 
 @* /floorsets/Flint, MI/3192 S Linden Rd, Flint, MI 48507 *@
 
-@page "/floorsets/{storeId}"
+@page "/floorsets/{StoreId:int}"
 
 @inject NavigationManager Navigation
 @inject FloorsetsHttpClient FloorsetsHttpClient
+@inject StoresHttpClient StoresHttpClient
 
 @* Top portion of the page (Showing store, location, and image for the current floorset) *@
 <div class="container">
     <div class="left">
-        <h1 font-size="3em">Floorsets for @storeId Store</h1>
+        <h1 font-size="3em">Floorsets for @StoreId Store</h1>
         <br>
         @* <h3>@storeLocation</h3> *@
     </div>
     <div class="right">
-        <img height="auto" width="500px" src="/img/FloorsetPhotoExample.png">
+        <img height="auto" width="500px" src="@StoreImageSrc">
     </div>
 </div>
 
@@ -37,28 +38,32 @@ Author: Andrew Fulton (3/13/2025)  *@
     Iterate over each name and image in the floorsets.
     *@
 
-    @foreach (var floorset in floorsets)
+    @foreach (var Floorset in floorsets)
     {
+        var ImageSrc = Floorset.FLOORSET_IMAGE != null ?
+        $"data:image/jpeg;base64,{Convert.ToBase64String(Floorset.FLOORSET_IMAGE)}" :
+        "https://placecats.com/300/200";
+
     <Card>
-        <a href="@($"/floorset-editor/{storeId}/{floorset.TUID}")">
-            <CardImage Image="https://placecats.com/300/200" />
+        <a href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")" class="w-100 ratio ratio-4x3">
+            <CardImage Image="@ImageSrc" />
         </a>
         <CardBody>
             <CardTitle class="over-hidden" style="width: 100%;">
-                <a href="@($"/floorset-editor/{storeId}/{floorset.TUID}")">
-                    <span class="d-inline-block text-truncate" style="max-width: 100%;">@floorset.NAME</span>
+                <a class="text-truncate" href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")">
+                    <span class="d-inline-block text-truncate" style="max-width: 100%;">@Floorset.NAME</span>
                 </a>
             </CardTitle>
-            <Dropdown Class="Dropdown" Id="@floorset.TUID.ToString()" LabelText="Floorset">
-                <DropdownLink data-bs-toggle="modal" data-bs-target="@($"#edit-floorset-{floorset.TUID}")"
+            <Dropdown Class="Dropdown" Id="@Floorset.TUID.ToString()" LabelText="Floorset">
+                <DropdownLink data-bs-toggle="modal" data-bs-target="@($"#edit-floorset-{Floorset.TUID}")"
                     Icon="fa-solid fa-pen-to-square">
                     Edit
                 </DropdownLink>
-                <DropdownLink Icon="fa-solid fa-copy" @onclick="async () => await OnCopyFloorsetClick(floorset)">
+                <DropdownLink Icon="fa-solid fa-copy" @onclick="async () => await OnCopyFloorsetClick(Floorset)">
                     Copy
                 </DropdownLink>
                 <DropdownLink Icon="fa-solid fa-trash-can" data-bs-toggle="modal"
-                    data-bs-target="@($"#delete-floorset-{floorset.TUID}")">
+                    data-bs-target="@($"#delete-floorset-{Floorset.TUID}")">
                     Delete
                 </DropdownLink>
             </Dropdown>
@@ -66,28 +71,12 @@ Author: Andrew Fulton (3/13/2025)  *@
         @* <a href="@($"/floorset-editor/{floorset.TUID}")"></a> *@
     </Card>
 
-        @* + Siona Beaudoin, 4/3/2025, edit the title of floorsets*@
-        <Modal id="@($"edit-floorset-{floorset.TUID}")" class="standard">
-            <ModalHeader Title="Edit Floorset Title" Variant="standard" />
-            <EditForm Model="EditFloorsetModel" OnSubmit="async () => await OnEditFloorsetSubmit(floorset.TUID)"
-                FormName="Create Floorset Form">
-                <ModalBody>
-                    <label>
-                        Name
-                        <InputText @bind-value="EditFloorsetModel!.NAME" />
-                    </label>
-                </ModalBody>
-                <ModalFooter>
-                    <Button Class="" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
-                        Edit
-                    </Button>
-                </ModalFooter>
-            </EditForm>
-        </Modal>
+        <EditFloorsetModal id="@($"edit-store-{Floorset.TUID}")" Floorset="Floorset" UpdateFloorsets="UpdateFloorsets"
+            FloorsetId="Floorset.TUID" />
 
-        <Modal id="@($"delete-floorset-{floorset.TUID}")" class="standard">
+        <Modal id="@($"delete-floorset-{Floorset.TUID}")" class="standard">
             <ModalHeader Title="Confirm Deletion" Variant="danger" />
-            <form @onsubmit="async () => await OnDeleteFloorsetSubmit(floorset.TUID)">
+            <form @onsubmit="async () => await OnDeleteFloorsetSubmit(Floorset.TUID)">
             @code {
                 private string? deleteTextInput;
                 private bool isDisabled => deleteTextInput != "DELETE";
@@ -109,23 +98,7 @@ Author: Andrew Fulton (3/13/2025)  *@
         }
 </div>
 
-<Modal id="create-floorset" class="standard">
-    <ModalHeader Title="Create Floorset" Variant="standard" />
-    <EditForm Model="CreateFloorsetModel" OnSubmit="async () => await OnCreateFloorsetSubmit()"
-        FormName="Create Floorset Form">
-        <ModalBody>
-            <label>
-                Title:
-                <InputText @bind-Value="CreateFloorsetModel!.NAME">Name</InputText>
-            </label>
-        </ModalBody>
-        <ModalFooter>
-            <Button TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
-                Create
-            </Button>
-        </ModalFooter>
-    </EditForm>
-</Modal>
+<AddFloorsetModal id="create-floorset" UpdateFloorsets="UpdateFloorsets" StoreId="StoreId" />
 
 <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary" Icon="fa-solid fa-plus"
     data-bs-toggle="modal" data-bs-target="#create-floorset">
@@ -135,52 +108,30 @@ Author: Andrew Fulton (3/13/2025)  *@
 <script src="js/copyFloorsetCard.js"></script>
 
 @code {
-    [Parameter] public required string storeId { get; set; }
-
-    [SupplyParameterFromForm]
-    private Data.Models.Floorsets.CreateFloorset? CreateFloorsetModel { get; set; }
-
-    [SupplyParameterFromForm]
-    private Data.Models.Floorsets.UpdatePublicInfoFloorset? EditFloorsetModel { get; set; }
-
-    protected override void OnInitialized()
-    {
-        CreateFloorsetModel ??= new()
-        {
-            STORE_TUID = Int32.Parse(storeId),
-            DATE_CREATED = DateTime.Now,
-            CREATED_BY = -1,
-            DATE_MODIFIED = DateTime.Now,
-            MODIFIED_BY = -1
-        };
-
-        EditFloorsetModel ??= new()
-        {
-            STORE_TUID = Int32.Parse(storeId),
-            DATE_CREATED = DateTime.Now,
-            CREATED_BY = -1,
-            DATE_MODIFIED = DateTime.Now,
-            MODIFIED_BY = -1
-        };
-    }
-
+    [Parameter] public required int StoreId { get; set; }
     private List<Data.Models.Floorsets.Floorset> floorsets = new List<Data.Models.Floorsets.Floorset>();
+
+    string StoreImageSrc = "https://placecats.com/300/200";
 
     private async Task UpdateFloorsets()
     {
-        if (storeId != null)
-        {
-            var response = await FloorsetsHttpClient.GetFloorsetsByStore(Int32.Parse(storeId));
+        var response = await FloorsetsHttpClient.GetFloorsetsByStore(StoreId);
 
-            if (response != null)
-            {
-                floorsets = response;
-            }
+        if (response != null)
+        {
+            floorsets = response;
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
+        var response = await StoresHttpClient.GetStore(StoreId);
+
+        if (response != null)
+        {
+            StoreImageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(response.BLUEPRINT_IMAGE!)}";
+        }
+
         await UpdateFloorsets();
     }
 
@@ -190,24 +141,14 @@ Author: Andrew Fulton (3/13/2025)  *@
         await UpdateFloorsets();
     }
 
-    //Siona Beaudoin - 4/3/2025
-    private async Task OnEditFloorsetSubmit(int floorsetId)
-    {
-        if (EditFloorsetModel != null)
-        {
-            await FloorsetsHttpClient.UpdatePublicInfo(floorsetId, EditFloorsetModel);
-            await UpdateFloorsets();
-        }
-    }
-
-    private async Task OnCreateFloorsetSubmit()
+    @* private async Task OnCreateFloorsetSubmit()
     {
         if (CreateFloorsetModel != null)
         {
             await FloorsetsHttpClient.CreateFloorset(CreateFloorsetModel);
             await UpdateFloorsets();
         }
-    }
+    } *@
 
     private async Task OnCopyFloorsetClick(Data.Models.Floorsets.Floorset Floorset)
     {
@@ -218,7 +159,7 @@ Author: Andrew Fulton (3/13/2025)  *@
             DATE_CREATED = DateTime.Now,
             DATE_MODIFIED = DateTime.Now,
             MODIFIED_BY = -1,
-            STORE_TUID = Int32.Parse(storeId)
+            STORE_TUID = StoreId
         };
 
         await FloorsetsHttpClient.CreateFloorset(createFloorset);

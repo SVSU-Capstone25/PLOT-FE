@@ -22,11 +22,11 @@ public class StoresHttpClient : PlotHttpClient
         return await SendGetAsync<List<Store>>($"/access/{userId}");
     }
 
-    public async Task<Store?> CreateStore(CreateStore store)
+    public async Task<HttpStatusCode> CreateStore(CreateStore store)
     {
         JsonContent body = JsonContent.Create(store);
 
-        return await SendPostAsync<Store>($"/create-store", body);
+        return await SendPostAsync<HttpStatusCode>($"/create-store", body);
     }
 
 

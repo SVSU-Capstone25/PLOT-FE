@@ -7,14 +7,14 @@
     <ModalHeader Title="Add Fixture" />
     <EditForm Model="AddFixtureModel" OnValidSubmit="OnAddFixtureSubmit">
         <ModalBody>
-            <label>
-                Name
+            <label class="w-100 d-flex">
+                <span class="mt-2 fw-bold">Name</span>
                 <InputText @bind-value="AddFixtureModel!.NAME">Three Way Rack</InputText>
             </label>
             <div class="row">
                 <div class="col-md-5">
-                    <label>
-                        Length
+                    <label class="w-100 d-flex">
+                        <span class="mt-2 fw-bold">Length</span>
                         <InputNumber @bind-Value="AddFixtureModel!.LENGTH" />
                     </label>
                 </div>
@@ -22,21 +22,20 @@
                     <i class="fa-solid fa-xmark mx-auto mt-4 ms-3"></i>
                 </div>
                 <div class="col-md-5">
-                    <label>
-                        Width
+                    <label class="w-100 d-flex">
+                        <span class="mt-2 fw-bold">Width</span>
                         <InputNumber @bind-Value="AddFixtureModel!.WIDTH" />
                     </label>
                 </div>
             </div>
 
-            <label>
-                Linear Feet Capacity
+            <label class="w-100 d-flex">
+                <span class="mt-2 fw-bold">Linear Feet Capacity</span>
                 <InputNumber @bind-Value="AddFixtureModel!.LF_CAP" />
             </label>
 
-            <label>
-                Total Linear Feet
-                @AddFixtureModel!.WIDTH * @AddFixtureModel!.LENGTH
+            <label class="w-100 d-flex">
+                <span class="fw-bold">Linear Feet: @AddFixtureModel!.WIDTH * @AddFixtureModel!.LENGTH</span>
             </label>
 
             <InputFile OnChange="OnImageUpload" />

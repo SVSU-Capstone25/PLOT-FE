@@ -12,12 +12,14 @@ Author: Tristan Calay (3/15/2025)-->
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 
-<div class="AllocationsSidebar scrollable">
-    <div class="inner-container">
-        <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
-        <hr style="opacity: 1.0; color:black;">
+@using Plot.Components.PartialComponents.SlideOut
 
-        @* Danielle Smith 3/17/2025
+<SlideOutHeader>
+    <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
+</SlideOutHeader>
+
+<SlideOutBody>
+    @* Danielle Smith 3/17/2025
         changed how these are being displayed to use bootstrap classes
         added params to help text input take up proper width *@
         <div class="row">
@@ -80,15 +82,13 @@ Author: Tristan Calay (3/15/2025)-->
             }
             </ul>
         </div>
-    </div>
-</div>
+</SlideOutBody>
 
 @* Tristan Calay - Scripts for category onclick *@
 <script>
-        //NumSortButtons needs to be equal to the number of sorting buttons defined in the html above.
+    //NumSortButtons needs to be equal to the number of sorting buttons defined in the html above.
     var numSortButtons = 2;
-    function swapSortButtons(sortButtonNum)
-    {
+    function swapSortButtons(sortButtonNum) {
         var nextButtonNum = (sortButtonNum + 1) % numSortButtons;
         document.getElementById("sortButton" + sortButtonNum).style.display = "none";
         document.getElementById("sortButton" + nextButtonNum).style.display = "";
@@ -132,7 +132,7 @@ Author: Tristan Calay (3/15/2025)-->
 
         Console.WriteLine("Selected index: " + index + " in list " + list);
     }
-           
+
     //categoryOnClick takes the ID of the list item and highlights that item for noting the selected category.
     //A reference is stored to the last selected item, if there is one, and it is unselected.
     private async void categoryOnClick(Category category)
@@ -148,7 +148,7 @@ Author: Tristan Calay (3/15/2025)-->
         lastSelectedCategory.isSelected = false;
         category.isSelected = true;
         lastSelectedCategory = category;
-        
+
         //Update the UI.
         StateHasChanged();
 
@@ -173,7 +173,7 @@ Author: Tristan Calay (3/15/2025)-->
     private List<Category> progressCategoriesWomen = [];
     private List<Category> progressCategoriesAccessories = [];
 
-    
+
     //When the component is initialized, retrieve info from database about categories.
     protected override void OnInitialized()
     {
@@ -210,7 +210,7 @@ Author: Tristan Calay (3/15/2025)-->
         progressCategoriesWomen.Add(new Category(currentCategory, "Shirts", currentColor, 100, 30, false));
         progressCategoriesWomen.Add(new Category(currentCategory, "Shoes", currentColor, 100, 60, false));
         progressCategoriesWomen.Add(new Category(currentCategory, "Shorts", currentColor, 100, 20, false));
-        
+
         @* Accessories *@
         currentColor = "#5FBD6A";
         currentCategory = "Accessories";
@@ -219,9 +219,9 @@ Author: Tristan Calay (3/15/2025)-->
         progressCategoriesAccessories.Add(new Category(currentCategory, "Hats", currentColor, 10, 20, false));
         progressCategoriesAccessories.Add(new Category(currentCategory, "Purses", currentColor, 10, 20, false));
         progressCategoriesAccessories.Add(new Category(currentCategory, "Jewelry", currentColor, 10, 20, false));
-        
+
     }
-    
+
     //Tristan Calay 3/29/25
     //Return a joined list of all the super categories.
     //The super categories can be sorted individually before they are retrieved.
@@ -284,5 +284,5 @@ Author: Tristan Calay (3/15/2025)-->
         StateHasChanged();
     }
 
-    
+
 }

@@ -1,6 +1,6 @@
 @inject UsersHttpClient UsersHttpClient
 
-<Modal class="modal-dialog modal-xl user-modal user-info-modal" @attributes="Attributes">
+<Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" @attributes="Attributes">
     <ModalHeader Title="Update User" />
     <EditForm Model="UpdateUserModel" OnValidSubmit="OnUpdateUserSubmit">
         <DataAnnotationsValidator />

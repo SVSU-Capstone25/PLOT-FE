@@ -1,4 +1,5 @@
-//floorsetGridCanvas.js
+let gridInstance;      // will hold our Grid
+let p5Instance;        // will hold our p5
 
 function setPaintMode(enabled) {
     console.log("Setting paint mode " + enabled)
@@ -56,68 +57,69 @@ function setEmployeeErase(newErase) {
 //Tristan Calay 4/7/25
 //Remove a rack from the racks array by ID
 function deleteRackByID(id) {
-    const racks = grid.racks;
+    const racks = this.racks;
     console.log("Called delete rack with ID: " + id)
     console.log("Racks: " + racks)
     for (var i = 0; i < racks.length; i++) {
         console.log("Checking index " + i)
-        const rack = grid.racks[i]
+        const rack = this.racks[i]
         if (rack.id === id) {
             console.log("Rack deleted: " + id)
-            grid.racks.splice(i, 1);
+            this.racks.splice(i, 1);
             return;
         }
     }
 }
+
+
 class Rack {
-    constructor(sketch, x, y, width, height, id, isEmployee = false) {
-        this.sketch = sketch;
+    constructor(p5, x, y, width, height, id, isEmployee = false) {
+        this.p5 = p5;
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.color = this.sketch.color(255, 255, 255);
+        this.color = this.p5.color(255, 255, 255);
         this.id = id;
         this.isEmployee = isEmployee;
         if (isEmployee) {
-            this.color = this.sketch.color(255, 0, 0, 100);
+            this.color = this.p5.color(255, 0, 0, 100);
         }
         else {
-            this.color = this.sketch.color(255, 255, 255);
+            this.color = this.p5.color(255, 255, 255);
         }
     }
 
     draw(gridSize) {
-        this.sketch.fill(this.color);
-        this.sketch.stroke(0);
-        this.sketch.strokeWeight(3);
-        this.sketch.rect(this.x, this.y, this.width * gridSize, this.height * gridSize);
-        this.sketch.push();
-        this.sketch.fill(this.color);
-        this.sketch.stroke(0);
+        this.p5.fill(this.color);
+        this.p5.stroke(0);
+        this.p5.strokeWeight(3);
+        this.p5.rect(this.x, this.y, this.width * gridSize, this.height * gridSize);
+        this.p5.push();
+        this.p5.fill(this.color);
+        this.p5.stroke(0);
         if (!this.isEmployee) {
-            this.sketch.strokeWeight(3);
+            this.p5.strokeWeight(3);
         }
-        this.sketch.rect(this.x, this.y, this.width * gridSize, this.height * gridSize);
-        this.sketch.pop();
+        this.p5.rect(this.x, this.y, this.width * gridSize, this.height * gridSize);
+        this.p5.pop();
     }
 }
 
 class Grid {
-    constructor(sketch) {
-        this.sketch = sketch;
+
+    constructor(p5) {
+        this.p5 = p5;
         this.size = 30;
-        this.racks = [];
         this.scale = 1;
+        this.racks = [];
+        this.width = 1;
+        this.height = 1;
         this.resize();
     }
 
-    get x() {
-        return window.gridWidth ?? 10;
-    }
-
-    get y() {
-        return window.gridHeight ?? 10;
+    addFixtureInstanceToGrid(id, x, y, width, length) {
+        this.racks.push(new Rack(this.p5, x, y, width, length, id, false));
     }
 
     toGridCoordinates(x, y) {
@@ -128,7 +130,7 @@ class Grid {
     }
 
     isOnGrid(gridX, gridY) {
-        if (gridX >= 0 && gridX < this.x && gridY >= 0 && gridY < this.y) {
+        if (gridX >= 0 && gridX < this.width && gridY >= 0 && gridY < this.height) {
             return true;
         }
         return false;
@@ -152,260 +154,195 @@ class Grid {
 
     resize() {
         this.translate = {
-            x: this.sketch.width / 2 - (this.size * this.x * this.scale) / 2,
-            y: this.sketch.height / 2 - (this.size * this.y * this.scale) / 2,
+            x: this.p5.width / 2 - (this.size * this.width * this.scale) / 2,
+            y: this.p5.height / 2 - (this.size * this.height * this.scale) / 2,
         };
     }
 
     draw() {
-        this.sketch.fill(255, 255, 255);
-        this.sketch.stroke(0, 100);
-        this.sketch.strokeWeight(1);
-        this.sketch.translate(this.translate.x, this.translate.y);
-        this.sketch.scale(this.scale);
+        this.p5.fill(255, 255, 255);
+        this.p5.stroke(0, 100);
+        this.p5.strokeWeight(1);
+        this.p5.translate(this.translate.x, this.translate.y);
+        this.p5.scale(this.scale);
 
-        // for (let y = 0; y < this.y; y++) {
-        //     for (let x = 0; x < this.x; x++) {
-        //         const x1 = x * this.size,
-        //             y1 = y * this.size;
-        //         this.sketch.rect(x1, y1, this.size, this.size);
-        //     }
-        // }
+        this.p5.rect(0, 0, this.width * this.size, this.height * this.size);
 
-        //Tristan Calay - rework this to be much more efficient (lines instead of each cell)
-
-        this.sketch.rect(0, 0, this.x * this.size, this.y * this.size);
-
-        for (let x = 1; x < this.x; x++) {
-            this.sketch.line(x * this.size, 0, x * this.size, this.y * this.size);
+        for (let x = 1; x < this.width; x++) {
+            this.p5.line(x * this.size, 0, x * this.size, this.height * this.size);
         }
 
-        for (let y = 1; y < this.y; y++) {
-            this.sketch.line(0, y * this.size, this.x * this.size, y * this.size);
+        for (let y = 1; y < this.height; y++) {
+            this.p5.line(0, y * this.size, this.width * this.size, y * this.size);
         }
 
-        // Draw the individual racks
         for (const rack of this.racks) {
             rack.draw(this.size);
         }
     }
 }
 
-var grid, mouseRack, sketchInstance;
+function sketch(p5) {
+    let mouseRack;
+    p5.setup = () => {
+        p5Instance = p5;
+        gridInstance = new Grid(p5);
 
-const floorsetGrid = (function () {
-    // Flag to make sure rack creation is called only once
-    let rackCreated = undefined;
+        window.p5Instance = p5Instance;
+        window.gridInstance = gridInstance;
 
-    return {
-        init() {
-            sketchInstance = new p5((sketch) => {
-                sketch.setup = () => {
-                    const $GRIDAREA = document.querySelector("div#grid-area");
-                    if (!$GRIDAREA) return;
+        window.gridState = "place";
 
-                    window.gridState = "place";
+        p5.createCanvas(p5.windowWidth, p5.windowHeight);
+        p5.frameRate(30);
 
-                    const canvas = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
-                    canvas.parent($GRIDAREA);
-                    canvas.style("position", "absolute");
-                    canvas.style("top", "0px");
-                    canvas.style("left", "0px");
+        document.oncontextmenu = function () {
+            const coords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY)
+            //console.log("Determine if should display context menu: " + coords.x + ", " + coords.y)
+            if (gridInstance.isOnGrid(coords.x, coords.y)) {
+                //console.log("Should not display context menu: Is on grid!")
+                return false;
+            }
+        }
 
-                    grid = new Grid(sketch);
+        window.paint = '#fff';
+    }
 
-                    document.oncontextmenu = function () {
-                        const coords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY)
-                        //console.log("Determine if should display context menu: " + coords.x + ", " + coords.y)
-                        if (grid.isOnGrid(coords.x, coords.y)) {
-                            //console.log("Should not display context menu: Is on grid!")
-                            return false;
-                        }
-                    }
 
-                    window.paint = '#fff';
-                };
+    p5.draw = () => {
+        p5.background(220);
+        p5.push();
+        gridInstance.draw();
+        mouseRack?.draw(gridInstance.size);
+        p5.pop();
+    };
 
-                sketch.draw = () => {
-                    sketch.background(220);
-                    sketch.push();
-                    grid.draw();
-                    mouseRack?.draw(grid.size);
-                    sketch.pop();
-                };
+    p5.windowResized = () => {
+        p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
+        gridInstance.resize();
+    }
 
-                sketch.windowResized = () => {
-                    sketch.resizeCanvas(sketch.windowWidth, sketch.windowHeight);
-                    grid.resize();
+    p5.mouseWheel = (event) => {
+        if (event.delta > 0) {
+            gridInstance.scale += 0.1;
+        } else {
+            gridInstance.scale -= 0.1;
+        }
+
+        gridInstance.scale = Math.max(0.1, gridInstance.scale);
+        gridInstance.resize();
+    }
+
+    p5.mousePressed = () => {
+        if (window.gridState === "place") {
+            const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+            const rack = gridInstance.getRackAt(gridCoords.x, gridCoords.y);
+            if (rack) {
+                const index = gridInstance.racks.indexOf(rack);
+                if (index > -1) {
+                    gridInstance.racks.splice(index, 1);
+                    mouseRack = rack;
                 }
-
-                sketch.mouseWheel = (event) => {
-                    if (event.delta > 0) {
-                        grid.scale += 0.1;
-                    } else {
-                        grid.scale -= 0.1;
-                    }
-
-                    grid.scale = Math.max(0.1, grid.scale);
-                    grid.resize();
+            }
+        } else if (window.gridState === "erase") {
+            const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+            const rack = gridInstance.getRackAt(gridCoords.x, gridCoords.y);
+            if (rack) {
+                const index = gridInstance.racks.indexOf(rack);
+                if (index > -1) {
+                    gridInstance.racks.splice(index, 1);
                 }
-
-                sketch.mousePressed = (event) => {
-                    const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                    const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-
-                    if (rack) {
-                        const index = grid.racks.indexOf(rack);
-                        if (index > -1) {
-                            switch (event.buttons) {
-                                case 1:
-                                    //Place, Erase, Paint modes
-                                    switch (window.gridState) {
-                                        case "place":
-                                            if (mouseRack) return;
-                                            grid.racks.splice(index, 1);
-                                            mouseRack = rack;
-                                            break;
-                                        case "employeeMode":
-                                            //Handle drawing employee boxes on the grid.
-                                            if (isEmployeeEraseEnabled && rack.isEmployee) {
-                                                //Erase this rack if it is an employee area
-                                                //console.log("I should erase this rack")
-                                                const index = grid.racks.indexOf(rack);
-                                                if (index > -1) {
-                                                    grid.racks.splice(index, 1);
-                                                }
-                                            }
-                                            //Do nothing if an employee area already exists under the cursor.
-                                            //console.log("Don't place a new rack here, one exists already.")
-                                            break;
-                                        case "erase":
-                                            grid.racks.splice(index, 1);
-                                            break;
-                                        case "paint":
-                                            if (!rack.isEmployee) {
-                                                rack.color = window.paint;
-                                                paintFixtureByID(rack.id);
-                                            }
-                                            break;
-                                    }
-                                    break;
-
-                                case 2:
-                                    //Context Window Mode
-                                    //console.log("Display context window of rack.")
-                                    selectFixtureByID(rack.id);
-                            }
-                        }
-                    }
-                    else {
-                        if (window.gridState === "employeeMode") {
-                            if (isEmployeeEraseEnabled || !grid.isOnGrid(gridCoords.x, gridCoords.y)) {
-                                //Don't place a rack if erase mode is on, or is off grid
-                                return;
-                            }
-                            //console.log("I should put a rack here!")
-                            let newEmployeeRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size, 1, 1, true);
-                            grid.racks.push(newEmployeeRack);
-                        }
-                    }
-                };
-
-                sketch.mouseDragged = () => {
-                    const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                    const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                    switch (window.gridState) {
-                        case "paint":
-                            if (rack && !rack.isEmployee) {
-                                rack.color = window.paint;
-                                paintFixtureByID(rack.id);
-                            }
-                            break;
-                        case "erase":
-                            if (rack && !rack.isEmployee) {
-                                const index = grid.racks.indexOf(rack);
-                                if (index > -1) {
-                                    grid.racks.splice(index, 1);
-                                }
-                            }
-                            break;
-                        case "employeeMode":
-                            //Handle drawing employee boxes on the grid.
-                            if (rack) {
-                                if (isEmployeeEraseEnabled && rack.isEmployee) {
-                                    //Erase this rack if it is an employee area
-                                    //console.log("I should erase this rack")
-                                    const index = grid.racks.indexOf(rack);
-                                    if (index > -1) {
-                                        grid.racks.splice(index, 1);
-                                    }
-                                }
-                                //console.log("Don't place a new rack here, one exists already.")
-                                //Do nothing if an employee area already exists under the cursor.
-                            }
-                            else {
-                                if (isEmployeeEraseEnabled || !grid.isOnGrid(gridCoords.x, gridCoords.y)) {
-                                    //Don't place a rack if erase mode is on.
-                                    return;
-                                }
-                                //console.log("I should put a rack here!")
-                                //TODO: Hook this into fixtures C# side for employee area fixture!!!!!!!
-                                let newEmployeeRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size, 1, 1, -1, true);
-                                grid.racks.push(newEmployeeRack);
-
-                            }
-                        case "place":
-                            // Place mode logic
-                            if (mouseRack) {
-                                if (gridCoords.x < 0 || gridCoords.x + mouseRack.width > grid.x || gridCoords.y < 0 || gridCoords.y + mouseRack.height > grid.y) return;
-
-                                mouseRack.x = gridCoords.x * grid.size;
-                                mouseRack.y = gridCoords.y * grid.size;
-                            } else if (window.draggedRack) {
-                                const { width, height, name } = window.draggedRack;
-                                if (gridCoords.x + width > grid.x || gridCoords.y + height > grid.y) return;
-                                mouseRack = new Rack(sketch, gridCoords.x * grid.size, gridCoords.y * grid.size,
-                                    width, height, -1);
-                                rackCreated = name;
-
-                            }
-                            break;
-                    }
-                }
-
-                sketch.mouseReleased = () => {
-                    if (!mouseRack) return;
-
-                    if (rackCreated) {
-                        let addedRack = mouseRack;
-                        jsCreateNewFixture(rackCreated).then(id => {
-                            console.log("Recieved ID: " + id);
-                            addedRack.id = id
-                            rackCreated = undefined;
-                            moveFixtureByID(addedRack.id, addedRack.x, addedRack.y)
-                        })
-                    }
-                    else {
-                        moveFixtureByID(mouseRack.id, mouseRack.x, mouseRack.y)
-                    }
-
-                    grid.racks.push(mouseRack);
-                    mouseRack = undefined;
-                    window.draggedRack = undefined;
-
-                };
-            }, document.querySelector("div#grid-area"));
+            }
+        } else {
+            const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+            const rack = gridInstance.getRackAt(gridCoords.x, gridCoords.y);
+            if (rack) rack.color = window.paint;
         }
     };
-})();
+
+    p5.mouseDragged = () => {
+        if (window.gridState === "paint") {
+            const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+            const rack = gridInstance.getRackAt(gridCoords.x, gridCoords.y);
+            if (rack) rack.color = window.paint;
+        } else if (window.gridState === "erase") {
+            const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+            const rack = gridInstance.getRackAt(gridCoords.x, gridCoords.y);
+            if (rack) {
+                const index = gridInstance.racks.indexOf(rack);
+                if (index > -1) {
+                    gridInstance.racks.splice(index, 1);
+                }
+            }
+        } else {
+            // Place mode logic
+            if (mouseRack) {
+                const { x: gridX, y: gridY } = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+                if (gridX < 0 || gridX + mouseRack.width > gridInstance.x || gridY < 0 || gridY + mouseRack.height > gridInstance.y) return;
+                mouseRack.x = gridX * gridInstance.size;
+                mouseRack.y = gridY * gridInstance.size;
+            } else if (window.draggedRack) {
+                const { width, height } = window.draggedRack;
+                const { x: gridX, y: gridY } = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+                if (gridX + width > gridInstance.x || gridY + height > gridInstance.y) return;
+                mouseRack = new Rack(p5, gridX * gridInstance.size, gridY * gridInstance.size, width, height);
+            }
+        }
+    }
+
+    p5.mouseReleased = () => {
+        if (!mouseRack) return;
+
+        gridInstance.racks.push(mouseRack);
+        mouseRack = undefined;
+        window.draggedRack = undefined;
+    }
+};
+
 
 //Test function to save the canvas as an image
 document.addEventListener('keypress', event => {
     if (event.keyCode == 83) { // "S" Key
-        sketchInstance.saveCanvas('floorsetGrid', 'jpg');
+        p5Instance.saveCanvas('floorsetGrid', 'jpg');
         console.log("Saving Image!");
     }
 })
 
-// Initialize when Blazor component loads
-//floorsetGrid.init();
+function addFixtureOnLoad(id, x, y, width, length, color) {
+    setTimeout(function () {
+        let newRack = new Rack(p5Instance, x, y, width, length, id);
+        newRack.color = color;
+        this.racks.push(newRack);
+    }, 500);
+}
+
+window.initP5 = (elementId) => {
+    new p5(sketch, elementId);
+};
+
+window.addFixture = (id, x, y, width, length) => {
+    if (!window.gridInstance) {
+        console.error("Grid not initialized yet!");
+        return;
+    }
+
+    window.gridInstance.addFixtureInstanceToGrid(id, x, y, width, length);
+};
+
+window.updateStoreSize = (width, height) => {
+    if (!window.gridInstance) {
+        console.error("Grid not initialized yet!");
+        return;
+    }
+
+    window.gridInstance.width = width;
+    window.gridInstance.height = height;
+    window.gridInstance.resize();
+}
+
+function createDraggable(event) {
+    const width = Number(event.target.getAttribute("data-width"));
+    const height = Number(event.target.getAttribute("data-height"));
+    const name = String(event.target.getAttribute("data-value"));
+    window.draggedRack = { width, height, name };
+}

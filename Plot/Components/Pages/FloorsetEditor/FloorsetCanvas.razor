@@ -1,0 +1,16 @@
+@inject IJSRuntime JS
+
+<div id="@_containerId" class="position-absolute top-0 start-0"></div>
+
+@code {
+    private string _containerId = $"p5_{Guid.NewGuid():N}";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // call the JS helper you loaded in App.razor
+            await JS.InvokeVoidAsync("initP5", _containerId);
+        }
+    }
+}

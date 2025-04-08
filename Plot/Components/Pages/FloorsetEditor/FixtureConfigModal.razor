@@ -1,59 +1,111 @@
-@inject IJSRuntime JS
+@* @inject IJSRuntime JS *@
 <!-- Author: Tristan Calay
 The floorset fixture config modal allows right-click editing of a fixture on the floorset grid.
 It allows changing the category, hanging, and notes of a fixture.
 It also allows you to delete a fixture on the grid. -->
 @* Add fixture edit modal to the floorset editor. - Tristan Calay *@
-<div class="dropdown-menu">
-  <a class="dropdown-item" href="#">Action</a>
-  <a class="dropdown-item" href="#">Another action</a>
-  <a class="dropdown-item" href="#">Something else here</a>
-  <div class="dropdown-divider"></div>
-  <a class="dropdown-item" href="#">Separated link</a>
-</div>
 
-@code {
+@* <div class="dropdown">
+
+    <p class="dropdown-header">Fixture Configuration</p>
+    <h6 class="dropdown-item">Two Way Rack</h6>
+
+    <div class="dropdown-divider"></div>
+
+    <div class="row">
+        <div class="col-auto pe-0">
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+
+        <div class="col ps-0">
+            <div class="form-group">
+                <select style="border: none;" class="form-control" id="CategorySelectFormGroup">
+                    <option>Women's Jeans</option>
+                    <option>Men's Jeans</option>
+                    <option>Women's Tops</option>
+                    <option>Men's Tops</option>
+                    <option>Women's Shoes</option>
+                </select>
+                <label class="dropdown-header" for="exampleFormControlSelect1">Select Category</label>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-auto pe-0">
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+
+        <div class="col ps-0">
+            <div class="form-group">
+                <select style="border: none;" class="form-control" id="CategorySelectFormGroup">
+                    <option>Single Hung</option>
+                    <option>Double Hung</option>
+                    <option>Triple Hung</option>
+                    <option>Quadruple Hung</option>
+                </select>
+                <label class="dropdown-header" for="exampleFormControlSelect1">Select Category</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="dropdown-divider"></div>
+
+
+    <div class="row">
+        <div class="col-auto pe-0">
+            <i class="fa-solid fa-pencil"></i>
+        </div>
+
+        <div class="col ps-0">
+            <p class="dropdown-item">Put Seasonal Colors Here</p>
+            <textarea style="border: none;" placeholder="Notes"></textarea>
+        </div>
+    </div>
+</div> *@
+
+
+@* @code {
     private String fixtureName = "Default Fixture Title";
-    private List<String> categoryInputValues = new List<String> { "Default Category" };
-    private List<String> hangingInputValues = new List<String> { "Default Hanging" };
+private List<String> categoryInputValues = new List<String> { "Default Category" };
+        private List<String> hangingInputValues = new List<String> { "Default Hanging" };
 
-    private String notesText = "";
+                private String notesText = "";
 
-    private Data.Models.Fixtures.FixtureInstance? currentFixture;
-    public void selectFixture(Data.Models.Fixtures.FixtureInstance selectedFixture)
-    {
-        currentFixture = selectedFixture;
-        if (selectedFixture == null)
-        {
-            return;
-        }
-        @* else
-        {
-            fixtureName = selectedFixture.;
-            //TODO: Change hanging, notes and category components here.
-            Console.WriteLine("Fixture Selected: " + fixtureName);
-        } *@
-        StateHasChanged();
-    }
+                private Data.Models.Fixtures.FixtureInstance? currentFixture;
+                public void selectFixture(Data.Models.Fixtures.FixtureInstance selectedFixture)
+                {
+                currentFixture = selectedFixture;
+                if (selectedFixture == null)
+                {
+                return;
+                }
+                else
+                {
+                fixtureName = selectedFixture.;
+                //TODO: Change hanging, notes and category components here.
+                Console.WriteLine("Fixture Selected: " + fixtureName);
+                }
+                StateHasChanged();
+                }
 
-    [Parameter] public required EventCallback<int> FixtureDeleted { get; set; }
+                [Parameter] public required EventCallback<int> FixtureDeleted { get; set; }
 
-    private void deleteCurrentFixture()
-    {
-        if (currentFixture != null)
-        {
-            Console.WriteLine("Delete Current Selected Fixture...");
-            @* FixtureDeleted.InvokeAsync(currentFixture.editorID); *@
-            JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
-        }
-    }
+                    private void deleteCurrentFixture()
+                    {
+                    if (currentFixture != null)
+                    {
+                    Console.WriteLine("Delete Current Selected Fixture...");
+                    FixtureDeleted.InvokeAsync(currentFixture.editorID);
+                    JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
+                    }
+                    }
 
-    private void saveChangesToCurrentFixture()
-    {
-        //TODO: Send data to DB and fixture object.
-        //currentFixture....
-        //Need data from DB to exist in the fixture object first!
-        Console.WriteLine("Save Changes Function...");
-        JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
-    }
-}
+                    private void saveChangesToCurrentFixture()
+                    {
+                    Console.WriteLine("Save Changes Function...");
+                    JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
+                    }
+                    } *@

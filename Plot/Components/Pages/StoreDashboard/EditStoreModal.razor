@@ -1,37 +1,10 @@
 @inject StoresHttpClient StoresHttpClient
 
-<Modal @attributes="Attributes">
+<Modal @attributes="Attributes" SizeClass="modal-lg">
     <ModalHeader Title="Update Store Information" />
-    <EditForm Model="EditStoreModel" OnValidSubmit="async () => await OnEditStoreSubmit(StoreId)">
+    <EditForm Model="EditStoreModel" OnValidSubmit="async () => await OnEditStoreSubmit()">
 
-        <ModalBody>
-            <label>
-                Name:
-                <InputText @bind-Value="EditStoreModel!.NAME">Name</InputText>
-            </label>
-
-            <label>
-                Address:
-                <InputText @bind-Value="EditStoreModel!.ADDRESS">Address</InputText>
-            </label>
-
-            <label>
-                City:
-                <InputText @bind-Value="EditStoreModel!.CITY">City</InputText>
-            </label>
-
-            <label>
-                State:
-                <InputText @bind-Value="EditStoreModel!.STATE">State</InputText>
-            </label>
-
-            <label>
-                Zip:
-                <InputText @bind-Value="EditStoreModel!.ZIP">Zip</InputText>
-            </label>
-
-            <InputFile OnChange="OnImageUpload" />
-        </ModalBody>
+        <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId"/>
 
         <ModalFooter>
             <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
@@ -42,8 +15,9 @@
 </Modal>
 
 @code {
+    [Parameter] public required Data.Models.Stores.Store Store { get; set; }
     [Parameter] public required EventCallback UpdateStores { get; set; }
-    [Parameter] public int StoreId { get; set; }
+    [Parameter] public required int StoreId { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? EditStoreModel { get; set; }
 
@@ -51,33 +25,33 @@
 
     protected override void OnInitialized()
     {
-        EditStoreModel ??= new();
+        EditStoreModel ??= new Data.Models.Stores.UpdatePublicInfoStore
+        {
+            NAME = Store.NAME!,
+            ADDRESS = Store.ADDRESS!,
+            CITY = Store.CITY!,
+            STATE = Store.STATE!,
+            ZIP = Store.ZIP!,
+            WIDTH = Store.WIDTH,
+            LENGTH = Store.LENGTH,
+            BLUEPRINT_IMAGE = Store.BLUEPRINT_IMAGE,
+            USER_TUIDS = ""
+        };
     }
 
-    private async Task OnEditStoreSubmit(int StoreId)
+    private async Task OnEditStoreSubmit()
     {
         await Task.Run(() => Console.WriteLine("Update store: " + StoreId));
 
-        if (EditStoreModel != null)
-        {
-            await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
-            await UpdateStores.InvokeAsync();
-        }
-    }
+        if (EditStoreModel == null) return;
 
-    private async Task OnImageUpload(InputFileChangeEventArgs e)
-    {
-        MemoryStream ms = new MemoryStream();
-        await e.File.OpenReadStream().CopyToAsync(ms);
-        var bytes = ms.ToArray();
+        var response = await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
 
-        if (EditStoreModel != null)
-        {
-            EditStoreModel!.BLUEPRINT_IMAGE = bytes;
-        }
-        else if (EditStoreModel != null)
-        {
-            EditStoreModel!.BLUEPRINT_IMAGE = bytes;
-        }
+        Console.WriteLine(response);
+
+        if (response != System.Net.HttpStatusCode.OK) return;
+
+        await UpdateStores.InvokeAsync();
+
     }
 }

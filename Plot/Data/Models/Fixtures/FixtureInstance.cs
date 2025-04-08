@@ -28,8 +28,8 @@ public class FixtureInstance : IEquatable<FixtureInstance>
     public int? HANGER_STACK { get; set; }
     public string? CATEGORY { get; set; }
     public string? NOTE { get; set; }
-    public int? EDITOR_ID { get; set; }
-    
+    public int EDITOR_ID { get; set; }
+
     public bool Equals(FixtureInstance? other)
     {
         if (other is null)
