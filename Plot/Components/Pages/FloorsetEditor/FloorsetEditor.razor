@@ -243,14 +243,20 @@
             {
                 if (category.isHeader)
                 {
-                    if (category.headerCategory == fixture.CATEGORY)
+                    if (category.headerCategory == fixture.SUPERCATEGORY_NAME)
                     {
-                        category.currentValue += fixture.TOT_LF;
+                        if (fixture.TOT_LF != null)
+                        {
+                            category.currentValue += (int)fixture.TOT_LF;
+                        }
                     }
                 }
-                else if (category.headerCategory == fixture.CATEGORY && category.text == fixture.CATEGORY)
+                else if (category.headerCategory == fixture.SUPERCATEGORY_NAME && category.text == fixture.SUBCATEGORY)
                 {
-                    category.currentValue += fixture.TOT_LF;
+                    if (fixture.TOT_LF != null)
+                    {
+                        category.currentValue += (int)fixture.TOT_LF;
+                    }
                 }
 
 
@@ -356,24 +362,9 @@
     public int dictAddNewFixture(String fixtureName)
     {
         Console.WriteLine("DotNet adding new fixture - Fixture Name: " + fixtureName);
-        @* int newID = fixturesCount + 1;
-        foreach (Fixture fixture in Fixture.fixtures.Values)
-        {
-            if (fixture.Name == fixtureName)
-            {
-                FixtureInstance newFixture = new FixtureInstance(fixture, newID);
-                fixturesDict.Add(newFixture.editorID, newFixture);
-                fixturesCount += 1;
-                Console.WriteLine("Created new fixture! Returning ID " + newID);
-                return newID;
-            }
-        } *@
-
         @*We have a reference to the dragged fixture model in currentDraggedFixture. 
-        Create an instance from it and append to dict. Return id.
+        Create an instance from it and append to dict. Return id.*@
         
-        Data.Models.Fixtures.FixtureInstance
-        *@
         if (currentDraggedFixture == null)
         {
             return -1;
@@ -423,16 +414,16 @@ Called in the JS on move to update the data here.*@
                 if (allocationsSidebar != null)
                 {
                     category = allocationsSidebar.getSelectedCategory();
-                    fixturesDict[fixtureID].CATEGORY = category.headerCategory;
-                    fixturesDict[fixtureID].CATEGORY = category.text;
+                    fixturesDict[fixtureID].SUPERCATEGORY_NAME = category.headerCategory;
+                    fixturesDict[fixtureID].SUBCATEGORY = category.text;
                     Console.WriteLine("Painted fixture " + fixtureID);
                     ComputeAllocationTotals();
                 }
             }
             else
             {
-                fixturesDict[fixtureID].CATEGORY = category.headerCategory;
-                fixturesDict[fixtureID].CATEGORY = category.text;
+                fixturesDict[fixtureID].SUPERCATEGORY_NAME = category.headerCategory;
+                fixturesDict[fixtureID].SUBCATEGORY = category.text;
                 Console.WriteLine("Painted fixture " + fixtureID);
                 ComputeAllocationTotals();
             }
