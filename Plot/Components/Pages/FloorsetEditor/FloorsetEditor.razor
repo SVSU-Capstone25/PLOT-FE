@@ -39,65 +39,65 @@
 <SlideOut Id="FloorsetSlideOut" Class="d-flex flex-column p-2">
     @if (allocationsOpen)
     {
-                            <AllocationsSidebar @ref="allocationsSidebar" />
+        <AllocationsSidebar @ref="allocationsSidebar" />
 
-                            <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations" EraseClicked="EraseCategoryClicked" />
+        <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations" EraseClicked="EraseCategoryClicked" />
     }
     else
     {
-                            @if (addFixtureExpanded || buildingWallsExpanded)
-                            {
-                                                    <div class="expanded flex-grow-1">
-                                                        @if (addFixtureExpanded)
-                                                        {
-                                                                                <AddFixturePanel StoreId="StoreId" OnFixtureClicked="TriggerStateChange" ToggleAddFixture="ToggleAddFixture"
-                                                                                    FixtureDraggedEvent="OnFixtureDragged" FixtureModels="FixtureModels" />
-                                                        }
-                                                        @if (buildingWallsExpanded)
-                                                        {
-                                                                                <BuildingWallsPanel StoreId="StoreId" UpdateStore="UpdateStore" ToggleBuildingWalls="ToggleBuildingWalls" />
-                                                        }
-                                                    </div>
-                            }
+        @if (addFixtureExpanded || buildingWallsExpanded)
+        {
+            <div class="expanded flex-grow-1">
+                @if (addFixtureExpanded)
+                {
+                    <AddFixturePanel StoreId="StoreId" OnFixtureClicked="TriggerStateChange" ToggleAddFixture="ToggleAddFixture"
+                        FixtureDraggedEvent="OnFixtureDragged" FixtureModels="FixtureModels" />
+                }
+                @if (buildingWallsExpanded)
+                {
+                    <BuildingWallsPanel StoreId="StoreId" UpdateStore="UpdateStore" ToggleBuildingWalls="ToggleBuildingWalls" />
+                }
+            </div>
+        }
 
-                            <div class="vertical-sidebar-buttons">
-                                @if (!addFixtureExpanded)
-                                {
-                                                        <Button Class="Button button-with-spacing" Id="buttonAddFixture" Variant="primary"
-                                                            OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
-                                                            Add Fixture
-                                                        </Button>
-                                }
+        <div class="vertical-sidebar-buttons">
+            @if (!addFixtureExpanded)
+            {
+                <Button Class="Button button-with-spacing" Id="buttonAddFixture" Variant="primary"
+                    OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+                    Add Fixture
+                </Button>
+            }
 
-                                @if (!buildingWallsExpanded)
-                                {
-                                                        <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
-                                                            OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
-                                                            Edit Building Walls
-                                                        </Button>
-                                }
+            @if (!buildingWallsExpanded)
+            {
+                <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
+                    OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+                    Edit Building Walls
+                </Button>
+            }
 
-                                <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="ToggleAllocations"
-                                    Icon="fa-solid fa-eye" IsDisabled=false TextAlignment="center">
-                                    View Allocations
-                                </Button>
+            <Button Class="Button" Id="buttonImportFile" Variant="primary" OnClickFunction="ToggleAllocations"
+                Icon="fa-solid fa-eye" IsDisabled=false TextAlignment="center">
+                View Allocations
+            </Button>
 
-                                <Button Class="Button" Id="buttonImportFile" Variant="primary" @onclick="OpenImportModal"
-                                    Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
-                                    Import Excel File
-                                </Button>
+            <Button Class="Button" Id="buttonImportFile" Variant="primary" @onclick="OpenImportModal"
+                Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
+                Import Excel File
+            </Button>
 
-                                <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
-                                    @onclick="OpenPrint">
-                                    Print Layout
-                                </Button>
+            <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
+                @onclick="OpenPrint">
+                Print Layout
+            </Button>
 
-                                <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
-                                    Save
-                                </Button>
+            <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
+                Save
+            </Button>
 
-                                <FixtureConfigModal />
-                            </div>
+            <FixtureConfigModal />
+        </div>
     }
 </SlideOut>
 
@@ -378,7 +378,7 @@
         {
             return -1;
         }
-        
+
         int newEditorID = fixturesCount + 1;
         Data.Models.Fixtures.FixtureInstance newFixture = new Data.Models.Fixtures.FixtureInstance();
         newFixture.EDITOR_ID = newEditorID;

@@ -5,19 +5,19 @@ It allows changing the category, hanging, and notes of a fixture.
 It also allows you to delete a fixture on the grid. -->
 @* Add fixture edit modal to the floorset editor. - Tristan Calay *@
 <div class="dropdown-menu">
-  <a class="dropdown-item" href="#">Action</a>
-  <a class="dropdown-item" href="#">Another action</a>
-  <a class="dropdown-item" href="#">Something else here</a>
-  <div class="dropdown-divider"></div>
-  <a class="dropdown-item" href="#">Separated link</a>
+    <a class="dropdown-item" href="#">Action</a>
+    <a class="dropdown-item" href="#">Another action</a>
+    <a class="dropdown-item" href="#">Something else here</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#">Separated link</a>
 </div>
 
 @code {
-    private String fixtureName = "Default Fixture Title";
+    //private String fixtureName = "Default Fixture Title";
     private List<String> categoryInputValues = new List<String> { "Default Category" };
     private List<String> hangingInputValues = new List<String> { "Default Hanging" };
 
-    private String notesText = "";
+    //private String notesText = "";
 
     private Data.Models.Fixtures.FixtureInstance? currentFixture;
     public void selectFixture(Data.Models.Fixtures.FixtureInstance selectedFixture)
