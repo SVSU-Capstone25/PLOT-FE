@@ -407,5 +407,13 @@ document.addEventListener('keypress', event => {
     }
 })
 
+function addFixtureOnLoad(id, x, y, width, length, color) {
+    setTimeout(function () {
+        let newRack = new Rack(sketchInstance, x, y, width, length, id);
+        newRack.color = color;
+        grid.racks.push(newRack);
+    }, 500);
+}
+
 // Initialize when Blazor component loads
 //floorsetGrid.init();

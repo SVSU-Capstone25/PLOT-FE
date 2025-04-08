@@ -127,7 +127,29 @@
         {
             fixtureInstances = response;
         }
+        else
+        {
+            Console.WriteLine("DB returned null response for fixtures.");
+            return;
+        }
 
+        int largestEditorID = 0;
+        fixturesDict.Clear();
+        Console.WriteLine("DB returned " + fixtureInstances.Count + " fixtures for floorset " + FloorsetId);
+        foreach (Data.Models.Fixtures.FixtureInstance fixture in fixtureInstances)
+        {
+            if (fixture.EDITOR_ID > largestEditorID)
+            {
+                largestEditorID = fixture.EDITOR_ID;
+            }
+            Console.WriteLine("Fixture: ID " + fixture.EDITOR_ID + ", " + fixture.NAME);
+            if (!fixturesDict.ContainsKey(fixture.EDITOR_ID))
+            {
+                fixturesDict.Add(fixture.EDITOR_ID, fixture);
+            }
+        }
+
+        fixturesCount = largestEditorID;
     }
 
     private List<Data.Models.Fixtures.FixtureModel> FixtureModels = new List<Data.Models.Fixtures.FixtureModel>();
@@ -183,8 +205,15 @@
             dotNet = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("eval", "floorsetGrid.init()");
             await JS.InvokeVoidAsync("floorsetDashboardSetDotNet", dotNet);
+
+            foreach (Data.Models.Fixtures.FixtureInstance fixture in fixturesDict.Values)
+            {
+                await JS.InvokeVoidAsync("addFixtureOnLoad", fixture.EDITOR_ID, fixture.X_POS, fixture.Y_POS, fixture.WIDTH,
+                fixture.LENGTH, fixture.COLOR);
+            }
         }
     }
+
 
     /* Tristan Calay 4/4/25
     Dictionary to cache fixture data from DB by TUID
@@ -359,14 +388,15 @@
     /* Tristan Calay 4/6/25
     Add a new fixture when a fixture is dragged into the grid. */
     [JSInvokable]
-    public int dictAddNewFixture(String fixtureName)
+    public async Task<int> dictAddNewFixture(String fixtureName)
     {
         Console.WriteLine("DotNet adding new fixture - Fixture Name: " + fixtureName);
         @*We have a reference to the dragged fixture model in currentDraggedFixture. 
         Create an instance from it and append to dict. Return id.*@
-        
+
         if (currentDraggedFixture == null)
         {
+            Console.WriteLine("currentDraggedFixture is null! Somewhing went wrong.");
             return -1;
         }
 
@@ -381,6 +411,13 @@
         }
         fixturesDict.Add(newEditorID, newFixture);
         fixturesCount += 1;
+
+        //AddFixtureModel.STORE_TUID = StoreId;
+        //Console.WriteLine(AddFixtureModel);
+        Data.Models.Fixtures.Fixtures_State state = new Data.Models.Fixtures.Fixtures_State();
+        state.CurrentFixtures = fixturesDict.Values;
+        var response = await FixturesHttpClient.UpdateFixtureInformation(FloorsetId, state);
+        Console.WriteLine(response);
         Console.WriteLine("Created new fixture! Returning ID " + newEditorID);
         return newEditorID;
     }

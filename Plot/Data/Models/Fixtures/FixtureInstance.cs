@@ -33,7 +33,7 @@ public class FixtureInstance : IEquatable<FixtureInstance>
     public string? SUBCATEGORY { get; set; }
     public int? TOTAL_SALES { get; set; }
     public string? COLOR { get; set; }
-    public int? EDITOR_ID { get; set; }
+    public int EDITOR_ID { get; set; }
 
     public bool Equals(FixtureInstance? other)
     {
