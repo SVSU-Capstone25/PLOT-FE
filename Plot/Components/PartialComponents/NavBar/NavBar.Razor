@@ -9,42 +9,45 @@ The purpose of PLOT is to allow users to easily create, manage,
 and allocate floorsets for Platos Closet. 
 
 Author: Luke Wollenweber (3/13/2025)
-Updated: Danielle Smith (3/29/2025)-->
-@inject IJSRuntime JS
-@inject NavigationManager Navigation
+Updated: Danielle Smith (3/29/2025)
+Updated: Andrew Miller (4/7/2025)
 
-<div class="NavBar @Class" id="@Id">
-    <nav class="nav flex-row">
-        <div class="nav-item px-3">
-            <a class="nav-link" onclick="window.location.href='/store-dashboard'">
-                Stores <i class="fa-solid fa-bag-shopping"></i>
-            </a>
-       </div>
+-->
+@using Plot.Services
 
-        <div class="nav-item px-3">
-            <a class="nav-link" onclick="window.location.href='/user-dashboard'">
-                Users <i class="fa-solid fa-shirt"></i>
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@inject ICookie cookie
+
+<nav class="navbar platos-blue w-100">
+    <ul class="navbar-nav flex-row w-100">
+    <li class="nav-item px-3">
+        <a class="nav-link link-light" href="/store-dashboard">
+            Stores <i class="fa-solid fa-bag-shopping"></i>
+        </a>
+    </li>
+
+    <li class="nav-item px-3">
+        <a class="nav-link link-light" href="/user-dashboard">
+            Users <i class="fa-solid fa-shirt"></i>
+        </a>
+    </li>
+    @* Danielle Smith - 3/29/2025
+    Make it so help modal only shows on the floorset editor *@
+
+        <li class="nav-item px-3" hidden="@(!ShowHelpLink)">
+            <a class="nav-link link-light" data-bs-toggle="modal" data-bs-target="#helpModal" href="#">
+                Help <i class="fa-solid fa-question"></i>
             </a>
-        </div>
-        @* Danielle Smith - 3/29/2025
-        Make it so help modal only shows on the floorset editor *@
-        @if (Navigation.Uri.Contains("/floorset-editor"))
-        {
-            <div class="nav-item px-3">
-                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#helpModal">
-                    Help <i class="fa-solid fa-question"></i>
-                </a>
-            </div>
-        }
-        @* Danielle Smith - 3/29/2025
-        Make it so logout goes back to login *@
-        <div class="nav-item px-3 ml-auto">
-            <a class="nav-link" onclick="window.location.href='/login'">
-                Logout 
-            </a>
-        </div>
-    </nav>
-</div>
+        </li>
+
+    <li class="nav-item px-3 ms-auto">
+        <a class="nav-link link-light" @onclick="async () => await OnLogoutClick()" href="#">
+            Logout
+        </a>
+    </li>
+    </ul>
+</nav>
 
 @code {
     [Parameter]
@@ -52,4 +55,36 @@ Updated: Danielle Smith (3/29/2025)-->
 
     [Parameter]
     public string? Class { get; set; }
+
+    private bool ShowHelpLink;
+
+    private async Task OnLogoutClick() {
+        await cookie.SetValue("Auth", string.Empty);
+        NavigationManager.NavigateTo("/login", forceLoad: true);
+    }
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+        UpdateHelpVisibility(NavigationManager.Uri);
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdateHelpVisibility(e.Location);
+        StateHasChanged();
+    }
+
+    private void UpdateHelpVisibility(string uri)
+    {
+        ShowHelpLink = uri.Contains("/floorset-editor", StringComparison.OrdinalIgnoreCase);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+
+
 }

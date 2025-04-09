@@ -1,0 +1,17 @@
+<li class="DropdownLink @Class" id="@Id">
+    <a class="dropdown-item" @attributes="Attributes">
+        <i class="@Icon"></i> @ChildContent
+    </a>
+</li>
+
+@code {
+    [Parameter] public string? Id { get; set; }
+
+    [Parameter] public string? Class { get; set; }
+
+    [Parameter] public required string Icon { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+}

@@ -1,0 +1,11 @@
+<div class="modal-header @Variant" @attributes="Attributes">
+    <h5 class="modal-title text-white"><i class="@Icon"></i> @Title</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string? Title { get; set; } // modal title
+    [Parameter] public string? Icon { get; set; } // modal icon (font awesome icon - nullable)
+    [Parameter] public string? Variant { get; set; } = "standard"; // modal color - defaults to "standard" if none is passed
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+}

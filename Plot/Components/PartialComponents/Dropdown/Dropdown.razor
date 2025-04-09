@@ -10,10 +10,14 @@ and allocate floorsets for Platos Closet.
 Author: Josh Rodack (2/10/2025)-->
 @inject IJSRuntime JSRuntime
 
-<div class="dropend @Class" id="@Id">
-  <button type="button" class="btn" data-bs-toggle="dropdown" aria-expanded="false">
+<div class="dropdown @Class" id="@Id">
+  @* <button type="button" class="btn" data-bs-toggle="dropdown" aria-expanded="false">
     <i class="fa-solid fa-ellipsis"></i>
-  </button>
+  </button> *@
+  <a class="btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fa-solid fa-ellipsis"></i>
+  </a>
+
 
   <ul class="dropdown-menu">
     <h6 class="dropdown-header">@LabelText Options</h6>

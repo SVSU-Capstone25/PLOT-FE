@@ -1,0 +1,15 @@
+.standard {
+    background-color: var(--platos-blue);
+}
+
+.danger {
+    background-color: var(--cancel);
+}
+
+.success {
+    background-color: var(--success);
+}
+
+.warning {
+    background-color: var(--warning);
+}

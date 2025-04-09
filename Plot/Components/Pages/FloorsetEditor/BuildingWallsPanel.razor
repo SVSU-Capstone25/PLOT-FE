@@ -1,68 +1,101 @@
-@inject IJSRuntime JS
+@inject StoresHttpClient StoresHttpClient
 
 @using Plot.Components.PartialComponents.NumericInput
+@using Plot.Components.PartialComponents.SlideOut
 
-<div class="walls-container">
-    <h3 class="header pt-3" style="font-weight: bold;" onclick="ToggleBuildingWalls"><i class="fas fa-edit"></i>
+<SlideOutHeader>
+    <h3 class="header pt-3" onclick="ToggleBuildingWalls">
+        <i class="fas fa-edit"></i>
         Edit Building Walls
     </h3>
-    <hr style="opacity: 1.0; color:black;">
-    <label>Dimensions</label>
-    <div class="horizantal-inputs">
-        <NumericInput Id="width" Class="numeric-input" Label="" Placeholder="" Description="" value="@width.ToString()"
-            ValueChanged="@(str => NumberChanged(str, value => width = value))" />
-        @* The X to separate the two inputs *@
-        <span class="dimension-separator" onclick="SwapDimensions('width-number-input','length-number-input')"
-            style="cursor: pointer;">X</span>
-        <NumericInput Id="length" Class="numeric-input" Label="" Placeholder="" Description=""
-            value="@length.ToString()" ValueChanged="@(str => NumberChanged(str, value => length = value))" />
-    </div>
-    <label>Enter the Dimensions (length and width) in feet</label>
+</SlideOutHeader>
 
-    <div class="fixture-area p-3 mt-3 d-flex mb-2">
-        <div class="fixture mb-3 d-flex flex-row" @ondragstart="@((e) => OnDragStartEmployee(e, "1x1", "red"))"
-            draggable="true" @ondragstart:preventDefault="true">
-            <div class="drag-start-area d-flex flex-row">
-                <div class="emp-only"></div>
-                <p class="fixture-text m-2 disable-select grab-cursor">Employee Only Area</p>
+<SlideOutBody>
+    <EditForm Model="UpdateSizeStoreModel" class="walls-container flex-grow-1 d-flex flex-column gap-2"
+        OnValidSubmit="OnUpdateSizeStoreSubmit">
+        <label>
+            Dimensions
+            <div class="d-flex flex-row gap-2 align-items-center">
+                <div class="input-group">
+                    <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.LENGTH" min="1" />
+                    <span class="input-group-text">ft</span>
+                </div>
+                <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Swap Dimensions" @onclick="OnSwapDimensionsClick">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+                <div class="input-group">
+                    <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.WIDTH" min="1" />
+                    <span class="input-group-text">ft</span>
+                </div>
             </div>
+            <div class="form-text">Enter the Dimensions (length and width) in feet</div>
+        </label>
+
+        @* Tristan Calay 4/2/25 - Added new employee area controls *@
+
+        <div style="display: flex; flex-direction: column; row-gap: 16px;">
+            <Button type="submit" Class="button-green" Variant="primary" Icon="fa-solid fa-check"
+                TextAlignment="center">
+                Apply
+            </Button>
+
+            <Button Class="button-green" Icon="fa-solid fa-brush" TextAlignment="center">
+                Toggle Paint Employee Area
+            </Button>
+
+            <Button Class="button-green" Icon="fa-solid fa-eraser" TextAlignment="center">
+                Toggle Erase Employee Area
+            </Button>
         </div>
-    </div>
-    <Button Class="button-green" Id="buttonApply" Variant="primary" OnClickFunction="ApplyDimensions"
-        Icon="fa-solid fa-check" IsDisabled="false" TextAlignment="center">
-        Apply
-    </Button>
-</div>
+    </EditForm>
+
+</SlideOutBody>
 
 @code {
 
-    private double width { get; set; }
-    private double length { get; set; }
+    [Parameter] public required int StoreId { get; set; }
+    [Parameter] public required Data.Models.Stores.Store Store { get; set; }
+    [Parameter] public EventCallback ToggleBuildingWalls { get; set; }
 
-    /* This function is called when the number is changed */
-    private async Task NumberChanged(string strNumber, Action<double> setValue)
+    [Parameter] public EventCallback UpdateStore { get; set; }
+
+    [SupplyParameterFromForm] private Data.Models.Stores.UpdateSizeStore? UpdateSizeStoreModel { get; set; }
+
+    protected override void OnInitialized()
     {
-        Double.TryParse(strNumber, out double newNumber);
-
-        setValue(newNumber);
-
-        await InvokeAsync(StateHasChanged);
-    }
-    //this method is called when teh apply button in the edit floor layout panel is clicked
-    private async Task ApplyDimensions()
-    {
-        //if either length and width are null
-        if (length <= 0 || width <= 0)
+        UpdateSizeStoreModel ??= new()
         {
-            //alerts the user that the data entered is invalid
-            await JS.InvokeVoidAsync("alert", "Please enter valid dimensions greater than 0.");
-            return;
-        }
-        await JS.InvokeVoidAsync("UpdateGridDimensions", length, width);
+            LENGTH = Store.LENGTH,
+            WIDTH = Store.WIDTH
+        };
     }
 
-    private async Task OnDragStartEmployee(DragEventArgs e, string size, string color)
+    private void OnSwapDimensionsClick()
     {
-        await JS.InvokeVoidAsync("createDraggableEmployee", e, size, color);
+        if (UpdateSizeStoreModel != null)
+        {
+            var temp = UpdateSizeStoreModel.LENGTH;
+            UpdateSizeStoreModel.LENGTH = UpdateSizeStoreModel.WIDTH;
+            UpdateSizeStoreModel.WIDTH = temp;
+        }
+    }
+
+    private async Task OnUpdateSizeStoreSubmit()
+    {
+        if (UpdateSizeStoreModel != null)
+        {
+
+            await Task.Run(() => Console.WriteLine(UpdateSizeStoreModel));
+
+            var response = await StoresHttpClient.UpdateStoreSize(StoreId, UpdateSizeStoreModel);
+
+            Console.WriteLine(response);
+
+            if (response == System.Net.HttpStatusCode.OK)
+            {
+                await UpdateStore.InvokeAsync();
+            }
+        }
     }
 }

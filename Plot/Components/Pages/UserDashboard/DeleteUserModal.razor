@@ -1,0 +1,38 @@
+@inject UsersHttpClient UsersHttpClient
+
+<Modal class="standard" @attributes="Attributes">
+    <ModalHeader Title="Confirm Deletion" Variant="danger" />
+    <form @onsubmit="async () => await OnDeleteUserSubmit(userTuid)">
+        @code {
+            private string? deleteTextInput;
+            private bool isDisabled => deleteTextInput != "DELETE";
+        }
+        <ModalBody>
+            <h2>Are you SURE you want to delete this user?</h2>
+            <input type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
+                @bind-value="deleteTextInput" @bind-value:event="oninput" />
+        </ModalBody>
+
+        <ModalFooter>
+            <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
+                data-bs-dismiss="modal">
+                Yes, Delete
+            </Button>
+        </ModalFooter>
+    </form>
+</Modal>
+
+@code {
+    [Parameter] public required int userTuid { get; set; }
+
+    [Parameter] public required EventCallback UpdateUsers { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    private async Task OnDeleteUserSubmit(int userId)
+    {
+        await UsersHttpClient.DeleteUserById(userId);
+        await UpdateUsers.InvokeAsync();
+    }
+
+}

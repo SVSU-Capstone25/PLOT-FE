@@ -10,35 +10,11 @@ and allocate floorsets for Platos Closet.
 @ChildContent
 Author: Josh Rodack (2/10/2025)-->
 
-<div role="button" class="card @Class border-0" id="@Id" style="width:300px;">
-    <img class="card-img-top img-card" src="@CardImage" alt="Card image cap">
-    <div class="card-body d-flex flex-row">
-        <h3 class="card-content flex-grow-1 d-inline text-truncate" style="font-weight: 600;">@CardText</h3>
-        <span class="d-inline float-end">@ChildContent</span>
-    </div>
+<div role="button" class="card border-0" style="width: 15rem;">
+    @ChildContent
 </div>
 
-
-
-
 @code {
-
-    [Parameter]
-    public string? Id { get; set; }
-
-    [Parameter]
-    public string? Class { get; set; }
-
-
-    [Parameter]
-    public required string CardText { get; set; }
-
-    [Parameter]
-    public required string CardImage { get; set; }
-
-    //dropdown component should be passed through this childcontent
-    //parameter
     [Parameter]
     public required RenderFragment ChildContent { get; set; }
-
 }

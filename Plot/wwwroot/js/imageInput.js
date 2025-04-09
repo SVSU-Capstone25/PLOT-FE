@@ -11,7 +11,7 @@
 */
 window.initializeImageInput = (id) => {
     // get the drag/drop area as well as the file input
-    const dropArea = document.getElementById(`${id}`);
+    const dropArea = document.getElementById(`${id}-container`);
     const fileInput = document.getElementById(`${id}-fileInput`);
 
     // add the event listener for when you click on the 
@@ -46,25 +46,27 @@ window.initializeImageInput = (id) => {
 
 // if a valid image file was selected, change the background 
 // of the drag/drop area to serve as a preview
-function onImageSelected(event, id) {
-    const file = event.target.files[0];
+function onImageSelected(id) {
+    console.log("id is " + id);
+    const fileInput = document.getElementById(`${id}-fileInput`);
+    const file = fileInput.files[0];
 
-    if(!file){  // cancel button in file explorer returns an empty file object
+    if (!file) {  // cancel button in file explorer returns an empty file object
         return;
     }
 
     if (file && file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onload = function (e) {
-        let dropArea = document.getElementById(`${id}`);
+            let dropArea = document.getElementById(`${id}-container`);
 
-        dropArea.style.backgroundImage = `url(${e.target.result})`;
-        dropArea.style.backgroundSize = "cover";
-        dropArea.style.backgroundPosition = "center";
-        dropArea.classList.remove("dashed-border");
+            dropArea.style.backgroundImage = `url(${e.target.result})`;
+            dropArea.style.backgroundSize = "cover";
+            dropArea.style.backgroundPosition = "center";
+            dropArea.classList.remove("dashed-border");
 
         };
-        
+
         reader.readAsDataURL(file);
     } else {
         alert("Please upload a valid image file.");

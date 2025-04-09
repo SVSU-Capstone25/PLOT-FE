@@ -1,172 +1,86 @@
 @inject IJSRuntime JS
-
-@using Plot.Components.PartialComponents.NumericInput
+@inject FixturesHttpClient FixturesHttpClient
 
 @* Add Fixture Modal *@
-@{    
-    <Modal Class="modal-xl fixture-modal" Id="addFixture" Title="Add Fixture">
-        <BodyContent>
-            <TextInput Label="Name" Placeholder="Three Way Rack" Type="text" Value="@ModalName" ValueChanged="@((v)=> ModalName = v)"/>
-            <div class="d-flex flex-row align-items-center justify-content-between">
 
-                <div class="dimension">
-                    <NumericInput Id="add-length" Class="dimension" Label="Length" Placeholder="2ft" Description="Enter the length in feet"
-                    Value="@ModalLength" ValueChanged="(v) => {
-                            ModalLength = v;
-                            // If the length and width boxes have values, calculate the LF capacity
-                            if (!ModalLength.Equals(string.Empty) && !ModalWidth.Equals(string.Empty)) {
-                                try {
-                                    ModalLFCapacity = (int.Parse(ModalLength) * int.Parse(ModalWidth)) + string.Empty;
-                                } catch (Exception e){
-                                    Console.WriteLine(e.GetBaseException());
-                                }
-                                // If the LF capacity and the hanger stack have values, calculate total LF
-                                try {
-                                    ModalTotalLF = (int.Parse(ModalLFCapacity) * int.Parse(ModalHangerStack)) + string.Empty;
-                                } catch (Exception e){
-                                    Console.WriteLine(e.GetBaseException());
-                                }
-                            } else {
-                                ModalTotalLF = string.Empty;
-                            }
-                        }" />
+<Modal class="modal-xl fixture-modal" id="addFixture">
+    <ModalHeader Title="Add Fixture" />
+    <EditForm Model="AddFixtureModel" OnValidSubmit="OnAddFixtureSubmit">
+        <ModalBody>
+            <label class="w-100 d-flex">
+                <span class="mt-2 fw-bold">Name</span>
+                <InputText @bind-value="AddFixtureModel!.NAME">Three Way Rack</InputText>
+            </label>
+            <div class="row">
+                <div class="col-md-5">
+                    <label class="w-100 d-flex">
+                        <span class="mt-2 fw-bold">Length</span>
+                        <InputNumber @bind-Value="AddFixtureModel!.LENGTH" />
+                    </label>
                 </div>
-
-                    @* The X to separate the two inputs *
-                    @* Making X clickable to swap dimensions (Width -> Length; Length -> Width) -- Zach Ventimiglia *
-                    Edited by Danielle Smith to use different implementation*@
-                <i class="fa-solid fa-xmark" onclick="SwapDimensions('add-length-number-input','add-width-number-input')" 
-                style="cursor: pointer;"></i>
-
-                <div class="dimension">
-                    <NumericInput Id="add-width" Class="dimension" Label="Width" Placeholder="2ft" Description="Enter the width in feet"
-                    Value="@ModalWidth" ValueChanged="(v) => {
-                            ModalWidth = v;
-                            // If the length and width boxes have values, calculate the LF capacity
-                            if (!ModalLength.Equals(string.Empty) && !ModalWidth.Equals(string.Empty)) {
-                                try {
-                                    ModalLFCapacity = (int.Parse(ModalLength) * int.Parse(ModalWidth)) + string.Empty;
-                                } catch (Exception e){
-                                    Console.WriteLine(e.GetBaseException());
-                                }
-                                // If the LF capacity and the hanger stack have values, calculate total LF
-                                try {
-                                    ModalTotalLF = (int.Parse(ModalLFCapacity) * int.Parse(ModalHangerStack)) + string.Empty;
-                                } catch (Exception e){
-                                    Console.WriteLine(e.GetBaseException());
-                                }
-                            } else {
-                                ModalTotalLF = string.Empty;
-                            }
-                        }" />
+                <div class="col-md-auto my-auto">
+                    <i class="fa-solid fa-xmark mx-auto mt-4 ms-3"></i>
+                </div>
+                <div class="col-md-5">
+                    <label class="w-100 d-flex">
+                        <span class="mt-2 fw-bold">Width</span>
+                        <InputNumber @bind-Value="AddFixtureModel!.WIDTH" />
+                    </label>
                 </div>
             </div>
 
-            <NumericInput Id="add-lfcapacity" Label="Linear Feet Capacity" Placeholder="2ft"
-            Description="Enter the capacity of the first layer of hangers on the rack in feet" ReadOnly="true"
-            Value="@ModalLFCapacity" ValueChanged="@(v => {
-                        ModalLFCapacity = v; 
-                        
-                        // If the LF capacity and the hanger stack have values, calculate total LF
-                        if (ModalLFCapacity.Equals("") || ModalHangerStack.Equals("")) {
-                            ModalTotalLF = "";
-                        } else {
-                            try {
-                                ModalTotalLF = (int.Parse(ModalLFCapacity) * int.Parse(ModalHangerStack)).ToString();
-                            } catch (FormatException e) {
-                                Console.WriteLine(e.GetBaseException());
-                            }
-                        }
-                    })" />
+            <label class="w-100 d-flex">
+                <span class="mt-2 fw-bold">Linear Feet Capacity</span>
+                <InputNumber @bind-Value="AddFixtureModel!.LF_CAP" />
+            </label>
 
-            <NumericInput Id="add-hanger-stack" Label="Hanger Stack" Placeholder="2" Description="Enter the number of vertically stacked racks"
-            Value="@ModalHangerStack" ValueChanged="@(v => {
-                        ModalHangerStack = v; 
-                        ModalFixtureImg = v;
-                        
-                        // If the LF capacity and the hanger stack have values, calculate total LF
-                        if (ModalLFCapacity.Equals("") || ModalHangerStack.Equals("")) {
-                            ModalTotalLF = "";
-                        } else {
-                            try {
-                                ModalTotalLF = (int.Parse(ModalLFCapacity) * int.Parse(ModalHangerStack)).ToString();
-                            } catch (FormatException e) {
-                                Console.WriteLine(e.GetBaseException());
-                            }
-                        }
-                    })" />
+            <label class="w-100 d-flex">
+                <span class="fw-bold">Linear Feet: @AddFixtureModel!.WIDTH * @AddFixtureModel!.LENGTH</span>
+            </label>
 
-            <NumericInput Id="add-total-lf" Label="Total Linear Feet" Placeholder="4"
-            Description="The final calculation of linear feet (LF capacity x hanger stack)" ReadOnly="true" @bind-value="ModalTotalLF" />
-
-
-            <div class="img-input">
-                <ImageInput Height="400px" Width="400px" Label="Fixture Image" 
-                Id="add-fixtureimg" />
-            </div>
-
-
-
-
-        </BodyContent>
-
-        <FooterContent>
-            <Button class="btn add-btn ms-auto" Variant="primary" OnClickFunction=@(async (e) => {
-                await AddFixture(new Fixture(ModalName,ModalLength,ModalWidth,ModalHangerStack,ModalFixtureImg));
-                
-            })>Add</Button>
-        </FooterContent>
-    </Modal>
-}
+            <InputFile OnChange="OnImageUpload" />
+        </ModalBody>
+        <ModalFooter>
+            <Button class="btn add-btn ms-auto" Variant="primary" type="submit">Add</Button>
+        </ModalFooter>
+    </EditForm>
+</Modal>
 
 @code {
-    // Temporary fields for the Add Fixture modal.
-    string ModalName = "";
-    string ModalLength = "";
-    string ModalWidth = "";
-    string ModalLFCapacity = "";
-    string ModalHangerStack = "";
-    string ModalTotalLF = "";
-    string ModalFixtureImg = "";
 
-    /*
-        The AddFixture function adds the fixture to the dictionary and clears the temporary fields.
-    */
-    public async Task AddFixture(Fixture currFixture)
+    [Parameter] public EventCallback UpdateFixtureModels { get; set; }
+
+    [Parameter] public required int StoreId { get; set; }
+
+    [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? AddFixtureModel { get; set; }
+
+    protected override void OnInitialized()
     {
-        try {
-            // If the fixture has valid values, add to the dictionary and close the modal.
-            if (!currFixture.HasNullProperties()) {
-                Fixture.fixtures.Add(currFixture.Name, currFixture);
-                await JS.InvokeVoidAsync("toggleModal","addFixture",false);
-                ClearTempFixtureData();
-            } else {
-                // If not, tell the user to fill out all fields.
-                await JS.InvokeVoidAsync("displayAlert","Please fill out all fields.");
-            }
-            
-        } catch (ArgumentException)
-        {
-            // If the name matches an existing fixture, tell the user to choose another name.
-            await JS.InvokeVoidAsync("displayAlert",
-                "A fixture with that name has already been used.  Please choose another name.");
-        }
-
-    
+        AddFixtureModel ??= new();
     }
 
-    /*
-        The ClearTempFixtureData function clears the data from the fields in the Add Fixture modal.
-    */
-    [JSInvokable]
-    public void ClearTempFixtureData() {
-        ModalName = "";
-        ModalLength = "";
-        ModalWidth = "";
-        ModalLFCapacity = "";
-        ModalHangerStack = "";
-        ModalTotalLF = "";
-        ModalFixtureImg = "";
-        StateHasChanged();
+    public async Task OnAddFixtureSubmit()
+    {
+        await Task.Run(() => Console.WriteLine("Add Fixture"));
+
+        if (AddFixtureModel != null)
+        {
+            AddFixtureModel.STORE_TUID = StoreId;
+            Console.WriteLine(AddFixtureModel);
+            var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
+            Console.WriteLine(response);
+
+            await UpdateFixtureModels.InvokeAsync();
+        }
+    }
+
+
+    private async Task OnImageUpload(InputFileChangeEventArgs e)
+    {
+        MemoryStream ms = new MemoryStream();
+        await e.File.OpenReadStream().CopyToAsync(ms);
+        var bytes = ms.ToArray();
+
+        AddFixtureModel!.ICON = bytes;
     }
 }

@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
+using Plot.Data.Models.Auth.Login;
+using Plot.Services;
 
 /*
     Filename: AuthService.cs
@@ -14,33 +16,17 @@ using Microsoft.JSInterop;
 
     Written by: Michael Polhill
 */
-public class AuthService
+public class AuthService : PlotHttpClient
 {
-    // VARIABLES -- VARIABLES -- VARIABLES -- VARIABLES -- VARIABLES ------
-    //Used for calling the JS functions for login and logout.
-    private readonly IJSRuntime _jsRuntime;
-    
-
-    //Used for getting the cookies from the request.
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    //The URL for the authentication API.
-    private string _jsAuthUrl = "";
-
-
-     // Methods -- Methods -- Methods -- Methods -- Methods -- Methods -----
+    // Methods -- Methods -- Methods -- Methods -- Methods -- Methods -----
 
     /// <summary>
     /// Inect the JS runtime and HTTP context accessor.
     /// </summary>
     /// <param name="jsRuntime"></param>
     /// <param name="httpContextAccessor"></param>
-    public AuthService(IJSRuntime jsRuntime, IHttpContextAccessor httpContextAccessor)
-    {
-        _jsRuntime=jsRuntime;
-        _httpContextAccessor=httpContextAccessor;
-        _jsAuthUrl="http://localhost:8085/api/auth";
-    }
+    public AuthService(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, "/auth")
+    { }
 
 
     /// <summary>
@@ -50,16 +36,11 @@ public class AuthService
     /// <param name="email"></param>
     /// <param name="password"></param>
     /// <returns> bool</returns> If the login was successful, it will return true, otherwise false.
-    public async Task<bool> LoginAsync(string email, string password)
+    public async Task<LoginToken?> LoginAsync(LoginRequest loginRequest)
     {
-        // The loginAPIUri is the URL for the login API.
-        var loginAPIUri= new Uri(_jsAuthUrl +"/login");
+        JsonContent body = JsonContent.Create(loginRequest);
 
-        // Use Js Interop to call the loginUser function in the JS file.
-        var result = await _jsRuntime.InvokeAsync<bool>("loginUser", loginAPIUri, email, password);
-
-        // Return the result of the login.
-        return result;
+        return await SendPostAsync<LoginToken>("/login", body);
     }
 
     /// <summary>
@@ -67,16 +48,9 @@ public class AuthService
     /// </summary>
     /// <returns>bool</returns> If the logout was successful, it will return true, otherwise false.
     public async Task<bool> LogOutAsync()
-    {   // The logoutAPIUri is the URL for the logout API.
-        var logoutAPIUri= new Uri(_jsAuthUrl +"/logout");
+    {
+        JsonContent body = JsonContent.Create("");
 
-        //Get the auth token to use in the request
-        var token =_httpContextAccessor.HttpContext?.Request.Cookies["Auth"];
-        
-        // Use Js Interop to call the logoutUser function in the JS file.
-        var result = await _jsRuntime.InvokeAsync<bool>("logoutUser", logoutAPIUri,token);
-        
-        //Return the result.
-        return result;
+        return await SendPostAsync<bool>("/logout", body);
     }
 }

@@ -23,7 +23,7 @@ public record UserDTO
 {
     [Required]
     [Range(1, int.MaxValue, ErrorMessage = "TUID must be an integer")]
-    public int? TUID { get; set; }
+    public required int TUID { get; set; }
     [Required]
     [StringLength(747, ErrorMessage = "First Name cannot exceed 747 characters.")]
     public string? FIRST_NAME { get; set; }

@@ -1,0 +1,52 @@
+@inject StoresHttpClient StoresHttpClient
+
+<Modal @attributes="Attributes" SizeClass="modal-lg">
+    <ModalHeader Title="Create Store" />
+    <EditForm Model="AddStoreModel" OnValidSubmit="async () => await OnAddStoreSubmit()">
+
+        <AddUpdateStoreModalBody AddUpdateStoreModel="AddStoreModel" StoreId="StoreId" />
+
+        <ModalFooter>
+            <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
+                Create Store
+            </Button>
+        </ModalFooter>
+    </EditForm>
+</Modal>
+
+@code {
+    [Parameter] public required EventCallback UpdateStores { get; set; }
+
+    [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? AddStoreModel { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    protected override void OnInitialized() => AddStoreModel ??= new();
+
+    public int StoreId = -1;
+
+    private async Task OnAddStoreSubmit()
+    {
+        if (AddStoreModel != null)
+        {
+
+            var Store = new Data.Models.Stores.CreateStore()
+            {
+                NAME = AddStoreModel.NAME!,
+                ADDRESS = AddStoreModel.ADDRESS!,
+                BLUEPRINT_IMAGE = AddStoreModel.BLUEPRINT_IMAGE,
+                CITY = AddStoreModel.CITY!,
+                LENGTH = AddStoreModel.LENGTH,
+                WIDTH = AddStoreModel.WIDTH,
+                STATE = AddStoreModel.STATE!,
+                ZIP = AddStoreModel.ZIP!,
+                USER_TUIDS = ""
+            };
+
+            Console.WriteLine(Store);
+
+            await StoresHttpClient.CreateStore(Store);
+            await UpdateStores.InvokeAsync();
+        }
+    }
+}

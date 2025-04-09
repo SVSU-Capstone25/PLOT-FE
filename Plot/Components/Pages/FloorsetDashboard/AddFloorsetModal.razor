@@ -1,0 +1,53 @@
+@inject FloorsetsHttpClient FloorsetsHttpClient
+
+@* + Siona Beaudoin, 4/3/2025, edit the title of floorsets*@
+<Modal id="create-floorset" class="standard">
+    <ModalHeader Title="Create Floorset" Variant="standard" />
+    <EditForm Model="CreateFloorsetModel" OnValidSubmit="async () => await OnCreateFloorsetSubmit()"
+        FormName="Create Floorset Form">
+
+        <AddEditFloorsetModalBody AddUpdateFloorsetModel="CreateFloorsetModel" />
+
+        <ModalFooter>
+            <Button TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
+                Create
+            </Button>
+        </ModalFooter>
+    </EditForm>
+</Modal>
+
+@code
+{
+    [Parameter] public required EventCallback UpdateFloorsets { get; set; }
+    [Parameter] public required int StoreId { get; set; }
+
+    [SupplyParameterFromForm] private Data.Models.Floorsets.UpdatePublicInfoFloorset? CreateFloorsetModel { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    protected override void OnInitialized()
+    {
+        CreateFloorsetModel ??= new();
+    }
+
+    //Siona Beaudoin - 4/3/2025
+    private async Task OnCreateFloorsetSubmit()
+    {
+        if (CreateFloorsetModel != null)
+        {
+            var Floorset = new Data.Models.Floorsets.CreateFloorset()
+            {
+                NAME = CreateFloorsetModel.NAME,
+                CREATED_BY = -1,
+                DATE_CREATED = DateTime.Now,
+                DATE_MODIFIED = DateTime.Now,
+                MODIFIED_BY = -1,
+                STORE_TUID = StoreId,
+                FLOORSET_IMAGE = new byte[] { 0x0 }
+            };
+
+            await FloorsetsHttpClient.CreateFloorset(Floorset);
+            await UpdateFloorsets.InvokeAsync();
+        }
+    }
+}

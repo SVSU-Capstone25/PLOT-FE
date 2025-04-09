@@ -14,6 +14,8 @@
     Written by: Michael Polhill
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Plot.Data.Models.Auth.ResetPassword;
 
 public record ResetPasswordRequest
@@ -21,5 +23,6 @@ public record ResetPasswordRequest
     // VARIABLES -- VARIABLES -- VARIABLES -- VARIABLES -- VARIABLES ------
 
     // Email address of the user requesting a password reset.
-    public required string EMAIL { get; set; }
+    [Required]
+    public string? EMAIL { get; set; }
 }
