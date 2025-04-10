@@ -1,6 +1,6 @@
 @inject UsersHttpClient UsersHttpClient
 
-<Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" @attributes="Attributes">
+<Modal class="modal-dialog modal-xl user-modal user-info-modal" @attributes="Attributes">
     <ModalHeader Title="Update User" />
     <EditForm Model="UpdateUserModel" OnValidSubmit="OnUpdateUserSubmit">
         <DataAnnotationsValidator />
@@ -17,6 +17,11 @@
 </Modal>
 
 @code {
+
+    private List<Data.Models.Stores.Store>? userStores = new List<Data.Models.Stores.Store>();
+
+    private List<Data.Models.Stores.Store>? notUserStores = new List<Data.Models.Stores.Store>();
+
     [Parameter] public required Data.Models.Users.UserDTO User { get; set; }
 
     [Parameter] public required EventCallback UpdateUsers { get; set; }
@@ -39,12 +44,46 @@
 
     private async Task OnUpdateUserSubmit()
     {
+        await UpdateUser();
+        await UpdateUserStores(User.TUID);
+    }
+
+    private async Task UpdateUser()
+    {
         if (UpdateUserModel != null)
         {
             Console.WriteLine(UpdateUserModel);
             var response = await UsersHttpClient.UpdateUserPublicInfo(User.TUID, UpdateUserModel);
             Console.WriteLine(response);
             await UpdateUsers.InvokeAsync();
+        }
+    }
+
+    private async Task UpdateUserStores(int userId)
+    {
+        await UpdateUserStoresAssigned(userId);
+        await UpdateUserStoresNotAssigned(userId);
+    }
+
+    private async Task UpdateUserStoresAssigned(int userId)
+    {
+        var response = await UsersHttpClient.GetStoreOfUserById(userId);
+
+        Console.WriteLine(response);
+
+        if (response != null)
+        {
+            userStores = response;
+        }
+    }
+
+    private async Task UpdateUserStoresNotAssigned(int userId)
+    {
+        var response = await UsersHttpClient.GetStoresNotForUser(userId);
+
+        if (response != null)
+        {
+            notUserStores = response;
         }
     }
 }

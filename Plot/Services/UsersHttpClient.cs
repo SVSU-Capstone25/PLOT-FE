@@ -54,8 +54,13 @@ public class UsersHttpClient : PlotHttpClient
         return await SendPostAsync<HttpStatusCode>($"/update-access-list", body);
     }
 
-    public async Task<Store?> GetStoreOfUserById(int userId)
+    public async Task<List<Store>?> GetStoreOfUserById(int userId)
     {
-        return await SendGetAsync<Store>($"/stores/{userId}");
+        return await SendGetAsync<List<Store>>($"/stores/{userId}");
+    }
+
+    public async Task<List<Store>?> GetStoresNotForUser(int userId)
+    {
+        return await SendGetAsync<List<Store>>($"/stores-not/{userId}");
     }
 }

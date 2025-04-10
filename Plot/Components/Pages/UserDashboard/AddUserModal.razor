@@ -1,6 +1,6 @@
 @inject AuthHttpClient AuthHttpClient
 
-<Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" @attributes="Attributes">
+<Modal class="modal-dialog modal-xl user-modal user-info-modal" @attributes="Attributes">
     <ModalHeader Title="Add User" />
     <EditForm Model="AddUserModel" OnValidSubmit="OnAddUserSubmit">
         <DataAnnotationsValidator />
