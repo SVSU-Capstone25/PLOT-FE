@@ -442,21 +442,37 @@ function flipOrder() {
 }
 
 /*
+    This function grabs the current canvas image from an open floorset and returns it
+*/
+
+function getCanvasImage() {
+    const canvas = document.querySelector('canvas');
+    if (!canvas) {
+        console.error("Canvas not found!");
+        return null;
+    }
+
+    //get the image data URL
+    const image = canvas.toDataURL("image/png"); 
+    return image; // Return the data URL (base64 image)
+}
+
+/*
     The downloadCanvasImage function grabs the main canvas and downloads its image 
     to the user's device when the Print button is clicked
 */
 function downloadCanvasImage(floorsetName) {
-    const canvas = document.querySelector('canvas'); 
-    if (!canvas) {
-        console.error("Canvas not found!");
+    const image = getCanvasImage();
+    if (!image) {
+        console.error("No image data available.");
         return;
     }
 
-    const image = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = image;
     const name = floorsetName.replace(/[^a-z0-9_\-]/gi, "_").toLowerCase();
     link.download = `${name}_Layout.png`;
+    
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

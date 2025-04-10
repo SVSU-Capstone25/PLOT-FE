@@ -44,6 +44,7 @@
 
 @code {
     [Parameter] public required int FloorsetId {get;set;}
+    [Parameter] public required Data.Models.Floorsets.Floorset Floorset {get;set;}
     
     //printLayout Task
     //Asynchronously prints the current grid layout from specified printer and options.
@@ -51,8 +52,8 @@
     private async Task printLayout()
     {
         //download a temporary .png file for now
-        Console.WriteLine("Printing floorset layout...");
-        await JS.InvokeVoidAsync("downloadCanvasImage", $"{FloorsetId}");
+        await JS.InvokeVoidAsync("downloadCanvasImage", $"{Floorset.NAME}");
+        Console.WriteLine("Printed floorset layout");
         
     }
 }

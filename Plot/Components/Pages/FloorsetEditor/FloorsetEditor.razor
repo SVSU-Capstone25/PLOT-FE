@@ -20,6 +20,7 @@
 @inject IJSRuntime JS
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
+@inject FloorsetsHttpClient FloorsetsHttpClient;
 @page "/floorset-editor/{StoreId:int}/{FloorsetId:int}"
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
@@ -100,7 +101,7 @@
 
 <ImportExcelModal FloorsetId="floorsetId" />
 
-<PrintModal FloorsetId="FloorsetId"/>
+<PrintModal FloorsetId="FloorsetId", Floorset="Floorset"/>
 
 <AddFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
@@ -126,7 +127,7 @@
     }
 
     private Data.Models.Stores.Store? Store;
-
+    private Data.Models.Floorsets.Floorset? Floorset;
     private async Task UpdateStore()
     {
         var response = await StoresHttpClient.GetStore(StoreId);
@@ -154,6 +155,12 @@
 
         await UpdateFixtureModels();
 
+        //get the current floorset being edited (for outputs)
+        var response1 = await FloorsetsHttpClient.GetFloorsetById(FloorsetId);
+        if (response1 != null)
+        {
+            Store = response;
+        }
         @* addFixtureInstanceToGrid *@
     }
 
