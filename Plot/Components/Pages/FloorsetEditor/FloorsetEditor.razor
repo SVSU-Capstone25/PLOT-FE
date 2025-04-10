@@ -84,8 +84,8 @@
                 Import Excel File
             </Button>
 
-            <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
-                data-bs-target="printModal" data-bs-toggle="modal">
+            <Button Icon="fa-solid fa-print" Id="printLayout" Variant="primary" isDisabled="false" TextAlignment="center"
+                data-bs-toggle="modal" data-bs-target="#printModal">
                 Print Layout
             </Button>
 
@@ -100,7 +100,7 @@
 
 <ImportExcelModal FloorsetId="floorsetId" />
 
-<PrintModal />
+<PrintModal FloorsetId="FloorsetId"/>
 
 <AddFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
@@ -257,6 +257,7 @@
     }
 
     private bool buildingWallsExpanded = false;
+    private bool printLayoutOpen = false;
     private bool allocationsOpen = false;
     private bool addFixtureExpanded = false;
 
@@ -284,6 +285,10 @@
     {
         buildingWallsExpanded = false;
         allocationsOpen = !allocationsOpen;
+    }
+    private void OpenPrintLayout()
+    {
+        printLayoutOpen = !printLayoutOpen;
     }
 
     private async Task editFixture()
