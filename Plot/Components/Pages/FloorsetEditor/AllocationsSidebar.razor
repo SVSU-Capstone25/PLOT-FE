@@ -154,7 +154,7 @@ Author: Tristan Calay (3/15/2025)-->
 
         //Call into the FloorsetEditor script for setting the paint color.
         //This requires the general category, specific category, and category color split by | characters.
-        await JS.InvokeVoidAsync("setPaint", category.color);
+        await JS.InvokeVoidAsync("window.setPaint", category.color);
     }
 
     //Function to clear the styling and last selected ID for the category list.

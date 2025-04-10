@@ -30,6 +30,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/copyFloorsetCard.js"></script>
+<script src="js/floorsetEditor.js"></script>
 <FloorsetCanvas />
 
 @* Sidebar *@
@@ -161,7 +162,7 @@
     {
         Console.WriteLine("render");
         await UpdateStore();
-        if (firstRender)
+        @* if (firstRender)
         {
 
             var response = await FixturesHttpClient.GetFloorsetFixtureInformation(FloorsetId);
@@ -175,7 +176,7 @@
     fixtureInstance.Y_POS, 1, 1);
                 });
             }
-        }
+        } *@
     }
 
     @* private int? selectedFixtureID; *@
