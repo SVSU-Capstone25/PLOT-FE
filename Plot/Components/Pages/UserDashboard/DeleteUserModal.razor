@@ -2,7 +2,9 @@
 
 <Modal class="standard" @attributes="Attributes">
     <ModalHeader Title="Confirm Deletion" Variant="danger" />
-    <form @onsubmit="async () => await OnDeleteUserSubmit(userTuid)">
+    <form @onsubmit="async () => {
+        await OnDeleteUserSubmit(userTuid);
+        deleteTextInput = string.Empty;}">
         @code {
             private string? deleteTextInput;
             private bool isDisabled => deleteTextInput != "DELETE";
