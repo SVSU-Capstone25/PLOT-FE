@@ -18,7 +18,7 @@ public class FloorsetsHttpClient : PlotHttpClient
 
     public async Task<Floorset?> GetFloorsetById(int floorsetId)
     {
-        return await SendGetAsync<Floorset>($"/get-floorset/{floorsetId}");
+        return await SendGetAsync<Floorset>($"get-floorset/{floorsetId}");
     }
 
     public async Task<int> CreateFloorset(CreateFloorset newFloorset)

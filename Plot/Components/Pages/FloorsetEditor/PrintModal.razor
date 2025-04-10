@@ -51,6 +51,11 @@
     //Called by the "Print" button in the print modal.
     private async Task printLayout()
     {
+        if (Floorset == null)
+        {
+            Console.WriteLine("Floorset is null.");
+            return; 
+        }
         //download a temporary .png file for now
         await JS.InvokeVoidAsync("downloadCanvasImage", $"{Floorset.NAME}");
         Console.WriteLine("Printed floorset layout");

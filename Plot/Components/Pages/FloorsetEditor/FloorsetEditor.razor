@@ -101,7 +101,7 @@
 
 <ImportExcelModal FloorsetId="floorsetId" />
 
-<PrintModal FloorsetId="FloorsetId", Floorset="Floorset"/>
+<PrintModal Floorset="Floorset" FloorsetId="FloorsetId" />
 
 <AddFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
@@ -147,21 +147,16 @@
     {
 
         var response = await StoresHttpClient.GetStore(StoreId);
-
-        if (response != null)
+        var response1 = await FloorsetsHttpClient.GetFloorsetById(FloorsetId);
+        if (response != null && response1 != null)
         {
             Store = response;
+            Floorset = response1;
         }
 
         await UpdateFixtureModels();
-
-        //get the current floorset being edited (for outputs)
-        var response1 = await FloorsetsHttpClient.GetFloorsetById(FloorsetId);
-        if (response1 != null)
-        {
-            Store = response;
-        }
         @* addFixtureInstanceToGrid *@
+        
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
