@@ -76,7 +76,9 @@ Author: Andrew Fulton (3/13/2025)  *@
 
         <Modal id="@($"delete-floorset-{Floorset.TUID}")" class="standard">
             <ModalHeader Title="Confirm Deletion" Variant="danger" />
-            <form @onsubmit="async () => await OnDeleteFloorsetSubmit(Floorset.TUID)">
+            <form @onsubmit="async () => {
+                await OnDeleteFloorsetSubmit(Floorset.TUID);
+                deleteTextInput = string.Empty;}">
             @code {
                 private string? deleteTextInput;
                 private bool isDisabled => deleteTextInput != "DELETE";
