@@ -19,7 +19,8 @@
             <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
         </div>
         <div class="align-items-center mt-3 d-flex">
-            <Button class="btn btn-large w-100" Variant="primary" OnClickFunction="OnFixtureAddClick">
+            <Button class="btn btn-large w-100" Variant="primary" data-bs-toggle="modal"
+                data-bs-target="#addFixture" OnClickFunction="OnFixtureAddClick">
                 <i class="fa-solid fa-plus" style="margin-right: .5rem;"></i>
                 Add Fixture
             </Button>
@@ -67,8 +68,8 @@
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
-                        data-bs-dismiss="modal">
+                    <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" 
+                        disabled="@isDisabled" data-bs-dismiss="modal">
                         Yes, Delete
                     </Button>
                 </ModalFooter>
@@ -120,7 +121,7 @@
     *@
     private async Task OnFixtureAddClick()
     {
-        await JS.InvokeVoidAsync("toggleModal", "addFixture", true);
+        //await JS.InvokeVoidAsync("toggleModal", "addFixture", true);
     }
 
     @*
