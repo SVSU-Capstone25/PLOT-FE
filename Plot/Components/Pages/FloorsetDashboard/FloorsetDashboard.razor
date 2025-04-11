@@ -112,7 +112,7 @@ Author: Andrew Fulton (3/13/2025)  *@
     private List<Data.Models.Floorsets.Floorset> floorsets = new List<Data.Models.Floorsets.Floorset>();
     private Data.Models.Stores.Store? Store {get;set;}
 
-    string StoreImageSrc = "https://placecats.com/300/200";
+    string StoreImageSrc = "";
 
     private async Task UpdateFloorsets()
     {
@@ -131,8 +131,8 @@ Author: Andrew Fulton (3/13/2025)  *@
         if (response != null)
         {
             Store = response;
-            //Need byte data to work before we start using database pictures
-            @* StoreImageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(response.BLUEPRINT_IMAGE!)}"; *@
+            
+            StoreImageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(response.BLUEPRINT_IMAGE!)}";
         }
 
         await UpdateFloorsets();
