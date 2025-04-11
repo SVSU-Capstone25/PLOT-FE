@@ -101,7 +101,7 @@
 
 <ImportExcelModal FloorsetId="floorsetId" />
 
-<PrintModal Floorset="Floorset" FloorsetId="FloorsetId" />
+<PrintModal FloorsetId="FloorsetId"/>
 
 <AddFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
@@ -127,7 +127,6 @@
     }
 
     private Data.Models.Stores.Store? Store;
-    private Data.Models.Floorsets.Floorset? Floorset;
     private async Task UpdateStore()
     {
         var response = await StoresHttpClient.GetStore(StoreId);
@@ -147,11 +146,9 @@
     {
 
         var response = await StoresHttpClient.GetStore(StoreId);
-        var response1 = await FloorsetsHttpClient.GetFloorsetById(FloorsetId);
-        if (response != null && response1 != null)
+        if (response != null)
         {
             Store = response;
-            Floorset = response1;
         }
 
         await UpdateFixtureModels();
