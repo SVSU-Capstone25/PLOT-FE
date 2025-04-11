@@ -86,7 +86,9 @@ builder.Services.AddAuthentication(options =>
             context.HandleResponse();
 
             // Return 401 or redirect to frontend login page
-            context.Response.StatusCode = 401;
+            context.Response.StatusCode = 401; // Unauthorized
+
+             // Redirect to login
             context.Response.Redirect("/login");
             return Task.CompletedTask;
         }
@@ -132,5 +134,5 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
+app.UseStatusCodePagesWithRedirects("/StatusCode/{0}");
 app.Run();

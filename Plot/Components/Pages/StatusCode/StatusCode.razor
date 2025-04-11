@@ -1,0 +1,28 @@
+@* Simple page to display an error page to the user if an 
+unexpected status code is received.
+Michael Polhill *@
+@page "/StatusCode/{statusCode:int}"
+
+
+<h3>Error @statusCode</h3>
+
+@if (statusCode == 404)
+{
+    <p>Sorry, the page you are looking for could not be found. Please check the URL.</p>
+}
+else if (statusCode == 500)
+{
+    <p>Something went wrong on our end. Please try again later.</p>
+}
+else
+{
+    <p>An unexpected error occurred. Please try again later.</p>
+}
+
+
+@code
+{
+    //Variable to get status code in url.
+    [Parameter] public required int statusCode { get; set; }
+}
+
