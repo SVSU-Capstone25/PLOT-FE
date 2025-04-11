@@ -42,7 +42,6 @@ Author: Andrew Fulton (3/13/2025)  *@
     an image being passed back. *@
     @foreach (var Floorset in floorsets)
     {
-
         var ImageSrc = "";
         var fimage = Floorset.FLOORSET_IMAGE;
         //the if statement is checking if the byte array
@@ -57,11 +56,8 @@ Author: Andrew Fulton (3/13/2025)  *@
         }
         else
         {
-            ImageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(Floorset.FLOORSET_IMAGE)}";
+            ImageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(fimage)}";
         }
-
-
-
 
     <Card>
         <a href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")" class="w-100 ratio ratio-4x3">
