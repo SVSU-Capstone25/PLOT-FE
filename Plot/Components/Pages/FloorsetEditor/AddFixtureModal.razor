@@ -7,31 +7,32 @@
     <ModalHeader Title="Add Fixture" />
     <EditForm Model="AddFixtureModel" OnValidSubmit="OnAddFixtureSubmit">
         <ModalBody>
-            <div class="row"> 
+            <div class="row">
                 <div class="col-md-6">
                     <label class="w-100 d-flex">
                         <span class="mt-2 fw-bold">Name</span>
-                        <InputText class="w-75 form-control ms-auto" @bind-value="AddFixtureModel!.NAME">Three Way Rack</InputText>
+                        <InputText class="w-75 form-control ms-auto" @bind-value="AddFixtureModel!.NAME">Three Way Rack
+                        </InputText>
                     </label>
-                    <div class="row">
+                    <div class="row justify-content-between">
                         <div class="col-md-5">
-                            <label class="w-100 d-flex">
-                                <span class="mt-2 fw-bold">Length</span>
-                                <InputNumber class="w-75 form-control ms-auto" @bind-Value="AddFixtureModel!.LENGTH" />
+                            <label class="w-100 d-flex flex-column align-items-center">
+                                <div class="mt-2 fw-bold">Length</div>
+                                <InputNumber class="w-100 form-control ms-auto" @bind-Value="AddFixtureModel!.LENGTH" />
                             </label>
                         </div>
                         <div class="col-md-auto my-auto">
                             <i class="fa-solid fa-xmark mx-auto mt-4 ms-3"></i>
                         </div>
                         <div class="col-md-5">
-                            <label class="w-100 d-flex">
-                                <span class="mt-2 fw-bold">Width</span>
-                                <InputNumber class="w-75 form-control ms-auto" @bind-Value="AddFixtureModel!.WIDTH" />
+                            <label class="w-100 d-flex flex-column align-items-center">
+                                <div class="mt-2 fw-bold">Width</div>
+                                <InputNumber class="w-100 form-control ms-auto" @bind-Value="AddFixtureModel!.WIDTH" />
                             </label>
                         </div>
                     </div>
 
-                    <label class="w-100 d-flex">
+                    <label class="w-100 d-flex my-2">
                         <span class="mt-2 fw-bold">Linear Feet Capacity</span>
                         <InputNumber class="w-75 form-control ms-auto" @bind-Value="AddFixtureModel!.LF_CAP" />
                     </label>
@@ -40,7 +41,7 @@
                         <span class="fw-bold">Linear Feet: @(AddFixtureModel!.WIDTH * AddFixtureModel!.LENGTH)</span>
                     </label>
 
-                    
+
                 </div>
                 <div class="col-md-6">
                     <ImageInput Label="Upload Image" Height="300px" Id="add-fixtureimg" OnImageUpload="OnImageUpload" />

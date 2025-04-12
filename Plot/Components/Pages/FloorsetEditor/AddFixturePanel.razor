@@ -20,7 +20,7 @@
         </div>
         <div class="align-items-center mt-3 d-flex">
             <Button class="btn btn-large w-100" Variant="primary" data-bs-toggle="modal"
-                data-bs-target="#addFixture" OnClickFunction="OnFixtureAddClick">
+                data-bs-target="#addFixture">
                 <i class="fa-solid fa-plus" style="margin-right: .5rem;"></i>
                 Add Fixture
             </Button>
@@ -119,10 +119,10 @@
     @*
     The OnFixtureAddClick function calls a JS function to toggle the add fixture modal.
     *@
-    private async Task OnFixtureAddClick()
+    @* private async Task OnFixtureAddClick()
     {
         //await JS.InvokeVoidAsync("toggleModal", "addFixture", true);
-    }
+    } *@
 
     @*
     The OnEditClick function is called when the user clicks the edit button on a fixture.
