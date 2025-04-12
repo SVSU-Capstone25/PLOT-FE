@@ -28,7 +28,7 @@
     <main>
         @* Danielle Smith - 3/16/2025
         make layout only show navbar if NOT on login screen *@
-        @if (!navManager.Uri.Contains("login") && !navManager.Uri.Contains("password")&& !navManager.Uri.Contains("StatusCode"))
+        @if (!navManager.Uri.Contains("login") && !navManager.Uri.Contains("password")&& !navManager.Uri.Contains("status-code"))
         {
             <div class="top-row">
                 <NavBar id="NavBar" class="Main" />

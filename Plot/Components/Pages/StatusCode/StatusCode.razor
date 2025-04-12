@@ -1,8 +1,9 @@
 @* Simple page to display an error page to the user if an 
 unexpected status code is received.
 Michael Polhill *@
-@page "/StatusCode/{statusCode:int}"
-
+@page "/status-code/{statusCode:int}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
 
 <h3>Error @statusCode</h3>
 

@@ -134,5 +134,5 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-app.UseStatusCodePagesWithRedirects("/StatusCode/{0}");
+app.UseStatusCodePagesWithRedirects("/status-code/{0}");
 app.Run();
