@@ -126,20 +126,20 @@
         if (!string.IsNullOrEmpty(base64Image))
         {
             var imageBytes = Convert.FromBase64String(base64Image.Split(',')[1]);
+            var byteString = Convert.ToBase64String(imageBytes);
             Console.WriteLine($"Image captured: {imageBytes.Length} bytes");
 
-            UpdatePublicInfoFloorset updatePublicInfoFloorset = new UpdatePublicInfoFloorset
-            {
-                STORE_TUID=StoreId,
-                FLOORSET_IMAGE=imageBytes
-            };
+            //UpdatePublicInfoFloorset updatePublicInfoFloorset = new UpdatePublicInfoFloorset
+            //{
+            //    STORE_TUID=StoreId,
+            //};
 
-            var msg =await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId,updatePublicInfoFloorset);
+            var msg =await FloorsetsHttpClient.UpdatePublicInfo(1,byteString);
             Console.WriteLine(msg.ToString());
         }
         else
         {
-            Console.WriteLine("JS returned null image.");
+            Console.WriteLine("JS returned null image...");
         }
 
         
