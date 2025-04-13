@@ -62,29 +62,9 @@ window.setPaint = (paint) => {
   window.paint = paint;
 }
 
-<<<<<<< HEAD
-function isOverScrollable() {
-    // Is the side bar over a scroll area
-    // (Andrew Miller - 4/6/2025)
-
-    // Checks if the user is hovering over a scrollable component.
-
-    let scrollables = document.querySelectorAll('.scrollable');
-
-    for (let scrollable of scrollables) {
-        if (scrollable.matches(':hover')) { return true; }
-    }
-
-    return false;
-}
-
-const floorsetGrid = (function () {
-    let sketchInstance = null;
-=======
 // Tristan Calay 4/2/25 - Toggles for employee paint/erase mode.
 // var isEmployeePaintEnabled = false;
 // var isEmployeeEraseEnabled = false;
->>>>>>> 1bb7fddfbe781d5db5ff136b44fe5df75a7ba10b
 
 function setEmployeePaint(newPaint) {
   // isEmployeePaintEnabled = newPaint;
@@ -160,125 +140,6 @@ function sketch(p5) {
     p5.createCanvas(p5.windowWidth, p5.windowHeight);
     p5.frameRate(30);
 
-<<<<<<< HEAD
-    return {
-        init() {
-            sketchInstance = new p5((sketch) => {
-                let grid, mouseRack;
-
-                sketch.setup = () => {
-                    const $GRIDAREA = document.querySelector("div#grid-area");
-                    if (!$GRIDAREA) return;
-
-                    window.gridState = "place";
-
-
-                    const canvas = sketch.createCanvas(sketch.windowWidth, sketch.windowHeight);
-                    canvas.parent($GRIDAREA);
-                    canvas.style("position", "absolute");
-                    canvas.style("top", "0px");
-                    canvas.style("left", "0px");
-
-                    grid = new Grid(sketch);
-                    window.paint = '#fff';
-                };
-
-                sketch.draw = () => {
-                    sketch.background(220);
-                    sketch.push();
-                    grid.draw();
-                    mouseRack?.draw(grid.size);
-                    sketch.pop();
-                };
-
-                sketch.windowResized = () => {
-                    sketch.resizeCanvas(sketch.windowWidth, sketch.windowHeight);
-                    grid.resize();
-                }
-
-                // Zooms the floorset by going up or down
-                // as long as it's not over scrollable
-                // component (Andrew Miller - 4/6/2025)
-                sketch.mouseWheel = (event) => {
-                    if (!isOverScrollable()) {
-                        if (event.delta > 0) {
-                            grid.scale += 0.1;
-                        } else {
-                            grid.scale -= 0.1;
-                        }
-
-                        grid.scale = Math.max(0.1, grid.scale);
-                        grid.resize();
-                    }
-                }
-
-                sketch.mousePressed = () => {
-                    if (window.gridState === "place") {
-                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) {
-                            const index = grid.racks.indexOf(rack);
-                            if (index > -1) {
-                                grid.racks.splice(index, 1);
-                                mouseRack = rack;
-                            }
-                        }
-                    } else if (window.gridState === "erase") {
-                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) {
-                            const index = grid.racks.indexOf(rack);
-                            if (index > -1) {
-                                grid.racks.splice(index, 1);
-                            }
-                        }
-                    } else {
-                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) rack.color = window.paint;
-                    }
-                };
-
-                sketch.mouseDragged = () => {
-                    if (window.gridState === "paint") {
-                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) rack.color = window.paint;
-                    } else if (window.gridState === "erase") {
-                        const gridCoords = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                        const rack = grid.getRackAt(gridCoords.x, gridCoords.y);
-                        if (rack) {
-                            const index = grid.racks.indexOf(rack);
-                            if (index > -1) {
-                                grid.racks.splice(index, 1);
-                            }
-                        }
-                    } else {
-                        // Place mode logic
-                        if (mouseRack) {
-                            const { x: gridX, y: gridY } = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                            if (gridX < 0 || gridX + mouseRack.width > grid.x || gridY < 0 || gridY + mouseRack.height > grid.y) return;
-                            mouseRack.x = gridX * grid.size;
-                            mouseRack.y = gridY * grid.size;
-                        } else if (window.draggedRack) {
-                            const { width, height } = window.draggedRack;
-                            const { x: gridX, y: gridY } = grid.toGridCoordinates(sketch.mouseX, sketch.mouseY);
-                            if (gridX + width > grid.x || gridY + height > grid.y) return;
-                            mouseRack = new Rack(sketch, gridX * grid.size, gridY * grid.size, width, height);
-                        }
-                    }
-                };
-
-                sketch.mouseReleased = () => {
-                    if (!mouseRack) return;
-
-                    grid.racks.push(mouseRack);
-                    mouseRack = undefined;
-                    window.draggedRack = undefined;
-                };
-            }, document.querySelector("div#grid-area"));
-        }
-=======
     document.oncontextmenu = function () {
       const coords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       //console.log("Determine if should display context menu: " + coords.x + ", " + coords.y)
@@ -286,7 +147,6 @@ function sketch(p5) {
         //console.log("Should not display context menu: Is on grid!")
         return false;
       }
->>>>>>> 1bb7fddfbe781d5db5ff136b44fe5df75a7ba10b
     };
   };
 
