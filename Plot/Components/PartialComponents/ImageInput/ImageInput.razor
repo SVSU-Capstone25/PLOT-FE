@@ -21,11 +21,13 @@ and Height, added aria to input box.
 
 *@
 
-<div class="ImageInput drag-drop-box dashed-border" id="@Id" style="width: @(Width ?? "100%"); height: @(Height ?? "100%")">
+<div class="ImageInput drag-drop-box dashed-border" id="@Id-container"
+    style="width: @(Width ?? "100%"); height: @(Height ?? "100%")">
     <h5 class="text-decoration-underline my-auto text-center">
         <i class="fa-solid fa-image"></i> @Label
     </h5>
-    <input type="file" id="@($"{Id}-fileInput")" class="d-none @Class" onchange="onImageSelected(event, '@Id')" aria-label="@Label">
+
+    <InputFile id="@($"{Id}-fileInput")" class="d-none" OnChange="UpdateImage" />
 </div>
 
 @code {
@@ -35,9 +37,11 @@ and Height, added aria to input box.
     [Parameter] public string? Class { get; set; } // string of classes (nullable)
     [Parameter] public string? Width { get; set; } // width of the drag/drop area (nullable)
     [Parameter] public string? Height { get; set; } // height of the drag/drop area (nullable)
+    [Parameter] public string? ImageSrc { get; set; } = ""; // (nullable)
+    [Parameter] public required EventCallback<InputFileChangeEventArgs> OnImageUpload { get; set; }
 
     // call javascript method to initialize input with the proper Id
-    // when the component is first loaded. the other way i was doing it 
+    // when the component is first loaded. the other way i was doing it
     // the Id did not have proper string escaping so it would bug out
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -45,5 +49,12 @@ and Height, added aria to input box.
         {
             await JS.InvokeVoidAsync("initializeImageInput", Id);
         }
+    }
+
+    private async Task UpdateImage(InputFileChangeEventArgs e)
+    {
+        Console.WriteLine("hit updateimage");
+        await JS.InvokeVoidAsync("onImageSelected", Id);
+        await OnImageUpload.InvokeAsync(e);
     }
 }

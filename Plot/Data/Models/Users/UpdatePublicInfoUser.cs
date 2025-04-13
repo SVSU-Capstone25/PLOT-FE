@@ -29,4 +29,7 @@ public record UpdatePublicInfoUser
     [Required, EmailAddress]
     [StringLength(320, ErrorMessage = "First Name cannot exceed 320 characters.")]
     public string? EMAIL { get; set; }
+
+    [Required]
+    public string? ROLE_NAME { get; set; }
 }

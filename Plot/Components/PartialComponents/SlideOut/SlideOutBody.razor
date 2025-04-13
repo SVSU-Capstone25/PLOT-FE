@@ -1,0 +1,7 @@
+<div class="offcanvas-body flex-grow-1 d-flex flex-column p-0">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

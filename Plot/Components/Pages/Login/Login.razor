@@ -1,97 +1,93 @@
 @* Front end by Luke Wollenweber *@
 @* Hook up to database by Michael Polhill *@
 @* Updated by Danielle Smith 4/1/2025 *@
-
+@* @attribute [AllowAnonymous] *@
 @page "/login"
 @using Microsoft.AspNetCore.Authentication
 @using System.Net.Http.Headers
 @using System.Security.Claims
+@using Plot.Services
+
 @inject NavigationManager Navigation
-@inject IJSRuntime JS
 @inject AuthService AuthService
+@inject ICookie cookie
 
 
 <PageTitle>Login</PageTitle>
 
 <body class="background">
-    <div class="login">
-        <form class="body-content" onsubmit="@OnLoginSubmit">
+    <main>
+        <EditForm class="d-flex flex-column gap-3 bg-white p-5 rounded-2" EditContext="LoginEditContext"
+            OnValidSubmit="OnLoginSubmit">
+            <DataAnnotationsValidator />
             <img src="img/PlatoLogo.png" alt="Plato's closet logo">
-            <h4>Welcome to PLOT, </h4>
-            <h4>Plato's Layout Optimization Tool</h4>
-            <p>Please log in to your account to continue</p>
+            <h1 class="fs-2 text-center">
+                <span>Welcome to PLOT,</span>
+                <br />
+                <span>Plato's Layout Optimization Tool</span>
+            </h1>
+            <p class="text-center">Please log in to your account to continue</p>
             @* Danielle Smith - 3/16/2025
                 gave better ids and added some margin on the forgot password link *@
-            <TextInput Id="email" Type="email" Label="Email" Placeholder="" Value="@email"
-                ValueChanged="@(e => email = e)" Required="true" />
-            <TextInput Id="password" Type="password" Label="Password" Placeholder="" Value="@password"
-                ValueChanged="@(e => password = e)" Class="masked" Required="true" />
-            <Link Id="link" Class="mb-3" Url="/recover_password">Forgot Password?</Link>
-            <Button Class="Button" Id="buttonLogin" Variant="primary" Icon="fa-solid fa-right-to-bracket" Type="submit"
-                IsDisabled=false TextAlignment="center">
-                Log in
-            </Button>
-            <Loader class="d-none" Id="LoginLoader">
-                Loading...
-            </Loader>
-        </form>
-        <div class="footer-content">
-            @if (isInvalid)
-            {
-                <p style="color: red; font-weight: bold;">Incorrect Email or Password</p>
-            }
-        </div>
-    </div>
+            <div class="form-group">
+                <label for="email" class="w-100">
+                    Email:
+                    <InputText id="email" class="form-control" type="email" @bind-Value="LoginModel!.EMAIL" />
+                    <div class="text-danger">
+                        <ValidationMessage For=@(() => LoginModel.EMAIL) />
+                    </div>
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="password" class="w-100">
+                    Password:
+                    <InputText id="password" class="form-control" type="password" @bind-Value="LoginModel!.PASSWORD" />
+                </label>
+                <ValidationMessage For=@(() => LoginModel.PASSWORD) />
+            </div>
+            <Link Id="link" Class="mb-3" Url="/password-reset-request">Forgot Password?</Link>
+            <div class="d-flex justify-content-center">
+                <Button Class="w-25" Variant="primary" Icon="fa-solid fa-right-to-bracket" type="submit"
+                    TextAlignment="center">
+                    Log in
+                </Button>
+            </div>
+        </EditForm>
+    </main>
 </body>
-
-@* Danielle Smith - 4/1/2025
-function to toggle a loader so the user can't spam 
-the login button while waiting for the auth *@
-<script>
-    function ToggleLoader(state) {
-        let loaderElem = document.getElementById("LoginLoader");
-        let loginButton = document.getElementById("buttonLogin");
-
-        if (state == true) {
-            loaderElem.classList.remove("d-none");
-            loginButton.classList.add("d-none");
-        }
-        else {
-            loaderElem.classList.add("d-none");
-            loginButton.classList.remove("d-none");
-        }
-    }
-</script>
 
 @code
 {
-    string email = ""; // Var to bind user email input
-    string password = ""; // Var to bind user password input
-    bool isInvalid = false; // Flag to show user if login details were bad
+    private EditContext? LoginEditContext;
 
-    // Function to handle the login submit event
+    [SupplyParameterFromForm]
+    private Data.Models.Auth.Login.LoginRequest? LoginModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoginModel ??= new();
+        LoginEditContext = new(LoginModel);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var token = await cookie.GetValue("Auth");
+
+        if (token != null && token != string.Empty) Navigation.NavigateTo("/store-dashboard", forceLoad: true);
+    }
+
     private async Task OnLoginSubmit()
     {
-        // set isinavlid to false to hide the text if the user is trying again
-        isInvalid = false;
+        if (LoginModel != null)
+        {
+            var token = await AuthService.LoginAsync(LoginModel);
 
-        // show the loader
-        await JS.InvokeVoidAsync("ToggleLoader", true);
+            Console.WriteLine(token);
 
-        // Call the AuthService to login the user with the email and password provided
-        var result = await AuthService.LoginAsync(email, password);
-
-        // True if user Authentication is good
-        if (result)
-        { //Good Auth, navigate to the dashbard, use forceload or the next pages elements will be off.
-            Navigation.NavigateTo("/store-dashboard", forceLoad: true);
-        }
-        else // False user Authentication is bad, set flag to true, this displays to the user that
-        { // the email or password was bad.
-            isInvalid = true;
-
-            // hide the loader
-            await JS.InvokeVoidAsync("ToggleLoader", false);
+            if (token != null)
+            {
+                await cookie.SetValue("Auth", token.Token);
+            }
         }
     }
 }

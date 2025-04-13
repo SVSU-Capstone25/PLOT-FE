@@ -1,0 +1,81 @@
+<ModalBody>
+    <div class="row">
+        <div class="col-md-6">
+            <label class="w-100 d-flex mb-2">
+                <span class="mt-2 fw-bold">Name</span>
+                <InputText class="w-75 form-control ms-auto" type="Text" @bind-value="AddUpdateStoreModel!.NAME" />
+                <div class="text-danger">
+                    <ValidationMessage For=@(() => AddUpdateStoreModel.NAME) />
+                </div>
+            </label>
+
+            <label class="w-100 d-flex my-2">
+                <span class="mt-2 fw-bold">Address</span>
+                <InputText class="w-75 form-control ms-auto" type="Text" @bind-value="AddUpdateStoreModel!.ADDRESS" />
+                <div class="text-danger">
+                    <ValidationMessage For=@(() => AddUpdateStoreModel.ADDRESS) />
+                </div>
+            </label>
+
+            <label class="w-100 d-flex my-2">
+                <span class="mt-2 fw-bold">City</span>
+                <InputText class="w-75 form-control ms-auto" type="Text" @bind-value="AddUpdateStoreModel!.CITY" />
+                <div class="text-danger">
+                    <ValidationMessage For=@(() => AddUpdateStoreModel.CITY) />
+                </div>
+            </label>
+
+            <label class="w-100 d-flex my-2">
+                <span class="mt-2 fw-bold">State</span>
+                <InputText class="w-75 form-control ms-auto" type="Text" @bind-value="AddUpdateStoreModel!.STATE" />
+                <div class="text-danger">
+                    <ValidationMessage For=@(() => AddUpdateStoreModel.STATE) />
+                </div>
+            </label>
+
+            <label class="w-100 d-flex my-2">
+                <span class="mt-2 fw-bold">Zip</span>
+                <InputText class="w-75 form-control ms-auto" type="Text" @bind-value="AddUpdateStoreModel!.ZIP" />
+                <div class="text-danger">
+                    <ValidationMessage For=@(() => AddUpdateStoreModel.ZIP) />
+                </div>
+            </label>
+        </div>
+
+        <div class="col-md-6">
+            <ImageInput Label="Upload Image" Id="@StoreId.ToString()" Height="300px" OnImageUpload="OnImageUpload"
+                ImageSrc="ImageSrc" />
+        </div>
+    </div>
+</ModalBody>
+
+@code {
+    [Parameter] public Data.Models.Stores.UpdatePublicInfoStore? AddUpdateStoreModel { get; set; }
+    [Parameter] public string? StoreName { get; set; } = "";
+    [Parameter] public required int StoreId { get; set; }
+
+    private string ImageSrc = "";
+
+    protected override void OnInitialized()
+    {
+        if (AddUpdateStoreModel != null)
+        {
+            ImageSrc = AddUpdateStoreModel.BLUEPRINT_IMAGE != null ?
+            $"data:image/jpeg;base64,{Convert.ToBase64String(AddUpdateStoreModel.BLUEPRINT_IMAGE)}" : "";
+        }
+
+    }
+
+    private async Task OnImageUpload(InputFileChangeEventArgs e)
+    {
+        await Task.Run(() => Console.WriteLine("Upload Image"));
+        MemoryStream ms = new MemoryStream();
+        await e.File.OpenReadStream().CopyToAsync(ms);
+        var bytes = ms.ToArray();
+
+        if (AddUpdateStoreModel != null)
+        {
+            AddUpdateStoreModel!.BLUEPRINT_IMAGE = bytes;
+        }
+    }
+}

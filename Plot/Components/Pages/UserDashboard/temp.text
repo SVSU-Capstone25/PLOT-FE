@@ -1,0 +1,236 @@
+<div class="d-flex flex-column align-content-between user-dashboard">
+    <div class="mb-4 table-set">
+        @* Users Table *@
+        <table class="table w-100">
+            <tbody>
+                <tr>
+                    @* Headers *@
+                    <td class="border border-light border-2 name_column">
+                        <div>Employee Name</div>
+                    </td>
+                    <td class="border border-light border-2 id_column">
+                        <div>Employee Id</div>
+                    </td>
+                    <td class="border border-light border-2 role_column">
+                        <div>Role</div>
+                    </td>
+                </tr>
+
+                @* A row for each user in the list of users *@
+                @foreach (var user in users)
+                {
+                    <tr>
+                        @* Name *@
+                        <td class="border border-light border-2 name_column">
+                            <span>@user.FirstName @user.LastName</span>
+                        </td>
+
+                        @* User Id *@
+                        <td class="border border-light border-2 id_column">
+                            <span>@DisplayId(user.Id)</span>
+                        </td>
+
+                        @* Role and Dropdown menu for editing or deleting the user *@
+                        <td class="border border-light border-2 role_column">
+                            @* Role of User*@
+                            <span class="role-box float-start py-2 px-3">@user.Role</span>
+
+                            @* Set selectedUser on click of dropdown menu *@
+                            <div class="float-end" @onclick="(() => SetSelectedUser(user))">
+
+                                @* Role Options Dropdown menu with id 
+                            dynamically reflecting the id of the user
+                            Provides Edit and Delete options which 
+                            open Edit User and Delete User Modals *@
+
+                                <Dropdown Id="@($"Dropdown-{user.Id}")" LabelText="Role">
+                                    <DropdownLink href="#UpdateUserModal" Icon="fa-solid fa-pen-to-square"
+                                        data-bs-toggle="modal">Edit</DropdownLink>
+                                    <DropdownLink href="#DeleteUserModal" Icon="fa-regular fa-trash-can"
+                                        data-bs-toggle="modal">Delete
+                                    </DropdownLink>
+                                </Dropdown>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+@* Modals *@
+
+@* User Info Modal (Add User or Edit User) *@
+
+<Modal id="UpdateUserModal" class="modal-dialog modal-xl user-modal user-info-modal">
+    <ModalHeader Title="@userModalDetails.Title" />
+    <ModalBody>
+        <form>
+
+            <h3>@userModalDetails.Header</h3>
+            <p>@userModalDetails.Description</p>
+
+            <div>
+                @* First Name *@
+                <div class="holds-first-name">
+                    <TextInput id="UserFirstNameUser" type="Text" @bind-value="@inEditUser.FirstName">
+                        First Name
+                    </TextInput>
+
+                    @* Error message *@
+                    <p class="validation-message">@firstNameError</p>
+                </div>
+
+                @* Last Name *@
+                <div class="holds-last-name">
+                    <TextInput id="UserLastNameUser" type="text" @bind-value="@inEditUser.LastName">Last Name
+                    </TextInput>
+
+                    @* Error message *@
+                    <p class="validation-message">@lastNameError</p>
+                </div>
+
+                @* Email *@
+                <div class="holds-email">
+                    <TextInput id="UserEmail" type="Text" @bind-value="@inEditUser.Email">Email</TextInput>
+
+                    @* Error message *@
+                    <p class="validation-message">@emailError</p>
+                </div>
+
+                @* Role and Store Select Options *@
+
+                @* Role Select Option *@
+
+                <OptionInput ID="UserRole" label="Role" optionsValues=userRoles optionsText=userRoles
+                    OnSelectFunction="SetUserRole" Class="user-option-input user-option-role" />
+
+                @* Store Selection *@
+
+                <p id="StoreSelectHeader">Store Selection</p>
+
+                <p>To select multiple stores use Ctrl-click</p>
+
+                @* Available Stores *@
+                <div id="UserStores" class="d-flex flex-row user-option-store">
+
+                    <div class="user-option-store-half user-option-store-left">
+
+                        <OptionInput ID="UserAvailStores" label="Available Stores"
+                            optionsValues="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()"
+                            optionsText="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()"
+                            Class="user-option-input user-option-store" AllowEmpty Multiple />
+
+                        <div class="btn-container">
+                            <Button Class="Button" Id="buttonPickFromAvail" Variant="primary" TextAlignment="center"
+                                OnClickFunction="PickFromAvail" IsDisabled="@isPickFromAvailDisabled"
+                                Icon="fa-solid fa-arrow-right">
+                                Select Store
+                            </Button>
+                        </div>
+
+                    </div>
+
+                    <div class="user-option-store-half user-option-store-right">
+                        @* Selected Stores *@
+                        <OptionInput ID="UserSelStores" label="Selected Stores" optionsValues=@inEditUser.Stores
+                            optionsText=@inEditUser.Stores Class="user-option-input user-option-store" AllowEmpty
+                            Multiple />
+
+                        <div class="btn-container">
+                            <Button Class="Button" Id="buttonUnpickFromSel" Variant="primary" TextAlignment="center"
+                                OnClickFunction="UnpickFromSel" IsDisabled="@isUnpickFromSelDisabled"
+                                Icon="fa-solid fa-arrow-left">
+                                Remove Store
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </ModalBody>
+
+    @* Footer: Cancel button included in Modal, Also adds Add User button *@
+    <ModalFooter>
+
+        @* Add user button, Cancel button comes with Modal component *@
+
+        <Button Class="Button" Id="buttonUpdateUserModal" Variant="primary" TextAlignment="center"
+            OnClickFunction="UpdateUser" IsDisabled="@isUpdateUserDisabled">
+            @userModalDetails.ButtonText
+        </Button>
+    </ModalFooter>
+
+</Modal>
+
+@* Delete User Modal *@
+
+<Modal id="DeleteUserModal" class="modal-dialog w-100 h-100 user-modal">
+
+    <ModalHeader Title="Confirm Deletion" Variant="danger" />
+
+    @* Confirm delete Question and Textbox *@
+    <ModalBody>
+
+        <h2>Are you SURE you want to delete this user?</h2>
+
+        @* confirmDelete variable bound with the input text
+        compared to check if delete button can be enabled
+        with EnableDelete function every time the text changes *@
+
+        <TextInput id="deleteTextInput" type="text" placeholder="Type DELETE here" value="@confirmDelete">
+            If so, type DELETE here</TextInput>
+
+    </ModalBody>
+
+    @* Button to confirm delete *@
+    <ModalFooter>
+
+        @* Cancel button is provided with Modal custom component *@
+
+        @* Delete user button deletes user
+        Disabled unless DELETE is in the TextInput *@
+
+        <Button Class="Button" Id="buttonConfirmDelete" Variant="primary" TextAlignment="center"
+            OnClickFunction="DeleteUser" IsDisabled="@isDeleteDisabled">
+            Yes, Delete
+        </Button>
+
+    </ModalFooter>
+
+</Modal>
+
+@* <div id="UserStores" class="d-flex flex-row user-option-store">
+
+                    <div class="user-option-store-half user-option-store-left">
+
+                        <OptionInput ID="UserAvailStores" label="Available Stores"
+                            optionsValues="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()"
+                            optionsText="@stores.Where(store => !inEditUser.Stores.Contains(store)).ToList()"
+                            Class="user-option-input user-option-store" AllowEmpty Multiple />
+
+                        <div class="btn-container">
+                            <Button Class="Button" Id="buttonPickFromAvail" Variant="primary" TextAlignment="center"
+                                OnClickFunction="PickFromAvail" IsDisabled="@isPickFromAvailDisabled"
+                                Icon="fa-solid fa-arrow-right">
+                                Select Store
+                            </Button>
+                        </div>
+
+                    </div>
+
+                    <div class="user-option-store-half user-option-store-right">
+                        <OptionInput ID="UserSelStores" label="Selected Stores" optionsValues=@inEditUser.Stores
+                            optionsText=@inEditUser.Stores Class="user-option-input user-option-store" AllowEmpty
+                            Multiple />
+
+                        <div class="btn-container">
+                            <Button Class="Button" Id="buttonUnpickFromSel" Variant="primary" TextAlignment="center"
+                                OnClickFunction="UnpickFromSel" IsDisabled="@isUnpickFromSelDisabled"
+                                Icon="fa-solid fa-arrow-left">
+                                Remove Store
+                            </Button>
+                        </div>
+                    </div>
+                </div> *@

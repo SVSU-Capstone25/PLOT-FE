@@ -1,36 +1,17 @@
-
-using Plot.Data.Models.Auth.Registration;
-using Plot.Data.Models.Auth.ResetPassword;
-using Plot.Data.Models.Fixtures;
-using Plot.Data.Models.Stores;
-using Plot.Data.Models.Users;
+using System.Net;
+using Plot.Services;
 
 //NEED TO FINISH
-public class SalesHttpClient
+public class SalesHttpClient : PlotHttpClient
 {
-    private const string BASE_CONTROLLER_ADDRESS="/Sales" ;
+    public SalesHttpClient(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, "/sales")
+    { }
 
-    private readonly AuthHeaderHttpClient _authHeaderHttpClient;
 
-
-    public SalesHttpClient(AuthHeaderHttpClient authHeaderHttpClient)
+    public async Task<HttpStatusCode> UploadSales(int floorsetId, IFormFile excelFile)
     {
-        _authHeaderHttpClient = authHeaderHttpClient;
-        _authHeaderHttpClient.AppendBaseAddress(BASE_CONTROLLER_ADDRESS);
+        JsonContent body = JsonContent.Create(excelFile);
+
+        return await SendPostAsync<HttpStatusCode>("", body);
     }
-
-
-    public async Task<HttpResponseMessage> UploadSales(int floorsetId, IFormFile excelFile)
-    {
-        string endpoint = "";
-        HttpMethod httpMethod = HttpMethod.Post;
-        JsonContent jsonBody = JsonContent.Create(excelFile);
-
-        var response = await _authHeaderHttpClient.SendAsyncWithAuth(endpoint, httpMethod, jsonBody);
-
-        return response;
-    }
-
-    
-    
 }

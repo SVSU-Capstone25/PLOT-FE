@@ -1,0 +1,57 @@
+@inject StoresHttpClient StoresHttpClient
+
+<Modal @attributes="Attributes" SizeClass="modal-lg">
+    <ModalHeader Title="Update Store Information" />
+    <EditForm Model="EditStoreModel" OnValidSubmit="async () => await OnEditStoreSubmit()">
+
+        <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId"/>
+
+        <ModalFooter>
+            <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
+                Update Store
+            </Button>
+        </ModalFooter>
+    </EditForm>
+</Modal>
+
+@code {
+    [Parameter] public required Data.Models.Stores.Store Store { get; set; }
+    [Parameter] public required EventCallback UpdateStores { get; set; }
+    [Parameter] public required int StoreId { get; set; }
+
+    [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? EditStoreModel { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    protected override void OnInitialized()
+    {
+        EditStoreModel ??= new Data.Models.Stores.UpdatePublicInfoStore
+        {
+            NAME = Store.NAME!,
+            ADDRESS = Store.ADDRESS!,
+            CITY = Store.CITY!,
+            STATE = Store.STATE!,
+            ZIP = Store.ZIP!,
+            WIDTH = Store.WIDTH,
+            LENGTH = Store.LENGTH,
+            BLUEPRINT_IMAGE = Store.BLUEPRINT_IMAGE,
+            USER_TUIDS = ""
+        };
+    }
+
+    private async Task OnEditStoreSubmit()
+    {
+        await Task.Run(() => Console.WriteLine("Update store: " + StoreId));
+
+        if (EditStoreModel == null) return;
+
+        var response = await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
+
+        Console.WriteLine(response);
+
+        if (response != System.Net.HttpStatusCode.OK) return;
+
+        await UpdateStores.InvokeAsync();
+
+    }
+}

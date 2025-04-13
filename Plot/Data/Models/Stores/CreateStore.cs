@@ -41,10 +41,12 @@ public record CreateStore
 
     [Required]
     [Range(int.MinValue, int.MaxValue, ErrorMessage = "Width must be an integer.")]
-    public int WIDTH { get; set; }
+    public required int WIDTH { get; set; }
 
     [Required]
     [Range(int.MinValue, int.MaxValue, ErrorMessage = "Length must be an integer.")]
-    public int LENGTH { get; set; }
-    public IFormFile? BLUEPRINT_IMAGE { get; set; }
+    public required int LENGTH { get; set; }
+
+    public required string USER_TUIDS { get; set; }
+    public byte[]? BLUEPRINT_IMAGE { get; set; }
 }

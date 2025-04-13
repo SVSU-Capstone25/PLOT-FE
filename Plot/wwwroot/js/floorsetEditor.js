@@ -459,6 +459,21 @@ function addFixtureClose(dotNet) {
     })
 }
 
+function isOverScrollable() {
+    // Is the side bar over a scroll area
+    // (Andrew Miller - 4/6/2025)
+
+    // Checks if the user is hovering over a scrollable component.
+
+    let scrollables = document.querySelectorAll('.scrollable');
+
+    for (let scrollable of scrollables) {
+        if (scrollable.matches(':hover')) { return true; }
+    }
+
+    return false;
+}
+
 /*
     The searchInputChange function adds an event listener to the fixture search bar.
 */
@@ -483,10 +498,44 @@ function searchInputChange() {
                 }
             })
         })
-    }, 10);
+    }, 500);
 }
 
+//method to set the background image of the edit modal imageinput to the fixture's image
+function SetBackgroundImage(elementId, strUrl) {
+    const element = document.getElementById(elementId);
+    console.log("here");
+    if (element) {
+        console.log(strUrl.includes("url"));
+        element.style.backgroundImage = "url("+strUrl+")";
+        element.style.backgroundSize = "cover";
+        element.style.backgroundPosition = "center";
+        element.classList.remove("dashed-border");
+    }
+}
 
+//function used to clear the imageInput background
+function ClearBackgroundImage(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.style.backgroundImage = "none";
+        element.classList.add("dashed-border");
+    }
+}
+
+// function to get the URL of the image from the elemebts style tag
+function getBackgroundImageUrl(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        const style = window.getComputedStyle(element);
+        const backgroundImage = style.backgroundImage;
+        // Extract the URL from the backgroundImage string in the style tag
+        const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+        //return urlMatch[1], which is the data URL string
+        return urlMatch && urlMatch[1] ? urlMatch[1] : null;
+    }
+    return null;
+}
 
 /*
     The toggleModal function toggles the visibility of a given modal.
@@ -541,8 +590,10 @@ function UpdateGridDimensions(passedLength, passedWidth) {
     window.gridWidth = passedWidth;
 }
 
-function createDraggable(event) {
-    const width = Number(event.target.getAttribute("data-width"));
-    const height = Number(event.target.getAttribute("data-height"));
-    window.draggedRack = { width, height };
-}
+// function createDraggable(event) {
+//     const width = Number(event.target.getAttribute("data-width")),
+//         height = Number(event.target.getAttribute("data-height")),
+//         name = String(event.target.getAttribute("data-value")),
+//         fixtureTuid = Number(event.target.getAttribute("data-fixture-tuid"));
+//     window.draggedFixture = { width, height, name };
+// }

@@ -1,0 +1,16 @@
+<div class="card-body d-flex align-items-center gap-2" @attributes="Attributes">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public required string Title { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    //dropdown component should be passed through this childcontent
+    //parameter
+    [Parameter]
+    public required RenderFragment ChildContent { get; set; }
+
+}

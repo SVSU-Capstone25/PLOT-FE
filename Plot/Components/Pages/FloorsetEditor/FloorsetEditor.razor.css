@@ -48,10 +48,3 @@
 #container {
     position: relative;
 }
-
-.vertical-sidebar-buttons {
-    justify-content: center;
-    row-gap: 16px;
-    display: flex;
-    flex-direction: column;
-}

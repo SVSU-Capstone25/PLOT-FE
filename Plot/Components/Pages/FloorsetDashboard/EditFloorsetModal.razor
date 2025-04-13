@@ -1,0 +1,60 @@
+@inject FloorsetsHttpClient FloorsetsHttpClient
+
+@* + Siona Beaudoin, 4/3/2025, edit the title of floorsets*@
+<Modal id="@($"edit-floorset-{Floorset.TUID}")" class="standard">
+    <ModalHeader Title="Edit Floorset Title" Variant="standard" />
+    <EditForm Model="EditFloorsetModel" OnSubmit="async () => await OnEditFloorsetSubmit()"
+        FormName="Edit Floorset Form">
+
+        <AddEditFloorsetModalBody AddUpdateFloorsetModel="EditFloorsetModel" />
+
+        <ModalFooter>
+            <Button Class="" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
+                Edit
+            </Button>
+        </ModalFooter>
+    </EditForm>
+</Modal>
+
+@code
+{
+    [Parameter] public required Data.Models.Floorsets.Floorset Floorset { get; set; }
+    [Parameter] public required EventCallback UpdateFloorsets { get; set; }
+    [Parameter] public required int FloorsetId { get; set; }
+
+    [SupplyParameterFromForm] private Data.Models.Floorsets.UpdatePublicInfoFloorset? EditFloorsetModel { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    protected override void OnInitialized()
+    {
+        EditFloorsetModel ??= new()
+        {
+            NAME = Floorset.NAME,
+            CREATED_BY = Floorset.CREATED_BY,
+            DATE_CREATED = Floorset.DATE_CREATED,
+            DATE_MODIFIED = Floorset.DATE_MODIFIED,
+            MODIFIED_BY = Floorset.MODIFIED_BY,
+            STORE_TUID = Floorset.STORE_TUID,
+            FLOORSET_IMAGE = Floorset.FLOORSET_IMAGE
+        };
+    }
+
+    //Siona Beaudoin - 4/3/2025
+    private async Task OnEditFloorsetSubmit()
+    {
+        if (EditFloorsetModel != null)
+        {
+            Console.WriteLine(FloorsetId);
+            Console.WriteLine(EditFloorsetModel);
+            var response = await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId, EditFloorsetModel);
+
+            Console.WriteLine(response);
+
+            if (response == System.Net.HttpStatusCode.OK)
+            {
+                await UpdateFloorsets.InvokeAsync();
+            }
+        }
+    }
+}

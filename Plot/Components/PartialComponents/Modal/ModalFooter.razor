@@ -1,0 +1,10 @@
+<div class="modal-footer" @attributes="Attributes">
+    <!-- cancel buttons for all modals -->
+    <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cancel</button>
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+}

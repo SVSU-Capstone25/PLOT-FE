@@ -1,0 +1,8 @@
+<div class="offcanvas-header p-2">
+    @ChildContent
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

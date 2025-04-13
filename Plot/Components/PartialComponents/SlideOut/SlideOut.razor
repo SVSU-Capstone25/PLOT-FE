@@ -14,68 +14,18 @@
 
 @inherits LayoutComponentBase
 
-<!-- Toggle Button -->
-<button class="btn btn-light toggle-btn shadow-sm collapsed" id='toggle-btn' onclick="toggleSidebar()">
-    <i class="fa-solid fa-chevron-right"></i>
+<button class="btn btn-light position-fixed top-50 end-0 translate-middle-y" data-bs-toggle="offcanvas"
+    data-bs-target="#side-bar">
+    <i class="fa-solid fa-chevron-left"></i>
 </button>
 
-<!-- Sidebar -->
-<aside class="SlideOut collapse-sidebar collapsed @Class" id="@Id">
-    @ChildContent
-</aside>
-
-<script>
-    /*
-        This function dynamically adjusts the sidebar's dimensions
-        based on the height of the navbar.
-    */
-    function adjustSidebar() {
-        const navbar = document.querySelector('.top-row');
-        const sidebar = document.querySelector('.collapse-sidebar');
-
-        // If the navbar and the sidebar exist
-        if (navbar && sidebar) {
-
-            const navbarHeight = navbar.offsetHeight;
-
-            // Set the top of the sidebar to the bottom of the navbar
-            sidebar.style.top = navbarHeight + "px";
-            sidebar.style.height = `calc(100vh - ${navbarHeight}px)`;
-        }
-    }
-
-    /*
-        This function toggles the collapsed state of the sidebar.
-    */
-    function toggleSidebar() {
-        const sidebar = document.querySelector('.collapse-sidebar');
-        const toggleBtn = document.getElementById('toggle-btn');
-
-        // Toggle the "collapsed" class for the sidebar and toggle button
-        sidebar.classList.toggle('collapsed');
-        toggleBtn.classList.toggle('collapsed');
-
-        // Update the sidebar's dimensions
-        window.adjustSidebar();
-
-    }
-
-    // Adjust the sidebar when page is loaded
-    window.addEventListener('load', () => {
-        setTimeout(adjustSidebar, 100); // Ensure layout has fully rendered
-    });
-
-    // Adjust the sidebar when the window is resized
-    window.addEventListener('resize', adjustSidebar);
-</script>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="side-bar" aria-labelledby="offcanvasExampleLabel"
+    data-bs-scroll="true" data-bs-backdrop="false">
+    <div class="d-flex flex-column p-2 h-100">
+        @ChildContent
+    </div>
+</div>
 
 @code {
-    [Parameter]
-    public string? Id { get; set; }
-
-    [Parameter]
-    public string? Class { get; set; }
-
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 }

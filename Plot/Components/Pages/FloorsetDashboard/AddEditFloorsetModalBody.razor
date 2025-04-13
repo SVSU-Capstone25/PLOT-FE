@@ -1,0 +1,11 @@
+<ModalBody>
+    <label class="w-100 d-flex">
+        <span class="mt-2 fw-bold">Name</span>
+        <InputText class="w-75 form-control mx-auto" @bind-value="AddUpdateFloorsetModel!.NAME" />
+    </label>
+</ModalBody>
+
+@code
+{
+    [Parameter] public Data.Models.Floorsets.UpdatePublicInfoFloorset? AddUpdateFloorsetModel { get; set; }
+}

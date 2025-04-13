@@ -1,3 +1,4 @@
+@* Toolbar Buttons.razor *@
 @inject IJSRuntime JS
 
 @using Plot.Components.PartialComponents.Button
@@ -8,29 +9,36 @@
         TextAlignment="center" />
 
     @*Paint Category Button *@
-    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-brush" OnClickFunction="togglePaintClicked"
-        TextAlignment="center" />
+    <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush"
+        OnClickFunction="togglePaintClicked" TextAlignment="center" />
 
     @*Erase Category Button *@
-    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="eraseCategoryClicked"
-        TextAlignment="center" />
-
-    @*View Fullfillment Button *@
-    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eye" OnClickFunction="viewFulfillment"
-        TextAlignment="center" />
-
-    @*Edit Layout Button *@
-    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-wrench" OnClickFunction="editLayout"
+    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="onEraseClicked"
         TextAlignment="center" />
 </div>
 
 @code {
     [Parameter] public required EventCallback ToggleAllocationsOpen { get; set; }
+    [Parameter] public required EventCallback EraseClicked { get; set; }
+
+    @* Tristan Calay 3/30/25
+    The paint mode button adds the return of getPaintClass() to its class when clicked.
+    Track paint mode here.*@
+
+    private bool paintModeEnabled = false;
+    private String getPaintVariant()
+    {
+        if (paintModeEnabled)
+        {
+            return "secondary";
+        }
+        return "primary";
+    }
 
     private async Task editFixture()
     {
         Console.WriteLine("Edit Fixture Function");
-        await JS.InvokeVoidAsync("setPlace");
+        await JS.InvokeVoidAsync("window.setPlace");
         await ToggleAllocationsOpen.InvokeAsync();
         @* allocationsOpen = false; *@
     }
@@ -39,23 +47,19 @@
     //It passes that information to the javascript.
     private async Task togglePaintClicked()
     {
-        Console.WriteLine("Toggle Paint Clicked");
-        await JS.InvokeVoidAsync("togglePaint");
+        paintModeEnabled = !paintModeEnabled;
+        Console.WriteLine("Toggle Paint Clicked: Now " + paintModeEnabled);
+        await JS.InvokeVoidAsync("window.setPaintMode", paintModeEnabled);
         @* paintModeEnabled = !paintModeEnabled;
         Console.WriteLine("Paint Category Function - set paint mode to " + paintModeEnabled); *@
         @* await JS.InvokeVoidAsync("setPaintEnabled", paintModeEnabled); *@
         @* StateHasChanged(); *@
     }
 
-    private async Task eraseCategoryClicked()
+    private async Task onEraseClicked()
     {
-        Console.WriteLine("Erase Category Function");
-        await JS.InvokeVoidAsync("setErase");
-        //Call the func in AllocationsSidebar to remove the styling of the selected category.
-        @* if (allocationsSidebar != null)
-        {
-            allocationsSidebar.clearSelectedCategory();
-        } *@
+        Console.WriteLine("Erase Clicked!");
+        await EraseClicked.InvokeAsync();
     }
 
     private void viewFulfillment()

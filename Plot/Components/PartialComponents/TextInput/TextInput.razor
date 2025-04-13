@@ -1,76 +1,19 @@
 @* Originally by Luke Wollenweber *@
 @* Updated 4/1/2025 by Danielle Smith to add Max parameter *@
-@inject IJSRuntime JSRuntime
 
-<script>
-    function handleValueChanged(element, dotNetHelper) {
-        // Call the Blazor method to update the value
-        dotNetHelper.invokeMethodAsync('OnValueChanged', element.value);
-        if (element.value.trim().length < 1) {
-            element.style.color = 'red';
-            element.style.borderColor = 'red';
-        }
-        else {
-            element.style.color = '';
-            element.style.borderColor = '';
-        }
-    }
-</script>
-
-<div class="text-input-container @(LabelOnTop == true ? "label-top" : "label-left")">
-    <label for="@Id">@Label</label>
-    <!-- Text Input Field -->
-    @* Danielle Smith 3/15/2025
-        implemented new OnInputChange method to assure you can pull value back out of the TextInput
-        removed unecessary input wrapper div *@
-    <input id="@Id" type="@Type" value="@Value" @oninput="OnInputChange" placeholder="@Placeholder"
-        class="TextInput @Class" maxlength="@Max" />
-
-</div>
+<label>
+    @ChildContent
+    <InputText class="@($"text-input-container {Class}")" @attributes="Attributes" />
+</label>
 
 @code {
-    [Parameter] public string? Label { get; set; } = "Enter text";
-    [Parameter] public string? Type { get; set; } = "text"; // Default type for text
-    [Parameter] public string? Placeholder { get; set; } = "Type here...";
-    [Parameter] public string? Value { get; set; }
-    [Parameter] public EventCallback<string> ValueChanged { get; set; } // Event callback for ValueChanged
-    [Parameter] public string? Id { get; set; }
-    [Parameter] public string? Class { get; set; }
-    [Parameter] public bool? LabelOnTop { get; set; } = true;
-    [Parameter] public bool? Required { get; set; } = false;
-    [Parameter] public int? Max { get; set; } = 255; // max length of input
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
-    // This is used for JS interop
-    /* Danielle Smith 3/15/2025
-    make DotNetHelper nullable to fix e2e warning */
-    private DotNetObjectReference<TextInput>? DotNetHelper;
+    private string? Class => Attributes.TryGetValue("class", out var val) ? val.ToString() : string.Empty;
 
-    /* Danielle Smith 3/15/2025
-    this method ensures that value updates to the properly binded
-    value so you can pull it back out of the TextInput */
-    private async Task OnInputChange(ChangeEventArgs e)
+    protected override void OnParametersSet()
     {
-        Value = e.Value?.ToString() ?? "";
-        await ValueChanged.InvokeAsync(Value);
-    }
-
-    // This method will be called via JS interop
-    [JSInvokable]
-    public async Task OnValueChanged(string newValue)
-    {
-        Value = newValue;
-        await ValueChanged.InvokeAsync(Value); // Notify the parent component about the change
-    }
-
-    // Dispose DotNetHelper when the component is disposed
-    public void Dispose()
-    {
-        DotNetHelper?.Dispose();
-    }
-
-    // Component initialization
-    protected override void OnInitialized()
-    {
-        DotNetHelper = DotNetObjectReference.Create(this);
+        Attributes.Remove("class");
     }
 }
