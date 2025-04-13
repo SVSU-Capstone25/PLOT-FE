@@ -343,3 +343,60 @@ window.createDraggable = (event) => {
   // window.draggedFixture = { width, height, name };
   window.draggedFixture = { WIDTH, LENGTH, NAME, FIXTURE_TUID, STORE_TUID };
 };
+
+window.captureFloorsetThumbnail = async (floorsetId) => {
+  return await new Promise((resolve, reject) => {
+  if (!window.gridInstance || !window.gridInstance.fixtures) {
+      console.error("gridInstance or fixtures not available");
+      reject("error")
+      return;
+  }
+
+  const width = 150;
+  const height = 150;
+
+  const sketch = (p5) => {
+      p5.setup = () => {
+          p5.createCanvas(width, height);
+          p5.background(255);
+
+          const grid = new Grid(p5);
+          grid.width = window.gridInstance.width;
+          grid.height = window.gridInstance.height;
+          grid.scale = Math.min(width / (grid.width * grid.size), height / (grid.height * grid.size));
+          grid.resize();
+
+          //Clone racks with new p5 context
+          grid.fixtures = window.gridInstance.fixtures.map((f) => {
+            const fixture = Fixture.from(p5, f);
+            return fixture;
+        });
+
+          p5.push();
+          grid.draw();
+          p5.pop();
+
+          // Wait for render, then capture image
+          setTimeout(() => {
+            const dataUrl = p5.canvas.toDataURL("image/png");
+            console.log("Thumbnail captured:", dataUrl.substring(0, 100));
+            resolve(dataUrl);
+            p5.remove();
+             // ✅ return image to Blazor
+            
+          }, 100);
+        };
+      };
+
+  // 🔒 Hidden container
+  const container = document.createElement('div');
+  container.style.position = 'absolute';
+  container.style.left = '-9999px';
+  container.style.top = '-9999px';
+  document.body.appendChild(container);
+
+  new p5(sketch, container);
+    });
+};
+
+
