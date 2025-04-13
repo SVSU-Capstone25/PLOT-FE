@@ -1,3 +1,9 @@
+@inject UsersHttpClient UsersHttpClient
+@inject StoresHttpClient StoresHttpClient
+@using Data.Models.Users;
+@using Data.Models.Stores;
+@using System.Net;
+
 <ModalBody>
 
     @* <h3>@userModalDetails.Header</h3>
@@ -43,19 +49,38 @@
 
     <p>To select multiple stores use Ctrl-click</p>
 
-    @*
     <label>
         Available Stores:
-        <InputSelect @bind-value="nonUserStores">
-
-        </InputSelect>
-
-        Selected Stores:
-        <InputSelect @bind-value="userStores">
-        </InputSelect>
+        <select size="6" multiple @onchange="HandleSelectionFromNotUserStores">
+            @if (notUserStores != null)
+            {
+                @foreach (var store in notUserStores)
+                {
+                    <option value="@store.TUID">@store.NAME</option>
+                }
+            }
+        </select>
+        <Button Variant="primary" TextAlignment="center" @onclick="SelectStoresForUser">
+            Select Store
+        </Button>
 
     </label>
-    *@
+
+    <label>
+        Selected Stores:
+        <select size="6" multiple @onchange="HandleSelectionFromUserStores">
+            @if (userStores != null)
+            {
+                @foreach (var store in userStores)
+                {
+                    <option value="@store.TUID">@store.NAME</option>
+                }
+            }
+        </select>
+        <Button Variant="primary" TextAlignment="center" @onclick="RemoveStoresFromUser">
+            Remove Store
+        </Button>
+    </label>
 
 </ModalBody>
 
@@ -64,6 +89,272 @@
     public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; }
 
     [Parameter]
-    public Data.Models.Users.AddUserToStoreRequest? AddUpdateUserStoreRequestModel { get; set; }
+    public required Data.Models.Users.UserDTO? User { get; set; }
+
+    [Parameter]
+    public List<Data.Models.Users.AddUserToStoreRequest>? AddUpdateUserStoreRequestModels { get; set; }
+
+    [Parameter]
+    public List<Data.Models.Stores.Store>? userStores { get; set; }
+
+    [Parameter]
+    public List<Data.Models.Stores.Store>? notUserStores { get; set; }
+
+    private List<int> selectedNotUserStoreTUIDs { get; set; } = new();
+    private List<int> selectedUserStoreTUIDs { get; set; } = new();
+
+    [Parameter] public required EventCallback UpdateUsers { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ResetUserStoreModel();
+
+        // Initialize the stores for the user
+        if (User != null)
+        {
+            await InitUserStores(User.TUID);
+        }
+        else
+        {
+            await InitUserStores(0);
+        }
+    }
+
+    /*
+    protected override async Task OnParametersSetAsync()
+    {
+    ResetUserStoreModel();
+
+    //Initialize the stores for the user
+    if(User != null){
+    await InitUserStores(User.TUID);
+    }
+    else{
+    await InitUserStores(0);
+    }
+    }
+    */
+    public void SelectStoresForUser()
+    {
+        //Console.WriteLine("Select Stores for Uer in AddUpdated...body pressed");
+
+        var storesToMove = notUserStores?.Where(store => selectedNotUserStoreTUIDs.Contains(store.TUID)).ToList();
+        //Console.WriteLine("Stores to Move: " + storesToMove);
+        if (storesToMove == null) { Console.WriteLine("No stores to move"); return; }
+
+        foreach (var store in storesToMove)
+        {
+            Console.WriteLine(store.NAME);
+            userStores?.Add(store);
+            notUserStores?.Remove(store);
+
+        }
+        //Console.WriteLine("Gets this far");
+        selectedNotUserStoreTUIDs.Clear();
+
+        //Console.WriteLine("And this far");
+        //ResetUserStoreModel();
+        //Console.WriteLine("All the way to the end");
+        StateHasChanged();
+    }
+
+    public void RemoveStoresFromUser()
+    {
+        var storesToMove = userStores?.Where(s => selectedUserStoreTUIDs.Contains(s.TUID)).ToList();
+        if (storesToMove == null) return;
+
+        foreach (var store in storesToMove)
+        {
+            notUserStores?.Add(store);
+            userStores?.Remove(store);
+
+            //AddUpdateUserStoreRequestModels?.RemoveAll(x => x.STORE_TUID == store.TUID);
+        }
+
+        selectedUserStoreTUIDs.Clear();
+
+        StateHasChanged();
+
+        //ResetUserStoreModel();
+    }
+
+    public void HandleSelectionFromUserStores(ChangeEventArgs e)
+    {
+        selectedUserStoreTUIDs = ExtractSelectedIds(e);
+    }
+
+    public void HandleSelectionFromNotUserStores(ChangeEventArgs e)
+    {
+        selectedNotUserStoreTUIDs = ExtractSelectedIds(e);
+    }
+
+    private List<int> ExtractSelectedIds(ChangeEventArgs e)
+    {
+        var selected = new List<int>();
+        if (e.Value is IEnumerable<object> values)
+        {
+            foreach (var v in values)
+            {
+                if (int.TryParse(v?.ToString(), out var id))
+                    selected.Add(id);
+            }
+        }
+        return selected;
+    }
+
+    /* Newly added */
+    public void ResetUserStoreModel()
+    {
+        if (AddUpdateUserStoreRequestModels != null)
+        {
+            // Clear the model
+            AddUpdateUserStoreRequestModels!.Clear();
+
+            // Add current store access
+            foreach (var store in userStores!)
+            {
+                AddUpdateUserStoreRequestModels!.Add(new Data.Models.Users.AddUserToStoreRequest
+                {
+                    USER_TUID = User!.TUID,
+                    STORE_TUID = store.TUID
+                });
+            }
+        }
+    }
+
+    public async Task OnUpdateUserSubmit()
+    {
+        ResetUserStoreModel();
+        await UpdateUser();
+        await UpdateUserStores(User!.TUID);
+        // Optionally trigger event to refresh data
+        await UpdateUsers.InvokeAsync();
+
+        StateHasChanged();
+    }
+
+    private async Task UpdateUser()
+    {
+
+        if (AddUpdateUserModel != null)
+        {
+            var response = await UsersHttpClient.UpdateUserPublicInfo(User!.TUID, AddUpdateUserModel!);
+        }
+
+    }
+
+    public async Task UpdateUserStores(int userTUID)
+    {
+        //Console.WriteLine("In UpdateUserStores method in UpdateUserModal.razor");
+        /* var storeTUIDs = AddUpdateUserStoreRequestModels.Select(store => store.STORE_TUID).ToList();
+        */
+        var storeTUIDs = (AddUpdateUserStoreRequestModels ?? new List<AddUserToStoreRequest>())
+        .Select(store => store.STORE_TUID)
+        .ToList();
+
+        foreach (var storeTUID in storeTUIDs)
+        {
+            Console.WriteLine(storeTUID);
+        }
+
+        var request = new UpdateAccessListRequest
+        {
+            USER_TUID = userTUID,
+            STORE_TUIDS = storeTUIDs
+        };
+
+        //Console.WriteLine("UpdateAccessListRequest object created, named request");
+        //Console.WriteLine(request);
+
+        //Console.WriteLine("await UsersHttpClient.UpdateAccessList(request);");
+
+        var response = await UsersHttpClient.UpdateAccessList(request);
+        //Console.WriteLine("THE RESPONSE:");
+        //Console.WriteLine(response);
+
+        //Console.WriteLine("Finishing the UpdateUserStores(int userTUID) method in UpdateUserModal.razor");
+    }
+
+    private async Task InitUserStores(int userTUID)
+    {
+        await InitUserStoresAssigned(userTUID);
+
+        await InitUsersStoresNotAssigned(userTUID);
+    }
+
+    private async Task InitUserStoresAssigned(int userTUID)
+    {
+        if (userTUID == 0)
+        {
+            userStores = new List<Data.Models.Stores.Store>();
+        }
+        else
+        {
+            var response = await UsersHttpClient.GetStoreOfUserById(userTUID);
+
+            //Console.WriteLine("Dashboard handling response for stores assigned as:");
+            //Console.WriteLine(response);
+
+            if (response != null)
+            {
+                //Console.WriteLine("List of Names and TUIDs");
+                foreach (var store in response)
+                {
+                    //Console.WriteLine($"Name: {store.NAME}, TUID: {store.TUID}");
+                }
+
+                userStores = response;
+            }
+            else
+            {
+                //Console.WriteLine("Response was null.");
+            }
+
+            if (response != null)
+            {
+                userStores = response;
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task InitUsersStoresNotAssigned(int userId)
+    {
+        if (userId != 0)
+        {
+            var response = await UsersHttpClient.GetStoresNotForUser(userId);
+
+            //Console.WriteLine("Dashboard handling response for stores NOT assigned as:");
+            //Console.WriteLine(response);
+
+            if (response != null)
+            {
+                foreach (var store in response)
+                {
+                    //Console.WriteLine($"Name: {store.NAME}, TUID: {store.TUID}");
+                }
+
+                notUserStores = response;
+            }
+            else
+            {
+                //Console.WriteLine("Response was null.");
+            }
+
+
+            if (response != null)
+            {
+                notUserStores = response;
+            }
+        }
+        else
+        {
+            // New user
+            notUserStores = await StoresHttpClient.GetListOfStores();
+        }
+
+        StateHasChanged();
+    }
 
 }

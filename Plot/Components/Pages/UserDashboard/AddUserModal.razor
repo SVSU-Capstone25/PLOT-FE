@@ -2,10 +2,12 @@
 
 <Modal class="modal-dialog modal-xl user-modal user-info-modal" @attributes="Attributes">
     <ModalHeader Title="Add User" />
-    <EditForm Model="AddUserModel" OnValidSubmit="OnAddUserSubmit">
+    <EditForm Model="AddUserModel" OnValidSubmit="async () => await OnAddUserSubmit()">
         <DataAnnotationsValidator />
 
-        <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" />
+        <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel"
+            AddUpdateUserStoreRequestModels="AddUpdateUserStoreRequestModels" UserStores="userStores"
+            NotUserStores="notUserStores" User="User" @ref="modalBodyRef" />
 
         <ModalFooter>
             <Button Variant="primary" TextAlignment="center" type="submit">
@@ -17,9 +19,18 @@
 </Modal>
 
 @code {
+    private AddUpdateUserModalBody? modalBodyRef;
+
+    private List<Data.Models.Stores.Store>? userStores = new List<Data.Models.Stores.Store>();
+
+    private List<Data.Models.Stores.Store>? notUserStores = new List<Data.Models.Stores.Store>();
+
+    private List<Data.Models.Users.AddUserToStoreRequest> AddUpdateUserStoreRequestModels = new();
+
     [Parameter] public required EventCallback UpdateUsers { get; set; }
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
     [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? AddUserModel { get; set; }
+    [Parameter] public required Data.Models.Users.UserDTO User { get; set; }
 
     protected override void OnInitialized() => AddUserModel ??= new();
 
@@ -35,11 +46,34 @@
                 ROLE_NAME = AddUserModel.ROLE_NAME
             };
 
-            Console.WriteLine(UserRegistration);
+            Console.WriteLine("USER REGISTRATION IS " + UserRegistration);
 
             var response = await AuthHttpClient.Register(UserRegistration);
 
-            Console.WriteLine(response);
+            Console.WriteLine("ON ADD USER SUBMIT " + response);
+
+            await modalBodyRef!.UpdateUserStores(response);
         }
+
     }
+    /*
+    private async Task OnAddUserSubmit()
+    {
+    //// REFACTOR
+
+    //ResetUserStoreModel();
+    //await UpdateUser();
+    //await UpdateUserStores(User.TUID);
+    // Optionally trigger event to refresh data
+    //await UpdateUsers.InvokeAsync();
+
+    StateHasChanged();
+    }
+    */
+    /*
+    private async Task OnAddUserSubmit()
+    {
+    await modalBodyRef!.OnUpdateUserSubmit(); // Call method from AddUpdateUserModalBody
+    }
+    */
 }
