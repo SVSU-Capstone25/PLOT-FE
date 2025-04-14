@@ -40,11 +40,13 @@
                 Apply
             </Button>
 
-            <Button Class="button-green" Icon="fa-solid fa-brush" TextAlignment="center">
+            <Button Class="button-green" Icon="fa-solid fa-brush" TextAlignment="center"
+                OnClickFunction="EmployeePaintOnClick">
                 Toggle Paint Employee Area
             </Button>
 
-            <Button Class="button-green" Icon="fa-solid fa-eraser" TextAlignment="center">
+            <Button Class="button-green" Icon="fa-solid fa-eraser" TextAlignment="center"
+                OnClickFunction="EmployeeEraseOnClick">
                 Toggle Erase Employee Area
             </Button>
         </div>
@@ -59,8 +61,26 @@
     [Parameter] public EventCallback ToggleBuildingWalls { get; set; }
 
     [Parameter] public EventCallback UpdateStore { get; set; }
-
+    [Parameter] public EventCallback<bool> EmployeePaintToggle { get; set; }
+    [Parameter] public EventCallback<bool> EmployeeEraseToggle { get; set; }
     [SupplyParameterFromForm] private Data.Models.Stores.UpdateSizeStore? UpdateSizeStoreModel { get; set; }
+
+    //Determines the state of the buttons for employee paint and erase mode
+    //Should be passed to the floorsetGridCanvas.js file on click.
+    private bool employeePaintMode = false;
+    private bool employeeEraseMode = false;
+
+    //Toggle the employee paint mode booleans and send the updated value to event listeners.
+    private void EmployeePaintOnClick()
+    {
+        employeePaintMode = !employeePaintMode;
+        EmployeePaintToggle.InvokeAsync(employeePaintMode);
+    }
+    private void EmployeeEraseOnClick()
+    {
+        employeeEraseMode = !employeeEraseMode;
+        EmployeeEraseToggle.InvokeAsync(employeeEraseMode);
+    }
 
     protected override void OnInitialized()
     {

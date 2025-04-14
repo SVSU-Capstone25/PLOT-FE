@@ -63,30 +63,26 @@ window.setPaint = (paint) => {
 }
 
 // Tristan Calay 4/2/25 - Toggles for employee paint/erase mode.
-// var isEmployeePaintEnabled = false;
-// var isEmployeeEraseEnabled = false;
+var isEmployeePaintEnabled = false;
+var isEmployeeEraseEnabled = false;
 
-function setEmployeePaint(newPaint) {
-  // isEmployeePaintEnabled = newPaint;
-  // console.log("Employee paint mode is " + isEmployeePaintEnabled);
-  //var marker = document.getElementById("employeePaintEnabledMarker");
-  // if (isEmployeePaintEnabled) {
-  //     console.log("Setting marker green...")
-  //     //marker.style.color = "green";
-  //     window.gridState = 'employeeMode';
-  // }
-  // else {
-  //     console.log("Setting marker black...")
-  //     //marker.style.color = "black";
-  //     window.gridState = 'place';
-  // }
+window.setEmployeePaint = (newPaint) => {
+  isEmployeePaintEnabled = newPaint;
+  console.log("Employee paint mode is " + isEmployeePaintEnabled);
+  if (isEmployeePaintEnabled) {
+    window.gridState = 'employeePaint';
+  }
+  else {
+    window.gridState = 'place';
+  }
 }
 
-function setEmployeeErase(newErase) {
-  // isEmployeeEraseEnabled = newErase;
-  // if (isEmployeeEraseEnabled) {
-  //     window.gridState = 'employeeMode';
-  // }
+window.setEmployeeErase = (newErase) => {
+  isEmployeeEraseEnabled = newErase;
+  console.log("Employee erase mode is " + isEmployeeEraseEnabled);
+  if (isEmployeeEraseEnabled) {
+    window.gridState = 'employeeErase';
+  }
 }
 
 //Tristan Calay 4/7/25
@@ -252,43 +248,43 @@ function sketch(p5) {
           window.draggedFixture = undefined;
         })
         .catch(console.error);
-    } else if(window.draggedFixture) {
-        const { x, y } = gridInstance.toGridCoordinates(
-            p5.mouseX,
-            p5.mouseY
-          );
+    } else if (window.draggedFixture) {
+      const { x, y } = gridInstance.toGridCoordinates(
+        p5.mouseX,
+        p5.mouseY
+      );
 
-        console.log({
-            ...window.draggedFixture,
-            COLOR: "#fff",
-            FLOORSET_TUID: floorsetId,
-            X_POS: x,
-            Y_POS: y,
-            ALLOCATED_LF: 1,
-            EDITOR_ID: gridInstance.fixtures.length + 1
-        })
-        createFixtureInstance(Fixture.from(p5, {
-            ...window.draggedFixture,
-            COLOR: "#fff",
-            FLOORSET_TUID: floorsetId,
-            X_POS: x,
-            Y_POS: y,
-            ALLOCATED_LF: 1,
-            EDITOR_ID: gridInstance.fixtures.length + 1
-        })).then((data) => {
-            console.log(data);
-            gridInstance.fixtures.push(Fixture.from(p5, {
-                ...window.draggedFixture,
-                COLOR: "#fff",
-                FLOORSET_TUID: floorsetId,
-                X_POS: x,
-                Y_POS: y,
-                ALLOCATED_LF: 1,
-                EDITOR_ID: gridInstance.fixtures.length + 1
-            }));
-            mouseFixture = undefined;
-            window.draggedFixture = undefined;
-        }).catch(console.error);
+      console.log({
+        ...window.draggedFixture,
+        COLOR: "#fff",
+        FLOORSET_TUID: floorsetId,
+        X_POS: x,
+        Y_POS: y,
+        ALLOCATED_LF: 1,
+        EDITOR_ID: gridInstance.fixtures.length + 1
+      })
+      createFixtureInstance(Fixture.from(p5, {
+        ...window.draggedFixture,
+        COLOR: "#fff",
+        FLOORSET_TUID: floorsetId,
+        X_POS: x,
+        Y_POS: y,
+        ALLOCATED_LF: 1,
+        EDITOR_ID: gridInstance.fixtures.length + 1
+      })).then((data) => {
+        console.log(data);
+        gridInstance.fixtures.push(Fixture.from(p5, {
+          ...window.draggedFixture,
+          COLOR: "#fff",
+          FLOORSET_TUID: floorsetId,
+          X_POS: x,
+          Y_POS: y,
+          ALLOCATED_LF: 1,
+          EDITOR_ID: gridInstance.fixtures.length + 1
+        }));
+        mouseFixture = undefined;
+        window.draggedFixture = undefined;
+      }).catch(console.error);
     }
   };
 }

@@ -53,7 +53,8 @@
             @if (buildingWallsExpanded)
             {
                 <BuildingWallsPanel StoreId="StoreId" Store="Store" UpdateStore="UpdateStore"
-                    ToggleBuildingWalls="ToggleBuildingWalls" />
+                    ToggleBuildingWalls="ToggleBuildingWalls" EmployeeEraseToggle="SendEmployeeErase"
+                    EmployeePaintToggle="SendEmployeePaint" />
             }
 
         }
@@ -128,6 +129,20 @@
 
     private Data.Models.Stores.Store? Store;
 
+
+    @* Tristan Calay 4/13 
+    When building walls panel updates its employee area paint/erase states, send them to the floorsetGridCanvas.js file
+    for processing. *@
+    private void SendEmployeePaint(bool newPaint)
+    {
+        Console.WriteLine("Sending Employee Paint: " + newPaint);
+        JS.InvokeVoidAsync("setEmployeePaint", newPaint);
+    }
+    private void SendEmployeeErase(bool newErase)
+    {
+        Console.WriteLine("Sending Employee Erase: " + newErase);
+        JS.InvokeVoidAsync("setEmployeeErase", newErase);
+    }
     private async Task UpdateStore()
     {
         var response = await StoresHttpClient.GetStore(StoreId);
