@@ -292,28 +292,12 @@
         {
             var response = await UsersHttpClient.GetStoreOfUserById(userTUID);
 
-            //Console.WriteLine("Dashboard handling response for stores assigned as:");
-            //Console.WriteLine(response);
-
             if (response != null)
             {
-                //Console.WriteLine("List of Names and TUIDs");
-                foreach (var store in response)
-                {
-                    //Console.WriteLine($"Name: {store.NAME}, TUID: {store.TUID}");
-                }
-
-                userStores = response;
-            }
-            else
-            {
-                //Console.WriteLine("Response was null.");
+                userStores = response.ToList();
             }
 
-            if (response != null)
-            {
-                userStores = response;
-            }
+
         }
 
         StateHasChanged();
@@ -330,27 +314,15 @@
 
             if (response != null)
             {
-                foreach (var store in response)
-                {
-                    //Console.WriteLine($"Name: {store.NAME}, TUID: {store.TUID}");
-                }
 
-                notUserStores = response;
-            }
-            else
-            {
-                //Console.WriteLine("Response was null.");
+                notUserStores = response.ToList();
             }
 
 
-            if (response != null)
-            {
-                notUserStores = response;
-            }
         }
         else
         {
-            // New user
+            // New user - Fill available stores list
             notUserStores = await StoresHttpClient.GetListOfStores();
         }
 
