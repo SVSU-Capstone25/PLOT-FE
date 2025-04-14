@@ -65,7 +65,9 @@ Author: Andrew Fulton (3/12/2025)
         @* Delete store modal *@
         <Modal id="@($"delete-store-{store.TUID}")" class="standard">
             <ModalHeader Title="Confirm Deletion" Variant="danger" />
-            <form @onsubmit="async () => await OnDeleteStoreSubmit(store.TUID)">
+            <form @onsubmit="async () => {
+                await OnDeleteStoreSubmit(store.TUID);
+                deleteTextInput = string.Empty;}">
             @code {
                 private string? deleteTextInput;
                 private bool isDisabled => deleteTextInput != "DELETE";
