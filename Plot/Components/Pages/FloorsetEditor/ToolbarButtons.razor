@@ -38,7 +38,7 @@
     private async Task editFixture()
     {
         Console.WriteLine("Edit Fixture Function");
-        await JS.InvokeVoidAsync("setPlace");
+        await JS.InvokeVoidAsync("window.setPlace");
         await ToggleAllocationsOpen.InvokeAsync();
         @* allocationsOpen = false; *@
     }
@@ -49,7 +49,7 @@
     {
         paintModeEnabled = !paintModeEnabled;
         Console.WriteLine("Toggle Paint Clicked: Now " + paintModeEnabled);
-        await JS.InvokeVoidAsync("setPaintMode", paintModeEnabled);
+        await JS.InvokeVoidAsync("window.setPaintMode", paintModeEnabled);
         @* paintModeEnabled = !paintModeEnabled;
         Console.WriteLine("Paint Category Function - set paint mode to " + paintModeEnabled); *@
         @* await JS.InvokeVoidAsync("setPaintEnabled", paintModeEnabled); *@

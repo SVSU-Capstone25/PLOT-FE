@@ -35,8 +35,14 @@
             var ImageSrc = fixtureModel.ICON != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(fixtureModel.ICON)}" :
             "https://placecats.com/200/200";
 
-        <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-value="@fixtureModel.NAME" draggable="true"
-            data-width="@fixtureModel.WIDTH" data-height="@fixtureModel.LENGTH" ondragstart="createDraggable(event)"
+        <div class="fixture d-flex align-items-center gap-3 grab-cursor" 
+            data-name="@fixtureModel.NAME"
+            data-fixture-tuid="@fixtureModel.TUID"
+            data-store-tuid="@fixtureModel.STORE_TUID"
+            data-width="@fixtureModel.WIDTH"
+            data-height="@fixtureModel.LENGTH"
+            draggable="true" 
+            ondragstart="window.createDraggable(event)"
             @ondragenter="() => FixtureDragged(fixtureModel)">
             <img class="fixture-img disable-select grab-cursor" src="@ImageSrc" alt="" draggable="false" />
             <p class="fixture-text m-0 disable-select text-truncate">@fixtureModel.NAME</p>

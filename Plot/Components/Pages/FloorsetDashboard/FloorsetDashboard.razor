@@ -21,14 +21,14 @@ Author: Andrew Fulton (3/13/2025)  *@
 @inject StoresHttpClient StoresHttpClient
 
 @* Top portion of the page (Showing store, location, and image for the current floorset) *@
-<div class="container">
-    <div class="left">
-        <h1 font-size="3em">Floorsets for @StoreId Store</h1>
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h1 font-size="3em">Floorsets for @(Store?.NAME ?? "Loading...")</h1>
+        <p class="small">@Store?.ADDRESS, @Store?.CITY, @Store?.STATE @Store?.ZIP</p>
         <br>
-        @* <h3>@storeLocation</h3> *@
     </div>
-    <div class="right">
-        <img height="auto" width="500px" src="@StoreImageSrc">
+    <div class="col-md-4">
+        <img height="auto" width="550px" src="@StoreImageSrc" class="img-fluid shadow">
     </div>
 </div>
 
@@ -112,8 +112,9 @@ Author: Andrew Fulton (3/13/2025)  *@
 @code {
     [Parameter] public required int StoreId { get; set; }
     private List<Data.Models.Floorsets.Floorset> floorsets = new List<Data.Models.Floorsets.Floorset>();
+    private Data.Models.Stores.Store? Store {get;set;}
 
-    string StoreImageSrc = "https://placecats.com/300/200";
+    string StoreImageSrc = "";
 
     private async Task UpdateFloorsets()
     {
@@ -131,6 +132,8 @@ Author: Andrew Fulton (3/13/2025)  *@
 
         if (response != null)
         {
+            Store = response;
+            
             StoreImageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(response.BLUEPRINT_IMAGE!)}";
         }
 
