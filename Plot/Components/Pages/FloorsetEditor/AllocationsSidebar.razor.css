@@ -1,5 +1,5 @@
 /* Originally by Tristan Calay */
-.progress-area {
+/* .progress-area {
     background-color: white;
     padding: 5px;
     height: inherit;
@@ -9,29 +9,29 @@
     overflow-y: scroll;
     overflow-x: hidden;
 
-}
+} */
 
-.inner-container {
+/* .inner-container {
     background-color: #f0f0f0;
     padding: .5rem;
-    border-radius: .5rem;
+    border-radius: .5rem; */
     /* Tristan Calay 4/1/2025 Remove height, use flex so sub components size properly */
-    display: flex;
+    /* display: flex;
     flex-direction: column;
     height: 100%;
-}
+} */
 
-ul {
+/* ul { */
     /* Remove padding from the category list */
-    padding-left: 0;
+    /* padding-left: 0;
     margin-bottom: 0;
-}
+} */
 
 /* Danielle Smith - 3/15/2025
 class for the area with the progress bars to make them a scrollable area
 with this and the height on inner-container, you now scroll the categories
 without the buttons at the bottom ever getting lost */
-.progress-area {
+/* .progress-area {
     overflow-x: hidden;
     overflow-y: scroll;
     height: 70vh;
@@ -49,4 +49,4 @@ without the buttons at the bottom ever getting lost */
 
 .text-input-container {
     flex-grow: 2;
-}
+} */

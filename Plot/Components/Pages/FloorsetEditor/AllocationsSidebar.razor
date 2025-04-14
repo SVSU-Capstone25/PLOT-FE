@@ -9,10 +9,22 @@ and allocate floorsets for Platos Closet.
 
 Author: Tristan Calay (3/15/2025)-->
 
+@* Danielle Smith 3/17/2025
+            added classes for margins on these progressbars
+            added more categories to fill this out for demo purpopses & sorted them alphabetically 
+            
+            Tristan Calay 3/29/25
+            Created a foreach loop to iterate over cached category data and display it.*@
+
+@* Tristan Calay 3/27/25
+            Added UL / LI with onclick to set the painting color. *@
+
 @rendermode InteractiveServer
 @inject IJSRuntime JS
+@inject SalesHttpClient SalesHttpClient
 
 @using Plot.Components.PartialComponents.SlideOut
+@using Plot.Components.PartialComponents.ProgressBar
 
 <SlideOutHeader>
     <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
@@ -22,267 +34,122 @@ Author: Tristan Calay (3/15/2025)-->
     @* Danielle Smith 3/17/2025
         changed how these are being displayed to use bootstrap classes
         added params to help text input take up proper width *@
-        <div class="row">
-            <div class="col-md-8">
-                <InputText id="category-search" type="search" placeholder="Category Search..."
-                    @bind-value="categorySearch"
-                    class="w-100"/>
-            </div>
+    <div class="d-flex flex-row gap-2">
+        <InputText id="category-search" type="search" placeholder="Search..." ValueExpression="() => CategorySearch"
+            ValueChanged="OnSearchChange" class="w-100 form-control" />
+        <Button Variant="primary" Icon="fa-solid fa-arrow-up-short-wide" Class="search-button" TextAlignment="center"
+            @onclick="OnSortAscendingClick" />
+        <Button Variant="primary" Icon="fa-solid fa-arrow-down-wide-short" Class="search-button" TextAlignment="center"
+            @onclick="OnSortDescendingClick" />
+        <Button Variant="primary" Icon="fa-solid fa-filter" Class="search-button" TextAlignment="center"
+            @onclick="OnFilterClick" />
+    </div>
 
-            @* id of sorting button follows the style "sortButton" + num, from 0 to n, where n is num sort buttons - 1.
-                Call JS.swapSortButtons(num) in the OnClickFunction to cycle to the next sort button in JS. *@
-            <div class="col-md-2" id="sortButton0">
-                <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-arrow-up-short-wide"
-                    OnClickFunction="sortAscending" Class="search-button" TextAlignment="center" />
-            </div>
+    <div class="progress-area">
+        <ul class="list-group list-group-flush">
 
-            @* Hide the buttons not currently active via display : none *@
-            <div class="col-md-2" id="sortButton1" style="display: none;">
-                <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-arrow-down-wide-short"
-                    OnClickFunction="sortDescending" Class="search-button" TextAlignment="center" />
-            </div>
-
-            <div class="col-md-2">
-                <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-filter"
-                    OnClickFunction="filterCategory" Class="search-button" TextAlignment="center" />
-            </div>
-        </div>
-
-        <div class="progress-area">
-            @* Danielle Smith 3/17/2025
-            added classes for margins on these progressbars
-            added more categories to fill this out for demo purpopses & sorted them alphabetically 
-            
-            Tristan Calay 3/29/25
-            Created a foreach loop to iterate over cached category data and display it.*@
-
-            @* Tristan Calay 3/27/25
-            Added UL / LI with onclick to set the painting color. *@
-            <ul style="list-style: none;">
-            
-            @foreach (var bar in getAllCategories())
+            @foreach (var allocationFufillmentList in allocationFufillmentLists)
             {
-                    //Continue to next category if the search filter is active
-                    //  and the search filter is not in the bar text.
-                    //  Exclude headers from being skipped.
-                    @if (bar.isHeader)
-                    {
-                            <hr class="category-separator">
-                            <li><ProgressBar iconString="fa-solid fa-chevron-down" mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
-                                barValue=@bar.currentValue barLabel=@bar.getLinearFeet() /></li>
-                    }
-                    else
-                    {
-                            @if (bar.isInSearch(categorySearch))
-                            {
-                                    <li @onclick=@(e => categoryOnClick(bar)) style=@bar.getStyle()><ProgressBar mainLabel=@bar.text barColor=@bar.color barMax=@bar.maxValue
-                                        barValue=@bar.currentValue barLabel=@bar.getLinearFeet() /></li>     
-                            }
-                    }
+                var SuperCategoryColor = allocationFufillmentList.Value.First().SUPERCATEGORY_COLOR;
+                var SuperCategoryTotalSales = allocationFufillmentList.Value.Sum((allocationFufillment) =>
+                allocationFufillment.TOTAL_SALES);
+
+                <li class="list-group-item">
+                    <ProgressBar>
+                        <ProgressBarHeader class="fs-5" Icon="fa-solid fa-chevron-down">@allocationFufillmentList.Key
+                        </ProgressBarHeader>
+                        <ProgressBarBar Color="@SuperCategoryColor" max="100" value="100" min="0">
+                            @SuperCategoryTotalSales
+                        </ProgressBarBar>
+                    </ProgressBar>
+                </li>
+
+                @foreach (var allocationFufillment in allocationFufillmentList.Value.Where((allocationFufillment) =>
+                            allocationFufillment.SUBCATEGORY.Contains(CategorySearch)))
+                {
+                    <li class="list-group-item" @onclick="() => OnCategoryClick(allocationFufillment.SUPERCATEGORY_COLOR)">
+                        <ProgressBar>
+                            <ProgressBarHeader class="fs-6">@allocationFufillment.SUBCATEGORY
+                            </ProgressBarHeader>
+                            <ProgressBarBar Color="@allocationFufillment.SUPERCATEGORY_COLOR" max="100"
+                                value="@allocationFufillment.TOTAL_SALES" min="0">
+                                @allocationFufillment.TOTAL_SALES
+                            </ProgressBarBar>
+                        </ProgressBar>
+                    </li>
+                }
             }
-            </ul>
-        </div>
+        </ul>
+    </div>
 </SlideOutBody>
 
-@* Tristan Calay - Scripts for category onclick *@
-<script>
-    //NumSortButtons needs to be equal to the number of sorting buttons defined in the html above.
-    var numSortButtons = 2;
-    function swapSortButtons(sortButtonNum) {
-        var nextButtonNum = (sortButtonNum + 1) % numSortButtons;
-        document.getElementById("sortButton" + sortButtonNum).style.display = "none";
-        document.getElementById("sortButton" + nextButtonNum).style.display = "";
-    }    
-</script>
 @code
 {
-    private String categorySearch = ""; //Default storage of the category search textbox.
+    [Parameter] public required int FloorsetId { get; set; }
 
-    @* Tristan Calay 4/2/25
-    Moved category on click/selection logic into C# @onclick functionality *@
+    private String CategorySearch { get; set; } = "";
 
-    private static Category nullCategory = new Category("null", "null", "transparent", 0, 0, false);
-    private Category lastSelectedCategory = nullCategory;
+    private Dictionary<string, List<Data.Models.Allocations.AllocationFufillments>> allocationFufillmentLists = new
+    Dictionary<string,
+    List<Data.Models.Allocations.AllocationFufillments>>();
 
-    //Getter for the selected category
-    public Category getSelectedCategory()
+    private async Task UpdateAllocationFufillments()
     {
-        return lastSelectedCategory;
-    }
+        var response = await SalesHttpClient.GetAllocationFufillments(FloorsetId);
 
-    //Func to find data in the three reference lists.
-    private void findListAndIndex(ref String list, ref int index, Category category)
-    {
-        index = progressCategoriesMen.FindIndex(x => x.Equals(category));
-        list = "mens";
-        if (index < 0)
+        Console.WriteLine(response);
+
+        if (response != null)
         {
-            index = progressCategoriesWomen.FindIndex(x => x.Equals(category));
-            list = "womens";
-        }
-        if (index < 0)
-        {
-            index = progressCategoriesAccessories.FindIndex(x => x.Equals(category));
-            list = "accessories";
-        }
-        if (index < 0)
-        {
-            throw new IndexOutOfRangeException("Could not find selected category reference in men's, women's or accessories.");
-        }
-
-        Console.WriteLine("Selected index: " + index + " in list " + list);
-    }
-
-    //categoryOnClick takes the ID of the list item and highlights that item for noting the selected category.
-    //A reference is stored to the last selected item, if there is one, and it is unselected.
-    private async void categoryOnClick(Category category)
-    {
-        Console.WriteLine("Category Onclick " + category.ToString());
-        //Don't do anything if we click the current selection.
-
-        if (lastSelectedCategory.Equals(category))
-        {
-            return;
-        }
-
-        lastSelectedCategory.isSelected = false;
-        category.isSelected = true;
-        lastSelectedCategory = category;
-
-        //Update the UI.
-        StateHasChanged();
-
-        //Call into the FloorsetEditor script for setting the paint color.
-        //This requires the general category, specific category, and category color split by | characters.
-        await JS.InvokeVoidAsync("window.setPaint", category.color);
-    }
-
-    //Function to clear the styling and last selected ID for the category list.
-    public void clearSelectedCategory()
-    {
-        if (!lastSelectedCategory.Equals(nullCategory))
-        {
-            //Unselect current category
-            Console.WriteLine("Removing selection of painting category");
-            categoryOnClick(nullCategory);
+            response.ForEach((allocationFufillment) =>
+            {
+                if (allocationFufillmentLists.TryGetValue(allocationFufillment.SUPERCATEGORY_NAME, out
+    List<Data.Models.Allocations.AllocationFufillments> list))
+                {
+                    list.Add(allocationFufillment);
+                }
+                else
+                {
+                    allocationFufillmentLists.Add(allocationFufillment.SUPERCATEGORY_NAME, new
+        List<Data.Models.Allocations.AllocationFufillments> {
+allocationFufillment
+            });
+                }
+            });
         }
     }
 
-    //Add one list for each super category
-    private List<Category> progressCategoriesMen = [];
-    private List<Category> progressCategoriesWomen = [];
-    private List<Category> progressCategoriesAccessories = [];
-
-
-    //When the component is initialized, retrieve info from database about categories.
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-        //For now, hardcoded categories.
-        //One exists for each super category, for ease of sorting. This can be changed.
-        progressCategoriesMen = [];
-        progressCategoriesWomen = [];
-        progressCategoriesAccessories = [];
-        @* Men's *@
-        var currentColor = "#AAD9FF";
-        var currentCategory = "Men\'s";
-        progressCategoriesMen.Add(new Category(currentCategory, currentCategory, currentColor, 480, 290, true));
-        progressCategoriesMen.Add(new Category(currentCategory, "Pants", currentColor, 100, 20, false));
-        progressCategoriesMen.Add(new Category(currentCategory, "Shirts", currentColor, 100, 30, false));
-        progressCategoriesMen.Add(new Category(currentCategory, "Shoes", currentColor, 100, 60, false));
-        progressCategoriesMen.Add(new Category(currentCategory, "Jeans", currentColor, 100, 20, false));
-        progressCategoriesMen.Add(new Category(currentCategory, "Jackets", currentColor, 100, 120, false));
-        progressCategoriesMen.Add(new Category(currentCategory, "Shorts", currentColor, 100, 20, false));
-        progressCategoriesMen.Add(new Category(currentCategory, "Sports", currentColor, 100, 20, false));
-        progressCategoriesMen.Add(new Category(currentCategory, "Suits", currentColor, 100, 10, false));
-
-        @* Women's *@
-        currentColor = "#FFAAD6";
-        currentCategory = "Women\'s";
-        progressCategoriesWomen.Add(new Category(currentCategory, currentCategory, currentColor, 800, 300, true));
-        progressCategoriesWomen.Add(new Category(currentCategory, "Dresses", currentColor, 100, 120, false));
-        progressCategoriesWomen.Add(new Category(currentCategory, "Skirts", currentColor, 100, 120, false));
-        progressCategoriesWomen.Add(new Category(currentCategory, "Sports", currentColor, 100, 20, false));
-        progressCategoriesWomen.Add(new Category(currentCategory, "Suits", currentColor, 100, 100, false));
-        progressCategoriesWomen.Add(new Category(currentCategory, "Jackets", currentColor, 100, 120, false));
-        progressCategoriesWomen.Add(new Category(currentCategory, "Jeans", currentColor, 100, 20, false));
-        progressCategoriesWomen.Add(new Category(currentCategory, "Pants", currentColor, 40, 20, false));
-        progressCategoriesWomen.Add(new Category(currentCategory, "Shirts", currentColor, 100, 30, false));
-        progressCategoriesWomen.Add(new Category(currentCategory, "Shoes", currentColor, 100, 60, false));
-        progressCategoriesWomen.Add(new Category(currentCategory, "Shorts", currentColor, 100, 20, false));
-
-        @* Accessories *@
-        currentColor = "#5FBD6A";
-        currentCategory = "Accessories";
-        progressCategoriesAccessories.Add(new Category(currentCategory, currentCategory, currentColor, 40, 80, true));
-        progressCategoriesAccessories.Add(new Category(currentCategory, "Belts", currentColor, 10, 20, false));
-        progressCategoriesAccessories.Add(new Category(currentCategory, "Hats", currentColor, 10, 20, false));
-        progressCategoriesAccessories.Add(new Category(currentCategory, "Purses", currentColor, 10, 20, false));
-        progressCategoriesAccessories.Add(new Category(currentCategory, "Jewelry", currentColor, 10, 20, false));
-
+        await UpdateAllocationFufillments();
     }
 
-    //Tristan Calay 3/29/25
-    //Return a joined list of all the super categories.
-    //The super categories can be sorted individually before they are retrieved.
-    public List<Category> getAllCategories()
+    private void OnSearchChange(string value)
     {
-        var joinedList = new List<Category>();
-        joinedList = [];
-        joinedList.AddRange(progressCategoriesMen);
-        joinedList.AddRange(progressCategoriesWomen);
-        joinedList.AddRange(progressCategoriesAccessories);
-
-        return joinedList;
-    }
-
-    //Tristan Calay 3/29/25
-    //Hide categories that do not contain the string "newSearch"
-    private void categorySearchChanged(String newSearch)
-    {
-        categorySearch = newSearch;
+        CategorySearch = value;
         StateHasChanged();
     }
 
-    private void filterCategory()
+    private async void OnCategoryClick(string color)
     {
-        Console.WriteLine("Filter Category Search Function");
+        Console.WriteLine("Category Onclick " + color);
+
+        await JS.InvokeVoidAsync("window.setPaint", color);
     }
 
-    //Tristan Calay 3/29/25
-    //Generic sort - Sort by alphabetical with headers first.
-
-    @* Create functions for sorting in different ways here. 
-        They should invoke swapSortButtons with the 
-        corresponding ID of the button that called the sort func.*@
-    private void sortAscending()
+    private void OnSortAscendingClick()
     {
-        sortCategory(Category.SORTTYPE.ASCENDING);
-        JS.InvokeVoidAsync("swapSortButtons", 0);
-    }
-    private void sortDescending()
-    {
-        sortCategory(Category.SORTTYPE.DESCENDING);
-        JS.InvokeVoidAsync("swapSortButtons", 1);
+        throw new NotImplementedException();
     }
 
-    @* Sort each sub category of items by the sorttype value. *@
-    private void sortCategory(Category.SORTTYPE sort)
+    private void OnSortDescendingClick()
     {
-        Console.WriteLine("Sort Category Search Function");
-        progressCategoriesMen.Sort((a, b) => Category.compareCategories(a, b, sort));
-        progressCategoriesWomen.Sort((a, b) => Category.compareCategories(a, b, sort));
-        progressCategoriesAccessories.Sort((a, b) => Category.compareCategories(a, b, sort));
-
-        StateHasChanged();
+        throw new NotImplementedException();
     }
 
-    //Tristan Calay
-    //Call when progress values have been updated
-    public void notifyCategoryUpdates()
+    private void OnFilterClick()
     {
-        StateHasChanged();
+        throw new NotImplementedException();
     }
-
 
 }

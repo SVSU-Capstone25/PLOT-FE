@@ -294,13 +294,13 @@ function sketch(p5) {
 }
 
 //Test function to save the canvas as an image
-document.addEventListener("keypress", (event) => {
-  if (event.keyCode == 83) {
-    // "S" Key
-    p5Instance.saveCanvas("floorsetGrid", "jpg");
-    console.log("Saving Image!");
-  }
-});
+// document.addEventListener("keypress", (event) => {
+//   if (event.keyCode == 83) {
+//     // "S" Key
+//     p5Instance.saveCanvas("floorsetGrid", "jpg");
+//     console.log("Saving Image!");
+//   }
+// });
 
 function addFixtureOnLoad(id, x, y, width, length, color) {
   setTimeout(function () {
