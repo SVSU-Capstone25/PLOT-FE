@@ -24,7 +24,6 @@ public record UpdateFixtureInstance
     public int? Y_POS { get; set; }
     public int? ALLOCATED_LF { get; set; }
     public int? HANGER_STACK { get; set; }
-    public int? TOT_LF { get; set; }
     public string? CATEGORY { get; set; }
     public string? NOTE { get; set; }
 }

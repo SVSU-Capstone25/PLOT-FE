@@ -37,7 +37,7 @@
 <SlideOut>
     @if (allocationsOpen)
     {
-        <AllocationsSidebar @ref="allocationsSidebar" />
+        <AllocationsSidebar FloorsetId="FloorsetId" @ref="allocationsSidebar" />
 
         <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations" EraseClicked="EraseCategoryClicked" />
     }
@@ -216,13 +216,13 @@
 
         Console.WriteLine("Compute Allocation Totals");
 
-        List<Category> categories = allocationsSidebar.getAllCategories();
+        @* List<Category> categories = allocationsSidebar.getAllCategories(); *@
         //Set all start values to zero. They are computed by adding the fixture LF to the categories.
 
-        foreach (Category category in categories)
+        @* foreach (Category category in categories)
         {
             category.currentValue = 0;
-        }
+        } *@
         @* foreach (Data.Models.Fixtures.FixtureInstance fixture in fixturesDict.Values)
         {
             //Find the progress bar representing the category, and add the current hanging capacity to it.
@@ -244,7 +244,7 @@
             }
         } *@
 
-        allocationsSidebar.notifyCategoryUpdates();
+        @* allocationsSidebar.notifyCategoryUpdates(); *@
     }
 
 
@@ -309,10 +309,10 @@
         Console.WriteLine("Erase Category Function");
         JS.InvokeVoidAsync("setErase");
         //Call the func in AllocationsSidebar to remove the styling of the selected category.
-        if (allocationsSidebar != null)
+        @* if (allocationsSidebar != null)
         {
             InvokeAsync(allocationsSidebar.clearSelectedCategory);
-        }
+        } *@
     }
 
     private int fixturesCount = 0;
