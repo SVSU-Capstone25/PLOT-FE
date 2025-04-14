@@ -58,30 +58,7 @@
             </Dropdown>
         </div>
 
-            @* Delete store modal *@
-            <Modal id="@($"delete-fixture-model-{fixtureModel.TUID}")" class=".z-1060 standard">
-                <ModalHeader Title="Confirm Deletion" Variant="danger" />
-                <form @onsubmit="async () => {
-                    await OnDeleteFixtureModelSubmit(fixtureModel.TUID);
-                    deleteTextInput = string.Empty;}">
-                @code {
-                    private string? deleteTextInput;
-                    private bool isDisabled => deleteTextInput != "DELETE";
-                }
-                <ModalBody>
-                    <h5>Are you SURE you want to delete this Fixture?</h5>
-                    <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
-                        @bind-value="deleteTextInput" @bind-value:event="oninput" />
-                </ModalBody>
-
-                <ModalFooter>
-                    <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
-                        data-bs-dismiss="modal">
-                        Yes, Delete
-                    </Button>
-                </ModalFooter>
-            </form>
-        </Modal>
+ 
                 }
     </div>
 </SlideOutBody>
