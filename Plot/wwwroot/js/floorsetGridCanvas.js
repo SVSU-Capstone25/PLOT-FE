@@ -89,6 +89,21 @@ function setEmployeeErase(newErase) {
   // }
 }
 
+function isOverScrollable() {
+  // Is the side bar over a scroll area
+  // (Andrew Miller - 4/6/2025)
+
+  // Checks if the user is hovering over a scrollable component.
+
+  let scrollables = document.querySelectorAll('.scrollable');
+
+  for (let scrollable of scrollables) {
+      if (scrollable.matches(':hover')) { return true; }
+  }
+
+  return false;
+}
+
 //Tristan Calay 4/7/25
 //Remove a rack from the racks array by ID
 function deleteFixtureByID(id) {
@@ -164,14 +179,16 @@ function sketch(p5) {
   };
 
   p5.mouseWheel = (event) => {
-    if (event.delta > 0) {
-      gridInstance.scale += 0.1;
-    } else {
-      gridInstance.scale -= 0.1;
-    }
+    if(!isOverScrollable()){
+      if (event.delta > 0) {
+        gridInstance.scale += 0.1;
+      } else {
+        gridInstance.scale -= 0.1;
+      }
 
-    gridInstance.scale = Math.max(0.1, gridInstance.scale);
-    gridInstance.resize();
+      gridInstance.scale = Math.max(0.1, gridInstance.scale);
+      gridInstance.resize();
+    }
   };
 
   p5.mousePressed = () => {
