@@ -11,15 +11,8 @@ Author: Tristan Calay (3/15/2025)-->
 
 @rendermode InteractiveServer
 @inject IJSRuntime JS
+
 @using Plot.Components.PartialComponents.SlideOut
-
-
-<div class="AllocationsSidebar scrollable">
-    <div class="inner-container">
-        <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
-        <hr style="opacity: 1.0; color:black;">
-    </div>
-</div>
 
 <SlideOutHeader>
     <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
@@ -55,7 +48,7 @@ Author: Tristan Calay (3/15/2025)-->
             </div>
         </div>
 
-        <div class="progress-area">
+        <div class="progress-area scrollable">
             @* Danielle Smith 3/17/2025
             added classes for margins on these progressbars
             added more categories to fill this out for demo purpopses & sorted them alphabetically 
@@ -65,6 +58,11 @@ Author: Tristan Calay (3/15/2025)-->
 
             @* Tristan Calay 3/27/25
             Added UL / LI with onclick to set the painting color. *@
+
+            @* Andrew Miller 4/13/2025
+            scrollable class marks div as "scrollable" to prevent zooming on the grid when over
+            this area
+            *@
             <ul style="list-style: none;">
             
             @foreach (var bar in getAllCategories())
