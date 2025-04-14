@@ -21,6 +21,7 @@
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
 @inject FloorsetsHttpClient FloorsetsHttpClient
+@inject AuthHttpClient AuthHttpClient
 @page "/floorset-editor/{StoreId:int}/{FloorsetId:int}"
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
@@ -28,7 +29,9 @@
 @using Plot.Components.PartialComponents.TextInput
 @using Plot.Components.PartialComponents.Modal
 @using Plot.Components.PartialComponents.FileInput
+@using Plot.Data.Models.Users
 @using Plot.Data.Models.Floorsets
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/copyFloorsetCard.js"></script>
@@ -117,38 +120,44 @@
 
     private List<Data.Models.Fixtures.FixtureModel> FixtureModels = new List<Data.Models.Fixtures.FixtureModel>();
 
-    private async Task saveCanvas()
+    // Used when the save button is pressed. Calls js to take a picture of the floorset
+    // and update the database with the new image- Michael Polhill
+     private async Task saveCanvas()
     {
-        Console.WriteLine("before js");
-        string base64Image = await JS.InvokeAsync<string>("captureFloorsetThumbnail", "1");
-        Console.WriteLine("after js");
+        // Get the image as a base64 string from the browser
+        string base64Image = await JS.InvokeAsync<string>("captureFloorsetThumbnail");
+        
 
         if (!string.IsNullOrEmpty(base64Image))
         {
+            // Take off header and convert to byte array
             var imageBytes = Convert.FromBase64String(base64Image.Split(',')[1]);
-            var byteString = Convert.ToBase64String(imageBytes);
-            Console.WriteLine($"Image captured: {imageBytes.Length} bytes");
 
-            //UpdatePublicInfoFloorset updatePublicInfoFloorset = new UpdatePublicInfoFloorset
-            //{
-            //    STORE_TUID=StoreId,
-            //};
+            // Get the current logged in user to add their information
+            // to the floorset update
+            var response = await AuthHttpClient.GetCurrentUser();
 
-            var msg =await FloorsetsHttpClient.UpdatePublicInfo(1,byteString);
-            Console.WriteLine(msg.ToString());
+            if(response != null)
+            {
+                UserDTO currentUser = response;
+
+                //Create an update model for the floorset
+                UpdatePublicInfoFloorset updatePublicInfoFloorset = new UpdatePublicInfoFloorset
+                {   
+                    STORE_TUID=StoreId,
+                    DATE_MODIFIED=DateTime.UtcNow,
+                    MODIFIED_BY=currentUser.TUID,
+                    FLOORSET_IMAGE=imageBytes
+                };
+
+                // Send updated to the BE API
+                await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId,updatePublicInfoFloorset);
+            }
         }
         else
         {
-            Console.WriteLine("JS returned null image...");
+            Console.WriteLine("JS returned null image.");
         }
-
-        
-
-        // Optional: remove the prefix like "data:image/png;base64,"
-       
-        
-
-
     }
 
     private async Task UpdateFixtureModels()
