@@ -1,7 +1,9 @@
 @using Microsoft.Net.Http.Headers
 @using Plot.Components.PartialComponents.Modal
+@using Plot.Components.PartialComponents.FileInput
 
 @inject SalesHttpClient SalesHttpClient
+
 
 @*Import Excel File Modal Andrew Miller *@
 <Modal id="importExcelModal" class="modal-dialog">
@@ -9,9 +11,9 @@
     <EditForm Model="ImportExcelFileModel" OnSubmit="async () => await OnImportExcelFileSubmit()"
         FormName="Import Excel File Form">
         <ModalBody>
-            <label>
+            <label class="w-100">
                 Import an Excel File
-                <InputFile @bind-value="ImportExcelFileModel!.EXCEL_FILE" />
+                <FileInput OnFileSelected="OnFileUpload" />
             </label>
         </ModalBody>
         <ModalFooter>
@@ -23,7 +25,7 @@
 </Modal>
 
 @code {
-    [Parameter] public required string FloorsetId { get; set; }
+    [Parameter] public required int FloorsetId { get; set; }
     [SupplyParameterFromForm] private Data.Models.Allocations.UploadFile? ImportExcelFileModel { get; set; }
 
     protected override void OnInitialized()
@@ -31,11 +33,23 @@
         ImportExcelFileModel ??= new();
     }
 
+    private async Task OnFileUpload(IBrowserFile e)
+    {
+        MemoryStream ms = new MemoryStream();
+        await e.OpenReadStream().CopyToAsync(ms);
+        IFormFile formFile = new FormFile(ms, 0, ms.Length, e.Name, e.Name);
+        if (ImportExcelFileModel != null)
+        {
+            ImportExcelFileModel!.EXCEL_FILE = formFile;
+        }
+    }
+
     private async Task OnImportExcelFileSubmit()
     {
         if (ImportExcelFileModel?.EXCEL_FILE != null)
         {
-            var response = await SalesHttpClient.UploadSales(Int32.Parse(FloorsetId), ImportExcelFileModel!.EXCEL_FILE);
+            var response = await SalesHttpClient.UploadSales(FloorsetId, ImportExcelFileModel!.EXCEL_FILE);
+            Console.WriteLine(response);
         }
     }
 }
