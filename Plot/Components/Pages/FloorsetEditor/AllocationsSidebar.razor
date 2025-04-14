@@ -41,8 +41,8 @@ Author: Tristan Calay (3/15/2025)-->
             @onclick="OnSortAscendingClick" />
         <Button Variant="primary" Icon="fa-solid fa-arrow-down-wide-short" Class="search-button" TextAlignment="center"
             @onclick="OnSortDescendingClick" />
-        <Button Variant="primary" Icon="fa-solid fa-filter" Class="search-button" TextAlignment="center"
-            @onclick="OnFilterClick" />
+        @* <Button Variant="primary" Icon="fa-solid fa-filter" Class="search-button" TextAlignment="center"
+            @onclick="OnFilterClick" /> *@
     </div>
 
     <div class="progress-area">
@@ -139,17 +139,32 @@ allocationFufillment
 
     private void OnSortAscendingClick()
     {
-        throw new NotImplementedException();
+        foreach (var allocationFufillmentList in allocationFufillmentLists)
+        {
+            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFufillments a,
+            Data.Models.Allocations.AllocationFufillments b)
+            {
+                if (a.SUBCATEGORY == null && b.SUBCATEGORY == null) return 0;
+                else if (a.SUBCATEGORY == null) return -1;
+                else if (b.SUBCATEGORY == null) return 1;
+                else return (a.SUBCATEGORY.CompareTo(b.SUBCATEGORY));
+            });
+        }
     }
 
     private void OnSortDescendingClick()
     {
-        throw new NotImplementedException();
-    }
-
-    private void OnFilterClick()
-    {
-        throw new NotImplementedException();
+        foreach (var allocationFufillmentList in allocationFufillmentLists)
+        {
+            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFufillments a,
+            Data.Models.Allocations.AllocationFufillments b)
+            {
+                if (a.SUBCATEGORY == null && b.SUBCATEGORY == null) return 0;
+                else if (a.SUBCATEGORY == null) return -1;
+                else if (b.SUBCATEGORY == null) return 1;
+                else return (b.SUBCATEGORY.CompareTo(a.SUBCATEGORY));
+            });
+        }
     }
 
 }
