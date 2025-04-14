@@ -104,7 +104,7 @@ Author: Tristan Calay (3/15/2025)-->
             response.ForEach((allocationFufillment) =>
             {
                 if (allocationFufillmentLists.TryGetValue(allocationFufillment.SUPERCATEGORY_NAME, out
-    List<Data.Models.Allocations.AllocationFufillments> list))
+    List<Data.Models.Allocations.AllocationFufillments>? list))
                 {
                     list.Add(allocationFufillment);
                 }
