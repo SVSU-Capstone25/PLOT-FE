@@ -98,7 +98,7 @@ Author: Andrew Fulton (3/13/2025)  *@
             }
             <ModalBody>
                 <h5>Are you SURE you want to delete this Floorset?</h5>
-                <input type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
+                <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
                     @bind-value="deleteTextInput" @bind-value:event="oninput" />
             </ModalBody>
 

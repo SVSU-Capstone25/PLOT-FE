@@ -99,6 +99,31 @@
     }
 </SlideOut>
 
+@foreach (Data.Models.Fixtures.FixtureModel fixtureModel in FixtureModels)
+{
+@* Delete store modal *@
+     <Modal id="@($"delete-fixture-model-{fixtureModel.TUID}")" class="standard">
+         <ModalHeader Title="Confirm Deletion" Variant="danger" />
+         <form @onsubmit="async () => await OnDeleteFixtureModelSubmit(fixtureModel.TUID)">
+             @code {
+                 private string? deleteTextInput;
+                 private bool isDisabled => deleteTextInput != "DELETE";
+             }
+             <ModalBody>
+                 <h5>Are you SURE you want to delete this Store?</h5>
+                 <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
+                     @bind-value="deleteTextInput" @bind-value:event="oninput" />
+             </ModalBody>  
+             <ModalFooter>
+                 <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
+                     data-bs-dismiss="modal">
+                     Yes, Delete
+                 </Button>
+             </ModalFooter>
+         </form>
+     </Modal>
+}
+
 <ImportExcelModal FloorsetId="floorsetId" />
 
 <PrintModal />
@@ -112,8 +137,18 @@
 @code {
     [Parameter] public int StoreId { get; set; }
     [Parameter] public int FloorsetId { get; set; }
+    
 
     private List<Data.Models.Fixtures.FixtureModel> FixtureModels = new List<Data.Models.Fixtures.FixtureModel>();
+
+    private async Task OnDeleteFixtureModelSubmit(int fixtureModelId)
+    {
+        var response = await FixturesHttpClient.DeleteFixtureModel(fixtureModelId);
+
+        if(response == System.Net.HttpStatusCode.OK) {
+            await UpdateFixtureModels();
+        }
+    }
 
     private async Task UpdateFixtureModels()
     {
