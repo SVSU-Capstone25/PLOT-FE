@@ -31,11 +31,17 @@
         ImportExcelFileModel ??= new();
     }
 
+    private void FileAttached()
+    {
+        Console.WriteLine("File Attached!");
+    }
     private async Task OnImportExcelFileSubmit()
     {
+        Console.WriteLine("Clicked submit on excel!");
         if (ImportExcelFileModel?.EXCEL_FILE != null)
         {
             var response = await SalesHttpClient.UploadSales(Int32.Parse(FloorsetId), ImportExcelFileModel!.EXCEL_FILE);
+            Console.WriteLine("Excel Submit Response: " + response);
         }
     }
 }

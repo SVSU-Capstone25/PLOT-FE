@@ -13,7 +13,7 @@ public class SalesHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(excelFile);
 
-        return await SendPostAsync<HttpStatusCode>("", body);
+        return await SendPostAsync<HttpStatusCode>($"/upload-sales/{floorsetId}", body);
     }
 
     public async Task<List<AllocationFufillments>?> GetAllocationFufillments(int floorsetId)
