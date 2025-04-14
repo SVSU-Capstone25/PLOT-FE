@@ -58,7 +58,7 @@
             }
         }
 
-        Console.WriteLine(EditStoreModel.USER_TUIDS);
+        Console.WriteLine("USER_TUIDS: "+EditStoreModel.USER_TUIDS);
 
         var response = await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
 

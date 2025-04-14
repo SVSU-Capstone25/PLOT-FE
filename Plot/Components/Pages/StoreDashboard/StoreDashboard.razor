@@ -157,6 +157,7 @@ Author: Andrew Fulton (3/12/2025)
         //Create the main container div for the user  
         const circleContainer = document.createElement("div");
         circleContainer.classList.add("circle-container");
+        circleContainer.classList.add("col-2");
 
         //Create the circle div
         const circle = document.createElement("div");
@@ -417,12 +418,12 @@ Author: Andrew Fulton (3/12/2025)
 
 
      @* user class for managing/addingh employees to a store *@
-    public class User
+    @* public class User
     {
         public int? TUID { get; set; }
         public string? FIRST_NAME { get; set; }
         public string? LAST_NAME { get; set; }
         public string? EMAIL { get; set; }
         public string? ROLE { get; set; }
-    }
+    } *@
 }
