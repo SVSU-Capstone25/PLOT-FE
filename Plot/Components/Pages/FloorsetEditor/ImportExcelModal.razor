@@ -35,12 +35,15 @@
 
     private async Task OnFileUpload(IBrowserFile e)
     {
-        MemoryStream ms = new MemoryStream();
-        await e.OpenReadStream().CopyToAsync(ms);
-        IFormFile formFile = new FormFile(ms, 0, ms.Length, e.Name, e.Name);
-        if (ImportExcelFileModel != null)
+        if (e != null)
         {
-            ImportExcelFileModel!.EXCEL_FILE = formFile;
+            MemoryStream ms = new MemoryStream();
+            await e.OpenReadStream().CopyToAsync(ms);
+            IFormFile formFile = new FormFile(ms, 0, ms.Length, e.Name, e.Name);
+            if (ImportExcelFileModel != null)
+            {
+                ImportExcelFileModel!.EXCEL_FILE = formFile;
+            }
         }
     }
 
