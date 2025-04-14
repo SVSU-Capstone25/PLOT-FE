@@ -38,10 +38,10 @@
                 <span class="fw-bold">Linear Feet: @AddFixtureModel!.WIDTH * @AddFixtureModel!.LENGTH</span>
             </label>
 
-            <InputFile OnChange="OnImageUpload" />
+            <InputFile @bind-Value="AddFixtureModel!.ICON" OnChange="OnImageUpload" />
         </ModalBody>
         <ModalFooter>
-            <Button class="btn add-btn ms-auto" Variant="primary" type="submit">Add</Button>
+            <Button class="btn add-btn ms-auto" Variant="primary" type="submit" data-bs-dismiss="modal">Add</Button>
         </ModalFooter>
     </EditForm>
 </Modal>
@@ -71,6 +71,7 @@
             Console.WriteLine(response);
 
             await UpdateFixtureModels.InvokeAsync();
+            ResetAddFixtureForm();
         }
     }
 
@@ -82,5 +83,12 @@
         var bytes = ms.ToArray();
 
         AddFixtureModel!.ICON = bytes;
+    }
+
+    private void ResetAddFixtureForm()
+    {
+        Console.WriteLine("Resetting");
+        AddFixtureModel = new Data.Models.Fixtures.CreateFixtureModel();
+        StateHasChanged();
     }
 }
