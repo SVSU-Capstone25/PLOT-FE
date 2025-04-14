@@ -14,7 +14,7 @@
         <div class="d-flex align-items-center m-0">
             <div class="w-100 search-text">
                 <InputText class="form-control p-2 " id="search" type="search" placeholder="Search"
-                    @bind-value="FixtureSearch" />
+                    @bind-Value="FixtureSearch" @oninput="FixtureSearchChanged"/>
             </div>
             <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
         </div>
@@ -32,6 +32,11 @@
         @* Create fixture tile for each fixture in dictionary *@
         @foreach (Data.Models.Fixtures.FixtureModel fixtureModel in FixtureModels)
         {
+            @if(FixtureSearch != "" && fixtureModel.NAME != null){
+                @if(!fixtureModel.NAME.ToLower().Contains(FixtureSearch)){
+                    continue;
+                }
+            } 
             var ImageSrc = fixtureModel.ICON != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(fixtureModel.ICON)}" :
             "https://placecats.com/200/200";
 
@@ -102,6 +107,9 @@
 
     [Parameter] public EventCallback<Data.Models.Fixtures.FixtureModel> FixtureDraggedEvent { get; set; }
 
+    private void FixtureSearchChanged(ChangeEventArgs e){
+        FixtureSearch = e.Value as String ?? "";
+    }
     private void FixtureDragged(Data.Models.Fixtures.FixtureModel currFixture)
     {
         FixtureDraggedEvent.InvokeAsync(currFixture);
