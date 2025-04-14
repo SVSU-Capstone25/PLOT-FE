@@ -444,6 +444,29 @@ function flipOrder() {
 /*
     This function grabs the current canvas image from an open floorset and returns it
 */
+/** @returns {Promise<string>} */
+function getCanvasAsBase64Png() {
+    console.log(getCanvasImage);
+    return new Promise((resolve, reject) => {
+        console.log("getCanvasAsBase64Png: calling getCanvasImage...");
+        getCanvasImage((image) => {
+            if (!image) {
+                reject("Canvas image generation failed");
+            } else {
+                resolve(image); // base64 string with prefix
+            }
+        });
+    });
+}
+
+function saveAsFile(filename, base64DataUrl) {
+    const link = document.createElement('a');
+    link.href = base64DataUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 
 function getCanvasImage(callback) {
     const canvas = document.querySelector('canvas');
