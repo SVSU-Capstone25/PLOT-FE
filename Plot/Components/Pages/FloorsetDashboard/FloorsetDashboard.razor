@@ -16,6 +16,7 @@ Author: Andrew Fulton (3/13/2025)  *@
 
 @inject NavigationManager Navigation
 @inject FloorsetsHttpClient FloorsetsHttpClient
+@inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
 
 @* Top portion of the page (Showing store, location, and image for the current floorset) *@
@@ -157,15 +158,21 @@ Author: Andrew Fulton (3/13/2025)  *@
     {
         Data.Models.Floorsets.CreateFloorset createFloorset = new Data.Models.Floorsets.CreateFloorset
         {
-            NAME = Floorset.NAME,
+            NAME = Floorset.NAME + " Copy",
             CREATED_BY = -1,
             DATE_CREATED = DateTime.Now,
             DATE_MODIFIED = DateTime.Now,
             MODIFIED_BY = -1,
-            STORE_TUID = StoreId
+            STORE_TUID = StoreId,
+            FLOORSET_IMAGE = Floorset.FLOORSET_IMAGE
         };
 
         await FloorsetsHttpClient.CreateFloorset(createFloorset);
+
+        // TODO: get floorset fixture information for floorset and associate it to the 
+        // new floorset
+        await FixturesHttpClient.GetFloorsetFixtureInformation(Floorset.TUID);
+
         await UpdateFloorsets();
     }
 }
