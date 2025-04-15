@@ -150,7 +150,6 @@ Author: Andrew Fulton (3/12/2025)
 
 
         function addEmployee(Id, name, initials, targetDiv, dotNet) {
-        //window.dotNetRef = dotNet;
         //Get the employees div
         const employeesDiv = document.getElementById(targetDiv);
 
@@ -163,7 +162,7 @@ Author: Andrew Fulton (3/12/2025)
         const circle = document.createElement("div");
         circle.classList.add("circle");
 
-        //dotNet.invokeMethodAsync("OnCircleClicked");
+        //Add the event for clicking the circle(removing the user)
         circle.addEventListener("click", function () {
             dotNet.invokeMethodAsync("OnCircleClicked", Id, targetDiv);
         });
@@ -203,26 +202,18 @@ Author: Andrew Fulton (3/12/2025)
 
 </script>
 
-
-
-
-
-
-
 @code {
 
     DotNetObjectReference<StoreDashboard>? dotNet;
     private List<Data.Models.Stores.Store> stores = new List<Data.Models.Stores.Store>();
     private List<Data.Models.Users.UserDTO> users = new List<Data.Models.Users.UserDTO>();  
-    //private List <Data.Models.Users.UserDTO> usersInCurrentStore = new List<Data.Models.Users.UserDTO>();
 
     private List<string> UserOptionsText { get; set; } = new List<string> { "init" };
     private List<string> UserOptionsValues { get; set; } = new List<string> { "init" };
 
     //list to hold the user that might be added to a store
     private List<Data.Models.Users.UserDTO> usersToAdd = new List<Data.Models.Users.UserDTO>();
-    //private List<User> usersToAdd = new List<User>();
-    //private List<User> selectedStoreUsers = new List<User>();    
+    
     private string strUserValueToAdd = "-1,FNAME,LNAME,EMAIL,ROLE";
 
 
@@ -253,11 +244,8 @@ Author: Andrew Fulton (3/12/2025)
     {
         var response = await StoresHttpClient.GetUsersAtStore(storeId);
 
-        //Console.WriteLine("Updating Users In Current Store: "+storeId+" "+response);
-
         if (response != null)
         {
-            //usersInCurrentStore = response;
             usersToAdd = response;
         }
     }
@@ -267,8 +255,6 @@ Author: Andrew Fulton (3/12/2025)
         dotNet = DotNetObjectReference.Create(this);
         await UpdateStores();
         await UpdateUsers();
-
-        //UpdateUserOptions();
     }
 
     private async Task OnEditClick(Data.Models.Stores.Store store)
@@ -276,10 +262,11 @@ Author: Andrew Fulton (3/12/2025)
         await Task.Run(() => Console.WriteLine("Edit store"));
         await UpdateStores();
 
-        //usersInCurrentStore.Clear();
         usersToAdd.Clear();
 
         await UpdateUsersInCurrentStore(store.TUID);
+
+        await JS.InvokeVoidAsync("clearDivExceptById", $"add-employee-div-store-{store.TUID}", "storeEmployeesDiv");
 
         foreach (var user in usersToAdd)
         {
@@ -293,7 +280,6 @@ Author: Andrew Fulton (3/12/2025)
 
     private void OnCreateClick()
     {
-        //usersInCurrentStore.Clear();
         usersToAdd.Clear();
         UpdateUserOptions();
     }
@@ -307,35 +293,16 @@ Author: Andrew Fulton (3/12/2025)
 
 
 
-
-
-
-
-
-
     private void UpdateUserOptions()
     {
         UserOptionsText.Clear();
         UserOptionsValues.Clear();
 
-        //fill selectedStoreUsers with the users in the store passed in
-
-        @* Console.WriteLine("Printing users in store:");
-        foreach (var user in usersInCurrentStore)
-        {
-            Console.WriteLine(user.FIRST_NAME+" "+user.LAST_NAME);
-        } *@
-
-
-
         foreach (var user in users)
         {
-            //bool isInSelectedStore = selectedStoreUsers.Any(su => su.TUID == user.TUID);
-            //bool isInSelectedStore = usersInCurrentStore.Any(su => su.TUID == user.TUID);
             bool isInUsersToAdd = usersToAdd.Any(u => u.TUID == user.TUID);
 
-            //if user is no associated with the store, add them to the dropdown text and values
-            //!isInSelectedStore & !isInUsersToAdd
+            //if user is not associated with the store, add them to the dropdown text and values
             if (!isInUsersToAdd)
             {
                 UserOptionsText.Add(user.FIRST_NAME + " " + user.LAST_NAME);
@@ -411,19 +378,4 @@ Author: Andrew Fulton (3/12/2025)
 
     }
 
-
-
-
-
-
-
-     @* user class for managing/addingh employees to a store *@
-    @* public class User
-    {
-        public int? TUID { get; set; }
-        public string? FIRST_NAME { get; set; }
-        public string? LAST_NAME { get; set; }
-        public string? EMAIL { get; set; }
-        public string? ROLE { get; set; }
-    } *@
 }
