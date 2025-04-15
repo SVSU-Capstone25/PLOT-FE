@@ -33,7 +33,7 @@ Updated: Danielle Smith (3/29/2025)-->
     @if(Navigation.Uri.Contains("/floorset-editor"))
     {
         <li class="nav-item px-3">
-            <a class="nav-link link-light" data-bs-toggle="modal" data-bs-target="#helpModal" href="#">
+            <a class="nav-link link-light" data-bs-toggle="modal" data-bs-target="#help-modal" href="#">
                 Help <i class="fa-solid fa-question"></i>
             </a>
         </li>
