@@ -24,7 +24,7 @@ public class StoresHttpClient : PlotHttpClient
     }
     public async Task<List<UserDTO>?> GetUsersAtStore(int storeId)
     {
-        return await SendGetAsync<List<UserDTO>>($"/get-users-by-store/{storeId:int}");
+        return await SendGetAsync<List<UserDTO>>($"/get-users-by-store/{storeId}");
     }
 
     public async Task<HttpStatusCode> CreateStore(CreateStore store)

@@ -1,4 +1,6 @@
 @inject StoresHttpClient StoresHttpClient
+@inject UsersHttpClient UsersHttpClient
+
 
 <Modal @attributes="Attributes" SizeClass="modal-lg">
     <ModalHeader Title="Update Store Information" />
@@ -50,6 +52,16 @@
         {
             foreach(var user in usersToAdd)
             {
+                //Create a new access model for updateing a users store access
+                Plot.Data.Models.Users.UpdateAccessListRequest updateUserAccess = new Plot.Data.Models.Users.UpdateAccessListRequest
+                {
+                    USER_TUID = user.TUID,
+                    STORE_TUIDS = new List<int> { StoreId }
+                };
+                //Send the list to BE to add the new store access for the user
+                // returns a httpstatuscode
+                await UsersHttpClient.UpdateAccessList(updateUserAccess);
+
                 EditStoreModel.USER_TUIDS += user.TUID +",";
             }
             if(EditStoreModel.USER_TUIDS != null)
@@ -59,6 +71,8 @@
         }
 
         Console.WriteLine("USER_TUIDS: "+EditStoreModel.USER_TUIDS);
+
+        
 
         var response = await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
 
