@@ -84,6 +84,11 @@
     /* Rounded corners */
 }
 
+.header {
+    font-weight: bold;
+    cursor: pointer;
+}
+
 .fixture-options {
     background: none;
     border: none;
