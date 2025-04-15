@@ -1,4 +1,5 @@
 .offcanvas {
   z-index: unset;
-  padding-top: 58px;
+  padding-top: 54px;
+  width: 600px;
 }
