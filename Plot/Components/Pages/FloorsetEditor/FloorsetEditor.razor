@@ -262,13 +262,13 @@
 
         Console.WriteLine("Compute Allocation Totals");
 
-        List<Category> categories = allocationsSidebar.getAllCategories();
+        //List<Category> categories = allocationsSidebar.getAllCategories();
         //Set all start values to zero. They are computed by adding the fixture LF to the categories.
 
-        foreach (Category category in categories)
+        @* foreach (Category category in categories)
         {
             category.currentValue = 0;
-        }
+        } *@
         @* foreach (Data.Models.Fixtures.FixtureInstance fixture in fixturesDict.Values)
         {
             //Find the progress bar representing the category, and add the current hanging capacity to it.
@@ -290,7 +290,7 @@
             }
         } *@
 
-        allocationsSidebar.notifyCategoryUpdates();
+        //allocationsSidebar.notifyCategoryUpdates();
     }
 
 
@@ -357,7 +357,7 @@
         //Call the func in AllocationsSidebar to remove the styling of the selected category.
         if (allocationsSidebar != null)
         {
-            InvokeAsync(allocationsSidebar.clearSelectedCategory);
+            //InvokeAsync(allocationsSidebar.clearSelectedCategory);
         }
     }
 
@@ -394,13 +394,13 @@
         }
 
         int newEditorID = fixturesCount + 1;
-        Data.Models.Fixtures.FixtureInstance newFixture = new Data.Models.Fixtures.FixtureInstance();
-        newFixture.EDITOR_ID = newEditorID;
-        newFixture.X_POS = -1;
-        newFixture.Y_POS = -1;
+        //Data.Models.Fixtures.FixtureInstance newFixture = new Data.Models.Fixtures.FixtureInstance();
+        //newFixture.EDITOR_ID = newEditorID;
+        //newFixture.X_POS = -1;
+        //newFixture.Y_POS = -1;
         if (currentDraggedFixture.LF_CAP != null)
         {
-            newFixture.TOT_LF = (int)currentDraggedFixture.LF_CAP;
+            //newFixture.TOT_LF = (int)currentDraggedFixture.LF_CAP;
         }
         @* fixturesDict.Add(newEditorID, newFixture); *@
         fixturesCount += 1;

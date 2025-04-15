@@ -1,4 +1,5 @@
 @inject StoresHttpClient StoresHttpClient
+@inject UsersHttpClient UsersHttpClient
 
 <Modal @attributes="Attributes" SizeClass="modal-lg">
     <ModalHeader Title="Create Store" />
@@ -7,7 +8,7 @@
         <AddUpdateStoreModalBody AddUpdateStoreModel="AddStoreModel" StoreId="StoreId" />
 
         <ModalFooter>
-            <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
+            <Button  Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
                 Create Store
             </Button>
         </ModalFooter>
@@ -17,11 +18,19 @@
 @code {
     [Parameter] public required EventCallback UpdateStores { get; set; }
 
+    [Parameter] public required List<Data.Models.Users.UserDTO> usersToAdd{ get; set; }
+
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? AddStoreModel { get; set; }
 
-    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }    
 
-    protected override void OnInitialized() => AddStoreModel ??= new();
+    protected override void OnInitialized() 
+
+
+    {
+        AddStoreModel ??= new();
+        //await UpdateUsers();
+    } 
 
     public int StoreId = -1;
 
@@ -43,10 +52,27 @@
                 USER_TUIDS = ""
             };
 
+            if(usersToAdd.Count > 0)
+            {
+                foreach(var user in usersToAdd)
+                {  
+                    AddStoreModel.USER_TUIDS += user.TUID +",";
+                }
+                if(AddStoreModel.USER_TUIDS != null)
+                {
+                    AddStoreModel.USER_TUIDS = AddStoreModel.USER_TUIDS.TrimEnd(',');
+                }
+            }
+
+            Console.WriteLine(AddStoreModel.USER_TUIDS);
+
             Console.WriteLine(Store);
+
 
             await StoresHttpClient.CreateStore(Store);
             await UpdateStores.InvokeAsync();
         }
     }
+
+    
 }

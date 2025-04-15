@@ -47,6 +47,14 @@
                 ImageSrc="ImageSrc" />
         </div>
     </div>
+
+    <h5>Employees</h5>
+    <div id="@($"add-employee-div-store-{StoreId}")" class="row">
+        <div id="storeEmployeesDiv" class="circle-container col-2">
+            <button type="button" class="circle no-hover btn-style" data-bs-toggle="modal" data-bs-target="@($"#add-employee-store-{StoreId}")"> <i class="fa-solid fa-plus"></i></button>
+            <p class="circle-name">Add Employee</p>
+        </div>
+    </div>
 </ModalBody>
 
 @code {
