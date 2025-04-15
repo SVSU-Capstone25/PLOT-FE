@@ -20,7 +20,7 @@
 @inject IJSRuntime JS
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
-@inject FloorsetsHttpClient FloorsetsHttpClient
+@inject FloorsetsHttpClient FloorsetsHttpClient;
 @inject AuthHttpClient AuthHttpClient
 @page "/floorset-editor/{StoreId:int}/{FloorsetId:int}"
 @using Plot.Components.PartialComponents.SlideOut
@@ -90,8 +90,8 @@
                 Import Excel File
             </Button>
 
-            <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
-                data-bs-target="printModal" data-bs-toggle="modal">
+            <Button Icon="fa-solid fa-print" Id="printLayout" Variant="primary" isDisabled="false" TextAlignment="center"
+                data-bs-toggle="modal" data-bs-target="#printModal">
                 Print Layout
             </Button>
 
@@ -106,7 +106,7 @@
 
 <ImportExcelModal FloorsetId="floorsetId" />
 
-<PrintModal />
+<PrintModal FloorsetId="FloorsetId"/>
 
 <AddFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
@@ -172,7 +172,6 @@
     }
 
     private Data.Models.Stores.Store? Store;
-
     private async Task UpdateStore()
     {
         var response = await StoresHttpClient.GetStore(StoreId);
@@ -193,15 +192,14 @@
     {
 
         var response = await StoresHttpClient.GetStore(StoreId);
-
         if (response != null)
         {
             Store = response;
         }
 
         await UpdateFixtureModels();
-
         @* addFixtureInstanceToGrid *@
+        
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -304,6 +302,7 @@
     }
 
     private bool buildingWallsExpanded = false;
+    private bool printLayoutOpen = false;
     private bool allocationsOpen = false;
     private bool addFixtureExpanded = false;
 
@@ -331,6 +330,10 @@
     {
         buildingWallsExpanded = false;
         allocationsOpen = !allocationsOpen;
+    }
+    private void OpenPrintLayout()
+    {
+        printLayoutOpen = !printLayoutOpen;
     }
 
     private async Task editFixture()
