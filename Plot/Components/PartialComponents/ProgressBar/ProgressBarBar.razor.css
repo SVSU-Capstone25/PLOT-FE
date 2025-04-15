@@ -1,0 +1,36 @@
+meter {
+  background: rgba(0, 0, 0, 0.25);
+  height: 1.2rem;
+  border-radius: 50vh;
+  width: 100%;
+}
+
+meter::-webkit-meter-bar {
+  height: 1em;
+  border-radius: 50vh;
+}
+
+meter::-moz-meter-bar {
+  background: var(--progress-bar-background-color);
+}
+
+meter::-webkit-meter-even-less-good-value {
+  background: var(--progress-bar-background-color);
+}
+
+meter::-webkit-meter-suboptimum-value {
+  background: var(--progress-bar-background-color);
+}
+
+meter::-webkit-meter-optimum-value {
+  background: var(--progress-bar-background-color);
+}
+
+.progress-unfulfilled {
+  border: 2px solid #ef4444;
+}
+
+.progress-overfilled {
+  border: 2px dashed gold;
+  background: black;
+}

@@ -35,8 +35,14 @@
             var ImageSrc = fixtureModel.ICON != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(fixtureModel.ICON)}" :
             "https://placecats.com/200/200";
 
-        <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-value="@fixtureModel.NAME" draggable="true"
-            data-width="@fixtureModel.WIDTH" data-height="@fixtureModel.LENGTH" ondragstart="createDraggable(event)"
+        <div class="fixture d-flex align-items-center gap-3 grab-cursor" 
+            data-name="@fixtureModel.NAME"
+            data-fixture-tuid="@fixtureModel.TUID"
+            data-store-tuid="@fixtureModel.STORE_TUID"
+            data-width="@fixtureModel.WIDTH"
+            data-height="@fixtureModel.LENGTH"
+            draggable="true" 
+            ondragstart="window.createDraggable(event)"
             @ondragenter="() => FixtureDragged(fixtureModel)">
             <img class="fixture-img disable-select grab-cursor" src="@ImageSrc" alt="" draggable="false" />
             <p class="fixture-text m-0 disable-select text-truncate">@fixtureModel.NAME</p>
@@ -52,31 +58,14 @@
             </Dropdown>
         </div>
 
-            @* Delete store modal *@
-            <Modal id="@($"delete-fixture-model-{fixtureModel.TUID}")" class="standard">
-                <ModalHeader Title="Confirm Deletion" Variant="danger" />
-                <form @onsubmit="async () => await OnDeleteFixtureModelSubmit(fixtureModel.TUID)">
-                @code {
-                    private string? deleteTextInput;
-                    private bool isDisabled => deleteTextInput != "DELETE";
-                }
-                <ModalBody>
-                    <h5>Are you SURE you want to delete this Store?</h5>
-                    <input type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
-                        @bind-value="deleteTextInput" @bind-value:event="oninput" />
-                </ModalBody>
-
-                <ModalFooter>
-                    <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
-                        data-bs-dismiss="modal">
-                        Yes, Delete
-                    </Button>
-                </ModalFooter>
-            </form>
-        </Modal>
+ 
                 }
     </div>
 </SlideOutBody>
+
+
+
+
 
 @code {
     private string FixtureSearch = "";
@@ -130,14 +119,5 @@
     {
 
         await Task.Run(() => Console.WriteLine(currFixture.NAME));
-    }
-
-    private async Task OnDeleteFixtureModelSubmit(int fixtureModelId)
-    {
-        var response = await FixturesHttpClient.DeleteFixtureModel(fixtureModelId);
-
-        if(response == System.Net.HttpStatusCode.OK) {
-            await UpdateFixtureModels.InvokeAsync();
-        }
     }
 }
