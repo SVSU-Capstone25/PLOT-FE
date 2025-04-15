@@ -4,6 +4,7 @@ using System.Text;
 using Plot.Components;
 using Microsoft.IdentityModel.Tokens;
 using Plot.Services;
+using Microsoft.AspNetCore.StaticFiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -109,6 +110,21 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
     options.DetailedErrors = true;
 });
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+// Add CORS configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://backend:8085", "http://localhost:8085") // Add your actual frontend URL(s)
+                                .AllowAnyHeader()
+                                .AllowAnyMethod()
+                                .AllowCredentials();
+                      });
+});
+
 
 var app = builder.Build();
 
@@ -127,6 +143,18 @@ if (!app.Environment.IsDevelopment())
 // Setup authentication and authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = new FileExtensionContentTypeProvider
+    {
+        Mappings = {
+            [".js"] = "application/javascript"
+        }
+    }
+});
+
+app.UseCors(MyAllowSpecificOrigins);
+
 
 app.UseAntiforgery();
 app.MapStaticAssets();
