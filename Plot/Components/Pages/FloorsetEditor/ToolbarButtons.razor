@@ -13,7 +13,7 @@
         OnClickFunction="togglePaintClicked" TextAlignment="center" />
 
     @*Erase Category Button *@
-    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="onEraseClicked"
+    <Button IsDisabled="false" Variant="@getEraseVariant()" Icon="fa-solid fa-eraser" OnClickFunction="onEraseClicked"
         TextAlignment="center" />
 </div>
 
@@ -26,6 +26,7 @@
     Track paint mode here.*@
 
     private bool paintModeEnabled = false;
+    private bool eraseEnabled = false;
     private String getPaintVariant()
     {
         if (paintModeEnabled)
@@ -33,6 +34,22 @@
             return "secondary";
         }
         return "primary";
+    }
+    private String getEraseVariant()
+    {
+        if (eraseEnabled)
+        {
+            return "secondary";
+        }
+        return "primary";
+    }
+
+    //Called in the fixture editor with the value "false" when a new category is selected.
+    //Called here when erase is clicked to signify no category is selected.
+    public void SetEraseEnabled(bool newErase)
+    {
+        Console.WriteLine("Recieved erase enabled state : " + newErase);
+        eraseEnabled = newErase;
     }
 
     private async Task editFixture()
@@ -59,6 +76,7 @@
     private async Task onEraseClicked()
     {
         Console.WriteLine("Erase Clicked!");
+        SetEraseEnabled(true);
         await EraseClicked.InvokeAsync();
     }
 
