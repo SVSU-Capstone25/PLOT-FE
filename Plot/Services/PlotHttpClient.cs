@@ -132,7 +132,6 @@ public async Task<T?> SendPostAsync<T>(string endpoint, JsonContent body)
     public async Task<HttpStatusCode> SendPatchAsync(string endpoint, JsonContent body)
     {
         var response = await SendAsync(endpoint, HttpMethod.Patch, body);
-
         return response.StatusCode;
     }
 

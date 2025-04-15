@@ -1,6 +1,7 @@
 using System.Net;
 using Plot.Data.Models.Auth.Registration;
 using Plot.Data.Models.Auth.ResetPassword;
+using Plot.Data.Models.Users;
 using Plot.Services;
 using Plot.Data.Models.Users;
 public class AuthHttpClient : PlotHttpClient
@@ -27,5 +28,10 @@ public class AuthHttpClient : PlotHttpClient
         JsonContent body = JsonContent.Create(user);
 
         return await SendPostAsync<HttpStatusCode>("/register", body);
+    }
+
+    public async Task<UserDTO?> GetCurrentUser()
+    {
+        return await SendGetAsync<UserDTO>("/get-current-user");
     }
 }
