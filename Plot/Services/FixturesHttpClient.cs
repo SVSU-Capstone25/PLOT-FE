@@ -79,6 +79,6 @@ public class FixturesHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(update);
 
-        return await SendPatchAsync($"/update-fixture/{storeId}", body);
+        return await SendPatchAsync($"/update-model/{storeId}", body);
     }
 }
