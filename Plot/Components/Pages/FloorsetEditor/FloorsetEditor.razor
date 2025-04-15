@@ -66,7 +66,7 @@
             @if (!addFixtureExpanded)
             {
                 <Button Class="Button button-with-spacing" Id="buttonAddFixture" Variant="primary"
-                    OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+                    OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" TextAlignment="center">
                     Add Fixture
                 </Button>
             }
@@ -74,27 +74,27 @@
             @if (!buildingWallsExpanded)
             {
                 <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
-                    OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" IsDisabled="false" TextAlignment="center">
+                    OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" TextAlignment="center">
                     Edit Building Walls
                 </Button>
             }
 
             <Button Class="Button" Id="buttonViewAllocations" Variant="primary" OnClickFunction="ToggleAllocations"
-                Icon="fa-solid fa-eye" IsDisabled=false TextAlignment="center">
+                Icon="fa-solid fa-eye" TextAlignment="center">
                 View Allocations
             </Button>
 
-            <Button Class="Button" Id="buttonImportFile" Variant="primary" data-bs-target="importExcelModal"
-                data-bs-toggle="modal" Icon="fa-solid fa-file-import" IsDisabled=false TextAlignment="center">
+            <Button Class="Button" Id="buttonImportFile" Variant="primary" data-bs-target="#import-excel-modal"
+                data-bs-toggle="modal" Icon="fa-solid fa-file-import" TextAlignment="center">
                 Import Excel File
             </Button>
 
-            <Button Icon="fa-solid fa-print" Id="printLayout" Variant="primary" isDisabled="false" TextAlignment="center"
+            <Button Icon="fa-solid fa-print" Id="printLayout" Variant="primary" TextAlignment="center"
                 data-bs-toggle="modal" data-bs-target="#printModal">
                 Print Layout
             </Button>
 
-            <Button Icon="fa-solid fa-floppy-disk" Variant="success" OnClickFunction="saveCanvas" isDisabled="false" TextAlignment="center">
+            <Button Icon="fa-solid fa-floppy-disk" Variant="success" OnClickFunction="saveCanvas" TextAlignment="center">
                 Save
             </Button>
 
@@ -105,7 +105,7 @@
 
 <ImportExcelModal FloorsetId="floorsetId" />
 
-<PrintModal FloorsetId="FloorsetId"/>
+<PrintModal FloorsetId="FloorsetId" />
 
 <AddFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
@@ -121,11 +121,11 @@
 
     // Used when the save button is pressed. Calls js to take a picture of the floorset
     // and update the database with the new image- Michael Polhill
-     private async Task saveCanvas()
+    private async Task saveCanvas()
     {
         // Get the image as a base64 string from the browser
         string base64Image = await JS.InvokeAsync<string>("captureFloorsetThumbnail");
-        
+
 
         if (!string.IsNullOrEmpty(base64Image))
         {
@@ -136,21 +136,21 @@
             // to the floorset update
             var response = await AuthHttpClient.GetCurrentUser();
 
-            if(response != null)
+            if (response != null)
             {
                 UserDTO currentUser = response;
 
                 //Create an update model for the floorset
                 UpdatePublicInfoFloorset updatePublicInfoFloorset = new UpdatePublicInfoFloorset
-                {   
-                    STORE_TUID=StoreId,
-                    DATE_MODIFIED=DateTime.UtcNow,
-                    MODIFIED_BY=currentUser.TUID,
-                    FLOORSET_IMAGE=imageBytes
+                {
+                    STORE_TUID = StoreId,
+                    DATE_MODIFIED = DateTime.UtcNow,
+                    MODIFIED_BY = currentUser.TUID,
+                    FLOORSET_IMAGE = imageBytes
                 };
 
                 // Send updated to the BE API
-                await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId,updatePublicInfoFloorset);
+                await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId, updatePublicInfoFloorset);
             }
         }
         else
@@ -174,7 +174,7 @@
     private async Task UpdateStore()
     {
         var response = await StoresHttpClient.GetStore(StoreId);
-    
+
 
         if (response != null)
         {
@@ -198,7 +198,7 @@
 
         await UpdateFixtureModels();
         @* addFixtureInstanceToGrid *@
-        
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
