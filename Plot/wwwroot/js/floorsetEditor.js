@@ -657,9 +657,10 @@ function UpdateGridDimensions(passedLength, passedWidth) {
     window.gridWidth = passedWidth;
 }
 
-function createDraggable(event) {
-    const width = Number(event.target.getAttribute("data-width"));
-    const height = Number(event.target.getAttribute("data-height"));
-    const name = String(event.target.getAttribute("data-value"));
-    window.draggedRack = { width, height, name };
-}
+// function createDraggable(event) {
+//     const width = Number(event.target.getAttribute("data-width")),
+//         height = Number(event.target.getAttribute("data-height")),
+//         name = String(event.target.getAttribute("data-value")),
+//         fixtureTuid = Number(event.target.getAttribute("data-fixture-tuid"));
+//     window.draggedFixture = { width, height, name };
+// }

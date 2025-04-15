@@ -21,6 +21,7 @@
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
 @inject FloorsetsHttpClient FloorsetsHttpClient;
+@inject AuthHttpClient AuthHttpClient
 @page "/floorset-editor/{StoreId:int}/{FloorsetId:int}"
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
@@ -28,9 +29,13 @@
 @using Plot.Components.PartialComponents.TextInput
 @using Plot.Components.PartialComponents.Modal
 @using Plot.Components.PartialComponents.FileInput
+@using Plot.Data.Models.Users
+@using Plot.Data.Models.Floorsets
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/copyFloorsetCard.js"></script>
+<script src="js/floorsetEditor.js"></script>
 <FloorsetCanvas />
 
 @* Sidebar *@
@@ -90,7 +95,7 @@
                 Print Layout
             </Button>
 
-            <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
+            <Button Icon="fa-solid fa-floppy-disk" Variant="success" OnClickFunction="saveCanvas" isDisabled="false" TextAlignment="center">
                 Save
             </Button>
 
@@ -115,6 +120,46 @@
 
     private List<Data.Models.Fixtures.FixtureModel> FixtureModels = new List<Data.Models.Fixtures.FixtureModel>();
 
+    // Used when the save button is pressed. Calls js to take a picture of the floorset
+    // and update the database with the new image- Michael Polhill
+     private async Task saveCanvas()
+    {
+        // Get the image as a base64 string from the browser
+        string base64Image = await JS.InvokeAsync<string>("captureFloorsetThumbnail");
+        
+
+        if (!string.IsNullOrEmpty(base64Image))
+        {
+            // Take off header and convert to byte array
+            var imageBytes = Convert.FromBase64String(base64Image.Split(',')[1]);
+
+            // Get the current logged in user to add their information
+            // to the floorset update
+            var response = await AuthHttpClient.GetCurrentUser();
+
+            if(response != null)
+            {
+                UserDTO currentUser = response;
+
+                //Create an update model for the floorset
+                UpdatePublicInfoFloorset updatePublicInfoFloorset = new UpdatePublicInfoFloorset
+                {   
+                    STORE_TUID=StoreId,
+                    DATE_MODIFIED=DateTime.UtcNow,
+                    MODIFIED_BY=currentUser.TUID,
+                    FLOORSET_IMAGE=imageBytes
+                };
+
+                // Send updated to the BE API
+                await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId,updatePublicInfoFloorset);
+            }
+        }
+        else
+        {
+            Console.WriteLine("JS returned null image.");
+        }
+    }
+
     private async Task UpdateFixtureModels()
     {
         var response = await FixturesHttpClient.GetFixtureModelsByStore(StoreId);
@@ -130,6 +175,7 @@
     private async Task UpdateStore()
     {
         var response = await StoresHttpClient.GetStore(StoreId);
+    
 
         if (response != null)
         {
@@ -160,7 +206,7 @@
     {
         Console.WriteLine("render");
         await UpdateStore();
-        if (firstRender)
+        @* if (firstRender)
         {
 
             var response = await FixturesHttpClient.GetFloorsetFixtureInformation(FloorsetId);
@@ -174,7 +220,7 @@
     fixtureInstance.Y_POS, 1, 1);
                 });
             }
-        }
+        } *@
     }
 
     @* private int? selectedFixtureID; *@
