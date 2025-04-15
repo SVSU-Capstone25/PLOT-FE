@@ -20,6 +20,8 @@
 @inject IJSRuntime JS
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
+@inject FloorsetsHttpClient FloorsetsHttpClient
+@inject AuthHttpClient AuthHttpClient
 @page "/floorset-editor/{StoreId:int}/{FloorsetId:int}"
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
@@ -27,6 +29,9 @@
 @using Plot.Components.PartialComponents.TextInput
 @using Plot.Components.PartialComponents.Modal
 @using Plot.Components.PartialComponents.FileInput
+@using Plot.Data.Models.Users
+@using Plot.Data.Models.Floorsets
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/copyFloorsetCard.js"></script>
@@ -37,7 +42,7 @@
 <SlideOut>
     @if (allocationsOpen)
     {
-        <AllocationsSidebar FloorsetId="FloorsetId" @ref="allocationsSidebar" />
+        <AllocationsSidebar @ref="allocationsSidebar" />
 
         <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations" EraseClicked="EraseCategoryClicked" />
     }
@@ -90,7 +95,7 @@
                 Print Layout
             </Button>
 
-            <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
+            <Button Icon="fa-solid fa-floppy-disk" Variant="success" OnClickFunction="saveCanvas" isDisabled="false" TextAlignment="center">
                 Save
             </Button>
 
@@ -98,31 +103,6 @@
         </div>
     }
 </SlideOut>
-
-@foreach (Data.Models.Fixtures.FixtureModel fixtureModel in FixtureModels)
-{
-@* Delete store modal *@
-     <Modal id="@($"delete-fixture-model-{fixtureModel.TUID}")" class="standard">
-         <ModalHeader Title="Confirm Deletion" Variant="danger" />
-         <form @onsubmit="async () => await OnDeleteFixtureModelSubmit(fixtureModel.TUID)">
-             @code {
-                 private string? deleteTextInput;
-                 private bool isDisabled => deleteTextInput != "DELETE";
-             }
-             <ModalBody>
-                 <h5>Are you SURE you want to delete this Store?</h5>
-                 <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
-                     @bind-value="deleteTextInput" @bind-value:event="oninput" />
-             </ModalBody>  
-             <ModalFooter>
-                 <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
-                     data-bs-dismiss="modal">
-                     Yes, Delete
-                 </Button>
-             </ModalFooter>
-         </form>
-     </Modal>
-}
 
 <ImportExcelModal FloorsetId="floorsetId" />
 
@@ -137,16 +117,46 @@
 @code {
     [Parameter] public int StoreId { get; set; }
     [Parameter] public int FloorsetId { get; set; }
-    
 
     private List<Data.Models.Fixtures.FixtureModel> FixtureModels = new List<Data.Models.Fixtures.FixtureModel>();
 
-    private async Task OnDeleteFixtureModelSubmit(int fixtureModelId)
+    // Used when the save button is pressed. Calls js to take a picture of the floorset
+    // and update the database with the new image- Michael Polhill
+     private async Task saveCanvas()
     {
-        var response = await FixturesHttpClient.DeleteFixtureModel(fixtureModelId);
+        // Get the image as a base64 string from the browser
+        string base64Image = await JS.InvokeAsync<string>("captureFloorsetThumbnail");
+        
 
-        if(response == System.Net.HttpStatusCode.OK) {
-            await UpdateFixtureModels();
+        if (!string.IsNullOrEmpty(base64Image))
+        {
+            // Take off header and convert to byte array
+            var imageBytes = Convert.FromBase64String(base64Image.Split(',')[1]);
+
+            // Get the current logged in user to add their information
+            // to the floorset update
+            var response = await AuthHttpClient.GetCurrentUser();
+
+            if(response != null)
+            {
+                UserDTO currentUser = response;
+
+                //Create an update model for the floorset
+                UpdatePublicInfoFloorset updatePublicInfoFloorset = new UpdatePublicInfoFloorset
+                {   
+                    STORE_TUID=StoreId,
+                    DATE_MODIFIED=DateTime.UtcNow,
+                    MODIFIED_BY=currentUser.TUID,
+                    FLOORSET_IMAGE=imageBytes
+                };
+
+                // Send updated to the BE API
+                await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId,updatePublicInfoFloorset);
+            }
+        }
+        else
+        {
+            Console.WriteLine("JS returned null image.");
         }
     }
 
@@ -166,6 +176,7 @@
     private async Task UpdateStore()
     {
         var response = await StoresHttpClient.GetStore(StoreId);
+    
 
         if (response != null)
         {
@@ -251,13 +262,13 @@
 
         Console.WriteLine("Compute Allocation Totals");
 
-        @* List<Category> categories = allocationsSidebar.getAllCategories(); *@
+        List<Category> categories = allocationsSidebar.getAllCategories();
         //Set all start values to zero. They are computed by adding the fixture LF to the categories.
 
-        @* foreach (Category category in categories)
+        foreach (Category category in categories)
         {
             category.currentValue = 0;
-        } *@
+        }
         @* foreach (Data.Models.Fixtures.FixtureInstance fixture in fixturesDict.Values)
         {
             //Find the progress bar representing the category, and add the current hanging capacity to it.
@@ -279,7 +290,7 @@
             }
         } *@
 
-        @* allocationsSidebar.notifyCategoryUpdates(); *@
+        allocationsSidebar.notifyCategoryUpdates();
     }
 
 
@@ -344,10 +355,10 @@
         Console.WriteLine("Erase Category Function");
         JS.InvokeVoidAsync("setErase");
         //Call the func in AllocationsSidebar to remove the styling of the selected category.
-        @* if (allocationsSidebar != null)
+        if (allocationsSidebar != null)
         {
             InvokeAsync(allocationsSidebar.clearSelectedCategory);
-        } *@
+        }
     }
 
     private int fixturesCount = 0;

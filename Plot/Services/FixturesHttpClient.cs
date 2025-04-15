@@ -65,7 +65,7 @@ public class FixturesHttpClient : PlotHttpClient
     /// <returns>Http response</returns>
     public async Task<HttpStatusCode> DeleteFixtureModel(int modelId)
     {
-        return await SendDeleteAsync($"/delete-model/{modelId}");
+        return await SendDeleteAsync($"/delete-fixture-model/{modelId}");
     }
 
 
