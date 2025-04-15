@@ -311,6 +311,12 @@ function addFixtureOnLoad(id, x, y, width, length, color) {
 }
 
 window.initP5 = (elementId) => {
+  // Check if p5 is already rendered to prevent 
+  // ghosting issues when rendering.
+  if (window.p5Instance) {
+    window.p5Instance.remove();
+    window.p5Instance = null;
+  }
   new p5(sketch, elementId);
 };
 
@@ -343,3 +349,83 @@ window.createDraggable = (event) => {
   // window.draggedFixture = { width, height, name };
   window.draggedFixture = { WIDTH, LENGTH, NAME, FIXTURE_TUID, STORE_TUID };
 };
+
+
+//This method is used with the save button it copies the current floorset, creates another 
+// grid and canvas, scales the image so the whole floorset is shown and 
+// renders the copied floorset outside of the users visible UI. The image
+// created is used for the floorsets dashboard.- Michael Polhill
+window.captureFloorsetThumbnail = async () => 
+  {
+    return await new Promise((resolve, reject) => 
+      {
+        //Ensure grid is rendered
+        if (!window.gridInstance || !window.gridInstance.fixtures) 
+          {
+            console.error("gridInstance or fixtures not available");
+            reject("error page not rendered")
+            return;
+          }
+    
+        // Resolution for the thumbnail. 
+        // 300~ kept breaking the blazor SignalR
+        // websocket so its set to 200. It works well.
+        const width = 200;
+        const height = 200;
+
+        //New p5 to render off screen
+        const sketch = (p5) => 
+          {
+            p5.setup = () => 
+              {
+                p5.createCanvas(width, height);
+                p5.background(255);
+
+                //Create a new grid and copy the primary grid dimensions
+                const grid = new Grid(p5);
+                grid.width = window.gridInstance.width;
+                grid.height = window.gridInstance.height;
+                // Set scale so entire floor plan will be in the image
+                grid.scale = Math.min
+                (
+                  width / (grid.width * grid.size),
+                  height / (grid.height * grid.size)
+                );
+                grid.resize();
+
+                //Clone fixtures on to the new grid
+                grid.fixtures = window.gridInstance.fixtures.map((f) => 
+                  {
+                    const fixture = Fixture.from(p5, f);
+                    return fixture;
+                  });
+
+                // Render the new floorset
+                p5.push();
+                grid.draw();
+                p5.pop();
+
+                // Wait for render, then capture image
+                setTimeout(() => 
+                  {
+                    const dataUrl = p5.canvas.toDataURL("image/png");
+                    resolve(dataUrl);
+                    p5.remove();//Clean up the grid
+                  }, 100);
+              };
+           };
+           
+
+  // Hidden container off screen to hold the 
+  // copied grid.
+  const container = document.createElement('div');
+  container.style.position = 'absolute';
+  container.style.left = '-9999px';
+  container.style.top = '-9999px';
+  document.body.appendChild(container);
+
+  new p5(sketch, container);
+    });
+};
+
+
