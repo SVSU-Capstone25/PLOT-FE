@@ -78,7 +78,8 @@ function sketch(p5) {
 
     window.grid.state = "place";
     window.grid.paint = {
-      COLOR: "#fff"
+      COLOR: "#fff",
+      SUPERCATEGORY_TUID: 0
     };
 
     const url = new URL(window.location.href);
@@ -159,7 +160,7 @@ function sketch(p5) {
     } else {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) rack.COLOR = window.grid.paint;
+      if (rack) rack.COLOR = window.grid.paint.COLOR;
     }
   };
 
@@ -311,7 +312,8 @@ window.setPaintMode = (enabled) => {
 }
 
 function setErase() {
-  window.grid.paint = "#fff";
+  window.grid.paint.COLOR = "#fff";
+  window.grid.paint.SUPERCATEGORY_TUID = 0;
   window.grid.state = "paint";
 }
 

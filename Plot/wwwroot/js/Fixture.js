@@ -34,13 +34,13 @@ class Fixture {
     COLOR = '#fff',
     LENGTH,
     WIDTH,
-    HANGER_STACK,
+    HANGER_STACK = 1,
     SUPERCATEGORY_TUID,
     SUBCATEGORY,
     SUBCATEGORY_NAME,
     TOTAL_SALES,
     NOTE,
-    ALLOCATED_LF
+    ALLOCATED_LF = 0
   ) {
     this.p5 = p5;
     this.TUID = TUID;
