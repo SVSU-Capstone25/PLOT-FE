@@ -20,6 +20,8 @@
 @inject IJSRuntime JS
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
+@inject FloorsetsHttpClient FloorsetsHttpClient;
+@inject AuthHttpClient AuthHttpClient
 @page "/floorset-editor/{StoreId:int}/{FloorsetId:int}"
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
@@ -27,6 +29,9 @@
 @using Plot.Components.PartialComponents.TextInput
 @using Plot.Components.PartialComponents.Modal
 @using Plot.Components.PartialComponents.FileInput
+@using Plot.Data.Models.Users
+@using Plot.Data.Models.Floorsets
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/copyFloorsetCard.js"></script>
@@ -37,7 +42,7 @@
 <SlideOut>
     @if (allocationsOpen)
     {
-        <AllocationsSidebar FloorsetId="FloorsetId" @ref="allocationsSidebar" />
+        <AllocationsSidebar FloorsetId="FloorsetId" />
 
         <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations" EraseClicked="EraseCategoryClicked" />
     }
@@ -47,8 +52,7 @@
         {
             @if (addFixtureExpanded)
             {
-                <AddFixturePanel StoreId="StoreId" OnFixtureClicked="TriggerStateChange" ToggleAddFixture="ToggleAddFixture"
-                    FixtureDraggedEvent="OnFixtureDragged" FixtureModels="FixtureModels" />
+                <AddFixturePanel StoreId="StoreId" ToggleAddFixture="ToggleAddFixture" FixtureModels="FixtureModels" />
             }
             @if (buildingWallsExpanded)
             {
@@ -85,12 +89,12 @@
                 Import Excel File
             </Button>
 
-            <Button Icon="fa-solid fa-print" Variant="primary" isDisabled="false" TextAlignment="center"
-                data-bs-target="printModal" data-bs-toggle="modal">
+            <Button Icon="fa-solid fa-print" Id="printLayout" Variant="primary" isDisabled="false" TextAlignment="center"
+                data-bs-toggle="modal" data-bs-target="#printModal">
                 Print Layout
             </Button>
 
-            <Button Icon="fa-solid fa-floppy-disk" Variant="success" isDisabled="false" TextAlignment="center">
+            <Button Icon="fa-solid fa-floppy-disk" Variant="success" OnClickFunction="saveCanvas" isDisabled="false" TextAlignment="center">
                 Save
             </Button>
 
@@ -99,34 +103,9 @@
     }
 </SlideOut>
 
-@foreach (Data.Models.Fixtures.FixtureModel fixtureModel in FixtureModels)
-{
-@* Delete store modal *@
-     <Modal id="@($"delete-fixture-model-{fixtureModel.TUID}")" class="standard">
-         <ModalHeader Title="Confirm Deletion" Variant="danger" />
-         <form @onsubmit="async () => await OnDeleteFixtureModelSubmit(fixtureModel.TUID)">
-             @code {
-                 private string? deleteTextInput;
-                 private bool isDisabled => deleteTextInput != "DELETE";
-             }
-             <ModalBody>
-                 <h5>Are you SURE you want to delete this Store?</h5>
-                 <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
-                     @bind-value="deleteTextInput" @bind-value:event="oninput" />
-             </ModalBody>  
-             <ModalFooter>
-                 <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
-                     data-bs-dismiss="modal">
-                     Yes, Delete
-                 </Button>
-             </ModalFooter>
-         </form>
-     </Modal>
-}
-
 <ImportExcelModal FloorsetId="floorsetId" />
 
-<PrintModal />
+<PrintModal FloorsetId="FloorsetId"/>
 
 <AddFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
@@ -135,18 +114,48 @@
 <HelpModal />
 
 @code {
-    [Parameter] public int StoreId { get; set; }
-    [Parameter] public int FloorsetId { get; set; }
-    
+    [Parameter] public required int StoreId { get; set; }
+    [Parameter] public required int FloorsetId { get; set; }
 
     private List<Data.Models.Fixtures.FixtureModel> FixtureModels = new List<Data.Models.Fixtures.FixtureModel>();
 
-    private async Task OnDeleteFixtureModelSubmit(int fixtureModelId)
+    // Used when the save button is pressed. Calls js to take a picture of the floorset
+    // and update the database with the new image- Michael Polhill
+     private async Task saveCanvas()
     {
-        var response = await FixturesHttpClient.DeleteFixtureModel(fixtureModelId);
+        // Get the image as a base64 string from the browser
+        string base64Image = await JS.InvokeAsync<string>("captureFloorsetThumbnail");
+        
 
-        if(response == System.Net.HttpStatusCode.OK) {
-            await UpdateFixtureModels();
+        if (!string.IsNullOrEmpty(base64Image))
+        {
+            // Take off header and convert to byte array
+            var imageBytes = Convert.FromBase64String(base64Image.Split(',')[1]);
+
+            // Get the current logged in user to add their information
+            // to the floorset update
+            var response = await AuthHttpClient.GetCurrentUser();
+
+            if(response != null)
+            {
+                UserDTO currentUser = response;
+
+                //Create an update model for the floorset
+                UpdatePublicInfoFloorset updatePublicInfoFloorset = new UpdatePublicInfoFloorset
+                {   
+                    STORE_TUID=StoreId,
+                    DATE_MODIFIED=DateTime.UtcNow,
+                    MODIFIED_BY=currentUser.TUID,
+                    FLOORSET_IMAGE=imageBytes
+                };
+
+                // Send updated to the BE API
+                await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId,updatePublicInfoFloorset);
+            }
+        }
+        else
+        {
+            Console.WriteLine("JS returned null image.");
         }
     }
 
@@ -162,10 +171,10 @@
     }
 
     private Data.Models.Stores.Store? Store;
-
     private async Task UpdateStore()
     {
         var response = await StoresHttpClient.GetStore(StoreId);
+    
 
         if (response != null)
         {
@@ -182,15 +191,14 @@
     {
 
         var response = await StoresHttpClient.GetStore(StoreId);
-
         if (response != null)
         {
             Store = response;
         }
 
         await UpdateFixtureModels();
-
         @* addFixtureInstanceToGrid *@
+        
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -217,71 +225,6 @@
     @* private int? selectedFixtureID; *@
     @* private FixtureConfigModal? configModal; *@
 
-    @* Tristan Calay 4/7/25
-    Hold a reference to the fixture model that gets dragged onto the grid, so that when the JS 
-    calls for a new ID, an instance is ready to be created.*@
-
-    private Data.Models.Fixtures.FixtureModel? currentDraggedFixture { get; set; }
-
-    @*
-    Tristan Calay 4/7/25
-    To be called by the AddFixturePanel : FixtureDraggedEvent callback. 
-    Caches a fixture model to be used as a FixtureInstance and sent to the grid.*@
-    public void OnFixtureDragged(Data.Models.Fixtures.FixtureModel model)
-    {
-        currentDraggedFixture = model;
-    }
-
-
-    /* Tristan Calay 3/28/25
-    The allocations sidebar reference allows methods to be called from here to the sidebar.
-    It should be set by @ref in the page layout above.
-    */
-    private AllocationsSidebar? allocationsSidebar;
-
-    /*Tristan Calay 4/7/25
-    Compute the totals for each category in the allocation sidebar, based on the fixtures dict*/
-    private void ComputeAllocationTotals()
-    {
-        //Break if the allocations sidebar reference is null.
-        if (allocationsSidebar == null)
-        {
-            return;
-        }
-
-        Console.WriteLine("Compute Allocation Totals");
-
-        @* List<Category> categories = allocationsSidebar.getAllCategories(); *@
-        //Set all start values to zero. They are computed by adding the fixture LF to the categories.
-
-        @* foreach (Category category in categories)
-        {
-            category.currentValue = 0;
-        } *@
-        @* foreach (Data.Models.Fixtures.FixtureInstance fixture in fixturesDict.Values)
-        {
-            //Find the progress bar representing the category, and add the current hanging capacity to it.
-            foreach (Category category in categories)
-            {
-                if (category.isHeader)
-                {
-                    if (category.headerCategory == fixture.CATEGORY)
-                    {
-                        category.currentValue += fixture.TOT_LF;
-                    }
-                }
-                else if (category.headerCategory == fixture.CATEGORY && category.text == fixture.CATEGORY)
-                {
-                    category.currentValue += fixture.TOT_LF;
-                }
-
-
-            }
-        } *@
-
-        @* allocationsSidebar.notifyCategoryUpdates(); *@
-    }
-
 
     /*
     The UpdateImage function updates the image data in a fixture.
@@ -293,6 +236,7 @@
     }
 
     private bool buildingWallsExpanded = false;
+    private bool printLayoutOpen = false;
     private bool allocationsOpen = false;
     private bool addFixtureExpanded = false;
 
@@ -321,6 +265,10 @@
         buildingWallsExpanded = false;
         allocationsOpen = !allocationsOpen;
     }
+    private void OpenPrintLayout()
+    {
+        printLayoutOpen = !printLayoutOpen;
+    }
 
     private async Task editFixture()
     {
@@ -343,71 +291,5 @@
     {
         Console.WriteLine("Erase Category Function");
         JS.InvokeVoidAsync("setErase");
-        //Call the func in AllocationsSidebar to remove the styling of the selected category.
-        @* if (allocationsSidebar != null)
-        {
-            InvokeAsync(allocationsSidebar.clearSelectedCategory);
-        } *@
-    }
-
-    private int fixturesCount = 0;
-
-    /* Tristan Calay 4/6/25
-    Add a new fixture when a fixture is dragged into the grid. */
-    [JSInvokable]
-    public async Task<int> dictAddNewFixture(String fixtureName)
-    {
-        Console.WriteLine("DotNet adding new fixture - Fixture Name: " + fixtureName);
-        @* int newID = fixturesCount + 1;
-        foreach (Fixture fixture in Fixture.fixtures.Values)
-        {
-            if (fixture.Name == fixtureName)
-            {
-                FixtureInstance newFixture = new FixtureInstance(fixture, newID);
-                fixturesDict.Add(newFixture.editorID, newFixture);
-                fixturesCount += 1;
-                Console.WriteLine("Created new fixture! Returning ID " + newID);
-                return newID;
-            }
-        } *@
-
-        @*We have a reference to the dragged fixture model in currentDraggedFixture. 
-        Create an instance from it and append to dict. Return id.
-        
-        Data.Models.Fixtures.FixtureInstance
-        *@
-        if (currentDraggedFixture == null)
-        {
-            Console.WriteLine("currentDraggedFixture is null! Somewhing went wrong.");
-            return -1;
-        }
-
-        int newEditorID = fixturesCount + 1;
-        Data.Models.Fixtures.FixtureInstance newFixture = new Data.Models.Fixtures.FixtureInstance();
-        newFixture.EDITOR_ID = newEditorID;
-        newFixture.X_POS = -1;
-        newFixture.Y_POS = -1;
-        if (currentDraggedFixture.LF_CAP != null)
-        {
-            newFixture.TOT_LF = (int)currentDraggedFixture.LF_CAP;
-        }
-        @* fixturesDict.Add(newEditorID, newFixture); *@
-        fixturesCount += 1;
-        //AddFixtureModel.STORE_TUID = StoreId;
-        Data.Models.Fixtures.Fixtures_State state = new Data.Models.Fixtures.Fixtures_State();
-        @* state.CurrentFixtures = fixturesDict.Values; *@
-        var response = await FixturesHttpClient.UpdateFixtureInformation(FloorsetId, state);
-        Console.WriteLine(response);
-        Console.WriteLine("Created new fixture! Returning ID " + newEditorID);
-        return newEditorID;
-    }
-
-    @*  Andrew Kennedy 4/7/25
-        This function triggers a state change for the whole page, 
-        used for updating the fixture list and fixture data.
-    *@
-    public void TriggerStateChange()
-    {
-        StateHasChanged();
     }
 }
