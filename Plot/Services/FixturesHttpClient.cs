@@ -18,7 +18,7 @@ public class FixturesHttpClient : PlotHttpClient
     /// <returns>A floorsets fixture information or null if bad http response</returns>
     public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floorsetId)
     {
-        return await SendGetAsync<List<FixtureInstance>>($"/get-fixtures/{floorsetId}");
+        return await SendGetAsync<List<FixtureInstance>>($"/get-fixtures-instances/{floorsetId}");
     }
 
     public async Task<List<FixtureModel>?> GetFixtureModelsByStore(int storeId)
@@ -53,7 +53,7 @@ public class FixturesHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(fixtureModel);
 
-        return await SendPostAsync<HttpStatusCode>($"/create-fixture/{storeId}", body);
+        return await SendPostAsync<HttpStatusCode>($"/create-fixture-model/", body);
     }
 
     /// <summary>
@@ -79,6 +79,6 @@ public class FixturesHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(update);
 
-        return await SendPatchAsync($"/update-model/{storeId}", body);
+        return await SendPatchAsync($"/update-fixture-model/", body);
     }
 }

@@ -78,6 +78,8 @@
             var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
             Console.WriteLine(response);
 
+            await JS.InvokeVoidAsync("toggleModal", "addFixture", false);
+
             await UpdateFixtureModels.InvokeAsync();
         }
     }
