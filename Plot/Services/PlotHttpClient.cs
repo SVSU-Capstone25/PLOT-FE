@@ -48,11 +48,12 @@ public class PlotHttpClient : HttpClient
         return default;
     }
 
+/*
     public async Task<T?> SendPostAsync<T>(string endpoint, JsonContent body)
     {
         var response = await SendAsync(endpoint, HttpMethod.Post, body);
 
-        Console.WriteLine(response);
+        Console.WriteLine("Send Post Async response is " + response);
 
         if (response.IsSuccessStatusCode)
         {
@@ -85,6 +86,48 @@ public class PlotHttpClient : HttpClient
 
         return default;
     }
+*/
+
+public async Task<T?> SendPostAsync<T>(string endpoint, JsonContent body)
+{
+    var response = await SendAsync(endpoint, HttpMethod.Post, body);
+
+    Console.WriteLine("Send Post Async response is " + response);
+
+    if (response.IsSuccessStatusCode)
+    {
+        response.Content.Headers.TryGetValues("Content-Type", out var headers);
+        var contentType = headers?.FirstOrDefault();
+
+        switch (contentType)
+        {
+            case "application/json; charset=utf-8":
+                return await response.Content.ReadFromJsonAsync<T>();
+            default:
+                return default;
+        }
+    }
+
+    // Log the error details in the response
+    string errorContent = await response.Content.ReadAsStringAsync();
+    Console.WriteLine("Error Response Content: " + errorContent);
+
+    if (response.StatusCode == HttpStatusCode.BadRequest)
+    {
+        response.Content.Headers.TryGetValues("Content-Type", out var headers);
+        var contentType = headers?.FirstOrDefault();
+
+        switch (contentType)
+        {
+            case "application/json; charset=utf-8":
+                return await response.Content.ReadFromJsonAsync<T>();
+            default:
+                return default;
+        }
+    }
+
+    return default;
+}
 
     public async Task<HttpStatusCode> SendPatchAsync(string endpoint, JsonContent body)
     {

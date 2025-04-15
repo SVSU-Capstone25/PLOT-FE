@@ -120,26 +120,10 @@
         }
     }
 
-    /*
-    protected override async Task OnParametersSetAsync()
-    {
-    ResetUserStoreModel();
-
-    //Initialize the stores for the user
-    if(User != null){
-    await InitUserStores(User.TUID);
-    }
-    else{
-    await InitUserStores(0);
-    }
-    }
-    */
     public void SelectStoresForUser()
     {
-        //Console.WriteLine("Select Stores for Uer in AddUpdated...body pressed");
 
         var storesToMove = notUserStores?.Where(store => selectedNotUserStoreTUIDs.Contains(store.TUID)).ToList();
-        //Console.WriteLine("Stores to Move: " + storesToMove);
         if (storesToMove == null) { Console.WriteLine("No stores to move"); return; }
 
         foreach (var store in storesToMove)
@@ -149,12 +133,8 @@
             notUserStores?.Remove(store);
 
         }
-        //Console.WriteLine("Gets this far");
         selectedNotUserStoreTUIDs.Clear();
 
-        //Console.WriteLine("And this far");
-        //ResetUserStoreModel();
-        //Console.WriteLine("All the way to the end");
         StateHasChanged();
     }
 
@@ -167,15 +147,12 @@
         {
             notUserStores?.Add(store);
             userStores?.Remove(store);
-
-            //AddUpdateUserStoreRequestModels?.RemoveAll(x => x.STORE_TUID == store.TUID);
         }
 
         selectedUserStoreTUIDs.Clear();
 
         StateHasChanged();
 
-        //ResetUserStoreModel();
     }
 
     public void HandleSelectionFromUserStores(ChangeEventArgs e)
@@ -235,6 +212,7 @@
 
     private async Task UpdateUser()
     {
+        // Updates user information
 
         if (AddUpdateUserModel != null)
         {
@@ -245,9 +223,7 @@
 
     public async Task UpdateUserStores(int userTUID)
     {
-        //Console.WriteLine("In UpdateUserStores method in UpdateUserModal.razor");
-        /* var storeTUIDs = AddUpdateUserStoreRequestModels.Select(store => store.STORE_TUID).ToList();
-        */
+        // Updates user store access
         var storeTUIDs = (AddUpdateUserStoreRequestModels ?? new List<AddUserToStoreRequest>())
         .Select(store => store.STORE_TUID)
         .ToList();
@@ -263,16 +239,8 @@
             STORE_TUIDS = storeTUIDs
         };
 
-        //Console.WriteLine("UpdateAccessListRequest object created, named request");
-        //Console.WriteLine(request);
-
-        //Console.WriteLine("await UsersHttpClient.UpdateAccessList(request);");
-
         var response = await UsersHttpClient.UpdateAccessList(request);
-        //Console.WriteLine("THE RESPONSE:");
-        //Console.WriteLine(response);
 
-        //Console.WriteLine("Finishing the UpdateUserStores(int userTUID) method in UpdateUserModal.razor");
     }
 
     private async Task InitUserStores(int userTUID)

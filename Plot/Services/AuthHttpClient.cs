@@ -2,7 +2,7 @@ using System.Net;
 using Plot.Data.Models.Auth.Registration;
 using Plot.Data.Models.Auth.ResetPassword;
 using Plot.Services;
-
+using Plot.Data.Models.Users;
 public class AuthHttpClient : PlotHttpClient
 {
     public AuthHttpClient(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, "/auth")

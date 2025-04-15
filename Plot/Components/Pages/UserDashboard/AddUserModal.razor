@@ -51,29 +51,12 @@
             var response = await AuthHttpClient.Register(UserRegistration);
 
             Console.WriteLine("ON ADD USER SUBMIT " + response);
-
-            //await modalBodyRef!.UpdateUserStores();
+/*
+            if(response != null){
+            await modalBodyRef!.UpdateUserStores(response.TUID);
+            }
+            */
         }
-
+        
     }
-    /*
-    private async Task OnAddUserSubmit()
-    {
-    //// REFACTOR
-
-    //ResetUserStoreModel();
-    //await UpdateUser();
-    //await UpdateUserStores(User.TUID);
-    // Optionally trigger event to refresh data
-    //await UpdateUsers.InvokeAsync();
-
-    StateHasChanged();
-    }
-    */
-    /*
-    private async Task OnAddUserSubmit()
-    {
-    await modalBodyRef!.OnUpdateUserSubmit();
-    }
-    */
 }
