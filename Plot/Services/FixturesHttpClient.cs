@@ -53,7 +53,7 @@ public class FixturesHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(fixtureModel);
 
-        return await SendPostAsync<HttpStatusCode>($"/create-fixture/{storeId}", body);
+        return await SendPostAsync<HttpStatusCode>($"/create-fixture-model/{storeId}", body);
     }
 
     /// <summary>

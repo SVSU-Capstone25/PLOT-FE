@@ -19,7 +19,7 @@
             <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
         </div>
         <div class="align-items-center mt-3 d-flex">
-            <Button class="btn btn-large w-100" Variant="primary" OnClickFunction="OnFixtureAddClick">
+            <Button class="btn btn-large w-100" Variant="primary" data-bs-toggle="modal" data-bs-target="#add-fixture">
                 <i class="fa-solid fa-plus" style="margin-right: .5rem;"></i>
                 Add Fixture
             </Button>
@@ -73,8 +73,6 @@
     [Parameter] public required int StoreId { get; set; }
     [Parameter] public required List<Data.Models.Fixtures.FixtureModel> FixtureModels { get; set; }
 
-    [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? CreateFixtureModel { get; set; }
-
     /* Danielle Smith - 3/24/2025
     added back add fixture stuff & also made it so expansions work properly with it */
     [Parameter] public EventCallback ToggleAddFixture { get; set; }
@@ -101,15 +99,6 @@
     private async Task FilterBtn()
     {
         await JS.InvokeVoidAsync("flipOrder");
-    }
-
-
-    @*
-    The OnFixtureAddClick function calls a JS function to toggle the add fixture modal.
-    *@
-    private async Task OnFixtureAddClick()
-    {
-        await JS.InvokeVoidAsync("toggleModal", "addFixture", true);
     }
 
     @*
