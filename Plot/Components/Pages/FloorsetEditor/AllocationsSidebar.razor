@@ -67,7 +67,8 @@ Author: Tristan Calay (3/15/2025)-->
                 @foreach (var allocationFulfillment in allocationFulfillmentList.Value.Where((allocationFulfillment) =>
                             allocationFulfillment.SUBCATEGORY.Contains(CategorySearch)))
                 {
-                    <li class="list-group-item" @onclick="() => OnCategoryClick(allocationFulfillment.SUPERCATEGORY_COLOR, allocationFulfillment.SUPERCATEGORY_TUID)">
+                    <li class="list-group-item"
+                        @onclick="() => OnCategoryClick(allocationFulfillment.SUPERCATEGORY_COLOR, allocationFulfillment.SUPERCATEGORY_TUID)">
                         <ProgressBar>
                             <ProgressBarHeader class="fs-6">@allocationFulfillment.SUBCATEGORY
                             </ProgressBarHeader>
@@ -89,7 +90,8 @@ Author: Tristan Calay (3/15/2025)-->
 
     private String CategorySearch { get; set; } = "";
 
-    private Dictionary<string, List<Data.Allocations.AllocationFulfillments>> allocationFulfillmentLists = new Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>>();
+    private Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>> allocationFulfillmentLists = new
+    Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>>();
 
     private async Task UpdateAllocationFulfillments()
     {
@@ -100,7 +102,7 @@ Author: Tristan Calay (3/15/2025)-->
             response.ForEach((allocationFulfillment) =>
             {
                 if (allocationFulfillmentLists.TryGetValue(allocationFulfillment.SUPERCATEGORY_NAME, out
-    List<Data.Allocations.AllocationFulfillments>? list))
+    List<Data.Models.Allocations.AllocationFulfillments>? list))
                 {
                     list.Add(allocationFulfillment);
                 }
@@ -135,10 +137,10 @@ allocationFulfillment
 
     private void OnSortAscendingClick()
     {
-        foreach (var allocationFufillmentList in allocationFufillmentLists)
+        foreach (var allocationFufillmentList in allocationFulfillmentLists)
         {
-            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFufillments a,
-            Data.Models.Allocations.AllocationFufillments b)
+            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFulfillments a,
+            Data.Models.Allocations.AllocationFulfillments b)
             {
                 if (a.SUBCATEGORY == null && b.SUBCATEGORY == null) return 0;
                 else if (a.SUBCATEGORY == null) return -1;
@@ -150,10 +152,10 @@ allocationFulfillment
 
     private void OnSortDescendingClick()
     {
-        foreach (var allocationFufillmentList in allocationFufillmentLists)
+        foreach (var allocationFufillmentList in allocationFulfillmentLists)
         {
-            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFufillments a,
-            Data.Models.Allocations.AllocationFufillments b)
+            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFulfillments a,
+            Data.Models.Allocations.AllocationFulfillments b)
             {
                 if (a.SUBCATEGORY == null && b.SUBCATEGORY == null) return 0;
                 else if (a.SUBCATEGORY == null) return -1;
