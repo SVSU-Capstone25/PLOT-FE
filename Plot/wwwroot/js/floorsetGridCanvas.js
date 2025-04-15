@@ -3,6 +3,10 @@ import Grid from "./Grid.js";
 import { getFixtureInstances } from "./getters.js";
 import { updateFixtureInstance, createFixtureInstance } from "./setters.js";
 
+/**
+ * @typedef {import('./globals.d.ts')}
+ */
+
 /** @type {Grid | null} */
 let gridInstance;
 let p5Instance;
@@ -37,87 +41,45 @@ async function getCookie(key) {
   return cookies[key];
 }
 
-window.setPaintMode = (enabled) => {
-  console.log("Setting paint mode " + enabled);
-  //Translate true/false to "paint" / "place"
-  if (enabled) {
-    window.gridState = "paint";
-  } else {
-    window.gridState = "place";
-  }
-  console.log("window gridstate now: " + window.gridState);
-}
+function createDebouncedAggregator(wait, onFlush) {
+  const items = new Set();
+  let timerId = null;
 
-function setErase() {
-  window.paint = "#fff";
-  window.gridState = "paint";
-}
-
-window.setPlace = () => {
-  window.gridState = "place";
-}
-
-window.setPaint = (paint) => {
-  console.log(paint);
-  window.paint = paint;
-}
-
-// Tristan Calay 4/2/25 - Toggles for employee paint/erase mode.
-// var isEmployeePaintEnabled = false;
-// var isEmployeeEraseEnabled = false;
-
-function setEmployeePaint(newPaint) {
-  // isEmployeePaintEnabled = newPaint;
-  // console.log("Employee paint mode is " + isEmployeePaintEnabled);
-  //var marker = document.getElementById("employeePaintEnabledMarker");
-  // if (isEmployeePaintEnabled) {
-  //     console.log("Setting marker green...")
-  //     //marker.style.color = "green";
-  //     window.gridState = 'employeeMode';
-  // }
-  // else {
-  //     console.log("Setting marker black...")
-  //     //marker.style.color = "black";
-  //     window.gridState = 'place';
-  // }
-}
-
-function setEmployeeErase(newErase) {
-  // isEmployeeEraseEnabled = newErase;
-  // if (isEmployeeEraseEnabled) {
-  //     window.gridState = 'employeeMode';
-  // }
-}
-
-//Tristan Calay 4/7/25
-//Remove a rack from the racks array by ID
-function deleteFixtureByID(id) {
-  const racks = this.fixtures;
-  console.log("Called delete rack with ID: " + id);
-  console.log("Fixtures: " + racks);
-  for (var i = 0; i < racks.length; i++) {
-    console.log("Checking index " + i);
-    const rack = this.fixtures[i];
-    if (rack.EDITOR_ID === id) {
-      console.log("Fixture deleted: " + id);
-      this.fixtures.splice(i, 1);
-      return;
-    }
-  }
+  return function add(item) {
+    items.add(item);
+    clearTimeout(timerId);
+    timerId = setTimeout(() => {
+      // snapshot the set so your callback can mutate it if needed
+      const snapshot = new Set(items);
+      onFlush(snapshot);
+      items.clear();
+    }, wait);
+  };
 }
 
 function sketch(p5) {
   let mouseFixture, floorsetId;
 
+  const paintAggregator = createDebouncedAggregator(500, (fixtures) => {
+    fixtures.forEach((fixture) => {
+      updateFixtureInstance(fixture)
+        .then(console.log)
+        .catch(console.error);
+    });
+  });
+
   p5.preload = () => {
     p5Instance = p5;
     gridInstance = new Grid(p5);
+    window.grid = {};
 
     window.p5Instance = p5Instance;
     window.gridInstance = gridInstance;
 
-    window.gridState = "place";
-    window.paint = "#fff";
+    window.grid.state = "place";
+    window.grid.paint = {
+      COLOR: "#fff"
+    };
 
     const url = new URL(window.location.href);
 
@@ -175,7 +137,7 @@ function sketch(p5) {
   };
 
   p5.mousePressed = () => {
-    if (window.gridState === "place") {
+    if (window.grid.state === "place") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
       if (rack) {
@@ -185,7 +147,7 @@ function sketch(p5) {
           mouseFixture = rack;
         }
       }
-    } else if (window.gridState === "erase") {
+    } else if (window.grid.state === "erase") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
       if (rack) {
@@ -197,16 +159,21 @@ function sketch(p5) {
     } else {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) rack.COLOR = window.paint;
+      if (rack) rack.COLOR = window.grid.paint;
     }
   };
 
-  p5.mouseDragged = () => {
-    if (window.gridState === "paint") {
+  p5.mouseDragged = async () => {
+    if (window.grid.state === "paint") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) rack.COLOR = window.paint;
-    } else if (window.gridState === "erase") {
+        const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
+        if (rack) {
+          rack.COLOR = window.grid.paint.COLOR;
+          rack.SUPERCATEGORY_TUID = window.grid.paint.SUPERCATEGORY_TUID;
+          
+          paintAggregator(rack);
+        }
+    } else if (window.grid.state === "erase") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
       if (rack) {
@@ -302,14 +269,6 @@ function sketch(p5) {
 //   }
 // });
 
-function addFixtureOnLoad(id, x, y, width, length, color) {
-  setTimeout(function () {
-    let newFixture = new Fixture(p5Instance, x, y, width, length, id);
-    newFixture.color = color;
-    this.fixtures.push(newFixture);
-  }, 500);
-}
-
 window.initP5 = (elementId) => {
   // Check if p5 is already rendered to prevent 
   // ghosting issues when rendering.
@@ -340,14 +299,40 @@ window.updateStoreSize = (width, height) => {
   window.gridInstance.resize();
 };
 
+window.setPaintMode = (enabled) => {
+  console.log("Setting paint mode " + enabled);
+  //Translate true/false to "paint" / "place"
+  if (enabled) {
+    window.grid.state = "paint";
+  } else {
+    window.grid.state = "place";
+  }
+  console.log("window gridstate now: " + window.grid.state);
+}
+
+function setErase() {
+  window.grid.paint = "#fff";
+  window.grid.state = "paint";
+}
+
+window.setPlace = () => {
+  window.grid.state = "place";
+}
+
+window.setPaint = (paint, supercategory_tuid) => {
+  window.grid.paint.COLOR = paint;
+  window.grid.paint.SUPERCATEGORY_TUID = supercategory_tuid;
+}
+
 window.createDraggable = (event) => {
   const WIDTH = Number(event.target.getAttribute("data-width")),
     LENGTH = Number(event.target.getAttribute("data-height")),
     NAME = String(event.target.getAttribute("data-name")),
     FIXTURE_TUID = Number(event.target.getAttribute("data-fixture-tuid")),
     STORE_TUID = Number(event.target.getAttribute("data-store-tuid"));
-  // window.draggedFixture = { width, height, name };
+
   window.draggedFixture = { WIDTH, LENGTH, NAME, FIXTURE_TUID, STORE_TUID };
+  console.log(window.draggedFixture);
 };
 
 
