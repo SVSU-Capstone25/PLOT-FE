@@ -4,9 +4,9 @@
     <ModalHeader Title="Update Store Information" />
     <EditForm Model="EditStoreModel" OnValidSubmit="async () => await OnEditStoreSubmit()">
 
-        <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId"/>
+        <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId" />
 
-        <ModalFooter>
+        <ModalFooter OnCancelClick="ClearEditStoreModel">
             <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
                 Update Store
             </Button>
@@ -53,5 +53,11 @@
 
         await UpdateStores.InvokeAsync();
 
+        ClearEditStoreModel();
+    }
+
+    private void ClearEditStoreModel()
+    {
+        EditStoreModel = new();
     }
 }

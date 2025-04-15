@@ -7,7 +7,7 @@
 
         <AddUpdateUserModalBody AddUpdateUserModel="UpdateUserModel" />
 
-        <ModalFooter>
+        <ModalFooter OnCancelClick="ClearUpdateUserModel">
             <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
                 Submit
             </Button>
@@ -44,5 +44,12 @@
 
             await UpdateUsers.InvokeAsync();
         }
+
+        ClearUpdateUserModel();
+    }
+
+    private void ClearUpdateUserModel()
+    {
+        UpdateUserModel = new();
     }
 }

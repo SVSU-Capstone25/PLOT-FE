@@ -7,7 +7,7 @@
 
         <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" />
 
-        <ModalFooter>
+        <ModalFooter OnCancelClick="ClearAddUserModel">
             <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
                 Submit
             </Button>
@@ -45,5 +45,15 @@
 
             await UpdateUsers.InvokeAsync();
         }
+
+        ClearAddUserModel();
+    }
+
+    private void ClearAddUserModel()
+    {
+        AddUserModel = new()
+        {
+            ROLE_NAME = "Owner"
+        };
     }
 }
