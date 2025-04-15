@@ -16,6 +16,7 @@ Author: Andrew Fulton (3/12/2025)
 
 @inject NavigationManager Navigation
 @inject StoresHttpClient StoresHttpClient
+@inject IJSRuntime JS
 
 @using System.Drawing;
 @using System.IO;
@@ -100,6 +101,7 @@ Author: Andrew Fulton (3/12/2025)
 @code {
     private List<Data.Models.Stores.Store> stores = new List<Data.Models.Stores.Store>();
 
+
     private async Task UpdateStores()
     {
         var response = await StoresHttpClient.GetListOfStores();
@@ -118,6 +120,8 @@ Author: Andrew Fulton (3/12/2025)
     private async Task OnEditClick(Data.Models.Stores.Store store)
     {
         await Task.Run(() => Console.WriteLine("Edit store"));
+        await JS.InvokeVoidAsync("SetBackgroundImage", store.TUID + "-container",
+        "data:image/png;base64," + Convert.ToBase64String(store.BLUEPRINT_IMAGE!));
         await UpdateStores();
 
     }
