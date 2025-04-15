@@ -4,32 +4,39 @@
 @using Plot.Components.PartialComponents.Button
 
 <div class="toolbar-buttons">
-    @*Edit Fixture Button *@
+@*Edit Fixture Button *@
     <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="editFixture"
         TextAlignment="center" />
 
-    @*Paint Category Button *@
+@*Paint Category Button *@
     <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush"
         OnClickFunction="togglePaintClicked" TextAlignment="center" />
+    using System.ComponentModel;
 
-    @*Erase Category Button *@
-    <Button IsDisabled="false" Variant="@getEraseVariant()" Icon="fa-solid fa-eraser" OnClickFunction="onEraseClicked"
-        TextAlignment="center" />
-</div>
+    #line default
+    #line hidden
+    #nullable disable
+    lable disable
+    v>
 
 @code {
     [Parameter] public required EventCallback ToggleAllocationsOpen { get; set; }
-    [Parameter] public required EventCallback EraseClicked { get; set; }
 
     @* Tristan Calay 3/30/25
     The paint mode button adds the return of getPaintClass() to its class when clicked.
     Track paint mode here.*@
 
-    private bool paintModeEnabled = false;
-    private bool eraseEnabled = false;
+    private enum PaintType
+    {
+        None,
+        Paint,
+        Erase
+    };
+
+    private PaintType paintMode = PaintType.None;
     private String getPaintVariant()
     {
-        if (paintModeEnabled)
+        if (paintMode == PaintType.Paint)
         {
             return "secondary";
         }
@@ -37,19 +44,11 @@
     }
     private String getEraseVariant()
     {
-        if (eraseEnabled)
+        if (paintMode == PaintType.Erase)
         {
             return "secondary";
         }
         return "primary";
-    }
-
-    //Called in the fixture editor with the value "false" when a new category is selected.
-    //Called here when erase is clicked to signify no category is selected.
-    public void SetEraseEnabled(bool newErase)
-    {
-        Console.WriteLine("Recieved erase enabled state : " + newErase);
-        eraseEnabled = newErase;
     }
 
     private async Task editFixture()
@@ -64,9 +63,19 @@
     //It passes that information to the javascript.
     private async Task togglePaintClicked()
     {
-        paintModeEnabled = !paintModeEnabled;
-        Console.WriteLine("Toggle Paint Clicked: Now " + paintModeEnabled);
-        await JS.InvokeVoidAsync("window.setPaintMode", paintModeEnabled);
+        switch (paintMode)
+        {
+            case PaintType.Paint:
+                paintMode = PaintType.None;
+                await JS.InvokeVoidAsync("window.setPaintMode", false);
+                break;
+            default:
+                paintMode = PaintType.Paint;
+                await JS.InvokeVoidAsync("window.setPaintMode", true);
+                break;
+        }
+
+        Console.WriteLine("Toggle Paint Clicked: Now " + paintMode);
         @* paintModeEnabled = !paintModeEnabled;
         Console.WriteLine("Paint Category Function - set paint mode to " + paintModeEnabled); *@
         @* await JS.InvokeVoidAsync("setPaintEnabled", paintModeEnabled); *@
@@ -75,9 +84,25 @@
 
     private async Task onEraseClicked()
     {
-        Console.WriteLine("Erase Clicked!");
-        SetEraseEnabled(true);
-        await EraseClicked.InvokeAsync();
+        //TODO: Remove this delay when some await is implemented, or change async to void
+        await Task.Run(async () =>
+        {
+            await Task.Delay(1);
+        });
+        //TODO: Change the JS functions here such that window state hooks up correctly.
+        switch (paintMode)
+        {
+            case PaintType.Erase:
+                paintMode = PaintType.None;
+                //await JS.InvokeVoidAsync("window.setPaintMode", false);
+                break;
+            default:
+                paintMode = PaintType.Erase;
+                //await JS.InvokeVoidAsync("window.setPaintMode", true);
+                //await JS.InvokeVoidAsync("setErase");
+                break;
+        }
+        Console.WriteLine("Erase Clicked! Paint mode now " + paintMode);
     }
 
     private void viewFulfillment()

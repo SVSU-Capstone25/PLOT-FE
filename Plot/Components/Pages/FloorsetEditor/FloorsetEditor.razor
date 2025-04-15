@@ -44,7 +44,7 @@
     {
         <AllocationsSidebar FloorsetId="FloorsetId" />
 
-        <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations" EraseClicked="EraseCategoryClicked" />
+        <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations"/>
     }
     else
     {
@@ -287,9 +287,4 @@
         await Task.Run(() => Console.WriteLine("Open Import"));
     }
 
-    private void EraseCategoryClicked()
-    {
-        Console.WriteLine("Erase Category Function");
-        JS.InvokeVoidAsync("setErase");
-    }
 }
