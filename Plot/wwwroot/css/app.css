@@ -1,6 +1,9 @@
 html,
 body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    overflow: hidden; /* ? Removes extra wiggle room on application  */
+    width: 100%;
+    height: 100%;
 }
 
 a,

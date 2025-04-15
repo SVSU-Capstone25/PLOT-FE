@@ -127,6 +127,8 @@ function sketch(p5) {
   };
 
   p5.mouseWheel = (event) => {
+    if(event.originalTarget.tagName !== "CANVAS") return;
+
     if (event.delta > 0) {
       gridInstance.scale += 0.1;
     } else {
@@ -414,5 +416,3 @@ window.captureFloorsetThumbnail = async () =>
   new p5(sketch, container);
     });
 };
-
-
