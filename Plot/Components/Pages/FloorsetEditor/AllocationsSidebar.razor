@@ -89,9 +89,7 @@ Author: Tristan Calay (3/15/2025)-->
 
     private String CategorySearch { get; set; } = "";
 
-    private Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>> allocationFulfillmentLists = new
-    Dictionary<string,
-    List<Data.Models.Allocations.AllocationFulfillments>>();
+    private Dictionary<string, List<Data.Allocations.AllocationFulfillments>> allocationFulfillmentLists = new Dictionary<string, List<Data.Allocations.AllocationFulfillments>>();
 
     private async Task UpdateAllocationFulfillments()
     {
@@ -102,14 +100,14 @@ Author: Tristan Calay (3/15/2025)-->
             response.ForEach((allocationFulfillment) =>
             {
                 if (allocationFulfillmentLists.TryGetValue(allocationFulfillment.SUPERCATEGORY_NAME, out
-    List<Data.Models.Allocations.AllocationFulfillments>? list))
+    List<Data.Allocations.AllocationFulfillments>? list))
                 {
                     list.Add(allocationFulfillment);
                 }
                 else
                 {
                     allocationFulfillmentLists.Add(allocationFulfillment.SUPERCATEGORY_NAME, new
-        List<Data.Models.Allocations.AllocationFulfillments> {
+        List<Data.Allocations.AllocationFulfillments> {
 allocationFulfillment
             });
                 }
@@ -139,8 +137,8 @@ allocationFulfillment
     {
         foreach (var allocationFufillmentList in allocationFufillmentLists)
         {
-            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFufillments a,
-            Data.Models.Allocations.AllocationFufillments b)
+            allocationFufillmentList.Value.Sort(delegate (Data.Allocations.AllocationFufillments a,
+            Data.Allocations.AllocationFufillments b)
             {
                 if (a.SUBCATEGORY == null && b.SUBCATEGORY == null) return 0;
                 else if (a.SUBCATEGORY == null) return -1;
@@ -154,8 +152,8 @@ allocationFulfillment
     {
         foreach (var allocationFufillmentList in allocationFufillmentLists)
         {
-            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFufillments a,
-            Data.Models.Allocations.AllocationFufillments b)
+            allocationFufillmentList.Value.Sort(delegate (Data.Allocations.AllocationFufillments a,
+            Data.Allocations.AllocationFufillments b)
             {
                 if (a.SUBCATEGORY == null && b.SUBCATEGORY == null) return 0;
                 else if (a.SUBCATEGORY == null) return -1;
