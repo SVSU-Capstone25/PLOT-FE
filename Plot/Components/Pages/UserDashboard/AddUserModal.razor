@@ -8,7 +8,7 @@
         <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" />
 
         <ModalFooter>
-            <Button Variant="primary" TextAlignment="center" type="submit">
+            <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
                 Submit
             </Button>
         </ModalFooter>
@@ -21,7 +21,13 @@
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
     [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? AddUserModel { get; set; }
 
-    protected override void OnInitialized() => AddUserModel ??= new();
+    protected override void OnInitialized()
+    {
+        AddUserModel ??= new()
+        {
+            ROLE_NAME = "Owner"
+        };
+    }
 
     private async Task OnAddUserSubmit()
     {
@@ -35,11 +41,9 @@
                 ROLE_NAME = AddUserModel.ROLE_NAME
             };
 
-            Console.WriteLine(UserRegistration);
+            await AuthHttpClient.Register(UserRegistration);
 
-            var response = await AuthHttpClient.Register(UserRegistration);
-
-            Console.WriteLine(response);
+            await UpdateUsers.InvokeAsync();
         }
     }
 }
