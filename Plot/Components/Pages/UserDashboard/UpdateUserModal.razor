@@ -7,8 +7,8 @@
 
         <AddUpdateUserModalBody AddUpdateUserModel="UpdateUserModel" />
 
-        <ModalFooter>
-            <Button Variant="primary" TextAlignment="center" type="submit">
+        <ModalFooter OnCancelClick="ClearUpdateUserModel">
+            <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
                 Submit
             </Button>
         </ModalFooter>
@@ -25,7 +25,6 @@
 
     [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? UpdateUserModel { get; set; }
 
-
     protected override void OnInitialized()
     {
         UpdateUserModel ??= new Data.Models.Users.UpdatePublicInfoUser
@@ -41,10 +40,16 @@
     {
         if (UpdateUserModel != null)
         {
-            Console.WriteLine(UpdateUserModel);
-            var response = await UsersHttpClient.UpdateUserPublicInfo(User.TUID, UpdateUserModel);
-            Console.WriteLine(response);
+            await UsersHttpClient.UpdateUserPublicInfo(User.TUID, UpdateUserModel);
+
             await UpdateUsers.InvokeAsync();
         }
+
+        ClearUpdateUserModel();
+    }
+
+    private void ClearUpdateUserModel()
+    {
+        UpdateUserModel = new();
     }
 }

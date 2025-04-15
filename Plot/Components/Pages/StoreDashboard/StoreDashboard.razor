@@ -16,6 +16,7 @@ Author: Andrew Fulton (3/12/2025)
 
 @inject NavigationManager Navigation
 @inject StoresHttpClient StoresHttpClient
+@inject IJSRuntime JS
 
 @using System.Drawing;
 @using System.IO;
@@ -39,7 +40,7 @@ Author: Andrew Fulton (3/12/2025)
         <CardBody>
             <CardTitle>
                 <a class="text-truncate" href="@($"/floorsets/{store.TUID}")">
-                    @store.CITY , @store.STATE
+                    @store.CITY, @store.STATE
                 </a>
             </CardTitle>
             <Dropdown Class="Dropdown" Id="@($"{store.NAME}{store.TUID}Dropdown")" LabelText="Store">
@@ -65,15 +66,17 @@ Author: Andrew Fulton (3/12/2025)
         @* Delete store modal *@
         <Modal id="@($"delete-store-{store.TUID}")" class="standard">
             <ModalHeader Title="Confirm Deletion" Variant="danger" />
-            <form @onsubmit="async () => await OnDeleteStoreSubmit(store.TUID)">
+            <form @onsubmit="async () => {
+                await OnDeleteStoreSubmit(store.TUID);
+                deleteTextInput = string.Empty;}">
             @code {
                 private string? deleteTextInput;
                 private bool isDisabled => deleteTextInput != "DELETE";
             }
             <ModalBody>
                 <h5>Are you SURE you want to delete this Store?</h5>
-                <input type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
-                    @bind-value="deleteTextInput" @bind-value:event="oninput" />
+                <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required
+                    pattern="DELETE" @bind-value="deleteTextInput" @bind-value:event="oninput" />
             </ModalBody>
 
             <ModalFooter>
@@ -98,6 +101,7 @@ Author: Andrew Fulton (3/12/2025)
 @code {
     private List<Data.Models.Stores.Store> stores = new List<Data.Models.Stores.Store>();
 
+
     private async Task UpdateStores()
     {
         var response = await StoresHttpClient.GetListOfStores();
@@ -116,6 +120,8 @@ Author: Andrew Fulton (3/12/2025)
     private async Task OnEditClick(Data.Models.Stores.Store store)
     {
         await Task.Run(() => Console.WriteLine("Edit store"));
+        await JS.InvokeVoidAsync("SetBackgroundImage", store.TUID + "-container",
+        "data:image/png;base64," + Convert.ToBase64String(store.BLUEPRINT_IMAGE!));
         await UpdateStores();
 
     }

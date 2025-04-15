@@ -37,12 +37,27 @@ Author: Andrew Fulton (3/13/2025)  *@
     Dynamically geenrate cards from stored floorsets.
     Iterate over each name and image in the floorsets.
     *@
-
+    @* Altered the image source so it would actually check if the
+    byte array given was the default byte arry or if there is already
+    an image being passed back. *@
     @foreach (var Floorset in floorsets)
     {
-        var ImageSrc = Floorset.FLOORSET_IMAGE != null ?
-        $"data:image/jpeg;base64,{Convert.ToBase64String(Floorset.FLOORSET_IMAGE)}" :
-        "https://placecats.com/300/200";
+        var ImageSrc = "";
+        var fimage = Floorset.FLOORSET_IMAGE;
+        //the if statement is checking if the byte array
+        //is null or if is set to the default
+        //because the floorset was just created it evaluates to
+        //true. If there is an image being passed back
+        //to display it should evaluate to false and hit
+        //the else statement
+        if (fimage == null || fimage.Length == 0 || fimage.All(b => b == 0))
+        {
+            ImageSrc = "/img/default_floorset.png";
+        }
+        else
+        {
+            ImageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(fimage)}";
+        }
 
     <Card>
         <a href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")" class="w-100 ratio ratio-4x3">
@@ -76,14 +91,16 @@ Author: Andrew Fulton (3/13/2025)  *@
 
         <Modal id="@($"delete-floorset-{Floorset.TUID}")" class="standard">
             <ModalHeader Title="Confirm Deletion" Variant="danger" />
-            <form @onsubmit="async () => await OnDeleteFloorsetSubmit(Floorset.TUID)">
+            <form @onsubmit="async () => {
+                await OnDeleteFloorsetSubmit(Floorset.TUID);
+                deleteTextInput = string.Empty;}">
             @code {
                 private string? deleteTextInput;
                 private bool isDisabled => deleteTextInput != "DELETE";
             }
             <ModalBody>
                 <h5>Are you SURE you want to delete this Floorset?</h5>
-                <input type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
+                <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
                     @bind-value="deleteTextInput" @bind-value:event="oninput" />
             </ModalBody>
 
@@ -168,4 +185,5 @@ Author: Andrew Fulton (3/13/2025)  *@
         await FloorsetsHttpClient.CreateFloorset(createFloorset);
         await UpdateFloorsets();
     }
+
 }
