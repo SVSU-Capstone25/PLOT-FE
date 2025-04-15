@@ -15,7 +15,6 @@ class Fixture {
    * @property {number} LENGTH
    * @property {number} WIDTH
    * @property {number} HANGER_STACK
-   * @property {number} TOT_LF
    * @property {number} SUPERCATEGORY_TUID
    * @property {string} SUBCATEGORY
    * @property {number} SUBCATEGORY_NAME
@@ -35,14 +34,13 @@ class Fixture {
     COLOR = '#fff',
     LENGTH,
     WIDTH,
-    HANGER_STACK,
-    TOT_LF,
+    HANGER_STACK = 1,
     SUPERCATEGORY_TUID,
     SUBCATEGORY,
     SUBCATEGORY_NAME,
     TOTAL_SALES,
     NOTE,
-    ALLOCATED_LF
+    ALLOCATED_LF = 0
   ) {
     this.p5 = p5;
     this.TUID = TUID;
@@ -55,7 +53,6 @@ class Fixture {
     this.LENGTH = LENGTH;
     this.WIDTH = WIDTH;
     this.HANGER_STACK = HANGER_STACK;
-    this.TOT_LF = TOT_LF;
     this.SUPERCATEGORY_TUID = SUPERCATEGORY_TUID;
     this.SUBCATEGORY = SUBCATEGORY;
     this.SUBCATEGORY_NAME = SUBCATEGORY_NAME;
@@ -109,7 +106,6 @@ class Fixture {
         LENGTH: this.LENGTH,
         WIDTH: this.WIDTH,
         HANGER_STACK: this.HANGER_STACK,
-        TOT_LF: this.TOT_LF,
         SUPERCATEGORY_TUID: this.SUPERCATEGORY_TUID,
         SUBCATEGORY: this.SUBCATEGORY,
         SUBCATEGORY_NAME: this.SUBCATEGORY_NAME,
@@ -137,7 +133,6 @@ class Fixture {
       object.LENGTH,
       object.WIDTH,
       object.HANGER_STACK,
-      object.TOT_LF,
       object.SUPERCATEGORY_TUID,
       object.SUBCATEGORY,
       object.SUBCATEGORY_NAME,
