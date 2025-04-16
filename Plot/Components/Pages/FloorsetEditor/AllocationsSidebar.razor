@@ -35,8 +35,8 @@ Author: Tristan Calay (3/15/2025)-->
         changed how these are being displayed to use bootstrap classes
         added params to help text input take up proper width *@
     <div class="d-flex flex-row gap-2">
-        <InputText id="category-search" type="search" placeholder="Search..." ValueExpression="() => CategorySearch"
-            ValueChanged="OnSearchChange" class="w-100 form-control" />
+        <InputText id="category-search" type="search" placeholder="Search..." @bind-Value="CategorySearch"
+            @oninput="OnSearchChange" class="w-100 form-control" />
         <Button Variant="primary" Icon="fa-solid fa-arrow-up-short-wide" Class="search-button" TextAlignment="center"
             @onclick="OnSortAscendingClick" />
         <Button Variant="primary" Icon="fa-solid fa-arrow-down-wide-short" Class="search-button" TextAlignment="center"
@@ -65,7 +65,7 @@ Author: Tristan Calay (3/15/2025)-->
                 </li>
 
                 @foreach (var allocationFulfillment in allocationFulfillmentList.Value.Where((allocationFulfillment) =>
-                            allocationFulfillment.SUBCATEGORY.Contains(CategorySearch)))
+                            allocationFulfillment.SUBCATEGORY.ToLower().Contains(CategorySearch)))
                 {
                     <li class="list-group-item"
                         @onclick="() => OnCategoryClick(allocationFulfillment.SUPERCATEGORY_COLOR, allocationFulfillment.SUPERCATEGORY_TUID)">
@@ -122,10 +122,10 @@ allocationFulfillment
         await UpdateAllocationFulfillments();
     }
 
-    private void OnSearchChange(string value)
+    private void OnSearchChange(ChangeEventArgs e)
     {
-        CategorySearch = value;
-        StateHasChanged();
+
+        CategorySearch = e.Value as String ?? "";
     }
 
     private async void OnCategoryClick(string color, int superCategoryTuid)
