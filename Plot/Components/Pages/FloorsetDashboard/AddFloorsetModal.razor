@@ -8,7 +8,7 @@
 
         <AddEditFloorsetModalBody AddUpdateFloorsetModel="CreateFloorsetModel" />
 
-        <ModalFooter>
+        <ModalFooter OnCancelClick="ClearCreateFloorsetModel">
             <Button TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
                 Create
             </Button>
@@ -47,7 +47,15 @@
             };
 
             await FloorsetsHttpClient.CreateFloorset(Floorset);
+
             await UpdateFloorsets.InvokeAsync();
+
+            ClearCreateFloorsetModel();
         }
+    }
+
+    private void ClearCreateFloorsetModel()
+    {
+        CreateFloorsetModel = new();
     }
 }

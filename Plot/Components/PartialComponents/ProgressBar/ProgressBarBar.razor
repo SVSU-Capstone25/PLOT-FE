@@ -1,0 +1,49 @@
+<label class="w-100 position-relative" for="main-progress">
+    <span class="position-absolute ps-2">@ChildContent</span>
+
+    <meter @attributes="Attributes" class="@FulfillmentClass @Attributes?.GetValueOrDefault("class")"
+        style="--progress-bar-background-color: @Color;">@Attributes?.GetValueOrDefault("value")</meter>
+</label>
+
+@code {
+    [Parameter]
+    public String? Color { get; set; } = "lightblue";
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    //Toggle for using over/underfill styling presets. Defaults to true,
+    // since this is most likely used primarily in allocations page.
+    @* [Parameter]
+    public Boolean usePresetFillWarnings { get; set; } = true; *@
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    //Preset styling for the bar - If the barProgress is < 100%, barClass is updated to mark the bar unfulfilled.
+    @* private String _unFilledClass = "progress-unfulfilled"; *@
+
+    //Preset styling for the bar - If barProgress is > 100%, barClass is updated to mark the bar overfilled
+    @* private String _overFilledClass = "progress-overfilled"; *@
+
+    //Progress Bar MapProgress function.
+    //Takes two inputs, max value, and current value
+    //Interpolates 0 -> currentValue -> maxValue into the range 0 -> 100
+    //Returns the new progress bar value.
+    @* private int MapProgress()
+    {
+        return Math.Clamp(
+        (int)Single.Lerp(0f, 100f, ((float)barValue / (float)barMax)),
+        0,
+        100
+        );
+    } *@
+
+    int max => Convert.ToInt32(Attributes?.GetValueOrDefault("max") ?? 100);
+    int value => Convert.ToInt32(Attributes?.GetValueOrDefault("value") ?? 50);
+    int min => Convert.ToInt32(Attributes?.GetValueOrDefault("min") ?? 0);
+
+    @* Tristan Calay 4/1/25
+        Removed "OnInitialized" and replaced with this func to
+        dynamically get the bar class for the component on render. *@
+    private String FulfillmentClass => value < max ? "progress-unfulfilled" : value > max ? "progress-overfilled" : "";
+}
