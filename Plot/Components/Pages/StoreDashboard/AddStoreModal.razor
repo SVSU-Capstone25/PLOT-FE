@@ -6,7 +6,7 @@
 
         <AddUpdateStoreModalBody AddUpdateStoreModel="AddStoreModel" StoreId="StoreId" />
 
-        <ModalFooter>
+        <ModalFooter OnCancelClick="ClearAddStoreModel">
             <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
                 Create Store
             </Button>
@@ -43,10 +43,16 @@
                 USER_TUIDS = ""
             };
 
-            Console.WriteLine(Store);
-
             await StoresHttpClient.CreateStore(Store);
+
             await UpdateStores.InvokeAsync();
+
+            ClearAddStoreModel();
         }
+    }
+
+    private void ClearAddStoreModel()
+    {
+        AddStoreModel = new();
     }
 }

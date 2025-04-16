@@ -19,7 +19,7 @@
             <Button class="filter-btn mb-2" Icon="fa-solid fa-filter" OnClickFunction="FilterBtn" />
         </div>
         <div class="align-items-center mt-3 d-flex">
-            <Button class="btn btn-large w-100" Variant="primary" OnClickFunction="OnFixtureAddClick">
+            <Button class="btn btn-large w-100" Variant="primary" data-bs-toggle="modal" data-bs-target="#add-fixture">
                 <i class="fa-solid fa-plus" style="margin-right: .5rem;"></i>
                 Add Fixture
             </Button>
@@ -58,39 +58,20 @@
             </Dropdown>
         </div>
 
-            @* Delete store modal *@
-            <Modal id="@($"delete-fixture-model-{fixtureModel.TUID}")" class="standard">
-                <ModalHeader Title="Confirm Deletion" Variant="danger" />
-                <form @onsubmit="async () => await OnDeleteFixtureModelSubmit(fixtureModel.TUID)">
-                @code {
-                    private string? deleteTextInput;
-                    private bool isDisabled => deleteTextInput != "DELETE";
-                }
-                <ModalBody>
-                    <h5>Are you SURE you want to delete this Store?</h5>
-                    <input type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
-                        @bind-value="deleteTextInput" @bind-value:event="oninput" />
-                </ModalBody>
-
-                <ModalFooter>
-                    <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
-                        data-bs-dismiss="modal">
-                        Yes, Delete
-                    </Button>
-                </ModalFooter>
-            </form>
-        </Modal>
+ 
                 }
     </div>
 </SlideOutBody>
+
+
+
+
 
 @code {
     private string FixtureSearch = "";
 
     [Parameter] public required int StoreId { get; set; }
     [Parameter] public required List<Data.Models.Fixtures.FixtureModel> FixtureModels { get; set; }
-
-    [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? CreateFixtureModel { get; set; }
 
     /* Danielle Smith - 3/24/2025
     added back add fixture stuff & also made it so expansions work properly with it */
@@ -120,15 +101,6 @@
         await JS.InvokeVoidAsync("flipOrder");
     }
 
-
-    @*
-    The OnFixtureAddClick function calls a JS function to toggle the add fixture modal.
-    *@
-    private async Task OnFixtureAddClick()
-    {
-        await JS.InvokeVoidAsync("toggleModal", "addFixture", true);
-    }
-
     @*
     The OnEditClick function is called when the user clicks the edit button on a fixture.
     *@
@@ -136,14 +108,5 @@
     {
 
         await Task.Run(() => Console.WriteLine(currFixture.NAME));
-    }
-
-    private async Task OnDeleteFixtureModelSubmit(int fixtureModelId)
-    {
-        var response = await FixturesHttpClient.DeleteFixtureModel(fixtureModelId);
-
-        if(response == System.Net.HttpStatusCode.OK) {
-            await UpdateFixtureModels.InvokeAsync();
-        }
     }
 }
