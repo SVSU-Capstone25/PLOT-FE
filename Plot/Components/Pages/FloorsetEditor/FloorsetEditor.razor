@@ -101,6 +101,21 @@
                 Save
             </Button>
 
+            <div class="toast-container position-fixed p-5 bottom-0 start-0 float-left" id="toastPlacement"
+                data-original-class="toast-container position-fixed p-5">
+
+                <div class="toast align-items-center text-white bg-success border-0" id="saveToast" role="alert"
+                    aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            Floorset saved.
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                            aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+
             <FixtureConfigModal />
         </div>
     }
@@ -116,11 +131,15 @@
 
 <HelpModal />
 
+
+
 @code {
     [Parameter] public required int StoreId { get; set; }
     [Parameter] public required int FloorsetId { get; set; }
 
     private List<Data.Models.Fixtures.FixtureModel> FixtureModels = new List<Data.Models.Fixtures.FixtureModel>();
+
+
 
     // Used when the save button is pressed. Calls js to take a picture of the floorset
     // and update the database with the new image- Michael Polhill
@@ -153,7 +172,13 @@
                 };
 
                 // Send updated to the BE API
-                await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId, updatePublicInfoFloorset);
+                var saveResponse = await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId, updatePublicInfoFloorset);
+
+                // If the floorset successfully saved, show a success message as a bootstrap toast.
+                if (saveResponse == System.Net.HttpStatusCode.OK)
+                {
+                    await JS.InvokeVoidAsync("openSaveToast", "saveToast");
+                }
             }
         }
         else
