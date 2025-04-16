@@ -16,13 +16,16 @@
     - Luke Wollenweber (Edit Building Walls) (3/22/2025)
 *@
 
+@page "/floorset-editor/{StoreId:int}/{FloorsetId:int}"
+@layout Plot.Components.Layout.FloorsetEditorLayout
 @rendermode InteractiveServer
+
 @inject IJSRuntime JS
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
 @inject FloorsetsHttpClient FloorsetsHttpClient;
 @inject AuthHttpClient AuthHttpClient
-@page "/floorset-editor/{StoreId:int}/{FloorsetId:int}"
+
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
 @using Plot.Components.PartialComponents.OptionInput
