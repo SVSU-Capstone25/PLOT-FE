@@ -23,7 +23,16 @@ public class PlotHttpClient : HttpClient
         var token = _httpContextAccessor.HttpContext?.Request.Cookies["Auth"];
         httpRequestMessage.Headers.Add("Authorization", $"Bearer {token}");
 
+        try{
         return await base.SendAsync(httpRequestMessage);
+        }
+        catch (TimeoutException ex)
+{
+            return new HttpResponseMessage(HttpStatusCode.RequestTimeout)
+            {
+                Content = new StringContent($"Request timed out: {ex.Message}")
+            };
+        }
     }
 
     private async Task<HttpResponseMessage> SendAsync(string endpoint, HttpMethod method)
@@ -33,7 +42,17 @@ public class PlotHttpClient : HttpClient
         var token = _httpContextAccessor.HttpContext?.Request.Cookies["Auth"];
         httpRequestMessage.Headers.Add("Authorization", $"Bearer {token}");
 
-        return await base.SendAsync(httpRequestMessage);
+        try{
+            return await base.SendAsync(httpRequestMessage);
+
+        }catch(Exception ex){
+
+            return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+            {
+                Content = new StringContent("Error: " + ex.Message)
+            };        
+        }
+
     }
 
     public async Task<T?> SendGetAsync<T>(string endpoint)

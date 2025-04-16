@@ -1,120 +1,246 @@
 @inject UsersHttpClient UsersHttpClient
+@inject StoresHttpClient StoresHttpClient
 @using Data.Models.Users;
 @using Data.Models.Stores;
 @using System.Net;
 
-<Modal class="modal-dialog modal-xl user-modal user-info-modal" @attributes="Attributes">
-    <ModalHeader Title="Update User" />
-    <EditForm Model="UpdateUserModel" OnValidSubmit="async () => await OnSubmitFromModalBody()">
-        <DataAnnotationsValidator />
+<ModalBody>
 
-        <AddUpdateUserModalBody AddUpdateUserModel="UpdateUserModel"
-            AddUpdateUserStoreRequestModels="AddUpdateUserStoreRequestModels" UserStores="userStores"
-            NotUserStores="notUserStores" User="User" 
-            @ref="modalBodyRef"/>
+    @* <h3>@userModalDetails.Header</h3>
+                <p>@userModalDetails.Description</p> *@
+    <label class="w-100 d-flex">
+        First Name:
+        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.FIRST_NAME" />
+        <div class="text-danger">
+            <ValidationMessage For=@(() => AddUpdateUserModel.FIRST_NAME) />
+        </div>
+    </label>
+    <label class="w-100 d-flex">
+        Last Name:
+        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.LAST_NAME" />
+        <div class="text-danger">
+            <ValidationMessage For=@(() => AddUpdateUserModel.LAST_NAME) />
+        </div>
+    </label>
 
-        <ModalFooter OnCancelClick="ClearUpdateUserModel">
-            <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
-                Submit
-            </Button>
-        </ModalFooter>
-    </EditForm>
+    <label class="w-100 d-flex">
+        Email:
+        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.EMAIL" />
+        <div class="text-danger">
+            <ValidationMessage For=@(() => AddUpdateUserModel.EMAIL) />
+        </div>
+    </label>
 
-</Modal>
+    <label>
+        Role:
+        <InputSelect @bind-value="AddUpdateUserModel!.ROLE_NAME">
+            <option value="Owner">Owner</option>
+            <option value="Manager">Manager</option>
+            <option value="Employee">Employee</option>
+        </InputSelect>
+        <div class="text-danger">
+            <ValidationMessage For=@(() => AddUpdateUserModel.EMAIL) />
+        </div>
+    </label>
+
+    @* TODO: Store selection *@
+
+    @* Store Selection *@
+
+    <p id="StoreSelectHeader">Store Selection</p>
+
+    <p>To select multiple stores use Ctrl-click</p>
+
+    <label>
+        Available Stores:
+        <select size="6" multiple @onchange="HandleSelectionFromNotUserStores">
+            @if (notUserStores != null)
+            {
+                @foreach (var store in notUserStores)
+                {
+                    <option value="@store.TUID">@store.NAME</option>
+                }
+            }
+        </select>
+        <Button Variant="primary" TextAlignment="center" @onclick="SelectStoresForUser">
+            Select Store
+        </Button>
+
+    </label>
+
+    <label>
+        Selected Stores:
+        <select size="6" multiple @onchange="HandleSelectionFromUserStores">
+            @if (userStores != null)
+            {
+                @foreach (var store in userStores)
+                {
+                    <option value="@store.TUID">@store.NAME</option>
+                }
+            }
+        </select>
+        <Button Variant="primary" TextAlignment="center" @onclick="RemoveStoresFromUser">
+            Remove Store
+        </Button>
+    </label>
+
+</ModalBody>
 
 @code {
+    [Parameter] public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; }
 
-    private AddUpdateUserModalBody? modalBodyRef;
+    [Parameter]
+    public required Data.Models.Users.UserDTO? User { get; set; }
 
-    private List<Data.Models.Stores.Store>? userStores = new List<Data.Models.Stores.Store>();
+    [Parameter]
+    public List<Data.Models.Users.AddUserToStoreRequest>? AddUpdateUserStoreRequestModels { get; set; }
 
-    private List<Data.Models.Stores.Store>? notUserStores = new List<Data.Models.Stores.Store>();
+    [Parameter]
+    public List<Data.Models.Stores.Store>? userStores { get; set; }
 
-    [Parameter] public required Data.Models.Users.UserDTO User { get; set; }
+    [Parameter]
+    public List<Data.Models.Stores.Store>? notUserStores { get; set; }
+
+    private List<int> selectedNotUserStoreTUIDs { get; set; } = new();
+    private List<int> selectedUserStoreTUIDs { get; set; } = new();
 
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
-    [Parameter] public required List<Data.Models.Stores.Store> UserStores { get; set; }
-
-    [Parameter] public required List<Data.Models.Stores.Store> UserNotStores { get; set; }
-
-    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
-
-    [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? UpdateUserModel { get; set; }
-
-    [SupplyParameterFromForm] private List<Data.Models.Stores.Store>? UpdateUserStoreModels { get; set; }
-
-    private List<int> selectedStoreTUIDs = new List<int>();
-
-    //private List<int> unselectedStoreTUIDs = new List<int>();
-
-    private List<Data.Models.Users.AddUserToStoreRequest> AddUpdateUserStoreRequestModels = new();
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        UpdateUserModel ??= new Data.Models.Users.UpdatePublicInfoUser
-        {
-            FIRST_NAME = User.FIRST_NAME,
-            LAST_NAME = User.LAST_NAME,
-            EMAIL = User.EMAIL,
-            ROLE_NAME = User.ROLE
-        };
+        ResetUserStoreModel();
 
-        AddUpdateUserStoreRequestModels ??= new List<Data.Models.Users.AddUserToStoreRequest>();
-
-        foreach (var selectedStoreTUID in selectedStoreTUIDs)
+        // Initialize the stores for the user
+        if (User != null)
         {
-            AddUpdateUserStoreRequestModels.Add(new AddUserToStoreRequest
-            {
-                USER_TUID = User.TUID,
-                STORE_TUID = selectedStoreTUID
-            });
+            await InitUserStores(User.TUID);
+        }
+        else
+        {
+            // Initializes all stores for unassigned and none for assigned
+            await InitUserStores(0);
         }
     }
-/*
+
+    public void SelectStoresForUser()
+    {
+
+        var storesToMove = notUserStores?.Where(store => selectedNotUserStoreTUIDs.Contains(store.TUID)).ToList();
+        if (storesToMove == null) { Console.WriteLine("No stores to move"); return; }
+
+        foreach (var store in storesToMove)
+        {
+            Console.WriteLine(store.NAME);
+            userStores?.Add(store);
+            notUserStores?.Remove(store);
+
+        }
+        selectedNotUserStoreTUIDs.Clear();
+
+        StateHasChanged();
+    }
+
+    public void RemoveStoresFromUser()
+    {
+        var storesToMove = userStores?.Where(store => selectedUserStoreTUIDs.Contains(store.TUID)).ToList();
+        if (storesToMove == null) return;
+
+        foreach (var store in storesToMove)
+        {
+            notUserStores?.Add(store);
+            userStores?.Remove(store);
+        }
+
+        selectedUserStoreTUIDs.Clear();
+
+        StateHasChanged();
+
+    }
+
+    public void HandleSelectionFromUserStores(ChangeEventArgs e)
+    {
+        selectedUserStoreTUIDs = ExtractSelectedIds(e);
+    }
+
+    public void HandleSelectionFromNotUserStores(ChangeEventArgs e)
+    {
+        selectedNotUserStoreTUIDs = ExtractSelectedIds(e);
+    }
+
+    private List<int> ExtractSelectedIds(ChangeEventArgs e)
+    {
+        var selected = new List<int>();
+        if (e.Value is IEnumerable<object> values)
+        {
+            foreach (var v in values)
+            {
+                if (int.TryParse(v?.ToString(), out var id))
+                    selected.Add(id);
+            }
+        }
+        return selected;
+    }
+
+    /* Newly added */
     public void ResetUserStoreModel()
     {
-        if(AddUpdateUserStoreRequestModels != null){
-        // Clear the model
-        AddUpdateUserStoreRequestModels!.Clear();
-
-        // Add current store access
-        foreach (var store in userStores!)
+        if (AddUpdateUserStoreRequestModels != null)
         {
-            AddUpdateUserStoreRequestModels!.Add(new Data.Models.Users.AddUserToStoreRequest
+            // Clear the model
+            AddUpdateUserStoreRequestModels!.Clear();
+
+            // Add current store access
+            foreach (var store in userStores!)
             {
-                USER_TUID = User!.TUID,
-                STORE_TUID = store.TUID
-            });
-        }
+                AddUpdateUserStoreRequestModels!.Add(new Data.Models.Users.AddUserToStoreRequest
+                {
+                    USER_TUID = User!.TUID,
+                    STORE_TUID = store.TUID
+                });
+            }
         }
     }
 
-    private async Task OnUpdateUserSubmit()
+    public async Task OnUpdateUserSubmit()
     {
         ResetUserStoreModel();
         await UpdateUser();
-        await UpdateUserStores(User.TUID);
+        await UpdateUserStores(User!.TUID);
         // Optionally trigger event to refresh data
         await UpdateUsers.InvokeAsync();
 
         StateHasChanged();
     }
 
-    private async Task UpdateUser()
+    public async Task OnAddingUserSubmit(int userTUID)
     {
+        ResetUserStoreModel();
+        await UpdateUserStores(userTUID);
+        // Optionally trigger event to refresh data
+        await UpdateUsers.InvokeAsync();
 
-        if (UpdateUserModel != null)
+        StateHasChanged();
+    }
+
+    public async Task UpdateUser()
+    {
+        // Updates user information
+
+        if (AddUpdateUserModel != null)
         {
-            var response = await UsersHttpClient.UpdateUserPublicInfo(User.TUID, UpdateUserModel);
+            var response = await UsersHttpClient.UpdateUserPublicInfo(User!.TUID, AddUpdateUserModel!);
         }
 
     }
 
-    private async Task UpdateUserStores(int userTUID)
+    public async Task UpdateUserStores(int userTUID)
     {
-        Console.WriteLine("In UpdateUserStores method in UpdateUserModal.razor");
-        var storeTUIDs = AddUpdateUserStoreRequestModels.Select(store => store.STORE_TUID).ToList();
+        Console.WriteLine("Updating stores for user of tuid " + userTUID);
+        // Updates user store access
+        var storeTUIDs = (AddUpdateUserStoreRequestModels ?? new List<AddUserToStoreRequest>())
+        .Select(store => store.STORE_TUID)
+        .ToList();
+
         foreach (var storeTUID in storeTUIDs)
         {
             Console.WriteLine(storeTUID);
@@ -126,50 +252,33 @@
             STORE_TUIDS = storeTUIDs
         };
 
-        Console.WriteLine("UpdateAccessListRequest object created, named request");
-        Console.WriteLine(request);
-
-        Console.WriteLine("await UsersHttpClient.UpdateAccessList(request);");
-
         var response = await UsersHttpClient.UpdateAccessList(request);
-        Console.WriteLine("THE RESPONSE:");
-        Console.WriteLine(response);
 
-        Console.WriteLine("Finishing the UpdateUserStores(int userTUID) method in UpdateUserModal.razor");
     }
-*/
-/*
-    private async Task InitUserStores(int userTUID)
+
+    public async Task InitUserStores(int userTUID)
     {
         await InitUserStoresAssigned(userTUID);
+
         await InitUsersStoresNotAssigned(userTUID);
     }
 
     private async Task InitUserStoresAssigned(int userTUID)
     {
-        var response = await UsersHttpClient.GetStoreOfUserById(userTUID);
-
-        Console.WriteLine("Dashboard handling response for stores assigned as:");
-        Console.WriteLine(response);
-
-        if (response != null)
+        if (userTUID == 0)
         {
-            Console.WriteLine("List of Names and TUIDs");
-            foreach (var store in response)
-            {
-                Console.WriteLine($"Name: {store.NAME}, TUID: {store.TUID}");
-            }
-
-            userStores = response;
+            userStores = new List<Data.Models.Stores.Store>();
         }
         else
         {
-            Console.WriteLine("Response was null.");
-        }
+            var response = await UsersHttpClient.GetStoreOfUserById(userTUID);
 
-        if (response != null)
-        {
-            userStores = response;
+            if (response != null)
+            {
+                userStores = response.ToList();
+            }
+
+
         }
 
         StateHasChanged();
@@ -177,58 +286,28 @@
 
     private async Task InitUsersStoresNotAssigned(int userId)
     {
-        var response = await UsersHttpClient.GetStoresNotForUser(userId);
-
-        Console.WriteLine("Dashboard handling response for stores NOT assigned as:");
-        Console.WriteLine(response);
-
-        if (response != null)
+        if (userId != 0)
         {
-            foreach (var store in response)
+            var response = await UsersHttpClient.GetStoresNotForUser(userId);
+
+            //Console.WriteLine("Dashboard handling response for stores NOT assigned as:");
+            //Console.WriteLine(response);
+
+            if (response != null)
             {
-                Console.WriteLine($"Name: {store.NAME}, TUID: {store.TUID}");
+
+                notUserStores = response.ToList();
             }
 
-            notUserStores = response;
+
         }
         else
         {
-            Console.WriteLine("Response was null.");
-        }
-
-
-        if (response != null)
-        {
-            notUserStores = response;
+            // New user - Fill available stores list
+            notUserStores = await StoresHttpClient.GetListOfStores();
         }
 
         StateHasChanged();
     }
-*/
-    /* New */
 
-private async Task OnSubmitFromModalBody()
-{
-    if (modalBodyRef != null)
-    {
-        await modalBodyRef.OnUpdateUserSubmit();
-    }
-
-    if (UsersHttpClient != null)
-    {
-        if (User != null && UpdateUserModel != null)
-        {
-            await UsersHttpClient.UpdateUserPublicInfo(User.TUID, UpdateUserModel);
-        }
-    }
-        await UpdateUsers.InvokeAsync();
-
-    ClearUpdateUserModel();
-}
-
-
-    private void ClearUpdateUserModel()
-    {
-        UpdateUserModel = new();
-    }
 }
