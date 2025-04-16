@@ -56,15 +56,15 @@
             {
                 foreach(var user in usersToAdd)
                 {  
-                    AddStoreModel.USER_TUIDS += user.TUID +",";
+                    Store.USER_TUIDS += user.TUID +",";
                 }
-                if(AddStoreModel.USER_TUIDS != null)
+                if(Store.USER_TUIDS != null)
                 {
-                    AddStoreModel.USER_TUIDS = AddStoreModel.USER_TUIDS.TrimEnd(',');
+                    Store.USER_TUIDS = Store.USER_TUIDS.TrimEnd(',');
                 }
             }
 
-            Console.WriteLine(AddStoreModel.USER_TUIDS);
+            Console.WriteLine(Store.USER_TUIDS);
 
             Console.WriteLine(Store);
 

@@ -61,7 +61,7 @@ Author: Andrew Fulton (3/12/2025)
             </CardBody>
         </Card>
 
-        <EditStoreModal id="@($"edit-store-{store.TUID}")" Store="store" UpdateStores="UpdateStores" StoreId="store.TUID" usersToAdd="@usersToAdd"/>
+        <EditStoreModal id="@($"edit-store-{store.TUID}")" Store="store" UpdateStores="UpdateStores" StoreId="store.TUID" usersToAdd="@usersToAdd" usersToDelete="@usersToDelete"/>
 
 
         @* Delete store modal *@
@@ -213,6 +213,8 @@ Author: Andrew Fulton (3/12/2025)
 
     //list to hold the user that might be added to a store
     private List<Data.Models.Users.UserDTO> usersToAdd = new List<Data.Models.Users.UserDTO>();
+    //list to hold the users that might be deleted from a store
+    private List<Data.Models.Users.UserDTO> usersToDelete = new List<Data.Models.Users.UserDTO>();
     
     private string strUserValueToAdd = "-1,FNAME,LNAME,EMAIL,ROLE";
 
@@ -263,6 +265,7 @@ Author: Andrew Fulton (3/12/2025)
         await UpdateStores();
 
         usersToAdd.Clear();
+        usersToDelete.Clear();
 
         await UpdateUsersInCurrentStore(store.TUID);
 
@@ -281,6 +284,7 @@ Author: Andrew Fulton (3/12/2025)
     private void OnCreateClick()
     {
         usersToAdd.Clear();
+        usersToDelete.Clear();
         UpdateUserOptions();
     }
 
@@ -367,6 +371,13 @@ Author: Andrew Fulton (3/12/2025)
         if (userToRemove != null)
         {
             usersToAdd.Remove(userToRemove);
+
+            bool isInUsersToDelete = usersToDelete.Any(u => u.TUID == ID);
+            if(!isInUsersToDelete)
+            {
+                usersToDelete.Add(userToRemove);
+            }
+
         }
 
         await JS.InvokeVoidAsync("clearDivExceptById", targetDiv, "storeEmployeesDiv");
@@ -375,6 +386,9 @@ Author: Andrew Fulton (3/12/2025)
             string userValues = $"{user.TUID},{user.FIRST_NAME},{user.LAST_NAME},{user.EMAIL},{user.ROLE}";
             await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", targetDiv, $"{userValues}", dotNet);
         }
+
+        UpdateUserOptions();
+        StateHasChanged();
 
     }
 

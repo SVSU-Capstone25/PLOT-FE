@@ -21,6 +21,7 @@
     [Parameter] public required EventCallback UpdateStores { get; set; }
     [Parameter] public required int StoreId { get; set; }
     [Parameter] public required List<Data.Models.Users.UserDTO> usersToAdd{ get; set; }
+    [Parameter] public required List<Data.Models.Users.UserDTO> usersToDelete{ get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? EditStoreModel { get; set; }
 
@@ -47,6 +48,27 @@
         await Task.Run(() => Console.WriteLine("Update store: " + StoreId));
 
         if (EditStoreModel == null) return;
+
+
+
+
+        if(usersToDelete.Count > 0)
+        {
+            Console.WriteLine("Before loop");
+            foreach(var user in usersToDelete)
+            {
+                Plot.Data.Models.Users.DeleteUserFromStoreRequest deleteUserAccess = new Plot.Data.Models.Users.DeleteUserFromStoreRequest
+                {
+                    USER_TUID = user.TUID,
+                    STORE_TUID = StoreId
+                };
+
+                await UsersHttpClient.DeleteFromStore(deleteUserAccess);
+
+                Console.WriteLine("Delete: "+user.TUID+" "+user.FIRST_NAME);
+            }
+        }
+
 
         if(usersToAdd.Count > 0)
         {
