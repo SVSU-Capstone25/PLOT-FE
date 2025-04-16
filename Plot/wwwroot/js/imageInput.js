@@ -72,3 +72,14 @@ function onImageSelected(id) {
         alert("Please upload a valid image file.");
     }
 }
+
+//method to set the background image of the edit modal imageinput to the fixture's image
+function SetBackgroundImage(elementId, strUrl) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.style.backgroundImage = "url(" + strUrl + ")";
+        element.style.backgroundSize = "cover";
+        element.style.backgroundPosition = "center";
+        element.classList.remove("dashed-border");
+    }
+}

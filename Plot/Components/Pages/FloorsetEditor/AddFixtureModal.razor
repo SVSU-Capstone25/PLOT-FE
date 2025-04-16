@@ -3,7 +3,7 @@
 
 @* Add Fixture Modal *@
 
-<Modal class="modal-xl fixture-modal" id="addFixture">
+<Modal class="modal-xl fixture-modal" id="add-fixture">
     <ModalHeader Title="Add Fixture" />
     <EditForm Model="AddFixtureModel" OnValidSubmit="OnAddFixtureSubmit">
         <ModalBody>
@@ -47,7 +47,7 @@
             <ImageInput Label="Upload Image" Id="@StoreId.ToString()" Height="300px" OnImageUpload="OnImageUpload"
             ImageSrc="ImageSrc" />
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter OnCancelClick="ClearAddFixtureModel">
             <Button class="btn add-btn ms-auto" Variant="primary" type="submit" data-bs-dismiss="modal">Add</Button>
         </ModalFooter>
     </EditForm>
@@ -76,14 +76,13 @@
 
         if (AddFixtureModel != null)
         {
-            AddFixtureModel.STORE_TUID = StoreId;
-            Console.WriteLine(AddFixtureModel);
             var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
-            Console.WriteLine(response);
 
             await UpdateFixtureModels.InvokeAsync();
             ResetAddFixtureForm();
         }
+
+        ClearAddFixtureModel();
     }
 
 /*
@@ -95,40 +94,9 @@
 
         AddFixtureModel!.ICON = bytes;
     }
-*/
-/*
-    private async Task OnImageUpload(InputFileChangeEventArgs e)
+
+    private void ClearAddFixtureModel()
     {
-        await Task.Run(() => Console.WriteLine("Upload Image"));
-        MemoryStream ms = new MemoryStream();
-        await e.File.OpenReadStream().CopyToAsync(ms);
-        var bytes = ms.ToArray();
-
-        if (AddFixtureModel != null)
-        {
-            AddFixtureModel!.ICON = bytes;
-        }
-    }
-*/
-
-    private async Task OnImageUpload(InputFileChangeEventArgs e)
-    {
-        await Task.Run(() => Console.WriteLine("Upload Image"));
-        MemoryStream ms = new MemoryStream();
-        await e.File.OpenReadStream().CopyToAsync(ms);
-        var bytes = ms.ToArray();
-
-        if (AddFixtureModel != null)
-        {
-            AddFixtureModel.ICON = bytes;
-            ImageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(bytes)}";
-        }
-    }
-
-    private void ResetAddFixtureForm()
-    {
-        Console.WriteLine("Resetting");
-        AddFixtureModel = new Data.Models.Fixtures.CreateFixtureModel();
-        StateHasChanged();
+        AddFixtureModel = new();
     }
 }
