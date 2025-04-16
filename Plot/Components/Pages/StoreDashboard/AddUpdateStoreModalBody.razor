@@ -43,7 +43,8 @@
 
             <label class="w-100 d-flex my-2">
                 <span class="mt-2 fw-bold">Width</span>
-                <InputNumber class="w-75 form-control ms-auto" type="Number" @bind-value="AddUpdateStoreModel!.WIDTH" />
+                <InputNumber class="w-75 form-control ms-auto" type="Number" @bind-value="AddUpdateStoreModel!.WIDTH"
+                    min="1" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.WIDTH) />
                 </div>
@@ -51,8 +52,8 @@
 
             <label class="w-100 d-flex my-2">
                 <span class="mt-2 fw-bold">Length</span>
-                <InputNumber class="w-75 form-control ms-auto" type="Number"
-                    @bind-value="AddUpdateStoreModel!.LENGTH" />
+                <InputNumber class="w-75 form-control ms-auto" type="Number" @bind-value="AddUpdateStoreModel!.LENGTH"
+                    min="1" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.LENGTH) />
                 </div>
