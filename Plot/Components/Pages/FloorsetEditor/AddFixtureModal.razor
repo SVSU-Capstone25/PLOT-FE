@@ -3,7 +3,7 @@
 
 @* Add Fixture Modal *@
 
-<Modal class="modal-xl fixture-modal" id="addFixture">
+<Modal class="modal-xl fixture-modal" id="add-fixture">
     <ModalHeader Title="Add Fixture" />
     <EditForm Model="AddFixtureModel" OnValidSubmit="OnAddFixtureSubmit">
         <ModalBody>
@@ -40,8 +40,8 @@
 
             <InputFile OnChange="OnImageUpload" />
         </ModalBody>
-        <ModalFooter>
-            <Button class="btn add-btn ms-auto" Variant="primary" type="submit">Add</Button>
+        <ModalFooter OnCancelClick="ClearAddFixtureModel">
+            <Button class="btn add-btn ms-auto" Variant="primary" type="submit" data-bs-dismiss="modal">Add</Button>
         </ModalFooter>
     </EditForm>
 </Modal>
@@ -65,13 +65,12 @@
 
         if (AddFixtureModel != null)
         {
-            AddFixtureModel.STORE_TUID = StoreId;
-            Console.WriteLine(AddFixtureModel);
             var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
-            Console.WriteLine(response);
 
             await UpdateFixtureModels.InvokeAsync();
         }
+
+        ClearAddFixtureModel();
     }
 
 
@@ -82,5 +81,10 @@
         var bytes = ms.ToArray();
 
         AddFixtureModel!.ICON = bytes;
+    }
+
+    private void ClearAddFixtureModel()
+    {
+        AddFixtureModel = new();
     }
 }

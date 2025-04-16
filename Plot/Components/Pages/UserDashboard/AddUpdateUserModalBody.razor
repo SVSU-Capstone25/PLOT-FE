@@ -43,6 +43,8 @@
         </div>
     </label>
 
+    @* TODO: Store selection *@
+
     @* Store Selection *@
 
     <p id="StoreSelectHeader">Store Selection</p>
@@ -85,8 +87,7 @@
 </ModalBody>
 
 @code {
-    [Parameter]
-    public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; }
+    [Parameter] public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; }
 
     [Parameter]
     public required Data.Models.Users.UserDTO? User { get; set; }
@@ -116,6 +117,7 @@
         }
         else
         {
+            // Initializes all stores for unassigned and none for assigned
             await InitUserStores(0);
         }
     }
@@ -140,7 +142,7 @@
 
     public void RemoveStoresFromUser()
     {
-        var storesToMove = userStores?.Where(s => selectedUserStoreTUIDs.Contains(s.TUID)).ToList();
+        var storesToMove = userStores?.Where(store => selectedUserStoreTUIDs.Contains(store.TUID)).ToList();
         if (storesToMove == null) return;
 
         foreach (var store in storesToMove)
@@ -210,7 +212,17 @@
         StateHasChanged();
     }
 
-    private async Task UpdateUser()
+    public async Task OnAddingUserSubmit(int userTUID)
+    {
+        ResetUserStoreModel();
+        await UpdateUserStores(userTUID);
+        // Optionally trigger event to refresh data
+        await UpdateUsers.InvokeAsync();
+
+        StateHasChanged();
+    }
+
+    public async Task UpdateUser()
     {
         // Updates user information
 
@@ -223,6 +235,7 @@
 
     public async Task UpdateUserStores(int userTUID)
     {
+        Console.WriteLine("Updating stores for user of tuid " + userTUID);
         // Updates user store access
         var storeTUIDs = (AddUpdateUserStoreRequestModels ?? new List<AddUserToStoreRequest>())
         .Select(store => store.STORE_TUID)
@@ -243,7 +256,7 @@
 
     }
 
-    private async Task InitUserStores(int userTUID)
+    public async Task InitUserStores(int userTUID)
     {
         await InitUserStoresAssigned(userTUID);
 

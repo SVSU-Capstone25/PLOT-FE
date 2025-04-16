@@ -13,7 +13,7 @@
             NotUserStores="notUserStores" User="User" 
             @ref="modalBodyRef"/>
 
-        <ModalFooter>
+        <ModalFooter OnCancelClick="ClearUpdateUserModel">
             <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
                 Submit
             </Button>
@@ -46,9 +46,7 @@
 
     private List<int> selectedStoreTUIDs = new List<int>();
 
-    private List<int> unselectedStoreTUIDs = new List<int>();
-
-    private List<Data.Models.Users.DeleteUserFromStoreRequest> DeleteUserStoreRequestModels = new();
+    //private List<int> unselectedStoreTUIDs = new List<int>();
 
     private List<Data.Models.Users.AddUserToStoreRequest> AddUpdateUserStoreRequestModels = new();
 
@@ -72,18 +70,6 @@
                 STORE_TUID = selectedStoreTUID
             });
         }
-
-        foreach (var unselectedStoreTUID in unselectedStoreTUIDs)
-        {
-            DeleteUserStoreRequestModels.Add(new DeleteUserFromStoreRequest
-            {
-                USER_TUID = User.TUID,
-                STORE_TUID = unselectedStoreTUID
-            });
-        }
-
-        /* Initialize the stores for the user */
-        //await InitUserStores(User.TUID);
     }
 /*
     public void ResetUserStoreModel()
@@ -221,8 +207,28 @@
 */
     /* New */
 
-    private async Task OnSubmitFromModalBody()
+private async Task OnSubmitFromModalBody()
+{
+    if (modalBodyRef != null)
     {
-        await modalBodyRef!.OnUpdateUserSubmit();  // Call method from AddUpdateUserModalBody
+        await modalBodyRef.OnUpdateUserSubmit();
+    }
+
+    if (UsersHttpClient != null)
+    {
+        if (User != null && UpdateUserModel != null)
+        {
+            await UsersHttpClient.UpdateUserPublicInfo(User.TUID, UpdateUserModel);
+        }
+    }
+        await UpdateUsers.InvokeAsync();
+
+    ClearUpdateUserModel();
+}
+
+
+    private void ClearUpdateUserModel()
+    {
+        UpdateUserModel = new();
     }
 }
