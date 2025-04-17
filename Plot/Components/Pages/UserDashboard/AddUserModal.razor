@@ -6,8 +6,8 @@
     <ModalHeader Title="Add User" />
     <EditForm Model="AddUserModel" OnValidSubmit="async () => await OnAddUserSubmit()">
         <DataAnnotationsValidator />
-        <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" userStores="userStores"
-            notUserStores="notUserStores" @ref="modalBodyRef" />
+        <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" userStores="userStores" notUserStores="notUserStores"
+            @ref="modalBodyRef" />
         @*<ModalFooter OnCancelClick="ClearAddUserModel"> <-- Weird bug: This broke it*@
         <ModalFooter>
             <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
@@ -40,14 +40,16 @@
 
     public Data.Models.Users.UserDTO? UserFromEmail { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        AddUserModel = new();
-
-        if (modalBodyRef != null)
+        AddUserModel ??= new()
         {
-            await modalBodyRef.InitUserStores(0);
-        }
+            ROLE_NAME = "Owner"
+        };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        await modalBodyRef!.InitUserStores(0);
     }
 
     private async Task OnAddUserSubmit()
@@ -93,17 +95,17 @@
 
         //ClearAddUserModel(UserFromEmail.TUID);
     }
-/*
+    /*
     public void ClearAddUserModel(int userTUID)
     {
-        AddUpdateUserModel = new()
-        {
-            ROLE_NAME = "Owner"
-        };
+    AddUpdateUserModel = new()
+    {
+    ROLE_NAME = "Owner"
+    };
 
-        modalBodyRef.ClearAddUpdateUserModel(userTUID);
+    modalBodyRef.ClearAddUpdateUserModel(userTUID);
 
-        StateHasChanged();
+    StateHasChanged();
     }
     */
 }

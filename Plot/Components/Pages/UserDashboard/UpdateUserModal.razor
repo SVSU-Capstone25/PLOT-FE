@@ -7,8 +7,7 @@
         <DataAnnotationsValidator />
         <AddUpdateUserModalBody AddUpdateUserModel="UpdateUserModel" userStores="userStores"
             notUserStores="notUserStores" @ref="modalBodyRef" />
-        @*<ModalFooter OnCancelClick="ClearUpdateUserModel"> <-- Weird error when I tried to use this*@
-        <ModalFooter>
+        <ModalFooter OnCancelClick="ClearUpdateUserModel">
             <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
                 Submit
             </Button>
@@ -29,7 +28,7 @@
 
     public AddUpdateUserModalBody? modalBodyRef;
 
-    public Data.Models.Users.UserDTO? UserById;
+    //public Data.Models.Users.UserDTO? UserById;
 
     public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel = new();
 
@@ -41,16 +40,22 @@
 
     public List<int> selectedUserStoreTUIDs = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        UpdateUserModel = new();
-
-        UserById = await UsersHttpClient.GetUserById(User!.TUID);
-
-        if (AddUpdateUserModel != null)
+        UpdateUserModel ??= new Data.Models.Users.UpdatePublicInfoUser
         {
-            await modalBodyRef!.InitUserStores(User!.TUID);
-        }
+            FIRST_NAME = User!.FIRST_NAME,
+            LAST_NAME = User!.LAST_NAME,
+            EMAIL = User!.EMAIL,
+            ROLE_NAME = User!.ROLE
+        };
+
+        //UserById = await UsersHttpClient.GetUserById(User!.TUID);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await modalBodyRef!.InitUserStores(User!.TUID);
     }
 
     public async Task OnUpdateUserSubmit()
@@ -59,16 +64,15 @@
         await modalBodyRef!.UpdateUserStores(User!.TUID);
         await UpdateUsers.InvokeAsync();
 
-        //ClearUpdateUserModel();
+        ClearUpdateUserModel();
     }
 
-    /*
+
     public void ClearUpdateUserModel()
     {
+        modalBodyRef!.ClearAddUpdateUserModel(User!.TUID);
 
-    modalBodyRef.ClearAddUpdateUserModel(User.TUID);
-
-    StateHasChanged();
+        StateHasChanged();
     }
-    */
+
 }

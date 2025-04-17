@@ -101,7 +101,6 @@
 
     public void SelectStoresForUser()
     {
-
         var storesToMove = notUserStores?.Where(store => selectedNotUserStoreTUIDs.Contains(store.TUID)).ToList();
         if (storesToMove == null) { Console.WriteLine("No stores to move"); return; }
 
@@ -110,7 +109,6 @@
             Console.WriteLine(store.NAME);
             userStores?.Add(store);
             notUserStores?.Remove(store);
-
         }
         selectedNotUserStoreTUIDs.Clear();
 
@@ -191,13 +189,18 @@
     {
         Console.WriteLine("Updating stores for user of tuid " + userTUID);
         // Updates user store access
+
+        // TODO: Set Store Tuids to userStores instead of below
         var storeTUIDs = (AddUpdateUserStoreRequestModels ?? new List<AddUserToStoreRequest>())
         .Select(store => store.STORE_TUID)
         .ToList();
 
-        foreach (var storeTUID in storeTUIDs)
+        if (userStores != null)
         {
-            Console.WriteLine(storeTUID);
+            foreach (var store in userStores)
+            {
+                Console.WriteLine("Updating with store of Name " + store!.NAME);
+            }
         }
 
         var request = new UpdateAccessListRequest
@@ -212,20 +215,9 @@
 
     public async Task InitUserStores(int userTUID)
     {
-        // Initialize the stores for the user
-        if (userTUID != 0)
-        {
-            await InitUserStoresAssigned(userTUID);
+        await InitUserStoresAssigned(userTUID);
 
-            await InitUsersStoresNotAssigned(userTUID);
-        }
-        else
-        {
-            // Initializes all stores for unassigned and none for assigned
-            await InitUsersStoresNotAssigned(userTUID);
-
-        }
-
+        await InitUsersStoresNotAssigned(userTUID);
     }
 
     private async Task InitUserStoresAssigned(int userTUID)
@@ -242,8 +234,10 @@
             {
                 userStores = response.ToList();
             }
-
-
+            else
+            {
+                //Console.WriteLine("Response is null when trying to get store of user by id in InitUserStoresAssigned");
+            }
         }
 
         StateHasChanged();
@@ -255,21 +249,20 @@
         {
             var response = await UsersHttpClient.GetStoresNotForUser(userId);
 
-            //Console.WriteLine("Dashboard handling response for stores NOT assigned as:");
-            //Console.WriteLine(response);
-
             if (response != null)
             {
-
                 notUserStores = response.ToList();
             }
-
-
+            else
+            {
+                //Console.WriteLine("Response is null when trying to get store of user by id in InitUserStoresNotAssigned");
+            }
         }
         else
         {
             // New user - Fill available stores list
             notUserStores = await StoresHttpClient.GetListOfStores();
+            Console.WriteLine("Not user stores");
         }
 
         StateHasChanged();
