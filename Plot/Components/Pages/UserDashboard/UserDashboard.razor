@@ -31,6 +31,7 @@ No author was given.
 @using System;
 @using System.Collections.Generic;
 @using System.Net.Mail;
+@using Microsoft.AspNetCore.Components.Authorization;
 
 <div class="d-flex flex-column align-content-between user-dashboard">
     <div class="mb-4 table-set">
@@ -65,42 +66,47 @@ No author was given.
                             @user.TUID
                         </td>
 
-                        @* Role and Dropdown menu for editing or deleting the user *@
-                        <td class="border border-light border-2">
-                            <div class="d-flex flex-row">
-                                @* Role of User*@
-                                <span class="flex-grow-1 align-self-center">@user.ROLE</span>
+                        <AuthorizeView Policy="Manager">
+                            @* Role and Dropdown menu for editing or deleting the user *@
+                            <td class="border border-light border-2">
+                                <div class="d-flex flex-row">
+                                    @* Role of User*@
+                                    <span class="flex-grow-1 align-self-center">@user.ROLE</span>
 
-                                @* Role Options Dropdown menu with id  dynamically reflecting the id of the user Provides Edit and Delete options which open Edit User and Delete User Modals *@
+                                    @* Role Options Dropdown menu with id  dynamically reflecting the id of the user Provides Edit and Delete options which open Edit User and Delete User Modals *@
 
-                                <Dropdown Id="@($"Dropdown-{user.TUID}")" LabelText="Role">
-                                    <DropdownLink Icon="fa-solid fa-pen-to-square" data-bs-toggle="modal"
-                                        data-bs-target="@($"#update-user-modal-{user.TUID}")">Edit</DropdownLink>
-                                    <DropdownLink Icon="fa-regular fa-trash-can" data-bs-toggle="modal"
-                                        data-bs-target="@($"#delete-user-modal-{user.TUID}")">
-                                        Delete
-                                    </DropdownLink>
-                                </Dropdown>
-                            </div>
-                        </td>
+                                    <Dropdown Id="@($"Dropdown-{user.TUID}")" LabelText="Role">
+                                        <DropdownLink Icon="fa-solid fa-pen-to-square" data-bs-toggle="modal"
+                                            data-bs-target="@($"#update-user-modal-{user.TUID}")">Edit</DropdownLink>
+                                        <DropdownLink Icon="fa-regular fa-trash-can" data-bs-toggle="modal"
+                                            data-bs-target="@($"#delete-user-modal-{user.TUID}")">
+                                            Delete
+                                        </DropdownLink>
+                                    </Dropdown>
+                                </div>
+                            </td>
 
-                        <UpdateUserModal id="@($"update-user-modal-{user.TUID}")" User="user" UpdateUsers="UpdateUsers" />
-                        <DeleteUserModal id="@($"delete-user-modal-{user.TUID}")" userTuid="user.TUID"
-                            UpdateUsers="UpdateUsers" />
+                            <UpdateUserModal id="@($"update-user-modal-{user.TUID}")" User="user"
+                                UpdateUsers="UpdateUsers" />
+                            <DeleteUserModal id="@($"delete-user-modal-{user.TUID}")" userTuid="user.TUID"
+                                UpdateUsers="UpdateUsers" />
+                        </AuthorizeView>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
-    <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" />
+    <AuthorizeView Policy="Manager">
+        <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" />
 
-    <div class="add-btn-container">
-        <Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary"
-            data-bs-toggle="modal" data-bs-target="@($"#add-user-modal")" TextAlignment="center">
-            Add User
-        </Button>
-    </div>
+        <div class="add-btn-container">
+            <Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary"
+                data-bs-toggle="modal" data-bs-target="@($"#add-user-modal")" TextAlignment="center">
+                Add User
+            </Button>
+        </div>
+    </AuthorizeView>
 </div>
 
 
