@@ -82,23 +82,14 @@
 
     private async Task onEraseClicked()
     {
-        //TODO: Remove this delay when some await is implemented, or change async to void
-        await Task.Run(async () =>
-        {
-            await Task.Delay(1);
-        });
-        //TODO: Change the JS functions here such that window state hooks up correctly.
         switch (paintMode)
         {
             case PaintType.Erase:
                 paintMode = PaintType.None;
-                //TODO: Send "no erase" to Window State
                 await JS.InvokeVoidAsync("window.setPaintMode", false);
                 break;
             default:
                 paintMode = PaintType.Erase;
-                //TODO: Send "erase" to Window State
-                //await JS.InvokeVoidAsync("window.setPaintMode", true);
                 await JS.InvokeVoidAsync("setErase");
                 break;
         }
