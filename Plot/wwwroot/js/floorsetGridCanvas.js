@@ -127,7 +127,7 @@ function sketch(p5) {
   };
 
   p5.mouseWheel = (event) => {
-    if(event.originalTarget.tagName !== "CANVAS") return;
+    if (event.originalTarget.tagName !== "CANVAS") return;
 
     if (event.delta > 0) {
       gridInstance.scale += 0.1;
@@ -169,13 +169,13 @@ function sketch(p5) {
   p5.mouseDragged = async () => {
     if (window.grid.state === "paint") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-        const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-        if (rack) {
-          rack.COLOR = window.grid.paint.COLOR;
-          rack.SUPERCATEGORY_TUID = window.grid.paint.SUPERCATEGORY_TUID;
-          
-          paintAggregator(rack);
-        }
+      const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
+      if (rack) {
+        rack.COLOR = window.grid.paint.COLOR;
+        rack.SUPERCATEGORY_TUID = window.grid.paint.SUPERCATEGORY_TUID;
+
+        paintAggregator(rack);
+      }
     } else if (window.grid.state === "erase") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
@@ -222,43 +222,43 @@ function sketch(p5) {
           window.draggedFixture = undefined;
         })
         .catch(console.error);
-    } else if(window.draggedFixture) {
-        const { x, y } = gridInstance.toGridCoordinates(
-            p5.mouseX,
-            p5.mouseY
-          );
+    } else if (window.draggedFixture) {
+      const { x, y } = gridInstance.toGridCoordinates(
+        p5.mouseX,
+        p5.mouseY
+      );
 
-        console.log({
-            ...window.draggedFixture,
-            COLOR: "#fff",
-            FLOORSET_TUID: floorsetId,
-            X_POS: x,
-            Y_POS: y,
-            ALLOCATED_LF: 1,
-            EDITOR_ID: gridInstance.fixtures.length + 1
-        })
-        createFixtureInstance(Fixture.from(p5, {
-            ...window.draggedFixture,
-            COLOR: "#fff",
-            FLOORSET_TUID: floorsetId,
-            X_POS: x,
-            Y_POS: y,
-            ALLOCATED_LF: 1,
-            EDITOR_ID: gridInstance.fixtures.length + 1
-        })).then((data) => {
-            console.log(data);
-            gridInstance.fixtures.push(Fixture.from(p5, {
-                ...window.draggedFixture,
-                COLOR: "#fff",
-                FLOORSET_TUID: floorsetId,
-                X_POS: x,
-                Y_POS: y,
-                ALLOCATED_LF: 1,
-                EDITOR_ID: gridInstance.fixtures.length + 1
-            }));
-            mouseFixture = undefined;
-            window.draggedFixture = undefined;
-        }).catch(console.error);
+      console.log({
+        ...window.draggedFixture,
+        COLOR: "#fff",
+        FLOORSET_TUID: floorsetId,
+        X_POS: x,
+        Y_POS: y,
+        ALLOCATED_LF: 1,
+        EDITOR_ID: gridInstance.fixtures.length + 1
+      })
+      createFixtureInstance(Fixture.from(p5, {
+        ...window.draggedFixture,
+        COLOR: "#fff",
+        FLOORSET_TUID: floorsetId,
+        X_POS: x,
+        Y_POS: y,
+        ALLOCATED_LF: 1,
+        EDITOR_ID: gridInstance.fixtures.length + 1
+      })).then((data) => {
+        console.log(data);
+        gridInstance.fixtures.push(Fixture.from(p5, {
+          ...window.draggedFixture,
+          COLOR: "#fff",
+          FLOORSET_TUID: floorsetId,
+          X_POS: x,
+          Y_POS: y,
+          ALLOCATED_LF: 1,
+          EDITOR_ID: gridInstance.fixtures.length + 1
+        }));
+        mouseFixture = undefined;
+        window.draggedFixture = undefined;
+      }).catch(console.error);
     }
   };
 }
@@ -313,7 +313,7 @@ window.setPaintMode = (enabled) => {
   console.log("window gridstate now: " + window.grid.state);
 }
 
-function setErase() {
+window.setErase = () => {
   window.grid.paint.COLOR = "#fff";
   window.grid.paint.SUPERCATEGORY_TUID = 0;
   window.grid.state = "paint";
@@ -344,75 +344,68 @@ window.createDraggable = (event) => {
 // grid and canvas, scales the image so the whole floorset is shown and 
 // renders the copied floorset outside of the users visible UI. The image
 // created is used for the floorsets dashboard.- Michael Polhill
-window.captureFloorsetThumbnail = async () => 
-  {
-    return await new Promise((resolve, reject) => 
-      {
-        //Ensure grid is rendered
-        if (!window.gridInstance || !window.gridInstance.fixtures) 
-          {
-            console.error("gridInstance or fixtures not available");
-            reject("error page not rendered")
-            return;
-          }
-    
-        // Resolution for the thumbnail. 
-        // 300~ kept breaking the blazor SignalR
-        // websocket so its set to 200. It works well.
-        const width = 200;
-        const height = 200;
+window.captureFloorsetThumbnail = async () => {
+  return await new Promise((resolve, reject) => {
+    //Ensure grid is rendered
+    if (!window.gridInstance || !window.gridInstance.fixtures) {
+      console.error("gridInstance or fixtures not available");
+      reject("error page not rendered")
+      return;
+    }
 
-        //New p5 to render off screen
-        const sketch = (p5) => 
-          {
-            p5.setup = () => 
-              {
-                p5.createCanvas(width, height);
-                p5.background(255);
+    // Resolution for the thumbnail. 
+    // 300~ kept breaking the blazor SignalR
+    // websocket so its set to 200. It works well.
+    const width = 200;
+    const height = 200;
 
-                //Create a new grid and copy the primary grid dimensions
-                const grid = new Grid(p5);
-                grid.width = window.gridInstance.width;
-                grid.height = window.gridInstance.height;
-                // Set scale so entire floor plan will be in the image
-                grid.scale = Math.min
-                (
-                  width / (grid.width * grid.size),
-                  height / (grid.height * grid.size)
-                );
-                grid.resize();
+    //New p5 to render off screen
+    const sketch = (p5) => {
+      p5.setup = () => {
+        p5.createCanvas(width, height);
+        p5.background(255);
 
-                //Clone fixtures on to the new grid
-                grid.fixtures = window.gridInstance.fixtures.map((f) => 
-                  {
-                    const fixture = Fixture.from(p5, f);
-                    return fixture;
-                  });
+        //Create a new grid and copy the primary grid dimensions
+        const grid = new Grid(p5);
+        grid.width = window.gridInstance.width;
+        grid.height = window.gridInstance.height;
+        // Set scale so entire floor plan will be in the image
+        grid.scale = Math.min
+          (
+            width / (grid.width * grid.size),
+            height / (grid.height * grid.size)
+          );
+        grid.resize();
 
-                // Render the new floorset
-                p5.push();
-                grid.draw();
-                p5.pop();
+        //Clone fixtures on to the new grid
+        grid.fixtures = window.gridInstance.fixtures.map((f) => {
+          const fixture = Fixture.from(p5, f);
+          return fixture;
+        });
 
-                // Wait for render, then capture image
-                setTimeout(() => 
-                  {
-                    const dataUrl = p5.canvas.toDataURL("image/png");
-                    resolve(dataUrl);
-                    p5.remove();//Clean up the grid
-                  }, 100);
-              };
-           };
-           
+        // Render the new floorset
+        p5.push();
+        grid.draw();
+        p5.pop();
 
-  // Hidden container off screen to hold the 
-  // copied grid.
-  const container = document.createElement('div');
-  container.style.position = 'absolute';
-  container.style.left = '-9999px';
-  container.style.top = '-9999px';
-  document.body.appendChild(container);
+        // Wait for render, then capture image
+        setTimeout(() => {
+          const dataUrl = p5.canvas.toDataURL("image/png");
+          resolve(dataUrl);
+          p5.remove();//Clean up the grid
+        }, 100);
+      };
+    };
 
-  new p5(sketch, container);
-    });
+
+    // Hidden container off screen to hold the 
+    // copied grid.
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '-9999px';
+    document.body.appendChild(container);
+
+    new p5(sketch, container);
+  });
 };
