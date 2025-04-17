@@ -11,13 +11,7 @@
 @*Paint Category Button *@
     <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush"
         OnClickFunction="togglePaintClicked" TextAlignment="center" />
-    using System.ComponentModel;
-
-    #line default
-    #line hidden
-    #nullable disable
-    lable disable
-    v>
+</div>
 
 @code {
     [Parameter] public required EventCallback ToggleAllocationsOpen { get; set; }
@@ -94,10 +88,12 @@
         {
             case PaintType.Erase:
                 paintMode = PaintType.None;
+                //TODO: Send "no erase" to Window State
                 //await JS.InvokeVoidAsync("window.setPaintMode", false);
                 break;
             default:
                 paintMode = PaintType.Erase;
+                //TODO: Send "erase" to Window State
                 //await JS.InvokeVoidAsync("window.setPaintMode", true);
                 //await JS.InvokeVoidAsync("setErase");
                 break;
