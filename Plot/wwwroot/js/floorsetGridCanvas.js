@@ -57,6 +57,17 @@ function createDebouncedAggregator(wait, onFlush) {
   };
 }
 
+function onZoomScroll(event) {
+  if (event.deltaY > 0) {
+    gridInstance.scale += 0.1;
+  } else {
+    gridInstance.scale -= 0.1;
+  }
+
+  gridInstance.scale = Math.max(0.1, gridInstance.scale);
+  gridInstance.resize();
+}
+
 function sketch(p5) {
   let mouseFixture, floorsetId;
 
@@ -100,7 +111,8 @@ function sketch(p5) {
   };
 
   p5.setup = () => {
-    p5.createCanvas(p5.windowWidth, p5.windowHeight);
+    const canvas = p5.createCanvas(p5.windowWidth, p5.windowHeight);
+
     p5.frameRate(30);
 
     document.oncontextmenu = function () {
@@ -111,6 +123,10 @@ function sketch(p5) {
         return false;
       }
     };
+
+    canvas.elt.addEventListener("wheel", onZoomScroll);
+
+    canvas.elt.addEventListener("mousewheel", onZoomScroll);
   };
 
   p5.draw = () => {
@@ -123,19 +139,6 @@ function sketch(p5) {
 
   p5.windowResized = () => {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
-    gridInstance.resize();
-  };
-
-  p5.mouseWheel = (event) => {
-    if(event.originalTarget.tagName !== "CANVAS") return;
-
-    if (event.delta > 0) {
-      gridInstance.scale += 0.1;
-    } else {
-      gridInstance.scale -= 0.1;
-    }
-
-    gridInstance.scale = Math.max(0.1, gridInstance.scale);
     gridInstance.resize();
   };
 
