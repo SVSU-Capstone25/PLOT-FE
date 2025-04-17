@@ -49,12 +49,8 @@
 
         if (EditStoreModel == null) return;
 
-
-
-
         if(usersToDelete.Count > 0)
         {
-            Console.WriteLine("Before loop");
             foreach(var user in usersToDelete)
             {
                 Plot.Data.Models.Users.DeleteUserFromStoreRequest deleteUserAccess = new Plot.Data.Models.Users.DeleteUserFromStoreRequest
@@ -62,27 +58,21 @@
                     USER_TUID = user.TUID,
                     STORE_TUID = StoreId
                 };
-
                 await UsersHttpClient.DeleteFromStore(deleteUserAccess);
-
-                Console.WriteLine("Delete: "+user.TUID+" "+user.FIRST_NAME);
             }
         }
 
-
         if(usersToAdd.Count > 0)
         {
+            EditStoreModel.USER_TUIDS = "";
             foreach(var user in usersToAdd)
             {
-                //Create a new access model for updateing a users store access
-                Plot.Data.Models.Users.UpdateAccessListRequest updateUserAccess = new Plot.Data.Models.Users.UpdateAccessListRequest
+                Plot.Data.Models.Users.AddUserToStoreRequest addUserToStore = new Plot.Data.Models.Users.AddUserToStoreRequest
                 {
                     USER_TUID = user.TUID,
-                    STORE_TUIDS = new List<int> { StoreId }
+                    STORE_TUID = StoreId
                 };
-                //Send the list to BE to add the new store access for the user
-                // returns a httpstatuscode
-                await UsersHttpClient.UpdateAccessList(updateUserAccess);
+                await UsersHttpClient.AddUserToStore(addUserToStore);
 
                 EditStoreModel.USER_TUIDS += user.TUID +",";
             }
@@ -92,10 +82,6 @@
             }
         }
 
-        Console.WriteLine("USER_TUIDS: "+EditStoreModel.USER_TUIDS);
-
-        
-
         var response = await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
 
         Console.WriteLine(response);
@@ -104,12 +90,9 @@
 
         await UpdateStores.InvokeAsync();
 
-        Console.WriteLine("Printing users in store after saving:");
-        foreach (var user in usersToAdd)
-        {
-            Console.WriteLine(user.FIRST_NAME+" "+user.LAST_NAME);
-        }
-
+        usersToDelete.Clear();
+        usersToAdd.Clear();
+        StateHasChanged();
     }
 
 }

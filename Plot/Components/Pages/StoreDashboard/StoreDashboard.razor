@@ -249,7 +249,13 @@ Author: Andrew Fulton (3/12/2025)
         if (response != null)
         {
             usersToAdd = response;
+
+            foreach(var user in usersToAdd)
+            {
+                Console.WriteLine($"Users in store: {user.TUID},{user.FIRST_NAME},{user.LAST_NAME}");
+            }
         }
+        StateHasChanged();
     }
 
     protected override async Task OnInitializedAsync()
@@ -278,6 +284,7 @@ Author: Andrew Fulton (3/12/2025)
         }
 
         UpdateUserOptions();
+        StateHasChanged();
 
     }
 
@@ -286,13 +293,14 @@ Author: Andrew Fulton (3/12/2025)
         usersToAdd.Clear();
         usersToDelete.Clear();
         UpdateUserOptions();
+        StateHasChanged();
     }
 
     private async Task OnDeleteStoreSubmit(int storeId)
     {
         await StoresHttpClient.DeleteStore(storeId);
         await UpdateStores();
-
+        StateHasChanged();
     }
 
 
@@ -324,6 +332,7 @@ Author: Andrew Fulton (3/12/2025)
             UserOptionsValues.Add("-1,NoUserToAdd");
             SetUserThatWillBeAddedToAStore(UserOptionsValues[0]);
         }
+        StateHasChanged();
     }
 
     //function that sets the user (strUserValueToAdd variable) that will be added to the store
@@ -345,6 +354,7 @@ Author: Andrew Fulton (3/12/2025)
             //add the user to the employee section of the modal
             await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", $"add-employee-div-store-{StoreId}", strUserValueToAdd, dotNet);
             //add the user to list of users that will potentially be added
+            usersToAdd.RemoveAll(u => u.TUID == int.Parse(arrSplitUserValues[0]));
             usersToAdd.Add(new Data.Models.Users.UserDTO
             {
                 TUID = int.Parse(arrSplitUserValues[0]),
@@ -353,10 +363,11 @@ Author: Andrew Fulton (3/12/2025)
                 EMAIL = arrSplitUserValues[3],
                 ROLE = arrSplitUserValues[4]
             });
+
+            StateHasChanged();
         }
         //update the user dropdown list to only show users that aren't associated with the store
         UpdateUserOptions();
-        StateHasChanged();
     }
 
 
@@ -372,11 +383,14 @@ Author: Andrew Fulton (3/12/2025)
         {
             usersToAdd.Remove(userToRemove);
 
-            bool isInUsersToDelete = usersToDelete.Any(u => u.TUID == ID);
-            if(!isInUsersToDelete)
+            usersToDelete.Add(new Data.Models.Users.UserDTO
             {
-                usersToDelete.Add(userToRemove);
-            }
+                TUID = userToRemove.TUID,
+                FIRST_NAME = userToRemove.FIRST_NAME,
+                LAST_NAME = userToRemove.LAST_NAME,
+                EMAIL = userToRemove.EMAIL,
+                ROLE = userToRemove.ROLE
+            });
 
         }
 

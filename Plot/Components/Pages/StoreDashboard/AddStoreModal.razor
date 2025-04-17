@@ -69,7 +69,8 @@
             Console.WriteLine(Store);
 
 
-            await StoresHttpClient.CreateStore(Store);
+            var response = await StoresHttpClient.CreateStore(Store);
+            Console.WriteLine("CREATE STORE RESPONSE: "+response);
             await UpdateStores.InvokeAsync();
         }
     }
