@@ -4,13 +4,17 @@
 @using Plot.Components.PartialComponents.Button
 
 <div class="toolbar-buttons">
-@*Edit Fixture Button *@
+    @*Edit Fixture Button *@
     <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="editFixture"
         TextAlignment="center" />
 
-@*Paint Category Button *@
+    @*Paint Category Button *@
     <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush"
         OnClickFunction="togglePaintClicked" TextAlignment="center" />
+
+    @*Erase Category Button *@
+    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="onEraseClicked"
+        TextAlignment="center" />
 </div>
 
 @code {
@@ -89,13 +93,13 @@
             case PaintType.Erase:
                 paintMode = PaintType.None;
                 //TODO: Send "no erase" to Window State
-                //await JS.InvokeVoidAsync("window.setPaintMode", false);
+                await JS.InvokeVoidAsync("window.setPaintMode", false);
                 break;
             default:
                 paintMode = PaintType.Erase;
                 //TODO: Send "erase" to Window State
                 //await JS.InvokeVoidAsync("window.setPaintMode", true);
-                //await JS.InvokeVoidAsync("setErase");
+                await JS.InvokeVoidAsync("setErase");
                 break;
         }
         Console.WriteLine("Erase Clicked! Paint mode now " + paintMode);
