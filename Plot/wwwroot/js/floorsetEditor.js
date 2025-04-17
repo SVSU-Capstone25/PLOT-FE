@@ -489,10 +489,14 @@ function getCanvasImage(callback) {
     
 
     //set scale and center the grid manually
-    grid.scale = 1;
-    const fullWidth = grid.width * grid.size;
-    const fullHeight = grid.height * grid.size;
-    p5.resizeCanvas(fullWidth, fullHeight);
+    const targetSize = 468;
+
+    // Adjust scale so content fits nicely
+    const scaleX = targetSize / (grid.width * grid.size);
+    const scaleY = targetSize / (grid.height * grid.size);
+    const exportScale = Math.min(scaleX, scaleY);
+    p5.resizeCanvas(targetSize, targetSize);
+    grid.scale = exportScale;
     grid.resize();
 
     //freeze drawing
