@@ -21,7 +21,14 @@
 
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
-    protected override void OnInitialized() => AddStoreModel ??= new();
+    protected override void OnInitialized()
+    {
+        AddStoreModel ??= new()
+        {
+            LENGTH = 1,
+            WIDTH = 1,
+        };
+    }
 
     public int StoreId = -1;
 
