@@ -2,19 +2,22 @@
 @inject IJSRuntime JS
 
 @using Plot.Components.PartialComponents.Button
+@using Microsoft.AspNetCore.Components.Authorization
 
 <div class="toolbar-buttons">
     @*Edit Fixture Button *@
     <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="editFixture"
         TextAlignment="center" />
 
-    @*Paint Category Button *@
-    <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush"
-        OnClickFunction="togglePaintClicked" TextAlignment="center" />
+    <AuthorizeView Policy="Manager">
+        @*Paint Category Button *@
+        <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush"
+            OnClickFunction="togglePaintClicked" TextAlignment="center" />
 
-    @*Erase Category Button *@
-    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="onEraseClicked"
-        TextAlignment="center" />
+        @*Erase Category Button *@
+        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="onEraseClicked"
+            TextAlignment="center" />
+    </AuthorizeView>
 </div>
 
 @code {
