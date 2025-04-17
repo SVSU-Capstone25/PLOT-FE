@@ -1,48 +1,48 @@
 <ModalBody>
-    <div class="row">
-        <div class="col-md-6">
-            <label class="w-100 d-flex mb-2">
-                <span class="mt-2 fw-bold">Name</span>
-                <InputText class="w-75 form-control ms-auto" type="Text" @bind-value="AddUpdateStoreModel!.NAME" />
+    <div class="d-flex flex-row gap-2">
+        <div class="d-flex flex-column gap-2">
+            <label class="w-100 d-flex gap-2">
+                <span class="fw-bold">Name</span>
+                <InputText class="form-control" type="text" @bind-value="AddUpdateStoreModel!.NAME" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.NAME) />
                 </div>
             </label>
 
-            <label class="w-100 d-flex my-2">
-                <span class="mt-2 fw-bold">Address</span>
-                <InputText class="w-75 form-control ms-auto" type="Text" @bind-value="AddUpdateStoreModel!.ADDRESS" />
+            <label class="w-100 d-flex gap-2">
+                <span class="fw-bold">Address</span>
+                <InputText class="form-control" type="text" @bind-value="AddUpdateStoreModel!.ADDRESS" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.ADDRESS) />
                 </div>
             </label>
 
-            <label class="w-100 d-flex my-2">
-                <span class="mt-2 fw-bold">City</span>
-                <InputText class="w-75 form-control ms-auto" type="Text" @bind-value="AddUpdateStoreModel!.CITY" />
+            <label class="w-100 d-flex gap-2">
+                <span class="fw-bold">City</span>
+                <InputText class="form-control" type="text" @bind-value="AddUpdateStoreModel!.CITY" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.CITY) />
                 </div>
             </label>
 
-            <label class="w-100 d-flex my-2">
-                <span class="mt-2 fw-bold">State</span>
-                <InputText class="w-75 form-control ms-auto" type="Text" @bind-value="AddUpdateStoreModel!.STATE" />
+            <label class="w-100 d-flex gap-2">
+                <span class="fw-bold">State</span>
+                <InputText class="form-control" type="text" @bind-value="AddUpdateStoreModel!.STATE" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.STATE) />
                 </div>
             </label>
 
-            <label class="w-100 d-flex my-2">
-                <span class="mt-2 fw-bold">Zip</span>
-                <InputText class="w-75 form-control ms-auto" type="Text" @bind-value="AddUpdateStoreModel!.ZIP" />
+            <label class="w-100 d-flex gap-2">
+                <span class="fw-bold">Zip</span>
+                <InputText class="form-control" type="text" @bind-value="AddUpdateStoreModel!.ZIP" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.ZIP) />
                 </div>
             </label>
         </div>
 
-        <div class="col-md-6">
+        <div class="d-flex align-items-center">
             <ImageInput Label="Upload Image" Id="@StoreId.ToString()" Height="300px" OnImageUpload="OnImageUpload"
                 ImageSrc="ImageSrc" />
         </div>

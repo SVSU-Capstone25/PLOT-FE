@@ -35,14 +35,14 @@ Author: Tristan Calay (3/15/2025)-->
         changed how these are being displayed to use bootstrap classes
         added params to help text input take up proper width *@
     <div class="d-flex flex-row gap-2">
-        <InputText id="category-search" type="search" placeholder="Search..." ValueExpression="() => CategorySearch"
-            ValueChanged="OnSearchChange" class="w-100 form-control" />
+        <InputText id="category-search" type="search" placeholder="Search..." @bind-Value="CategorySearch"
+            @oninput="OnSearchChange" class="w-100 form-control" />
         <Button Variant="primary" Icon="fa-solid fa-arrow-up-short-wide" Class="search-button" TextAlignment="center"
             @onclick="OnSortAscendingClick" />
         <Button Variant="primary" Icon="fa-solid fa-arrow-down-wide-short" Class="search-button" TextAlignment="center"
             @onclick="OnSortDescendingClick" />
-        <Button Variant="primary" Icon="fa-solid fa-filter" Class="search-button" TextAlignment="center"
-            @onclick="OnFilterClick" />
+        @* <Button Variant="primary" Icon="fa-solid fa-filter" Class="search-button" TextAlignment="center"
+            @onclick="OnFilterClick" /> *@
     </div>
 
     <div class="progress-area">
@@ -65,9 +65,10 @@ Author: Tristan Calay (3/15/2025)-->
                 </li>
 
                 @foreach (var allocationFulfillment in allocationFulfillmentList.Value.Where((allocationFulfillment) =>
-                            allocationFulfillment.SUBCATEGORY.Contains(CategorySearch)))
+                            allocationFulfillment.SUBCATEGORY.ToLower().Contains(CategorySearch)))
                 {
-                    <li class="list-group-item" @onclick="() => OnCategoryClick(allocationFulfillment.SUPERCATEGORY_COLOR, allocationFulfillment.SUPERCATEGORY_TUID)">
+                    <li class="list-group-item"
+                        @onclick="() => OnCategoryClick(allocationFulfillment.SUPERCATEGORY_COLOR, allocationFulfillment.SUPERCATEGORY_TUID)">
                         <ProgressBar>
                             <ProgressBarHeader class="fs-6">@allocationFulfillment.SUBCATEGORY
                             </ProgressBarHeader>
@@ -90,8 +91,7 @@ Author: Tristan Calay (3/15/2025)-->
     private String CategorySearch { get; set; } = "";
 
     private Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>> allocationFulfillmentLists = new
-    Dictionary<string,
-    List<Data.Models.Allocations.AllocationFulfillments>>();
+    Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>>();
 
     private async Task UpdateAllocationFulfillments()
     {
@@ -122,10 +122,10 @@ allocationFulfillment
         await UpdateAllocationFulfillments();
     }
 
-    private void OnSearchChange(string value)
+    private void OnSearchChange(ChangeEventArgs e)
     {
-        CategorySearch = value;
-        StateHasChanged();
+
+        CategorySearch = e.Value as String ?? "";
     }
 
     private async void OnCategoryClick(string color, int superCategoryTuid)
@@ -137,17 +137,32 @@ allocationFulfillment
 
     private void OnSortAscendingClick()
     {
-        throw new NotImplementedException();
+        foreach (var allocationFufillmentList in allocationFulfillmentLists)
+        {
+            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFulfillments a,
+            Data.Models.Allocations.AllocationFulfillments b)
+            {
+                if (a.SUBCATEGORY == null && b.SUBCATEGORY == null) return 0;
+                else if (a.SUBCATEGORY == null) return -1;
+                else if (b.SUBCATEGORY == null) return 1;
+                else return (a.SUBCATEGORY.CompareTo(b.SUBCATEGORY));
+            });
+        }
     }
 
     private void OnSortDescendingClick()
     {
-        throw new NotImplementedException();
-    }
-
-    private void OnFilterClick()
-    {
-        throw new NotImplementedException();
+        foreach (var allocationFufillmentList in allocationFulfillmentLists)
+        {
+            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFulfillments a,
+            Data.Models.Allocations.AllocationFulfillments b)
+            {
+                if (a.SUBCATEGORY == null && b.SUBCATEGORY == null) return 0;
+                else if (a.SUBCATEGORY == null) return -1;
+                else if (b.SUBCATEGORY == null) return 1;
+                else return (b.SUBCATEGORY.CompareTo(a.SUBCATEGORY));
+            });
+        }
     }
 
 }

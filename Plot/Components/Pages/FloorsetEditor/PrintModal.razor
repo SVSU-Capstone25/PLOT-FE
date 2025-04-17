@@ -8,8 +8,8 @@
 
 @*Print Modal *@
 @*Tristan Calay *@
-<Modal id="printModal" SizeClass="modal-md">
-    <ModalHeader Title="Print Layout" Variant="standard"/>
+<Modal id="print-modal" SizeClass="modal-lg">
+    <ModalHeader Title="Print Layout" Variant="standard" />
     <ModalBody>
         <h6 style="opacity: 0.5;">Select print options for how you would like your printed document to be formatted.
         </h6>
@@ -36,15 +36,15 @@
     </ModalBody>
 
     <ModalFooter>
-        <Button Variant="primary" data-bs-dismiss="modal" isDisabled="false" OnClickFunction="printLayout" >
+        <Button Variant="primary" data-bs-dismiss="modal" isDisabled="false" OnClickFunction="printLayout">
             Print
         </Button>
     </ModalFooter>
 </Modal>
 
 @code {
-    [Parameter] public required int FloorsetId {get;set;}
-    public required Data.Models.Floorsets.Floorset? Floorset {get;set;}
+    [Parameter] public required int FloorsetId { get; set; }
+    public required Data.Models.Floorsets.Floorset? Floorset { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,7 +54,7 @@
             Floorset = response;
         }
     }
-    
+
     //printLayout Task
     //Asynchronously prints the current grid layout from specified printer and options.
     //Called by the "Print" button in the print modal.
@@ -63,6 +63,6 @@
         //download a temporary .png file for now
         await JS.InvokeVoidAsync("downloadCanvasImage", Floorset?.NAME ?? "empty");
         Console.WriteLine("Printed floorset layout");
-        
+
     }
 }
