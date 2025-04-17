@@ -43,9 +43,12 @@
                 ROLE_NAME = AddUserModel.ROLE_NAME
             };
 
+            @* Set a loader to run while a user is added *@
             await AddingUser.InvokeAsync(true);
             await AuthHttpClient.Register(UserRegistration);
             await AddingUser.InvokeAsync(false);
+
+
             await UpdateUsers.InvokeAsync();
         }
 
