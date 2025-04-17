@@ -16,6 +16,11 @@ public class FloorsetsHttpClient : PlotHttpClient
         return await SendGetAsync<List<Floorset>>($"/get-floorsets/{storeId}");
     }
 
+    public async Task<Floorset?> GetFloorsetById(int floorsetId)
+    {
+        return await SendGetAsync<Floorset>($"/get-floorset/{floorsetId}");
+    }
+
     public async Task<int> CreateFloorset(CreateFloorset newFloorset)
     {
         JsonContent body = JsonContent.Create(newFloorset);

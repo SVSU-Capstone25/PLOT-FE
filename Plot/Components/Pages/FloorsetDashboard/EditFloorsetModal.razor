@@ -8,8 +8,8 @@
 
         <AddEditFloorsetModalBody AddUpdateFloorsetModel="EditFloorsetModel" />
 
-        <ModalFooter>
-            <Button Class="" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
+        <ModalFooter OnCancelClick="ClearEditFloorsetModel">
+            <Button TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
                 Edit
             </Button>
         </ModalFooter>
@@ -45,16 +45,19 @@
     {
         if (EditFloorsetModel != null)
         {
-            Console.WriteLine(FloorsetId);
-            Console.WriteLine(EditFloorsetModel);
             var response = await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId, EditFloorsetModel);
-
-            Console.WriteLine(response);
 
             if (response == System.Net.HttpStatusCode.OK)
             {
                 await UpdateFloorsets.InvokeAsync();
             }
+
+            ClearEditFloorsetModel();
         }
+    }
+
+    private void ClearEditFloorsetModel()
+    {
+        EditFloorsetModel = new();
     }
 }

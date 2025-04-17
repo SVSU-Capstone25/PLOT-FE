@@ -61,7 +61,8 @@ Author: Andrew Fulton (3/12/2025)
             </CardBody>
         </Card>
 
-        <EditStoreModal id="@($"edit-store-{store.TUID}")" Store="store" UpdateStores="UpdateStores" StoreId="store.TUID" usersToAdd="@usersToAdd" usersToDelete="@usersToDelete"/>
+        <EditStoreModal id="@($"edit-store-{store.TUID}")" Store="store" UpdateStores="UpdateStores" StoreId="store.TUID"
+            usersToAdd="@usersToAdd" />
 
 
         @* Delete store modal *@
@@ -90,33 +91,38 @@ Author: Andrew Fulton (3/12/2025)
     @* Add Employee Modal *@
     <Modal id="@($"add-employee-store-{store.TUID}")" class="standard">
         <ModalHeader Title="Add Employee" Variant="standard" />
-    <ModalBody>
-        <h3>Select an Employee to add</h3>
-        <OptionInput ID="addEmployeeOptionsInput" Class="optionInput" label="Select an employee to add" optionsText="@UserOptionsText" optionsValues="@UserOptionsValues" OnSelectFunction="SetUserThatWillBeAddedToAStore"/>
-    </ModalBody>
+        <ModalBody>
+            <h3>Select an Employee to add</h3>
+            <OptionInput ID="addEmployeeOptionsInput" Class="optionInput" label="Select an employee to add"
+                optionsText="@UserOptionsText" optionsValues="@UserOptionsValues"
+                OnSelectFunction="SetUserThatWillBeAddedToAStore" />
+        </ModalBody>
 
-    <ModalFooter>
-        <Button type="button" Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="async () => await AddNewEmployee(store.TUID)">Add User</Button>
-    </ModalFooter>
-</Modal>
+        <ModalFooter>
+            <Button type="button" Class="Test Button" TextAlignment="center" Variant="primary"
+                OnClickFunction="async () => await AddNewEmployee(store.TUID)">Add User</Button>
+        </ModalFooter>
+    </Modal>
 
         }
 
 
-    <AddStoreModal id="create-store" UpdateStores="UpdateStores" usersToAdd="@usersToAdd"/>
+    <AddStoreModal id="create-store" UpdateStores="UpdateStores" usersToAdd="@usersToAdd" />
 
-        @* Add Employee Modal for a new store *@
+    @* Add Employee Modal for a new store *@
     <Modal id="add-employee-store--1" class="standard">
         <ModalHeader Title="Add Employee" Variant="standard" />
-    <ModalBody>
-        <h3>Select an Employee to add</h3>
-        <OptionInput ID="addEmployeeOptionsInput" Class="optionInput" label="Select an employee to add" optionsText="@UserOptionsText" optionsValues="@UserOptionsValues"/>
-    </ModalBody>
+        <ModalBody>
+            <h3>Select an Employee to add</h3>
+            <OptionInput ID="addEmployeeOptionsInput" Class="optionInput" label="Select an employee to add"
+                optionsText="@UserOptionsText" optionsValues="@UserOptionsValues" />
+        </ModalBody>
 
-    <ModalFooter>
-        <Button type="button" Class="Test Button" TextAlignment="center" Variant="primary" OnClickFunction="async () => await AddNewEmployee(-1)">Add User</Button>
-    </ModalFooter>
-</Modal>
+        <ModalFooter>
+            <Button type="button" Class="Test Button" TextAlignment="center" Variant="primary"
+                OnClickFunction="async () => await AddNewEmployee(-1)">Add User</Button>
+        </ModalFooter>
+    </Modal>
 
 
     <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary" Icon="fa-solid fa-plus"
@@ -130,7 +136,7 @@ Author: Andrew Fulton (3/12/2025)
 
 <script>
 
- @* helper function to get the value from the Option input component in the 
+    @* helper function to get the value from the Option input component in the 
         addEmployee modal when trying to add an employee to a store *@
         function GetEmployeeBeingAddedToStore(targetDiv, strUserValues, dotNet) {
             @* const employeeOptionInput = document.getElementById(targetDropdownID);
@@ -149,7 +155,7 @@ Author: Andrew Fulton (3/12/2025)
         }
 
 
-        function addEmployee(Id, name, initials, targetDiv, dotNet) {
+    function addEmployee(Id, name, initials, targetDiv, dotNet) {
         //Get the employees div
         const employeesDiv = document.getElementById(targetDiv);
 
@@ -191,12 +197,10 @@ Author: Andrew Fulton (3/12/2025)
         const div = document.getElementById(divId);
 
         @* Lopp through the div children and remove all but the element specified *@
-        for (let i = div.children.length - 1; i >= 0; i--) 
-        {
-            if (div.children[i].id !== exceptionId) 
-            {
-                    div.children[i].remove();
-                }
+        for (let i = div.children.length - 1; i >= 0; i--) {
+            if (div.children[i].id !== exceptionId) {
+                div.children[i].remove();
+            }
         }
     }
 
@@ -206,16 +210,14 @@ Author: Andrew Fulton (3/12/2025)
 
     DotNetObjectReference<StoreDashboard>? dotNet;
     private List<Data.Models.Stores.Store> stores = new List<Data.Models.Stores.Store>();
-    private List<Data.Models.Users.UserDTO> users = new List<Data.Models.Users.UserDTO>();  
+    private List<Data.Models.Users.UserDTO> users = new List<Data.Models.Users.UserDTO>();
 
     private List<string> UserOptionsText { get; set; } = new List<string> { "init" };
     private List<string> UserOptionsValues { get; set; } = new List<string> { "init" };
 
     //list to hold the user that might be added to a store
     private List<Data.Models.Users.UserDTO> usersToAdd = new List<Data.Models.Users.UserDTO>();
-    //list to hold the users that might be deleted from a store
-    private List<Data.Models.Users.UserDTO> usersToDelete = new List<Data.Models.Users.UserDTO>();
-    
+
     private string strUserValueToAdd = "-1,FNAME,LNAME,EMAIL,ROLE";
 
 
@@ -230,7 +232,7 @@ Author: Andrew Fulton (3/12/2025)
         }
     }
 
-     private async Task UpdateUsers()
+    private async Task UpdateUsers()
     {
         var response = await UsersHttpClient.GetAllUsers();
 
@@ -242,7 +244,7 @@ Author: Andrew Fulton (3/12/2025)
         }
     }
 
-     private async Task UpdateUsersInCurrentStore(int storeId)
+    private async Task UpdateUsersInCurrentStore(int storeId)
     {
         var response = await StoresHttpClient.GetUsersAtStore(storeId);
 
@@ -250,7 +252,7 @@ Author: Andrew Fulton (3/12/2025)
         {
             usersToAdd = response;
 
-            foreach(var user in usersToAdd)
+            foreach (var user in usersToAdd)
             {
                 Console.WriteLine($"Users in store: {user.TUID},{user.FIRST_NAME},{user.LAST_NAME}");
             }
@@ -271,7 +273,6 @@ Author: Andrew Fulton (3/12/2025)
         await UpdateStores();
 
         usersToAdd.Clear();
-        usersToDelete.Clear();
 
         await UpdateUsersInCurrentStore(store.TUID);
 
@@ -291,7 +292,6 @@ Author: Andrew Fulton (3/12/2025)
     private void OnCreateClick()
     {
         usersToAdd.Clear();
-        usersToDelete.Clear();
         UpdateUserOptions();
         StateHasChanged();
     }
@@ -352,7 +352,8 @@ Author: Andrew Fulton (3/12/2025)
         if (!arrSplitUserValues[0].Equals("-1"))
         {
             //add the user to the employee section of the modal
-            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", $"add-employee-div-store-{StoreId}", strUserValueToAdd, dotNet);
+            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", $"add-employee-div-store-{StoreId}", strUserValueToAdd,
+            dotNet);
             //add the user to list of users that will potentially be added
             usersToAdd.RemoveAll(u => u.TUID == int.Parse(arrSplitUserValues[0]));
             usersToAdd.Add(new Data.Models.Users.UserDTO
@@ -371,7 +372,7 @@ Author: Andrew Fulton (3/12/2025)
     }
 
 
-  [JSInvokable]
+    [JSInvokable]
     public async Task OnCircleClicked(string Id, string targetDiv)
     {
         //user ID of the user to be removed
@@ -382,16 +383,6 @@ Author: Andrew Fulton (3/12/2025)
         if (userToRemove != null)
         {
             usersToAdd.Remove(userToRemove);
-
-            usersToDelete.Add(new Data.Models.Users.UserDTO
-            {
-                TUID = userToRemove.TUID,
-                FIRST_NAME = userToRemove.FIRST_NAME,
-                LAST_NAME = userToRemove.LAST_NAME,
-                EMAIL = userToRemove.EMAIL,
-                ROLE = userToRemove.ROLE
-            });
-
         }
 
         await JS.InvokeVoidAsync("clearDivExceptById", targetDiv, "storeEmployeesDiv");

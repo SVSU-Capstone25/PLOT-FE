@@ -6,7 +6,7 @@
     <ModalHeader Title="Update Store Information" />
     <EditForm Model="EditStoreModel" OnValidSubmit="async () => await OnEditStoreSubmit()">
 
-        <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId"/>
+        <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId" />
 
         <ModalFooter>
             <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
@@ -20,8 +20,7 @@
     [Parameter] public required Data.Models.Stores.Store Store { get; set; }
     [Parameter] public required EventCallback UpdateStores { get; set; }
     [Parameter] public required int StoreId { get; set; }
-    [Parameter] public required List<Data.Models.Users.UserDTO> usersToAdd{ get; set; }
-    [Parameter] public required List<Data.Models.Users.UserDTO> usersToDelete{ get; set; }
+    [Parameter] public required List<Data.Models.Users.UserDTO> usersToAdd { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? EditStoreModel { get; set; }
 
@@ -49,34 +48,15 @@
 
         if (EditStoreModel == null) return;
 
-        if(usersToDelete.Count > 0)
-        {
-            foreach(var user in usersToDelete)
-            {
-                Plot.Data.Models.Users.DeleteUserFromStoreRequest deleteUserAccess = new Plot.Data.Models.Users.DeleteUserFromStoreRequest
-                {
-                    USER_TUID = user.TUID,
-                    STORE_TUID = StoreId
-                };
-                await UsersHttpClient.DeleteFromStore(deleteUserAccess);
-            }
-        }
 
-        if(usersToAdd.Count > 0)
+        if (usersToAdd.Count > 0)
         {
             EditStoreModel.USER_TUIDS = "";
-            foreach(var user in usersToAdd)
+            foreach (var user in usersToAdd)
             {
-                Plot.Data.Models.Users.AddUserToStoreRequest addUserToStore = new Plot.Data.Models.Users.AddUserToStoreRequest
-                {
-                    USER_TUID = user.TUID,
-                    STORE_TUID = StoreId
-                };
-                await UsersHttpClient.AddUserToStore(addUserToStore);
-
-                EditStoreModel.USER_TUIDS += user.TUID +",";
+                EditStoreModel.USER_TUIDS += user.TUID + ",";
             }
-            if(EditStoreModel.USER_TUIDS != null)
+            if (EditStoreModel.USER_TUIDS != null)
             {
                 EditStoreModel.USER_TUIDS = EditStoreModel.USER_TUIDS.TrimEnd(',');
             }
@@ -90,9 +70,15 @@
 
         await UpdateStores.InvokeAsync();
 
-        usersToDelete.Clear();
         usersToAdd.Clear();
+
+        //ClearEditStoreModel();
+
         StateHasChanged();
     }
 
+    private void ClearEditStoreModel()
+    {
+        EditStoreModel = new();
+    }
 }
