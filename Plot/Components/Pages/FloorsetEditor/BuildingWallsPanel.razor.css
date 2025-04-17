@@ -13,6 +13,10 @@
     /* Aligns the inputs vertically in the center */
 }
 
+.header {
+    font-weight: bold;
+    cursor: pointer;
+}
 
 /* Ensures that the container aligns the numeric inputs horizontally */
 .horizantal-inputs {
