@@ -1,14 +1,22 @@
 @inject AuthHttpClient AuthHttpClient
 @inject UsersHttpClient UsersHttpClient
 
-<Modal class="modal-dialog modal-xl user-modal user-info-modal" @attributes="Attributes">
+<Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" @attributes="Attributes">
     <ModalHeader Title="Add User" />
-    <EditForm Model="AddUserModel" OnValidSubmit="async () => await OnAddUserSubmit()">
+    <EditForm Model="AddUpdateUserModel" OnValidSubmit="async () => await OnAddUserSubmit()">
         <DataAnnotationsValidator />
 
-        <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel"
-            AddUpdateUserStoreRequestModels="AddUpdateUserStoreRequestModels" userStores="userStores"
+
+@if (AddUpdateUserModel != null)
+{
+        <AddUpdateUserModalBody AddUpdateUserModel="AddUpdateUserModel"
+            userStores="userStores"
             notUserStores="notUserStores" User="User" @ref="modalBodyRef" />
+}
+else{
+    <p>Model not initialized</p>
+
+}
 
         <ModalFooter OnCancelClick="ClearAddUserModel">
             <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
@@ -20,91 +28,58 @@
 </Modal>
 
 @code {
-    private AddUpdateUserModalBody? modalBodyRef;
+    public AddUpdateUserModalBody? modalBodyRef;
 
-    private List<Data.Models.Stores.Store>? userStores = new List<Data.Models.Stores.Store>();
+    public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel = new()        {
+            ROLE_NAME = "Owner"
+        };
 
-    private List<Data.Models.Stores.Store>? notUserStores = new List<Data.Models.Stores.Store>();
+    public List<Data.Models.Stores.Store>? userStores = new List<Data.Models.Stores.Store>();
 
-    private List<Data.Models.Users.AddUserToStoreRequest> AddUpdateUserStoreRequestModels = new();
+    public List<Data.Models.Stores.Store>? notUserStores = new List<Data.Models.Stores.Store>();
 
     [Parameter] public required EventCallback UpdateUsers { get; set; }
+
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
-    [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? AddUserModel { get; set; }
+
     [Parameter] public required Data.Models.Users.UserDTO User { get; set; }
 
     public Data.Models.Users.UserDTO? UserFromEmail { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        AddUserModel ??= new()
+        if (AddUpdateUserModel is null)
         {
-            ROLE_NAME = "Owner"
-        };
-    }
-/*
-    private async Task OnAddUserSubmit()
-    {
-        if (AddUserModel != null)
-        {
-            Data.Models.Auth.Registration.UserRegistration UserRegistration = new Data.Models.Auth.Registration.UserRegistration
-            {
-                EMAIL = AddUserModel.EMAIL,
-                FIRST_NAME = AddUserModel.FIRST_NAME,
-                LAST_NAME = AddUserModel.LAST_NAME,
-                ROLE_NAME = AddUserModel.ROLE_NAME
-            };
-
-            var response = await AuthHttpClient.Register(UserRegistration);
-
-            Console.WriteLine("The response is " + response);
-
-            // Call from email
-            if(UserRegistration != null && !string.IsNullOrWhiteSpace(AddUserModel.EMAIL)){
-                Console.WriteLine("Getting user by email using email " + AddUserModel.EMAIL);
-                UserFromEmail = await UsersHttpClient.GetUserByEmail(AddUserModel.EMAIL);
-                if(UserFromEmail != null){
-                    Console.WriteLine("User from Email has TUID" + UserFromEmail.TUID);
-                }
-                else{
-                    Console.WriteLine("User is null");
-                }
-            }
-
-            if(modalBodyRef != null && UserFromEmail != null) {
-
-                await modalBodyRef.UpdateUserStores(UserFromEmail.TUID);
-            }
+            throw new InvalidOperationException("AddUpdateUserModel must be provided by the parent.");
         }
 
-
-        ClearAddUserModel();
+        if(modalBodyRef != null){
+            await modalBodyRef.InitUserStores(0);
+        }
     }
 
-*/
 private async Task OnAddUserSubmit()
 {
-    if (AddUserModel != null)
+    if (AddUpdateUserModel != null)
     {
 
         Data.Models.Auth.Registration.UserRegistration UserRegistration = new Data.Models.Auth.Registration.UserRegistration
         {
-            EMAIL = AddUserModel.EMAIL,
-            FIRST_NAME = AddUserModel.FIRST_NAME,
-            LAST_NAME = AddUserModel.LAST_NAME,
-            ROLE_NAME = AddUserModel.ROLE_NAME
+            EMAIL = AddUpdateUserModel.EMAIL,
+            FIRST_NAME = AddUpdateUserModel.FIRST_NAME,
+            LAST_NAME = AddUpdateUserModel.LAST_NAME,
+            ROLE_NAME = AddUpdateUserModel.ROLE_NAME
         };
 
         var response = await AuthHttpClient.Register(UserRegistration);
 
         Console.WriteLine("The response is " + response);
 
-        // Call from email
+        // Use email address to get user information
         if(UserRegistration != null && !string.IsNullOrWhiteSpace(UserRegistration.EMAIL)){
             Console.WriteLine("Getting user by email using email " + UserRegistration.EMAIL);
             UserFromEmail = await UsersHttpClient.GetUserByEmail(UserRegistration.EMAIL);
             
-            // Check if UserFromEmail was retrieved correctly
             if(UserFromEmail != null){
                 Console.WriteLine("User from Email has TUID: " + UserFromEmail.TUID);
             }
@@ -113,7 +88,6 @@ private async Task OnAddUserSubmit()
             }
         }
 
-        // Check if the modal body reference is initialized
         if(modalBodyRef != null && UserFromEmail != null) {
             await modalBodyRef.UpdateUserStores(UserFromEmail.TUID);
         }
@@ -121,12 +95,14 @@ private async Task OnAddUserSubmit()
         await UpdateUsers.InvokeAsync();
     }
 
-    ClearAddUserModel();
+    modalBodyRef.ResetUserStoreModel();
+
+    modalBodyRef.ClearAddUpdateUserModel();
 }
 
     private void ClearAddUserModel()
     {
-        AddUserModel = new()
+        AddUpdateUserModel = new()
         {
             ROLE_NAME = "Owner"
         };

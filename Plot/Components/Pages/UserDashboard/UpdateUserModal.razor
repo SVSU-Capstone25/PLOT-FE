@@ -4,90 +4,36 @@
 @using Data.Models.Stores;
 @using System.Net;
 
-<ModalBody>
+<Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" @attributes="Attributes">
+    <ModalHeader Title="Update User" />
+    <EditForm Model="AddUpdateUserModel" OnValidSubmit="OnUpdateUserSubmit">
+        <DataAnnotationsValidator />
 
-    @* <h3>@userModalDetails.Header</h3>
-                <p>@userModalDetails.Description</p> *@
-    <label class="w-100 d-flex">
-        First Name:
-        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.FIRST_NAME" />
-        <div class="text-danger">
-            <ValidationMessage For=@(() => AddUpdateUserModel.FIRST_NAME) />
-        </div>
-    </label>
-    <label class="w-100 d-flex">
-        Last Name:
-        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.LAST_NAME" />
-        <div class="text-danger">
-            <ValidationMessage For=@(() => AddUpdateUserModel.LAST_NAME) />
-        </div>
-    </label>
+@if (AddUpdateUserModel != null)
+{
+        <AddUpdateUserModalBody AddUpdateUserModel="AddUpdateUserModel"  userStores="userStores"
+            notUserStores="notUserStores" User="User" @ref="modalBodyRef"/>
+}
+else
+{
+    <p>Model not initialized</p>
+}
+        <ModalFooter OnCancelClick="ClearUpdateUserModel">
+            <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
+                Submit
+            </Button>
+        </ModalFooter>
+    </EditForm>
 
-    <label class="w-100 d-flex">
-        Email:
-        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.EMAIL" />
-        <div class="text-danger">
-            <ValidationMessage For=@(() => AddUpdateUserModel.EMAIL) />
-        </div>
-    </label>
-
-    <label>
-        Role:
-        <InputSelect @bind-value="AddUpdateUserModel!.ROLE_NAME">
-            <option value="Owner">Owner</option>
-            <option value="Manager">Manager</option>
-            <option value="Employee">Employee</option>
-        </InputSelect>
-        <div class="text-danger">
-            <ValidationMessage For=@(() => AddUpdateUserModel.EMAIL) />
-        </div>
-    </label>
-
-    @* TODO: Store selection *@
-
-    @* Store Selection *@
-
-    <p id="StoreSelectHeader">Store Selection</p>
-
-    <p>To select multiple stores use Ctrl-click</p>
-
-    <label>
-        Available Stores:
-        <select size="6" multiple @onchange="HandleSelectionFromNotUserStores">
-            @if (notUserStores != null)
-            {
-                @foreach (var store in notUserStores)
-                {
-                    <option value="@store.TUID">@store.NAME</option>
-                }
-            }
-        </select>
-        <Button Variant="primary" TextAlignment="center" @onclick="SelectStoresForUser">
-            Select Store
-        </Button>
-
-    </label>
-
-    <label>
-        Selected Stores:
-        <select size="6" multiple @onchange="HandleSelectionFromUserStores">
-            @if (userStores != null)
-            {
-                @foreach (var store in userStores)
-                {
-                    <option value="@store.TUID">@store.NAME</option>
-                }
-            }
-        </select>
-        <Button Variant="primary" TextAlignment="center" @onclick="RemoveStoresFromUser">
-            Remove Store
-        </Button>
-    </label>
-
-</ModalBody>
+</Modal>
 
 @code {
-    [Parameter] public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; }
+
+    public AddUpdateUserModalBody? modalBodyRef;
+
+    public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel = new()         {
+            ROLE_NAME = "Owner"
+        };
 
     [Parameter]
     public required Data.Models.Users.UserDTO? User { get; set; }
@@ -95,32 +41,19 @@
     [Parameter]
     public List<Data.Models.Users.AddUserToStoreRequest>? AddUpdateUserStoreRequestModels { get; set; }
 
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
     [Parameter]
     public List<Data.Models.Stores.Store>? userStores { get; set; }
 
     [Parameter]
     public List<Data.Models.Stores.Store>? notUserStores { get; set; }
 
-    private List<int> selectedNotUserStoreTUIDs { get; set; } = new();
-    private List<int> selectedUserStoreTUIDs { get; set; } = new();
+    public List<int> selectedNotUserStoreTUIDs { get; set; } = new();
+    public List<int> selectedUserStoreTUIDs { get; set; } = new();
 
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        ResetUserStoreModel();
-
-        // Initialize the stores for the user
-        if (User != null)
-        {
-            await InitUserStores(User.TUID);
-        }
-        else
-        {
-            // Initializes all stores for unassigned and none for assigned
-            await InitUserStores(0);
-        }
-    }
 
     public void SelectStoresForUser()
     {
@@ -181,56 +114,26 @@
         return selected;
     }
 
-    /* Newly added */
-    public void ResetUserStoreModel()
-    {
-        if (AddUpdateUserStoreRequestModels != null)
-        {
-            // Clear the model
-            AddUpdateUserStoreRequestModels!.Clear();
-
-            // Add current store access
-            foreach (var store in userStores!)
-            {
-                AddUpdateUserStoreRequestModels!.Add(new Data.Models.Users.AddUserToStoreRequest
-                {
-                    USER_TUID = User!.TUID,
-                    STORE_TUID = store.TUID
-                });
-            }
-        }
-    }
-
     public async Task OnUpdateUserSubmit()
     {
-        ResetUserStoreModel();
         await UpdateUser();
         await UpdateUserStores(User!.TUID);
         // Optionally trigger event to refresh data
         await UpdateUsers.InvokeAsync();
 
         StateHasChanged();
-    }
 
-    public async Task OnAddingUserSubmit(int userTUID)
-    {
-        ResetUserStoreModel();
-        await UpdateUserStores(userTUID);
-        // Optionally trigger event to refresh data
-        await UpdateUsers.InvokeAsync();
-
-        StateHasChanged();
+        modalBodyRef.ResetUserStoreModel();
+        
+        modalBodyRef.ClearAddUpdateUserModel();
     }
 
     public async Task UpdateUser()
     {
-        // Updates user information
-
         if (AddUpdateUserModel != null)
         {
             var response = await UsersHttpClient.UpdateUserPublicInfo(User!.TUID, AddUpdateUserModel!);
         }
-
     }
 
     public async Task UpdateUserStores(int userTUID)

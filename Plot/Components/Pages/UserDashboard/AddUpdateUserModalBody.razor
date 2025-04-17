@@ -39,7 +39,7 @@
             <option value="Employee">Employee</option>
         </InputSelect>
         <div class="text-danger">
-            <ValidationMessage For=@(() => AddUpdateUserModel.EMAIL) />
+            <ValidationMessage For=@(() => AddUpdateUserModel.ROLE_NAME) />
         </div>
     </label>
 
@@ -87,7 +87,8 @@
 </ModalBody>
 
 @code {
-    [Parameter] public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; }
+
+    [Parameter] public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; } = new();
 
     [Parameter]
     public required Data.Models.Users.UserDTO? User { get; set; }
@@ -101,25 +102,20 @@
     [Parameter]
     public List<Data.Models.Stores.Store>? notUserStores { get; set; }
 
-    private List<int> selectedNotUserStoreTUIDs { get; set; } = new();
-    private List<int> selectedUserStoreTUIDs { get; set; } = new();
+    public List<int> selectedNotUserStoreTUIDs { get; set; } = new();
+    public List<int> selectedUserStoreTUIDs { get; set; } = new();
 
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        ResetUserStoreModel();
+        //ResetUserStoreModel(); // ? - Check: Should I remove or place at end of method?
 
-        // Initialize the stores for the user
-        if (User != null)
+        if (AddUpdateUserModel == null)
         {
-            await InitUserStores(User.TUID);
+            AddUpdateUserModel = new Data.Models.Users.UpdatePublicInfoUser();
         }
-        else
-        {
-            // Initializes all stores for unassigned and none for assigned
-            await InitUserStores(0);
-        }
+
     }
 
     public void SelectStoresForUser()
@@ -201,27 +197,6 @@
         }
     }
 
-    public async Task OnUpdateUserSubmit()
-    {
-        ResetUserStoreModel();
-        await UpdateUser();
-        await UpdateUserStores(User!.TUID);
-        // Optionally trigger event to refresh data
-        await UpdateUsers.InvokeAsync();
-
-        StateHasChanged();
-    }
-
-    public async Task OnAddingUserSubmit(int userTUID)
-    {
-        ResetUserStoreModel();
-        await UpdateUserStores(userTUID);
-        // Optionally trigger event to refresh data
-        await UpdateUsers.InvokeAsync();
-
-        StateHasChanged();
-    }
-
     public async Task UpdateUser()
     {
         // Updates user information
@@ -258,9 +233,19 @@
 
     public async Task InitUserStores(int userTUID)
     {
-        await InitUserStoresAssigned(userTUID);
+                // Initialize the stores for the user
+        if (userTUID != 0)
+        {
+            await InitUserStoresAssigned(userTUID);
 
-        await InitUsersStoresNotAssigned(userTUID);
+            await InitUsersStoresNotAssigned(userTUID);        }
+        else
+        {
+            // Initializes all stores for unassigned and none for assigned
+            await InitUsersStoresNotAssigned(userTUID);
+
+        }
+
     }
 
     private async Task InitUserStoresAssigned(int userTUID)
@@ -308,6 +293,14 @@
         }
 
         StateHasChanged();
+    }
+
+    public void ClearAddUpdateUserModel()
+    {
+        AddUpdateUserModel = new()
+        {
+            ROLE_NAME = "Owner"
+        };
     }
 
 }
