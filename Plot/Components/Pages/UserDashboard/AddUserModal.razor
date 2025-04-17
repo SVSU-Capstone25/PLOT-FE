@@ -1,5 +1,6 @@
 @inject AuthHttpClient AuthHttpClient
 
+
 <Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" @attributes="Attributes">
     <ModalHeader Title="Add User" />
     <EditForm Model="AddUserModel" OnValidSubmit="OnAddUserSubmit">
@@ -18,6 +19,7 @@
 
 @code {
     [Parameter] public required EventCallback UpdateUsers { get; set; }
+    [Parameter] public required EventCallback<bool> AddingUser { get; set; }
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
     [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? AddUserModel { get; set; }
 
@@ -41,8 +43,9 @@
                 ROLE_NAME = AddUserModel.ROLE_NAME
             };
 
+            await AddingUser.InvokeAsync(true);
             await AuthHttpClient.Register(UserRegistration);
-
+            await AddingUser.InvokeAsync(false);
             await UpdateUsers.InvokeAsync();
         }
 

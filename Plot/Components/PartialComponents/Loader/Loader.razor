@@ -10,7 +10,7 @@ and allocate floorsets for Platos Closet.
 
 Author: Josh Rodack (2/10/2025)-->
 
-<div class="Loader @Class" id="@Id">
+<div class="Loader @Class" id="@Id" @attributes="Attributes">
     <div class="fa-3x">
         <i class="fa-solid fa-spinner fa-spin-pulse"></i>
     </div>
@@ -26,4 +26,7 @@ Author: Josh Rodack (2/10/2025)-->
 
     [Parameter]
     public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public required Dictionary<string, object> Attributes { get; set; }
 }
