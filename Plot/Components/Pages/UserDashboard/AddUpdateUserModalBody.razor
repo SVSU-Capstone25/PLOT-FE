@@ -1,8 +1,6 @@
 @inject UsersHttpClient UsersHttpClient
 @inject StoresHttpClient StoresHttpClient
-@using Data.Models.Users;
-@using Data.Models.Stores;
-@using System.Net;
+@using Data.Models.Users
 
 <ModalBody>
 
@@ -90,33 +88,16 @@
 
     [Parameter] public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; } = new();
 
-    [Parameter]
-    public required Data.Models.Users.UserDTO? User { get; set; }
+    [Parameter] public List<Data.Models.Users.AddUserToStoreRequest>? AddUpdateUserStoreRequestModels { get; set; }
 
-    [Parameter]
-    public List<Data.Models.Users.AddUserToStoreRequest>? AddUpdateUserStoreRequestModels { get; set; }
+    [Parameter] public List<Data.Models.Stores.Store>? userStores { get; set; }
 
-    [Parameter]
-    public List<Data.Models.Stores.Store>? userStores { get; set; }
-
-    [Parameter]
-    public List<Data.Models.Stores.Store>? notUserStores { get; set; }
+    [Parameter] public List<Data.Models.Stores.Store>? notUserStores { get; set; }
 
     public List<int> selectedNotUserStoreTUIDs { get; set; } = new();
     public List<int> selectedUserStoreTUIDs { get; set; } = new();
 
     [Parameter] public required EventCallback UpdateUsers { get; set; }
-
-    protected override void OnInitialized()
-    {
-        //ResetUserStoreModel(); // ? - Check: Should I remove or place at end of method?
-
-        if (AddUpdateUserModel == null)
-        {
-            AddUpdateUserModel = new Data.Models.Users.UpdatePublicInfoUser();
-        }
-
-    }
 
     public void SelectStoresForUser()
     {
@@ -178,7 +159,7 @@
     }
 
     /* Newly added */
-    public void ResetUserStoreModel()
+    public void ResetUserStoreModel(int userTUID)
     {
         if (AddUpdateUserStoreRequestModels != null)
         {
@@ -190,20 +171,18 @@
             {
                 AddUpdateUserStoreRequestModels!.Add(new Data.Models.Users.AddUserToStoreRequest
                 {
-                    USER_TUID = User!.TUID,
+                    USER_TUID = userTUID,
                     STORE_TUID = store.TUID
                 });
             }
         }
     }
 
-    public async Task UpdateUser()
+    public async Task UpdateUser(int userTUID)
     {
-        // Updates user information
-
         if (AddUpdateUserModel != null)
         {
-            var response = await UsersHttpClient.UpdateUserPublicInfo(User!.TUID, AddUpdateUserModel!);
+            var response = await UsersHttpClient.UpdateUserPublicInfo(userTUID, AddUpdateUserModel!);
         }
 
     }
@@ -233,12 +212,13 @@
 
     public async Task InitUserStores(int userTUID)
     {
-                // Initialize the stores for the user
+        // Initialize the stores for the user
         if (userTUID != 0)
         {
             await InitUserStoresAssigned(userTUID);
 
-            await InitUsersStoresNotAssigned(userTUID);        }
+            await InitUsersStoresNotAssigned(userTUID);
+        }
         else
         {
             // Initializes all stores for unassigned and none for assigned
@@ -295,12 +275,10 @@
         StateHasChanged();
     }
 
-    public void ClearAddUpdateUserModel()
+    public void ClearAddUpdateUserModel(int userTUID)
     {
-        AddUpdateUserModel = new()
-        {
-            ROLE_NAME = "Owner"
-        };
+        AddUpdateUserModel = new();
+        ResetUserStoreModel(userTUID);
     }
 
 }
