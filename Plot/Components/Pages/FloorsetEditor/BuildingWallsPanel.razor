@@ -13,8 +13,8 @@
 
 <SlideOutBody>
     <AuthorizeView Policy="Manager">
-        <EditForm Model="UpdateSizeStoreModel" class="walls-container flex-grow-1 d-flex flex-column gap-2"
-            OnValidSubmit="OnUpdateSizeStoreSubmit">
+        <EditForm Context="form_context" Model="UpdateSizeStoreModel"
+            class="walls-container flex-grow-1 d-flex flex-column gap-2" OnValidSubmit="OnUpdateSizeStoreSubmit">
             <label>
                 Dimensions
                 <div class="d-flex flex-row gap-2 align-items-center">
