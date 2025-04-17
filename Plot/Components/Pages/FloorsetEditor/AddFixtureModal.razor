@@ -15,7 +15,9 @@
                 <label class="d-flex align-items-center flex-fill">
                     <span class="fw-bold me-2">Length</span>
                     <div class="flex-grow-1">
-                        <InputNumber @bind-Value="AddFixtureModel!.LENGTH" class="form-control" />
+                        <InputNumber @bind-Value="AddFixtureModel!.LENGTH"
+                        @oninput="HandleLengthChange"
+                        class="form-control" />
                     </div>
                 </label>
 
@@ -26,18 +28,20 @@
                 <label class="d-flex align-items-center flex-fill my-2">
                     <span class="fw-bold me-2">Width</span>
                     <div class="flex-grow-1">
-                        <InputNumber @bind-Value="AddFixtureModel!.WIDTH" class="form-control" />
+                        <InputNumber @bind-Value="AddFixtureModel!.WIDTH"
+                        @oninput="HandleWidthChange"
+                        class="form-control" />
                     </div>
                 </label>
             </div>
 
             <label class="w-100 d-flex my-2">
                 <span class="fw-bold">Linear Feet Capacity</span>
-                <InputNumber @bind-Value="AddFixtureModel!.LF_CAP" class="form-control" />
+                <InputNumber @bind-Value="AddFixtureModel!.LF_CAP"/>
             </label>
 
             <label class="w-100 d-flex">
-                <span class="fw-bold">Linear Feet: @AddFixtureModel!.WIDTH * @AddFixtureModel!.LENGTH</span>
+                <span class="fw-bold">Linear Feet: @LinearFeet </span>
             </label>
 
             <ImageInput Label="Upload Image" Id="@($"ImageUpload-{StoreId}")" Height="300px"
@@ -56,6 +60,8 @@
     [Parameter] public required int StoreId { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? AddFixtureModel { get; set; }
+
+    private string LinearFeet = "";
 
     protected override void OnInitialized()
     {
@@ -76,6 +82,35 @@
         ClearAddFixtureModel();
     }
 
+    public void HandleLengthChange(ChangeEventArgs e)
+    {
+        // Parse Length - Send value if there is one, else send null
+        int? Length = int.TryParse(e.Value?.ToString(), out int result) ? (int?)result : null;
+        CalcLinearFeet(Length, AddFixtureModel.WIDTH);
+    }
+
+    public void HandleWidthChange(ChangeEventArgs e)
+    {
+        // Parse Width - Send value if there is one, else send null
+        int? Width = int.TryParse(e.Value?.ToString(), out int result) ? (int?)result : null;
+        CalcLinearFeet(AddFixtureModel.LENGTH, Width);
+    }
+
+    public void CalcLinearFeet(int? length, int? width){
+        // Calculates linear feet (length * width) and sets text of bound
+        // LinearFeet variable to result, or empty if length
+        // or width is not defined
+
+        if (length.HasValue && width.HasValue)
+        {
+            LinearFeet = (length.Value * width.Value).ToString();
+        }
+        else
+        {
+            LinearFeet = "";
+        }
+        StateHasChanged();
+    }
 
     private async Task OnImageUpload(InputFileChangeEventArgs e)
     {
