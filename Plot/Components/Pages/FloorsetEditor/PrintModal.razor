@@ -5,6 +5,7 @@
 @using Plot.Components.PartialComponents.Modal
 
 <script src="js/floorsetEditor.js"></script>
+<script src="js/floorsetGridCanvas.js"></script>
 
 @*Print Modal *@
 @*Tristan Calay *@
@@ -13,7 +14,14 @@
     <ModalBody>
         <h6 style="opacity: 0.5;">Select print options for how you would like your printed document to be formatted.
         </h6>
-        <img class="w-100" src="/img/printpreview.png">
+        @if (base64Image == null || base64Image.Length == 0 || base64Image.All(b => b == 0))
+        {
+            <img class="w-100" src="/img/printpreview.png">
+        }
+        else
+        {
+            <img class="w-100" src="data:image/png;base64,{Convert.ToBase64String(base64Image)}" />
+        }
 
         @* Danielle Smith - 3/17/2025
         changed to use bootstrap classes and added some margin *@
@@ -46,12 +54,21 @@
     [Parameter] public required int FloorsetId {get;set;}
     public required Data.Models.Floorsets.Floorset? Floorset {get;set;}
 
+    private string? base64Image;
     protected override async Task OnInitializedAsync()
     {
         var response = await FloorsetsHttpClient.GetFloorsetById(FloorsetId);
         if (response != null)
         {
             Floorset = response;
+        }
+
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender){
+            base64Image = await JS.InvokeAsync<string>("getCanvasAsBase64Png");
+            StateHasChanged();
         }
     }
     
@@ -63,15 +80,16 @@
         try
         {
             // Call JS to get the PNG image as a base64 string
-            var base64Png = await JS.InvokeAsync<string>("getCanvasAsBase64Png");
-            if (string.IsNullOrEmpty(base64Png))
+            
+            if (string.IsNullOrEmpty(base64Image))
             {
                 Console.WriteLine("PNG data is null or empty.");
                 return;
             }
 
             // Strip data URL prefix and decode
-            var base64Data = base64Png.Substring(base64Png.IndexOf(",") + 1);
+            var base64Data = base64Image.Substring(base64Image.IndexOf(",") + 1);
+            Console.WriteLine(base64Data);
             byte[] pngBytes = Convert.FromBase64String(base64Data);
 
             // Create PDF

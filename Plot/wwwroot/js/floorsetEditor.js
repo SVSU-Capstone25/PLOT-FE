@@ -444,20 +444,23 @@ function flipOrder() {
 /*
     This function grabs the current canvas image from an open floorset and returns it
 */
-/** @returns {Promise<string>} */
-function getCanvasAsBase64Png() {
-    console.log(getCanvasImage);
-    return new Promise((resolve, reject) => {
-        console.log("getCanvasAsBase64Png: calling getCanvasImage...");
-        getCanvasImage((image) => {
-            if (!image) {
-                reject("Canvas image generation failed");
-            } else {
-                resolve(image); // base64 string with prefix
+window.getCanvasAsBase64Png = async () => {
+    return await new Promise((resolve, reject) => {
+        if (!window.gridInstance || !window.p5Instance) {
+            console.error("p5Instance or gridInstance not available");
+            reject("Required instances not available");
+            return;
+        }
+        getCanvasImage(image => {
+            if (!image){
+                reject("No image!")
+            }else{
+                resolve(image);
             }
-        });
+        })
+        
     });
-}
+};
 
 function saveAsFile(filename, base64DataUrl) {
     const link = document.createElement('a');
