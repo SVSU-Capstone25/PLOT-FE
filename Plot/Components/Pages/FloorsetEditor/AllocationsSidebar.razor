@@ -34,7 +34,7 @@ Author: Tristan Calay (3/15/2025)-->
     @* Danielle Smith 3/17/2025
         changed how these are being displayed to use bootstrap classes
         added params to help text input take up proper width *@
-    <div class="d-flex flex-row gap-2">
+    <div class="d-flex flex-row gap-2 form-control">
         <InputText id="category-search" type="search" placeholder="Search..." @bind-Value="CategorySearch"
             @oninput="OnSearchChange" class="w-100 form-control" />
         <Button Variant="primary" Icon="fa-solid fa-arrow-up-short-wide" Class="search-button" TextAlignment="center"
