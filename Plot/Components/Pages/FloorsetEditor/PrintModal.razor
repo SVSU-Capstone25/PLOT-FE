@@ -14,13 +14,13 @@
     <ModalBody>
         <h6 style="opacity: 0.5;">Select print options for how you would like your printed document to be formatted.
         </h6>
-        @if (base64Image == null || base64Image.Length == 0 || base64Image.All(b => b == 0))
+        @if (base64ImageThumbnail == null || base64ImageThumbnail.Length == 0 || base64ImageThumbnail.All(b => b == 0))
         {
             <img class="w-100" src="/img/printpreview.png">
         }
         else
         {
-            <img class="w-100" src="@base64Image" />
+            <img class="w-100" src="@base64ImageThumbnail" />
         }
 
         @* Danielle Smith - 3/17/2025
@@ -54,33 +54,58 @@
     [Parameter] public required int FloorsetId {get;set;}
     public required Data.Models.Floorsets.Floorset? Floorset {get;set;}
     private string? base64Image;
+    private string? base64ImageThumbnail;
     private bool isInitialized = false;
-    protected override async Task OnInitializedAsync()
-    {
-        var response = await FloorsetsHttpClient.GetFloorsetById(FloorsetId);
-        if (response != null)
-        {
-            Floorset = response;
-        }
 
-    }
     //Asynchronously get the image preview of the canvas when opening the modal
     //this ensures you always get the current canvas image 
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (isInitialized)
+        {
+            isInitialized = false;
+
+            try
+            {
+                // These canvas functions should now succeed because the modal is rendered
+                base64ImageThumbnail = await JS.InvokeAsync<string>("getCanvasBase64Image", "thumb");
+                Console.WriteLine("Got preview image!");
+                base64Image = await JS.InvokeAsync<string>("getCanvasBase64Image", "full");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading image: {ex.Message}");
+            }
+
+            StateHasChanged(); // Ensure the new image is shown
+        }
+    }
+
     public async Task OnModalOpenedAsync()
     {
-        if (isInitialized) return;
+        // This flag defers the image load until after the modal is rendered
+        isInitialized = true;
+
+        // Kick off rendering now so OnAfterRenderAsync runs
+        await InvokeAsync(StateHasChanged);
+    }
+    @* public async Task OnModalOpenedAsync()
+    {
         isInitialized = true;
 
         try
         {
-            base64Image = await JS.InvokeAsync<string>("getCanvasAsBase64Png");
+            //get the thumbnail for the canvas
+            base64ImageThumbnail = await JS.InvokeAsync<string>("getCanvasBase64Image","thumb");
             Console.WriteLine("Got preview image!");
+            base64Image = await JS.InvokeAsync<string>("getCanvasBase64Image","full");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading image: {ex.Message}");
         }
-    }
+    } *@
 
     //printLayout Task
     //Asynchronously prints the current grid layout from specified printer and options.
@@ -89,21 +114,19 @@
     {
         try
         {
-            // Call JS to get the PNG image as a base64 string
-            
             if (string.IsNullOrEmpty(base64Image))
             {
                 Console.WriteLine("PNG data is null or empty.");
                 return;
             }
 
-            // Strip data URL prefix and encode into bytes
+            //Strip data URL prefix and encode into bytes
             var base64Data = base64Image.Substring(base64Image.IndexOf(",") + 1);  
             byte[] pngBytes = Convert.FromBase64String(base64Data);
 
-            // Create PDF
+            //Create PDF
             byte[] pdfBytes = CanvasPdfExporter.GeneratePdfFromImage(pngBytes);
-            Console.WriteLine(pdfBytes);
+
             // Trigger download
             await JS.InvokeVoidAsync("saveAsFile", $"{Floorset?.NAME ?? "layout"}.pdf", Convert.ToBase64String(pdfBytes));
 

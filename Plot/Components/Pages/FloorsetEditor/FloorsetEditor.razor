@@ -101,8 +101,7 @@
 
 <ImportExcelModal FloorsetId="floorsetId" />
 
-@if(printLayoutOpen)
-{
+@if(printLayoutOpen){
     <PrintModal @ref="printModal" FloorsetId="FloorsetId"/>
 }
 
@@ -184,6 +183,9 @@
     private async Task OpenPrintModal()
     {
         printLayoutOpen = true;
+        await InvokeAsync(StateHasChanged);
+
+        await Task.Delay(200);
 
         if(printModal != null){
             await printModal.OnModalOpenedAsync();

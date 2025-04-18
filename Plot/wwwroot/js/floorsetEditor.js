@@ -426,6 +426,28 @@
 // }
 
 
+// /*
+//     The downloadCanvasImage function grabs the main canvas and downloads its image 
+//     to the user's device when the Print button is clicked
+// */
+// function downloadCanvasImage(floorsetName) {
+//     getCanvasImage((image) => {
+//         if (!image) {
+//             console.error("No image data available.");
+//             return;
+//         }
+
+//         const link = document.createElement("a");
+//         link.href = image;
+//         const name = floorsetName.replace(/[^a-z0-9_\-]/gi, "_").toLowerCase();
+//         link.download = `${name}_Layout.png`;
+
+//         document.body.appendChild(link);
+//         link.click();
+//         document.body.removeChild(link);
+//     });
+// }
+
 
 /*
     The flipOrder function changes the flex column direction when the button is selected.
@@ -444,43 +466,52 @@ function flipOrder() {
 /*
     This function grabs the current canvas image from an open floorset and returns it
 */
-window.getCanvasAsBase64Png = async () => {
+window.getCanvasBase64Image = async (type) => {
     return await new Promise((resolve, reject) => {
         if (!window.gridInstance || !window.p5Instance) {
             console.error("p5Instance or gridInstance not available");
             reject("Required instances not available");
             return;
         }
-        getCanvasImage(image => {
-            if (!image){
-                reject("No image!")
-            }else{
-                resolve(image);
-            }
-        })
+        //check if we need the thumbnail or the full size image for the PDF
+        if (type='thumb'){
+            getCanvasThumbnailImage(image => {
+                if (!image){
+                    reject("No image!")
+                }else{
+                    resolve(image);
+                }
+            })
+        }else{
+            getCanvasImage(image => {
+                if (!image){
+                    reject("No image!")
+                }else{
+                    resolve(image);
+                }
+            })
+        }
+        
         
     });
 };
 
 function saveAsFile(filename, base64DataUrl) {
     const link = document.createElement('a');
-    link.href = base64DataUrl;
+    link.href = 'data:application/octet-stream;base64,'+base64DataUrl;
     link.download = filename;
     document.body.appendChild(link);
     link.click();
     // Wait a little before removing the link to allow the browser to start the download
-    setTimeout(() => {
-        document.body.removeChild(link);
-    }, 10000);
+    document.body.removeChild(link);
 }
 
-function getCanvasImage(callback) {
+function getCanvasThumbnailImage(callback) {
     const canvas = document.querySelector('canvas');
     if (!canvas) {
         console.error("Canvas not found!");
         return null;
     }
-
     //save current zoom
     const p5 = window.p5Instance;
     const grid = window.gridInstance;
@@ -489,16 +520,12 @@ function getCanvasImage(callback) {
     const originalWidth = p5.width;
     const originalHeight = p5.height;
 
-    
-
-    //set scale and center the grid manually
-    const targetSize = 468;
 
     // Adjust scale so content fits nicely
-    const scaleX = targetSize / (grid.width * grid.size);
-    const scaleY = targetSize / (grid.height * grid.size);
+    const scaleX = 448 / (grid.width * grid.size);
+    const scaleY = 320 / (grid.height * grid.size);
     const exportScale = Math.min(scaleX, scaleY);
-    p5.resizeCanvas(targetSize, targetSize);
+    p5.resizeCanvas(448, 320);
     grid.scale = exportScale;
     grid.resize();
 
@@ -520,27 +547,48 @@ function getCanvasImage(callback) {
     });
 }
 
-/*
-    The downloadCanvasImage function grabs the main canvas and downloads its image 
-    to the user's device when the Print button is clicked
-*/
-function downloadCanvasImage(floorsetName) {
-    getCanvasImage((image) => {
-        if (!image) {
-            console.error("No image data available.");
-            return;
-        }
+function getCanvasImage(callback) {
+    const canvas = document.querySelector('canvas');
+    if (!canvas) {
+        console.error("Canvas not found!");
+        return null;
+    }
+    console.log("Getting Image...");
+    //save current zoom
+    const p5 = window.p5Instance;
+    const grid = window.gridInstance;
 
-        const link = document.createElement("a");
-        link.href = image;
-        const name = floorsetName.replace(/[^a-z0-9_\-]/gi, "_").toLowerCase();
-        link.download = `${name}_Layout.png`;
+    const originalScale = grid.scale;
+    const originalWidth = p5.width;
+    const originalHeight = p5.height;
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    const fullWidth = grid.width * grid.size * 4;
+    const fullHeight = grid.height * grid.size * 4;
+
+    // Resize canvas to actual content size
+    p5.resizeCanvas(fullWidth, fullHeight);
+    grid.scale *= 4; // 1:1 scale for full content
+    grid.resize();
+
+    //freeze drawing
+    p5.noLoop();
+    //force draw with requestAnimationFrame to get the full canvas size
+    requestAnimationFrame(() => {
+        p5.redraw();
+        const image = canvas.toDataURL("image/png");
+
+        //Restore everything
+        p5.resizeCanvas(originalWidth, originalHeight);
+        grid.scale = originalScale;
+        grid.resize();
+        p5.redraw();
+        p5.loop();
+
+        callback(image);
     });
 }
+
+
 /*
     The addFixtureClose function adds an event listener to the add button in the Add Fixture modal.
 */
