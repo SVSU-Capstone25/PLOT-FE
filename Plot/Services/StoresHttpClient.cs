@@ -1,5 +1,6 @@
 using System.Net;
 using Plot.Data.Models.Stores;
+using Plot.Data.Models.Users;
 using Plot.Services;
 
 public class StoresHttpClient : PlotHttpClient
@@ -20,6 +21,10 @@ public class StoresHttpClient : PlotHttpClient
     public async Task<List<Store>?> GetStoreAccessByUserId(int userId)
     {
         return await SendGetAsync<List<Store>>($"/access/{userId}");
+    }
+    public async Task<List<UserDTO>?> GetUsersAtStore(int storeId)
+    {
+        return await SendGetAsync<List<UserDTO>>($"/get-users-by-store/{storeId}");
     }
 
     public async Task<HttpStatusCode> CreateStore(CreateStore store)
@@ -48,4 +53,5 @@ public class StoresHttpClient : PlotHttpClient
     {
         return await SendDeleteAsync($"/{storeId}");
     }
+    
 }
