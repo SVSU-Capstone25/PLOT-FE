@@ -65,7 +65,7 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = envSettings.audience,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(envSettings.secret_key)),
+            Encoding.UTF8.GetBytes(envSettings.auth_secret_key)),
         ValidateLifetime = true,
     };
 
