@@ -79,6 +79,14 @@ function sketch(p5) {
     });
   });
 
+  const employeeAreaPaintAggregator = createDebouncedAggregator(500, (fixtures) => {
+    fixtures.forEach((fixture) => {
+      updateFixtureInstance(fixture)
+        .then(console.log)
+        .catch(console.error);
+    });
+  });
+
   p5.preload = () => {
     p5Instance = p5;
     gridInstance = new Grid(p5);
@@ -201,6 +209,10 @@ function sketch(p5) {
           gridInstance.fixtures.splice(index, 1);
         }
       }
+    } else if(window.grid.state === "employee_area_paint") {
+      console.log("Employee Area Paint");
+    } else if(window.grid.state === "employee_area_erase") {
+      console.log("Employee Area Erase");
     } else {
       if (mouseFixture) {
         const { x: gridX, y: gridY } = gridInstance.toGridCoordinates(
@@ -337,6 +349,14 @@ window.setErase = () => {
 
 window.setPlace = () => {
   window.grid.state = "place";
+}
+
+window.setEmployeeAreaPaint = () => {
+  window.grid.state = "employee_area_paint";
+}
+
+window.setEmployeeAreaErase = () => {
+  window.grid.state = "employee_area_erase";
 }
 
 window.setPaint = (paint, supercategory_tuid) => {
