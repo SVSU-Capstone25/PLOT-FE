@@ -5,8 +5,9 @@
     <ModalHeader Title="Update User" />
     <EditForm Model="UpdateUserModel" OnValidSubmit="OnUpdateUserSubmit">
         <DataAnnotationsValidator />
-        <AddUpdateUserModalBody AddUpdateUserModel="UpdateUserModel" userStores="userStores"
-            notUserStores="notUserStores" @ref="modalBodyRef" />
+        <AddUpdateUserModalBody AddUpdateUserModel="UpdateUserModel" UserStores="UpdateUserStores"
+            NotUserStores="NotUpdateUserStores" OnUserStoresChanged="HandleUserStoresChange"
+            OnNotUserStoresChanged="HandleNotUserStoresChange" @ref="modalBodyRef" />
         <ModalFooter OnCancelClick="ClearUpdateUserModel">
             <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
                 Submit
@@ -26,9 +27,11 @@
 
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
-    public AddUpdateUserModalBody? modalBodyRef;
+    public List<Data.Models.Stores.Store>? UpdateUserStores = new();
 
-    //public Data.Models.Users.UserDTO? UserById;
+    public List<Data.Models.Stores.Store>? NotUpdateUserStores = new();
+
+    public AddUpdateUserModalBody? modalBodyRef;
 
     public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel = new();
 
@@ -50,12 +53,14 @@
             ROLE_NAME = User!.ROLE
         };
 
-        //UserById = await UsersHttpClient.GetUserById(User!.TUID);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await modalBodyRef!.InitUserStores(User!.TUID);
+        if (firstRender)
+        {
+            await modalBodyRef!.InitUserStores(User!.TUID);
+        }
     }
 
     public async Task OnUpdateUserSubmit()
@@ -73,6 +78,16 @@
         modalBodyRef!.ClearAddUpdateUserModel(User!.TUID);
 
         StateHasChanged();
+    }
+
+    public void HandleUserStoresChange(List<Data.Models.Stores.Store>? NewUpdateUserStores)
+    {
+        UpdateUserStores = NewUpdateUserStores;
+    }
+
+    public void HandleNotUserStoresChange(List<Data.Models.Stores.Store>? NewNotUpdateUserStores)
+    {
+        NotUpdateUserStores = NewNotUpdateUserStores;
     }
 
 }

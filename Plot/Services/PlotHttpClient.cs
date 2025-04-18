@@ -37,6 +37,8 @@ public class PlotHttpClient : HttpClient
 
     private async Task<HttpResponseMessage> SendAsync(string endpoint, HttpMethod method)
     {
+        //string fullUrl = $"{BaseAddress}{controller}{endpoint}";
+
         HttpRequestMessage httpRequestMessage = new HttpRequestMessage(method, $"{BaseAddress}{controller}{endpoint}");
 
         var token = _httpContextAccessor.HttpContext?.Request.Cookies["Auth"];
@@ -57,6 +59,7 @@ public class PlotHttpClient : HttpClient
 
     public async Task<T?> SendGetAsync<T>(string endpoint)
     {
+        //Console.WriteLine("In SendGetAsync");
         var response = await SendAsync(endpoint, HttpMethod.Get);
 
         if (response.IsSuccessStatusCode)

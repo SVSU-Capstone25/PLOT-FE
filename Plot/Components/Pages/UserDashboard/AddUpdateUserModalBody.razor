@@ -52,9 +52,9 @@
     <label>
         Available Stores:
         <select size="6" multiple @onchange="HandleSelectionFromNotUserStores">
-            @if (notUserStores != null)
+            @if (NotUserStores != null)
             {
-                @foreach (var store in notUserStores)
+                @foreach (var store in NotUserStores)
                 {
                     <option value="@store.TUID">@store.NAME</option>
                 }
@@ -69,9 +69,9 @@
     <label>
         Selected Stores:
         <select size="6" multiple @onchange="HandleSelectionFromUserStores">
-            @if (userStores != null)
+            @if (UserStores != null)
             {
-                @foreach (var store in userStores)
+                @foreach (var store in UserStores)
                 {
                     <option value="@store.TUID">@store.NAME</option>
                 }
@@ -90,45 +90,87 @@
 
     [Parameter] public List<Data.Models.Users.AddUserToStoreRequest>? AddUpdateUserStoreRequestModels { get; set; }
 
-    [Parameter] public List<Data.Models.Stores.Store>? userStores { get; set; }
+    [Parameter] public List<Data.Models.Stores.Store>? UserStores { get; set; }
 
-    [Parameter] public List<Data.Models.Stores.Store>? notUserStores { get; set; }
+    [Parameter] public List<Data.Models.Stores.Store>? NotUserStores { get; set; }
 
     public List<int> selectedNotUserStoreTUIDs { get; set; } = new();
     public List<int> selectedUserStoreTUIDs { get; set; } = new();
 
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
-    public void SelectStoresForUser()
+    [Parameter] public EventCallback<List<Data.Models.Stores.Store>?> OnUserStoresChanged { get; set; }
+    [Parameter] public EventCallback<List<Data.Models.Stores.Store>?> OnNotUserStoresChanged { get; set; }
+
+
+    public async Task SelectStoresForUser()
     {
-        var storesToMove = notUserStores?.Where(store => selectedNotUserStoreTUIDs.Contains(store.TUID)).ToList();
+        var storesToMove = NotUserStores?.Where(store => selectedNotUserStoreTUIDs.Contains(store.TUID)).ToList();
         if (storesToMove == null) { Console.WriteLine("No stores to move"); return; }
 
         foreach (var store in storesToMove)
         {
-            Console.WriteLine(store.NAME);
-            userStores?.Add(store);
-            notUserStores?.Remove(store);
+            Console.WriteLine(store.NAME + " selected for selection");
+            UserStores?.Add(store);
+            NotUserStores?.Remove(store);
         }
         selectedNotUserStoreTUIDs.Clear();
 
+        await OnUserStoresChanged.InvokeAsync(UserStores);
+        await OnNotUserStoresChanged.InvokeAsync(NotUserStores);
+
         StateHasChanged();
+        if (UserStores != null)
+        {
+            foreach (var store in UserStores)
+            {
+                Console.WriteLine("SelectStoresForUser: Store of Name: " + store.NAME + " in UserStores");
+            }
+        }
+
+        if (NotUserStores != null)
+        {
+            foreach (var store in NotUserStores)
+            {
+                Console.WriteLine("SelectStoresForUser: Store of Name: " + store.NAME + " in NotUserStores");
+            }
+        }
     }
 
-    public void RemoveStoresFromUser()
+    public async Task RemoveStoresFromUser()
     {
-        var storesToMove = userStores?.Where(store => selectedUserStoreTUIDs.Contains(store.TUID)).ToList();
+        var storesToMove = UserStores?.Where(store => selectedUserStoreTUIDs.Contains(store.TUID)).ToList();
         if (storesToMove == null) return;
 
         foreach (var store in storesToMove)
         {
-            notUserStores?.Add(store);
-            userStores?.Remove(store);
+            Console.WriteLine("RemoveStoresFromUser: " + store.NAME + " selected for removal");
+            NotUserStores?.Add(store);
+            UserStores?.Remove(store);
         }
 
         selectedUserStoreTUIDs.Clear();
 
+        await OnUserStoresChanged.InvokeAsync(UserStores);
+        await OnNotUserStoresChanged.InvokeAsync(NotUserStores);
+        
         StateHasChanged();
+
+        if (UserStores != null)
+        {
+            foreach (var store in UserStores)
+            {
+                Console.WriteLine("RemoveStoresFromUser: Store of Name: " + store.NAME + " in UserStores");
+            }
+        }
+
+        if (NotUserStores != null)
+        {
+            foreach (var store in NotUserStores)
+            {
+                Console.WriteLine("Store of Name: " + store.NAME + " in NotUserStores");
+            }
+        }
 
     }
 
@@ -165,7 +207,7 @@
             AddUpdateUserStoreRequestModels!.Clear();
 
             // Add current store access
-            foreach (var store in userStores!)
+            foreach (var store in UserStores!)
             {
                 AddUpdateUserStoreRequestModels!.Add(new Data.Models.Users.AddUserToStoreRequest
                 {
@@ -183,6 +225,7 @@
             var response = await UsersHttpClient.UpdateUserPublicInfo(userTUID, AddUpdateUserModel!);
         }
 
+        StateHasChanged();
     }
 
     public async Task UpdateUserStores(int userTUID)
@@ -190,27 +233,29 @@
         Console.WriteLine("Updating stores for user of tuid " + userTUID);
         // Updates user store access
 
-        // TODO: Set Store Tuids to userStores instead of below
-        var storeTUIDs = (AddUpdateUserStoreRequestModels ?? new List<AddUserToStoreRequest>())
-        .Select(store => store.STORE_TUID)
-        .ToList();
-
-        if (userStores != null)
+        // TODO: Set Store Tuids to UserStores instead of below
+        if (UserStores != null)
         {
-            foreach (var store in userStores)
+            var storeTUIDs = UserStores
+            .Select(store => store!.TUID)
+            .ToList();
+
+            foreach (var store in UserStores)
             {
                 Console.WriteLine("Updating with store of Name " + store!.NAME);
             }
+
+            var request = new UpdateAccessListRequest
+            {
+                USER_TUID = userTUID,
+                STORE_TUIDS = storeTUIDs
+            };
+
+            var response = await UsersHttpClient.UpdateAccessList(request);
+            Console.WriteLine("Response when updating user stores is " + response);
         }
 
-        var request = new UpdateAccessListRequest
-        {
-            USER_TUID = userTUID,
-            STORE_TUIDS = storeTUIDs
-        };
-
-        var response = await UsersHttpClient.UpdateAccessList(request);
-
+        StateHasChanged();
     }
 
     public async Task InitUserStores(int userTUID)
@@ -224,7 +269,7 @@
     {
         if (userTUID == 0)
         {
-            userStores = new List<Data.Models.Stores.Store>();
+            UserStores!.Clear();
         }
         else
         {
@@ -232,11 +277,7 @@
 
             if (response != null)
             {
-                userStores = response.ToList();
-            }
-            else
-            {
-                //Console.WriteLine("Response is null when trying to get store of user by id in InitUserStoresAssigned");
+                UserStores = response.ToList();
             }
         }
 
@@ -251,18 +292,13 @@
 
             if (response != null)
             {
-                notUserStores = response.ToList();
-            }
-            else
-            {
-                //Console.WriteLine("Response is null when trying to get store of user by id in InitUserStoresNotAssigned");
+                NotUserStores = response.ToList();
             }
         }
         else
         {
             // New user - Fill available stores list
-            notUserStores = await StoresHttpClient.GetListOfStores();
-            Console.WriteLine("Not user stores");
+            NotUserStores = await StoresHttpClient.GetListOfStores();
         }
 
         StateHasChanged();

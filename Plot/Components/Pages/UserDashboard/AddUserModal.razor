@@ -6,10 +6,11 @@
     <ModalHeader Title="Add User" />
     <EditForm Model="AddUserModel" OnValidSubmit="async () => await OnAddUserSubmit()">
         <DataAnnotationsValidator />
-        <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" userStores="userStores" notUserStores="notUserStores"
-            @ref="modalBodyRef" />
-        @*<ModalFooter OnCancelClick="ClearAddUserModel"> <-- Weird bug: This broke it*@
-        <ModalFooter>
+        <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" UserStores="AddUserStores"
+            NotUserStores="NotAddUserStores" @ref="modalBodyRef"
+            OnUserStoresChanged="HandleUserStoresChange"
+            OnNotUserStoresChanged="HandleNotUserStoresChange"/>
+        <ModalFooter OnCancelClick="ClearAddUserModel">
             <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
                 Submit
             </Button>
@@ -29,14 +30,9 @@
 
     public AddUpdateUserModalBody? modalBodyRef;
 
-    public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel = new()
-    {
-        ROLE_NAME = "Owner"
-    };
+    public List<Data.Models.Stores.Store>? AddUserStores = new();
 
-    public List<Data.Models.Stores.Store>? userStores = new List<Data.Models.Stores.Store>();
-
-    public List<Data.Models.Stores.Store>? notUserStores = new List<Data.Models.Stores.Store>();
+    public List<Data.Models.Stores.Store>? NotAddUserStores = new();
 
     public Data.Models.Users.UserDTO? UserFromEmail { get; set; }
 
@@ -48,64 +44,110 @@
         };
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender){
-        await modalBodyRef!.InitUserStores(0);
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender){
+            await modalBodyRef!.InitUserStores(0);
+        }
     }
 
     private async Task OnAddUserSubmit()
     {
-        if (AddUpdateUserModel != null)
+        int tuid = new();
+
+        if (AddUserModel != null)
         {
 
             Data.Models.Auth.Registration.UserRegistration UserRegistration = new Data.Models.Auth.Registration.UserRegistration
             {
-                EMAIL = AddUpdateUserModel.EMAIL,
-                FIRST_NAME = AddUpdateUserModel.FIRST_NAME,
-                LAST_NAME = AddUpdateUserModel.LAST_NAME,
-                ROLE_NAME = AddUpdateUserModel.ROLE_NAME
+                EMAIL = AddUserModel.EMAIL,
+                FIRST_NAME = AddUserModel.FIRST_NAME,
+                LAST_NAME = AddUserModel.LAST_NAME,
+                ROLE_NAME = AddUserModel.ROLE_NAME
             };
 
             var response = await AuthHttpClient.Register(UserRegistration);
 
             Console.WriteLine("The response is " + response);
 
-            // Use email address to get user information
-            if (UserRegistration != null && !string.IsNullOrWhiteSpace(UserRegistration.EMAIL))
+            Console.WriteLine("Getting user by email using email " + AddUserModel.EMAIL);
+            if (AddUserModel != null && AddUserModel.EMAIL != null)
             {
-                Console.WriteLine("Getting user by email using email " + UserRegistration.EMAIL);
-                UserFromEmail = await UsersHttpClient.GetUserByEmail(UserRegistration.EMAIL);
+                int maxRetries = 20;
+                int delayMs = 500; // half a second
+                int attempt = 0;
 
-                if (UserFromEmail != null)
+                while (UserFromEmail == null && attempt < maxRetries)
                 {
-                    Console.WriteLine("User from Email has TUID: " + UserFromEmail.TUID);
+                    try
+                    {
+                        UserFromEmail = await UsersHttpClient.GetUserByEmail(AddUserModel!.EMAIL.ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Attempt {attempt + 1}: Exception occurred - {ex.Message}");
+                    }
+
+                    if (UserFromEmail == null)
+                    {
+                        Console.WriteLine($"User not found yet. Retrying in {delayMs}ms... (Attempt {attempt + 1}/{maxRetries})");
+                        await Task.Delay(delayMs);
+                        attempt++;
+                    }
                 }
-                else
+
+                if (UserFromEmail == null)
                 {
-                    Console.WriteLine("UserFromEmail is null");
+                    Console.WriteLine("ERROR: User still not found after registration retries.");
+                    // Handle fallback or user feedback here
+                    return;
                 }
+                Console.WriteLine("UserDTO object is " + UserFromEmail);
+            }
+            else
+            {
+                Console.WriteLine("AddUserModel.EMAIL is null. Why? It shouldn't be null!");
             }
 
-            if (modalBodyRef != null && UserFromEmail != null)
+            if (UserFromEmail != null)
             {
-                await modalBodyRef.UpdateUserStores(UserFromEmail.TUID);
+                tuid = (int)UserFromEmail.TUID;
+                Console.WriteLine($"TUID: {tuid}");
             }
+            else
+            {
+                Console.WriteLine("UserFromEmail is null? Why oh why is it null?");
+            }
+
+            Console.WriteLine("In Add user modal About to update user stores in child component");
+            await modalBodyRef!.UpdateUserStores(tuid);
+
 
             await UpdateUsers.InvokeAsync();
         }
 
-        //ClearAddUserModel(UserFromEmail.TUID);
+        await ClearAddUserModel();
     }
-    /*
-    public void ClearAddUserModel(int userTUID)
-    {
-    AddUpdateUserModel = new()
-    {
-    ROLE_NAME = "Owner"
-    };
 
-    modalBodyRef.ClearAddUpdateUserModel(userTUID);
+    public async Task ClearAddUserModel()
+    {
+        AddUserModel= new()
+        {
+            ROLE_NAME = "Owner"
+        };
 
-    StateHasChanged();
+        await modalBodyRef!.InitUserStores(0);
+
+        StateHasChanged();
     }
-    */
+
+    public void HandleUserStoresChange(List<Data.Models.Stores.Store>? NewAddUserStores)
+    {
+        AddUserStores = NewAddUserStores;
+    }
+
+    public void HandleNotUserStoresChange(List<Data.Models.Stores.Store>? NewNotAddUserStores)
+    {
+        NotAddUserStores = NewNotAddUserStores;
+    }
 }
