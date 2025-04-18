@@ -1,7 +1,12 @@
 import Fixture from "./Fixture.js";
+import EmployeeArea from "./EmployeeArea.js";
 import Grid from "./Grid.js";
 import { getFixtureInstances } from "./getters.js";
-import { updateFixtureInstance, createFixtureInstance } from "./setters.js";
+import {
+  updateFixtureInstance,
+  createFixtureInstance,
+  createEmployeeAreas,
+} from "./setters.js";
 
 /**
  * @typedef {import('./globals.d.ts')}
@@ -46,11 +51,11 @@ function createDebouncedAggregator(wait, onFlush) {
   let timerId = null;
 
   return function add(item) {
-    items.add(item);
+    items.add(JSON.stringify(item));
     clearTimeout(timerId);
     timerId = setTimeout(() => {
       // snapshot the set so your callback can mutate it if needed
-      const snapshot = new Set(items);
+      const snapshot = Array.from(items).map(JSON.parse);
       onFlush(snapshot);
       items.clear();
     }, wait);
@@ -73,19 +78,16 @@ function sketch(p5) {
 
   const paintAggregator = createDebouncedAggregator(500, (fixtures) => {
     fixtures.forEach((fixture) => {
-      updateFixtureInstance(fixture)
-        .then(console.log)
-        .catch(console.error);
+      updateFixtureInstance(fixture).then(console.log).catch(console.error);
     });
   });
 
-  const employeeAreaPaintAggregator = createDebouncedAggregator(500, (fixtures) => {
-    fixtures.forEach((fixture) => {
-      updateFixtureInstance(fixture)
-        .then(console.log)
-        .catch(console.error);
-    });
-  });
+  const employeeAreaPaintAggregator = createDebouncedAggregator(
+    500,
+    (employeeAreas) => {
+      createEmployeeAreas(employeeAreas).then(console.log).catch(console.error);
+    }
+  );
 
   p5.preload = () => {
     p5Instance = p5;
@@ -98,7 +100,7 @@ function sketch(p5) {
     window.grid.state = "place";
     window.grid.paint = {
       COLOR: "#fff",
-      SUPERCATEGORY_TUID: 0
+      SUPERCATEGORY_TUID: 0,
     };
 
     const url = new URL(window.location.href);
@@ -209,9 +211,17 @@ function sketch(p5) {
           gridInstance.fixtures.splice(index, 1);
         }
       }
-    } else if(window.grid.state === "employee_area_paint") {
+    } else if (window.grid.state === "employee_area_paint") {
+      const { x, y } = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+      const isOnGrid = gridInstance.isOnGrid(x, y);
+
+      if (isOnGrid) {
+        const newEmployeeArea = new EmployeeArea(p5, floorsetId, x, y);
+        employeeAreaPaintAggregator(newEmployeeArea.toObject());
+      }
+
       console.log("Employee Area Paint");
-    } else if(window.grid.state === "employee_area_erase") {
+    } else if (window.grid.state === "employee_area_erase") {
       console.log("Employee Area Erase");
     } else {
       if (mouseFixture) {
@@ -251,10 +261,7 @@ function sketch(p5) {
         })
         .catch(console.error);
     } else if (window.draggedFixture) {
-      const { x, y } = gridInstance.toGridCoordinates(
-        p5.mouseX,
-        p5.mouseY
-      );
+      const { x, y } = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
 
       console.log({
         ...window.draggedFixture,
@@ -263,30 +270,36 @@ function sketch(p5) {
         X_POS: x,
         Y_POS: y,
         ALLOCATED_LF: 1,
-        EDITOR_ID: gridInstance.fixtures.length + 1
-      })
-      createFixtureInstance(Fixture.from(p5, {
-        ...window.draggedFixture,
-        COLOR: "#fff",
-        FLOORSET_TUID: floorsetId,
-        X_POS: x,
-        Y_POS: y,
-        ALLOCATED_LF: 1,
-        EDITOR_ID: gridInstance.fixtures.length + 1
-      })).then((data) => {
-        console.log(data);
-        gridInstance.fixtures.push(Fixture.from(p5, {
+        EDITOR_ID: gridInstance.fixtures.length + 1,
+      });
+      createFixtureInstance(
+        Fixture.from(p5, {
           ...window.draggedFixture,
           COLOR: "#fff",
           FLOORSET_TUID: floorsetId,
           X_POS: x,
           Y_POS: y,
           ALLOCATED_LF: 1,
-          EDITOR_ID: gridInstance.fixtures.length + 1
-        }));
-        mouseFixture = undefined;
-        window.draggedFixture = undefined;
-      }).catch(console.error);
+          EDITOR_ID: gridInstance.fixtures.length + 1,
+        })
+      )
+        .then((data) => {
+          console.log(data);
+          gridInstance.fixtures.push(
+            Fixture.from(p5, {
+              ...window.draggedFixture,
+              COLOR: "#fff",
+              FLOORSET_TUID: floorsetId,
+              X_POS: x,
+              Y_POS: y,
+              ALLOCATED_LF: 1,
+              EDITOR_ID: gridInstance.fixtures.length + 1,
+            })
+          );
+          mouseFixture = undefined;
+          window.draggedFixture = undefined;
+        })
+        .catch(console.error);
     }
   };
 }
@@ -301,7 +314,7 @@ function sketch(p5) {
 // });
 
 window.initP5 = (elementId) => {
-  // Check if p5 is already rendered to prevent 
+  // Check if p5 is already rendered to prevent
   // ghosting issues when rendering.
   if (window.p5Instance) {
     window.p5Instance.remove();
@@ -339,30 +352,30 @@ window.setPaintMode = (enabled) => {
     window.grid.state = "place";
   }
   console.log("window gridstate now: " + window.grid.state);
-}
+};
 
 window.setErase = () => {
   window.grid.paint.COLOR = "#fff";
   window.grid.paint.SUPERCATEGORY_TUID = 0;
   window.grid.state = "paint";
-}
+};
 
 window.setPlace = () => {
   window.grid.state = "place";
-}
+};
 
 window.setEmployeeAreaPaint = () => {
   window.grid.state = "employee_area_paint";
-}
+};
 
 window.setEmployeeAreaErase = () => {
   window.grid.state = "employee_area_erase";
-}
+};
 
 window.setPaint = (paint, supercategory_tuid) => {
   window.grid.paint.COLOR = paint;
   window.grid.paint.SUPERCATEGORY_TUID = supercategory_tuid;
-}
+};
 
 window.createDraggable = (event) => {
   const WIDTH = Number(event.target.getAttribute("data-width")),
@@ -375,9 +388,8 @@ window.createDraggable = (event) => {
   console.log(window.draggedFixture);
 };
 
-
-//This method is used with the save button it copies the current floorset, creates another 
-// grid and canvas, scales the image so the whole floorset is shown and 
+//This method is used with the save button it copies the current floorset, creates another
+// grid and canvas, scales the image so the whole floorset is shown and
 // renders the copied floorset outside of the users visible UI. The image
 // created is used for the floorsets dashboard.- Michael Polhill
 window.captureFloorsetThumbnail = async () => {
@@ -385,11 +397,11 @@ window.captureFloorsetThumbnail = async () => {
     //Ensure grid is rendered
     if (!window.gridInstance || !window.gridInstance.fixtures) {
       console.error("gridInstance or fixtures not available");
-      reject("error page not rendered")
+      reject("error page not rendered");
       return;
     }
 
-    // Resolution for the thumbnail. 
+    // Resolution for the thumbnail.
     // 300~ kept breaking the blazor SignalR
     // websocket so its set to 200. It works well.
     const width = 200;
@@ -406,11 +418,10 @@ window.captureFloorsetThumbnail = async () => {
         grid.width = window.gridInstance.width;
         grid.height = window.gridInstance.height;
         // Set scale so entire floor plan will be in the image
-        grid.scale = Math.min
-          (
-            width / (grid.width * grid.size),
-            height / (grid.height * grid.size)
-          );
+        grid.scale = Math.min(
+          width / (grid.width * grid.size),
+          height / (grid.height * grid.size)
+        );
         grid.resize();
 
         //Clone fixtures on to the new grid
@@ -428,18 +439,17 @@ window.captureFloorsetThumbnail = async () => {
         setTimeout(() => {
           const dataUrl = p5.canvas.toDataURL("image/png");
           resolve(dataUrl);
-          p5.remove();//Clean up the grid
+          p5.remove(); //Clean up the grid
         }, 100);
       };
     };
 
-
-    // Hidden container off screen to hold the 
+    // Hidden container off screen to hold the
     // copied grid.
-    const container = document.createElement('div');
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    container.style.top = '-9999px';
+    const container = document.createElement("div");
+    container.style.position = "absolute";
+    container.style.left = "-9999px";
+    container.style.top = "-9999px";
     document.body.appendChild(container);
 
     new p5(sketch, container);
