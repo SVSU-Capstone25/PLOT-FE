@@ -468,7 +468,10 @@ function saveAsFile(filename, base64DataUrl) {
     link.download = filename;
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    // Wait a little before removing the link to allow the browser to start the download
+    setTimeout(() => {
+        document.body.removeChild(link);
+    }, 10000);
 }
 
 function getCanvasImage(callback) {

@@ -53,8 +53,8 @@
 @code {
     [Parameter] public required int FloorsetId {get;set;}
     public required Data.Models.Floorsets.Floorset? Floorset {get;set;}
-
     private string? base64Image;
+    private bool isInitialized = false;
     protected override async Task OnInitializedAsync()
     {
         var response = await FloorsetsHttpClient.GetFloorsetById(FloorsetId);
@@ -64,14 +64,24 @@
         }
 
     }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    //Asynchronously get the image preview of the canvas when opening the modal
+    //this ensures you always get the current canvas image 
+    public async Task OnModalOpenedAsync()
     {
-        if(firstRender){
+        if (isInitialized) return;
+        isInitialized = true;
+
+        try
+        {
             base64Image = await JS.InvokeAsync<string>("getCanvasAsBase64Png");
-            StateHasChanged();
+            Console.WriteLine("Got preview image!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading image: {ex.Message}");
         }
     }
-    
+
     //printLayout Task
     //Asynchronously prints the current grid layout from specified printer and options.
     //Called by the "Print" button in the print modal.
@@ -87,14 +97,13 @@
                 return;
             }
 
-            // Strip data URL prefix and decode
-            var base64Data = base64Image.Substring(base64Image.IndexOf(",") + 1);
-            Console.WriteLine(base64Data);
+            // Strip data URL prefix and encode into bytes
+            var base64Data = base64Image.Substring(base64Image.IndexOf(",") + 1);  
             byte[] pngBytes = Convert.FromBase64String(base64Data);
 
             // Create PDF
             byte[] pdfBytes = CanvasPdfExporter.GeneratePdfFromImage(pngBytes);
-
+            Console.WriteLine(pdfBytes);
             // Trigger download
             await JS.InvokeVoidAsync("saveAsFile", $"{Floorset?.NAME ?? "layout"}.pdf", Convert.ToBase64String(pdfBytes));
 

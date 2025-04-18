@@ -18,9 +18,13 @@ public static class CanvasPdfExporter
                 var page = doc.AddPage();
                 using (var gfx = XGraphics.FromPdfPage(page))
                 {
-                    using (var ms = new MemoryStream(imageBytes))
+                    using (var originalMs = new MemoryStream(imageBytes))
+                    using (var copyMs = new MemoryStream())
                     {
-                        var img = XImage.FromStream(ms);
+                        originalMs.CopyTo(copyMs);
+                        copyMs.Position = 0;
+
+                        var img = XImage.FromStream(copyMs);
 
                         // Scale image to fit page
                         double scale = Math.Min(page.Width / img.PixelWidth * 72 / img.HorizontalResolution,
