@@ -175,19 +175,6 @@ function sketch(p5) {
     gridInstance.resize();
   };
 
-  p5.mouseWheel = (event) => {
-    if (event.originalTarget.tagName !== "CANVAS") return;
-
-    if (event.delta > 0) {
-      gridInstance.scale += 0.1;
-    } else {
-      gridInstance.scale -= 0.1;
-    }
-
-    gridInstance.scale = Math.max(0.1, gridInstance.scale);
-    gridInstance.resize();
-  };
-
   p5.mousePressed = () => {
     if (window.grid.state === "place") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
