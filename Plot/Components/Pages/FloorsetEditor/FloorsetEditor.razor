@@ -47,7 +47,7 @@
     {
         <AllocationsSidebar FloorsetId="FloorsetId" />
 
-        <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations"/>
+        <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations" />
     }
     else
     {
@@ -253,6 +253,71 @@
     @* private int? selectedFixtureID; *@
     @* private FixtureConfigModal? configModal; *@
 
+    @* Tristan Calay 4/7/25
+    Hold a reference to the fixture model that gets dragged onto the grid, so that when the JS 
+    calls for a new ID, an instance is ready to be created.*@
+
+    private Data.Models.Fixtures.FixtureModel? currentDraggedFixture { get; set; }
+
+    @*
+    Tristan Calay 4/7/25
+    To be called by the AddFixturePanel : FixtureDraggedEvent callback. 
+    Caches a fixture model to be used as a FixtureInstance and sent to the grid.*@
+    public void OnFixtureDragged(Data.Models.Fixtures.FixtureModel model)
+    {
+        currentDraggedFixture = model;
+    }
+
+
+    /* Tristan Calay 3/28/25
+    The allocations sidebar reference allows methods to be called from here to the sidebar.
+    It should be set by @ref in the page layout above.
+    */
+    //private AllocationsSidebar? allocationsSidebar;
+
+    /*Tristan Calay 4/7/25
+    Compute the totals for each category in the allocation sidebar, based on the fixtures dict*/
+    private void ComputeAllocationTotals()
+    {
+        //Break if the allocations sidebar reference is null.
+        @* if (allocationsSidebar == null)
+        {
+            return;
+        } *@
+
+        Console.WriteLine("Compute Allocation Totals");
+
+        //List<Category> categories = allocationsSidebar.getAllCategories();
+        //Set all start values to zero. They are computed by adding the fixture LF to the categories.
+
+        @* foreach (Category category in categories)
+        {
+            category.currentValue = 0;
+        } *@
+        @* foreach (Data.Models.Fixtures.FixtureInstance fixture in fixturesDict.Values)
+        {
+            //Find the progress bar representing the category, and add the current hanging capacity to it.
+            foreach (Category category in categories)
+            {
+                if (category.isHeader)
+                {
+                    if (category.headerCategory == fixture.CATEGORY)
+                    {
+                        category.currentValue += fixture.TOT_LF;
+                    }
+                }
+                else if (category.headerCategory == fixture.CATEGORY && category.text == fixture.CATEGORY)
+                {
+                    category.currentValue += fixture.TOT_LF;
+                }
+
+
+            }
+        } *@
+
+        //allocationsSidebar.notifyCategoryUpdates();
+    }
+
 
     /*
     The UpdateImage function updates the image data in a fixture.
@@ -315,4 +380,75 @@
         await Task.Run(() => Console.WriteLine("Open Import"));
     }
 
+    private void EraseCategoryClicked()
+    {
+        Console.WriteLine("Erase Category Function");
+        JS.InvokeVoidAsync("setErase");
+        //Call the func in AllocationsSidebar to remove the styling of the selected category.
+        //if (allocationsSidebar != null)
+        //{
+        //InvokeAsync(allocationsSidebar.clearSelectedCategory);
+        //}
+    }
+
+    private int fixturesCount = 0;
+
+    /* Tristan Calay 4/6/25
+    Add a new fixture when a fixture is dragged into the grid. */
+    [JSInvokable]
+    public async Task<int> dictAddNewFixture(String fixtureName)
+    {
+        Console.WriteLine("DotNet adding new fixture - Fixture Name: " + fixtureName);
+        @* int newID = fixturesCount + 1;
+        foreach (Fixture fixture in Fixture.fixtures.Values)
+        {
+            if (fixture.Name == fixtureName)
+            {
+                FixtureInstance newFixture = new FixtureInstance(fixture, newID);
+                fixturesDict.Add(newFixture.editorID, newFixture);
+                fixturesCount += 1;
+                Console.WriteLine("Created new fixture! Returning ID " + newID);
+                return newID;
+            }
+        } *@
+
+        @*We have a reference to the dragged fixture model in currentDraggedFixture. 
+        Create an instance from it and append to dict. Return id.
+        
+        Data.Models.Fixtures.FixtureInstance
+        *@
+        if (currentDraggedFixture == null)
+        {
+            Console.WriteLine("currentDraggedFixture is null! Somewhing went wrong.");
+            return -1;
+        }
+
+        int newEditorID = fixturesCount + 1;
+        //Data.Models.Fixtures.FixtureInstance newFixture = new Data.Models.Fixtures.FixtureInstance();
+        //newFixture.EDITOR_ID = newEditorID;
+        //newFixture.X_POS = -1;
+        //newFixture.Y_POS = -1;
+        //if (currentDraggedFixture.LF_CAP != null)
+        //{
+        //newFixture.TOT_LF = (int)currentDraggedFixture.LF_CAP;
+        //}
+        @* fixturesDict.Add(newEditorID, newFixture); *@
+        fixturesCount += 1;
+        //AddFixtureModel.STORE_TUID = StoreId;
+        Data.Models.Fixtures.Fixtures_State state = new Data.Models.Fixtures.Fixtures_State();
+        @* state.CurrentFixtures = fixturesDict.Values; *@
+        var response = await FixturesHttpClient.UpdateFixtureInformation(FloorsetId, state);
+        Console.WriteLine(response);
+        Console.WriteLine("Created new fixture! Returning ID " + newEditorID);
+        return newEditorID;
+    }
+
+    @*  Andrew Kennedy 4/7/25
+        This function triggers a state change for the whole page, 
+        used for updating the fixture list and fixture data.
+    *@
+    public void TriggerStateChange()
+    {
+        StateHasChanged();
+    }
 }
