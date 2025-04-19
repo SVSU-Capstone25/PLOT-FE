@@ -185,7 +185,7 @@
         printLayoutOpen = true;
         await InvokeAsync(StateHasChanged);
 
-        await Task.Delay(200);
+        await Task.Delay(500);
 
         if(printModal != null){
             await printModal.OnModalOpenedAsync();

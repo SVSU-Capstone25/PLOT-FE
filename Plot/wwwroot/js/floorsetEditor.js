@@ -466,33 +466,42 @@ function flipOrder() {
 /*
     This function grabs the current canvas image from an open floorset and returns it
 */
-window.getCanvasBase64Image = async (type) => {
+async function getCanvasBase64Thumbnail()
+{
     return await new Promise((resolve, reject) => {
         if (!window.gridInstance || !window.p5Instance) {
             console.error("p5Instance or gridInstance not available");
             reject("Required instances not available");
             return;
         }
-        //check if we need the thumbnail or the full size image for the PDF
-        if (type='thumb'){
-            getCanvasThumbnailImage(image => {
-                if (!image){
-                    reject("No image!")
-                }else{
-                    resolve(image);
-                }
-            })
-        }else{
-            getCanvasImage(image => {
-                if (!image){
-                    reject("No image!")
-                }else{
-                    resolve(image);
-                }
-            })
+
+        getCanvasThumbnailImage(image => {
+            if (!image){
+                reject("No image!")
+            }else{
+                console.log("nice image");
+                resolve(image);
+            }
+        });
+    });
+};
+
+window.getCanvasBase64Image = async function () 
+{
+    return await new Promise((resolve, reject) => {
+        if (!window.gridInstance || !window.p5Instance) {
+            console.error("p5Instance or gridInstance not available");
+            reject("Required instances not available");
+            return;
         }
-        
-        
+
+        getCanvasImage(image => {
+            if (!image){
+                reject("No image!")
+            }else{
+                resolve(image);
+            }
+        })
     });
 };
 
@@ -553,7 +562,6 @@ function getCanvasImage(callback) {
         console.error("Canvas not found!");
         return null;
     }
-    console.log("Getting Image...");
     //save current zoom
     const p5 = window.p5Instance;
     const grid = window.gridInstance;
@@ -562,12 +570,13 @@ function getCanvasImage(callback) {
     const originalWidth = p5.width;
     const originalHeight = p5.height;
 
-    const fullWidth = grid.width * grid.size * 4;
-    const fullHeight = grid.height * grid.size * 4;
 
-    // Resize canvas to actual content size
-    p5.resizeCanvas(fullWidth, fullHeight);
-    grid.scale *= 4; // 1:1 scale for full content
+    // Adjust scale so content fits nicely
+    const scaleX = 448 / (grid.width * grid.size);
+    const scaleY = 320 / (grid.height * grid.size);
+    const exportScale = Math.min(scaleX, scaleY);
+    p5.resizeCanvas(448, 320);
+    grid.scale = exportScale;
     grid.resize();
 
     //freeze drawing
@@ -575,7 +584,7 @@ function getCanvasImage(callback) {
     //force draw with requestAnimationFrame to get the full canvas size
     requestAnimationFrame(() => {
         p5.redraw();
-        const image = canvas.toDataURL("image/png");
+        const image = canvas.toDataURL("image/png", 1.0);
 
         //Restore everything
         p5.resizeCanvas(originalWidth, originalHeight);
@@ -586,8 +595,7 @@ function getCanvasImage(callback) {
 
         callback(image);
     });
-}
-
+};
 
 /*
     The addFixtureClose function adds an event listener to the add button in the Add Fixture modal.

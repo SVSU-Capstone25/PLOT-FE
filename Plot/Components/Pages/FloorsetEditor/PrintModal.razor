@@ -57,9 +57,19 @@
     private string? base64ImageThumbnail;
     private bool isInitialized = false;
 
-    //Asynchronously get the image preview of the canvas when opening the modal
-    //this ensures you always get the current canvas image 
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await FloorsetsHttpClient.GetFloorsetById(FloorsetId);
+        if (response != null)
+        {
+            Floorset = response;
+            Console.WriteLine("got floorset!!!");
+        }
 
+    }
+
+    //Asynchronously get the image preview of the canvas when opening the modal
+    //this ensures we always get the current canvas image 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (isInitialized)
@@ -69,9 +79,11 @@
             try
             {
                 // These canvas functions should now succeed because the modal is rendered
-                base64ImageThumbnail = await JS.InvokeAsync<string>("getCanvasBase64Image", "thumb");
+                base64ImageThumbnail = await JS.InvokeAsync<string>("getCanvasBase64Thumbnail");
                 Console.WriteLine("Got preview image!");
-                base64Image = await JS.InvokeAsync<string>("getCanvasBase64Image", "full");
+
+                await Task.Delay(800);
+                base64Image = await JS.InvokeAsync<string>("getCanvasBase64Image");
             }
             catch (Exception ex)
             {
@@ -82,6 +94,7 @@
         }
     }
 
+    //helper method for the rendering on the preview image on open
     public async Task OnModalOpenedAsync()
     {
         // This flag defers the image load until after the modal is rendered
@@ -90,22 +103,6 @@
         // Kick off rendering now so OnAfterRenderAsync runs
         await InvokeAsync(StateHasChanged);
     }
-    @* public async Task OnModalOpenedAsync()
-    {
-        isInitialized = true;
-
-        try
-        {
-            //get the thumbnail for the canvas
-            base64ImageThumbnail = await JS.InvokeAsync<string>("getCanvasBase64Image","thumb");
-            Console.WriteLine("Got preview image!");
-            base64Image = await JS.InvokeAsync<string>("getCanvasBase64Image","full");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading image: {ex.Message}");
-        }
-    } *@
 
     //printLayout Task
     //Asynchronously prints the current grid layout from specified printer and options.
