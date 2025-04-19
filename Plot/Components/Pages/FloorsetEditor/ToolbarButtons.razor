@@ -5,15 +5,15 @@
 
 <div class="toolbar-buttons">
     @*Edit Fixture Button *@
-    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="editFixture"
+    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="EditFixture"
         TextAlignment="center" />
 
     @*Paint Category Button *@
     <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush"
-        OnClickFunction="togglePaintClicked" TextAlignment="center" />
+        OnClickFunction="TogglePaintClicked" TextAlignment="center" />
 
     @*Erase Category Button *@
-    <Button IsDisabled="false" Variant="@getEraseVariant()" Icon="fa-solid fa-eraser" OnClickFunction="onEraseClicked"
+    <Button IsDisabled="false" Variant="@getEraseVariant()" Icon="fa-solid fa-eraser" OnClickFunction="OnEraseClicked"
         TextAlignment="center" />
 </div>
 
@@ -49,7 +49,7 @@
         return "primary";
     }
 
-    private async Task editFixture()
+    private async Task EditFixture()
     {
         Console.WriteLine("Edit Fixture Function");
         await JS.InvokeVoidAsync("window.setPlace");
@@ -59,7 +59,7 @@
 
     //The paintCategory button toggles the paint mode of the floorset editor.
     //It passes that information to the javascript.
-    private async Task togglePaintClicked()
+    private async Task TogglePaintClicked()
     {
         switch (paintMode)
         {
@@ -80,7 +80,7 @@
         @* StateHasChanged(); *@
     }
 
-    private async Task onEraseClicked()
+    private async Task OnEraseClicked()
     {
         switch (paintMode)
         {
