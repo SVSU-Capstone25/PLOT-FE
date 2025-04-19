@@ -13,6 +13,8 @@ Author: Andrew Fulton (3/13/2025)  *@
 @* /floorsets/Flint, MI/3192 S Linden Rd, Flint, MI 48507 *@
 
 @page "/floorsets/{StoreId:int}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
 @inject NavigationManager Navigation
 @inject FloorsetsHttpClient FloorsetsHttpClient
