@@ -127,6 +127,7 @@ function sketch(p5) {
     canvas.elt.addEventListener("wheel", onZoomScroll);
 
     canvas.elt.addEventListener("mousewheel", onZoomScroll);
+
   };
 
   p5.draw = () => {
@@ -156,30 +157,38 @@ function sketch(p5) {
   };
 
   p5.mousePressed = () => {
-    if (window.grid.state === "place") {
-      const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) {
-        const index = gridInstance.fixtures.indexOf(rack);
-        if (index > -1) {
-          gridInstance.fixtures.splice(index, 1);
-          mouseFixture = rack;
+    if (p5.mouseButton === "left") {
+      if (window.grid.state === "place") {
+        const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+        const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
+        if (rack) {
+          const index = gridInstance.fixtures.indexOf(rack);
+          if (index > -1) {
+            gridInstance.fixtures.splice(index, 1);
+            mouseFixture = rack;
+          }
         }
-      }
-    } else if (window.grid.state === "erase") {
-      const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) {
-        const index = gridInstance.fixtures.indexOf(rack);
-        if (index > -1) {
-          gridInstance.fixtures.splice(index, 1);
+      } else if (window.grid.state === "erase") {
+        const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+        const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
+        if (rack) {
+          const index = gridInstance.fixtures.indexOf(rack);
+          if (index > -1) {
+            gridInstance.fixtures.splice(index, 1);
+          }
         }
+      } else {
+        const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+        const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
+        if (rack) rack.COLOR = window.grid.paint.COLOR;
       }
-    } else {
-      const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) rack.COLOR = window.grid.paint.COLOR;
     }
+
+    if (p5.mouseButton === "right") {
+      const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+      showDropdown(p5.mouseX, p5.mouseY);
+    }
+
   };
 
   p5.mouseDragged = async () => {
@@ -277,6 +286,15 @@ function sketch(p5) {
       }).catch(console.error);
     }
   };
+}
+
+function showDropdown(x, y) {
+  console.log(x, y);
+  let dropdown = document.getElementById('fixtureContextMenu');
+  dropdown.style.left = (x + 40) + 'px';
+  dropdown.style.top = y + 'px';
+  dropdown.style.position = "absolute";
+  dropdown.style.display = 'block';
 }
 
 //Test function to save the canvas as an image

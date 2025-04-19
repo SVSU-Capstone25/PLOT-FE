@@ -5,48 +5,50 @@ It allows changing the category, hanging, and notes of a fixture.
 It also allows you to delete a fixture on the grid. -->
 @* Add fixture edit modal to the floorset editor. - Tristan Calay *@
 
-@* <div class="dropdown">
-
+<div id="fixtureContextMenu" class="dropdown-menu" role="menu">
+    
     <p class="dropdown-header">Fixture Configuration</p>
     <h6 class="dropdown-item">Two Way Rack</h6>
 
     <div class="dropdown-divider"></div>
 
-    <div class="row">
-        <div class="col-auto pe-0">
-            <i class="fa-solid fa-chevron-down"></i>
-        </div>
-
-        <div class="col ps-0">
-            <div class="form-group">
-                <select style="border: none;" class="form-control" id="CategorySelectFormGroup">
-                    <option>Women's Jeans</option>
-                    <option>Men's Jeans</option>
-                    <option>Women's Tops</option>
-                    <option>Men's Tops</option>
-                    <option>Women's Shoes</option>
-                </select>
-                <label class="dropdown-header" for="exampleFormControlSelect1">Select Category</label>
-            </div>
-        </div>
+    <div class="d-flex flex-row gap-2 align-items-center px-2">
+            <p class="d-flex justify-content-center m-0" for="exampleFormControlSelect1">Select Category</p>
     </div>
+
+    <OptionInput ID="categorySelectOptionInput" Class="optionInput" label=""
+                optionsText="@menuCategoryItems" optionsValues="@menuCategoryItems"
+                OnSelectFunction="SetFixtureCategory" />
 
     <br>
 
-    <div class="row">
+    <div class="d-flex flex-row gap-2 align-items-center px-2">
         <div class="col-auto pe-0">
             <i class="fa-solid fa-chevron-down"></i>
         </div>
 
         <div class="col ps-0">
             <div class="form-group">
+
                 <select style="border: none;" class="form-control" id="CategorySelectFormGroup">
                     <option>Single Hung</option>
                     <option>Double Hung</option>
                     <option>Triple Hung</option>
                     <option>Quadruple Hung</option>
                 </select>
-                <label class="dropdown-header" for="exampleFormControlSelect1">Select Category</label>
+                        
+                
+                <!-- <OptionInput ID="hangingSelectOptionInput" Class="optionInput" label="Select fixture hanging"
+                optionsText="@menuHangingOptions" optionsValues="@menuHangingOptions"
+                OnSelectFunction="SetFixtureHanging" /> -->
+                
+                <!-- <select style="border: none;" class="form-control" id="CategorySelectFormGroup">
+                    @foreach(string option in menuHangingOptions)
+                    {
+                        <option>@option</option>
+                    }
+                </select> -->
+                <label class="dropdown-header" for="exampleFormControlSelect1">Select Hanging</label>
             </div>
         </div>
     </div>
@@ -54,18 +56,64 @@ It also allows you to delete a fixture on the grid. -->
     <div class="dropdown-divider"></div>
 
 
-    <div class="row">
-        <div class="col-auto pe-0">
+    <div class="d-flex flex-row gap-2 align-items-center px-2">
             <i class="fa-solid fa-pencil"></i>
-        </div>
-
-        <div class="col ps-0">
-            <p class="dropdown-item">Put Seasonal Colors Here</p>
-            <textarea style="border: none;" placeholder="Notes"></textarea>
-        </div>
+            <p class="d-flex justify-content-center m-0">Fixture Notes</p>
     </div>
-</div> *@
 
+    <!-- <textarea style="border: none;" placeholder="Notes">@strFixtureNotes</textarea> -->
+    <div class="d-flex flex-row gap-2 align-items-center px-2">
+        <textarea style="border: none;" placeholder="Notes">@strFixtureNotes</textarea>
+    </div>
+
+
+    <div class="dropdown-divider"></div>
+
+
+    <div class="d-flex flex-row gap-2 align-items-center px-2 justify-content-between">
+                
+    
+        <Button Class="Button" TextAlignment="center" Variant="danger" OnClickFunction="OnDeleteClick">Delete</Button>
+        <Button Class="Button" TextAlignment="center" Variant="success" OnClickFunction="OnSaveClick">Save</Button>
+    
+    </div>
+</div>
+
+
+
+
+@code 
+{
+    [Parameter] public required int FloorsetId { get; set; }
+    private List<string> menuCategoryItems = new List<string>{"Men's Pants", "Women's Pants", "Men's Shirts", "Women's Shirts"};
+    private List<string> menuHangingOptions = new List<string>{"Single Hung", "Double Hung","Triple Hung", "Quadruple Hung"};
+    [Parameter] public required string strFixtureNotes { get; set; }
+
+    private Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>> allocationFulfillmentLists = new
+    Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>>();
+
+    
+
+    private void SetFixtureCategory(string strSelectedOption)
+    {
+        Console.WriteLine("Fixture Category: "+strSelectedOption);
+    }
+
+    private void SetFixtureHanging(string strSelectedOption)
+    {
+        Console.WriteLine("Fixture Hanging: "+strSelectedOption);
+    }
+
+    private void OnSaveClick()
+    {
+        Console.WriteLine("Save this fixture");
+    }
+
+    private void OnDeleteClick()
+    {
+        Console.WriteLine("Delete this fixture");
+    }
+}
 
 @* @code {
     private String fixtureName = "Default Fixture Title";

@@ -1,6 +1,8 @@
 @inject IJSRuntime JS
 
-<div id="@_containerId" class="position-absolute top-0 start-0"></div>
+<div id="@_containerId" class="position-absolute top-0 start-0">
+    <FixtureConfigModal />
+</div>
 
 @code {
     private string _containerId = $"p5_{Guid.NewGuid():N}";
