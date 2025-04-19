@@ -16,9 +16,9 @@ public class SalesHttpClient : PlotHttpClient
         return await SendPostAsync<HttpStatusCode>("", body);
     }
 
-    public async Task<List<AllocationFufillments>?> GetAllocationFufillments(int floorsetId)
+    public async Task<List<AllocationFulfillments>?> GetAllocationFulfillments(int floorsetId)
     {
-        var response = await SendGetAsync<List<AllocationFufillments>>($"/allocation-fufillments/{floorsetId}");
+        var response = await SendGetAsync<List<AllocationFulfillments>>($"/allocation-fulfillments/{floorsetId}");
 
         return response;
     }

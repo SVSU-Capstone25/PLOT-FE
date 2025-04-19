@@ -27,7 +27,7 @@ Author: Tristan Calay (3/15/2025)-->
 @using Plot.Components.PartialComponents.ProgressBar
 
 <SlideOutHeader>
-    <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fullfillment</h3>
+    <h3 style="font-weight: bold;"><i class="fa-solid fa-file-circle-check"></i> Category Fulfillment</h3>
 </SlideOutHeader>
 
 <SlideOutBody>
@@ -35,28 +35,28 @@ Author: Tristan Calay (3/15/2025)-->
         changed how these are being displayed to use bootstrap classes
         added params to help text input take up proper width *@
     <div class="d-flex flex-row gap-2">
-        <InputText id="category-search" type="search" placeholder="Search..." ValueExpression="() => CategorySearch"
-            ValueChanged="OnSearchChange" class="w-100 form-control" />
+        <InputText id="category-search" type="search" placeholder="Search..." @bind-Value="CategorySearch"
+            @oninput="OnSearchChange" class="w-100 form-control" />
         <Button Variant="primary" Icon="fa-solid fa-arrow-up-short-wide" Class="search-button" TextAlignment="center"
             @onclick="OnSortAscendingClick" />
         <Button Variant="primary" Icon="fa-solid fa-arrow-down-wide-short" Class="search-button" TextAlignment="center"
             @onclick="OnSortDescendingClick" />
-        <Button Variant="primary" Icon="fa-solid fa-filter" Class="search-button" TextAlignment="center"
-            @onclick="OnFilterClick" />
+        @* <Button Variant="primary" Icon="fa-solid fa-filter" Class="search-button" TextAlignment="center"
+            @onclick="OnFilterClick" /> *@
     </div>
 
     <div class="progress-area">
         <ul class="list-group list-group-flush">
 
-            @foreach (var allocationFufillmentList in allocationFufillmentLists)
+            @foreach (var allocationFulfillmentList in allocationFulfillmentLists)
             {
-                var SuperCategoryColor = allocationFufillmentList.Value.First().SUPERCATEGORY_COLOR;
-                var SuperCategoryTotalSales = allocationFufillmentList.Value.Sum((allocationFufillment) =>
-                allocationFufillment.TOTAL_SALES);
+                var SuperCategoryColor = allocationFulfillmentList.Value.First().SUPERCATEGORY_COLOR;
+                var SuperCategoryTotalSales = allocationFulfillmentList.Value.Sum((allocationFulfillment) =>
+                allocationFulfillment.TOTAL_SALES);
 
                 <li class="list-group-item">
                     <ProgressBar>
-                        <ProgressBarHeader class="fs-5" Icon="fa-solid fa-chevron-down">@allocationFufillmentList.Key
+                        <ProgressBarHeader class="fs-5" Icon="fa-solid fa-chevron-down">@allocationFulfillmentList.Key
                         </ProgressBarHeader>
                         <ProgressBarBar Color="@SuperCategoryColor" max="100" value="100" min="0">
                             @SuperCategoryTotalSales
@@ -64,16 +64,17 @@ Author: Tristan Calay (3/15/2025)-->
                     </ProgressBar>
                 </li>
 
-                @foreach (var allocationFufillment in allocationFufillmentList.Value.Where((allocationFufillment) =>
-                            allocationFufillment.SUBCATEGORY.Contains(CategorySearch)))
+                @foreach (var allocationFulfillment in allocationFulfillmentList.Value.Where((allocationFulfillment) =>
+                            allocationFulfillment.SUBCATEGORY.ToLower().Contains(CategorySearch)))
                 {
-                    <li class="list-group-item" @onclick="() => OnCategoryClick(allocationFufillment.SUPERCATEGORY_COLOR)">
+                    <li class="list-group-item"
+                        @onclick="() => OnCategoryClick(allocationFulfillment.SUPERCATEGORY_COLOR, allocationFulfillment.SUPERCATEGORY_TUID)">
                         <ProgressBar>
-                            <ProgressBarHeader class="fs-6">@allocationFufillment.SUBCATEGORY
+                            <ProgressBarHeader class="fs-6">@allocationFulfillment.SUBCATEGORY
                             </ProgressBarHeader>
-                            <ProgressBarBar Color="@allocationFufillment.SUPERCATEGORY_COLOR" max="100"
-                                value="@allocationFufillment.TOTAL_SALES" min="0">
-                                @allocationFufillment.TOTAL_SALES
+                            <ProgressBarBar Color="@allocationFulfillment.SUPERCATEGORY_COLOR" max="100"
+                                value="@allocationFulfillment.TOTAL_SALES" min="0">
+                                @allocationFulfillment.TOTAL_SALES
                             </ProgressBarBar>
                         </ProgressBar>
                     </li>
@@ -89,30 +90,27 @@ Author: Tristan Calay (3/15/2025)-->
 
     private String CategorySearch { get; set; } = "";
 
-    private Dictionary<string, List<Data.Models.Allocations.AllocationFufillments>> allocationFufillmentLists = new
-    Dictionary<string,
-    List<Data.Models.Allocations.AllocationFufillments>>();
+    private Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>> allocationFulfillmentLists = new
+    Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>>();
 
-    private async Task UpdateAllocationFufillments()
+    private async Task UpdateAllocationFulfillments()
     {
-        var response = await SalesHttpClient.GetAllocationFufillments(FloorsetId);
-
-        Console.WriteLine(response);
+        var response = await SalesHttpClient.GetAllocationFulfillments(FloorsetId);
 
         if (response != null)
         {
-            response.ForEach((allocationFufillment) =>
+            response.ForEach((allocationFulfillment) =>
             {
-                if (allocationFufillmentLists.TryGetValue(allocationFufillment.SUPERCATEGORY_NAME, out
-    List<Data.Models.Allocations.AllocationFufillments>? list))
+                if (allocationFulfillmentLists.TryGetValue(allocationFulfillment.SUPERCATEGORY_NAME, out
+    List<Data.Models.Allocations.AllocationFulfillments>? list))
                 {
-                    list.Add(allocationFufillment);
+                    list.Add(allocationFulfillment);
                 }
                 else
                 {
-                    allocationFufillmentLists.Add(allocationFufillment.SUPERCATEGORY_NAME, new
-        List<Data.Models.Allocations.AllocationFufillments> {
-allocationFufillment
+                    allocationFulfillmentLists.Add(allocationFulfillment.SUPERCATEGORY_NAME, new
+        List<Data.Models.Allocations.AllocationFulfillments> {
+allocationFulfillment
             });
                 }
             });
@@ -121,35 +119,50 @@ allocationFufillment
 
     protected override async Task OnInitializedAsync()
     {
-        await UpdateAllocationFufillments();
+        await UpdateAllocationFulfillments();
     }
 
-    private void OnSearchChange(string value)
+    private void OnSearchChange(ChangeEventArgs e)
     {
-        CategorySearch = value;
-        StateHasChanged();
+
+        CategorySearch = e.Value as String ?? "";
     }
 
-    private async void OnCategoryClick(string color)
+    private async void OnCategoryClick(string color, int superCategoryTuid)
     {
         Console.WriteLine("Category Onclick " + color);
 
-        await JS.InvokeVoidAsync("window.setPaint", color);
+        await JS.InvokeVoidAsync("window.setPaint", color, superCategoryTuid);
     }
 
     private void OnSortAscendingClick()
     {
-        throw new NotImplementedException();
+        foreach (var allocationFufillmentList in allocationFulfillmentLists)
+        {
+            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFulfillments a,
+            Data.Models.Allocations.AllocationFulfillments b)
+            {
+                if (a.SUBCATEGORY == null && b.SUBCATEGORY == null) return 0;
+                else if (a.SUBCATEGORY == null) return -1;
+                else if (b.SUBCATEGORY == null) return 1;
+                else return (a.SUBCATEGORY.CompareTo(b.SUBCATEGORY));
+            });
+        }
     }
 
     private void OnSortDescendingClick()
     {
-        throw new NotImplementedException();
-    }
-
-    private void OnFilterClick()
-    {
-        throw new NotImplementedException();
+        foreach (var allocationFufillmentList in allocationFulfillmentLists)
+        {
+            allocationFufillmentList.Value.Sort(delegate (Data.Models.Allocations.AllocationFulfillments a,
+            Data.Models.Allocations.AllocationFulfillments b)
+            {
+                if (a.SUBCATEGORY == null && b.SUBCATEGORY == null) return 0;
+                else if (a.SUBCATEGORY == null) return -1;
+                else if (b.SUBCATEGORY == null) return 1;
+                else return (b.SUBCATEGORY.CompareTo(a.SUBCATEGORY));
+            });
+        }
     }
 
 }

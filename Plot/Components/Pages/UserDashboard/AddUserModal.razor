@@ -1,5 +1,6 @@
 @inject AuthHttpClient AuthHttpClient
 
+
 <Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" @attributes="Attributes">
     <ModalHeader Title="Add User" />
     <EditForm Model="AddUserModel" OnValidSubmit="OnAddUserSubmit">
@@ -7,8 +8,8 @@
 
         <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" />
 
-        <ModalFooter>
-            <Button Variant="primary" TextAlignment="center" type="submit">
+        <ModalFooter OnCancelClick="ClearAddUserModel">
+            <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
                 Submit
             </Button>
         </ModalFooter>
@@ -18,10 +19,17 @@
 
 @code {
     [Parameter] public required EventCallback UpdateUsers { get; set; }
+    [Parameter] public required EventCallback<bool> AddingUser { get; set; }
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
     [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? AddUserModel { get; set; }
 
-    protected override void OnInitialized() => AddUserModel ??= new();
+    protected override void OnInitialized()
+    {
+        AddUserModel ??= new()
+        {
+            ROLE_NAME = "Owner"
+        };
+    }
 
     private async Task OnAddUserSubmit()
     {
@@ -35,11 +43,23 @@
                 ROLE_NAME = AddUserModel.ROLE_NAME
             };
 
-            Console.WriteLine(UserRegistration);
+            @* Set a loader to run while a user is added *@
+            await AddingUser.InvokeAsync(true);
+            await AuthHttpClient.Register(UserRegistration);
+            await AddingUser.InvokeAsync(false);
 
-            var response = await AuthHttpClient.Register(UserRegistration);
 
-            Console.WriteLine(response);
+            await UpdateUsers.InvokeAsync();
         }
+
+        ClearAddUserModel();
+    }
+
+    private void ClearAddUserModel()
+    {
+        AddUserModel = new()
+        {
+            ROLE_NAME = "Owner"
+        };
     }
 }

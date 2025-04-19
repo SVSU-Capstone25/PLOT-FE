@@ -3,6 +3,10 @@ import Grid from "./Grid.js";
 import { getFixtureInstances } from "./getters.js";
 import { updateFixtureInstance, createFixtureInstance } from "./setters.js";
 
+/**
+ * @typedef {import('./globals.d.ts')}
+ */
+
 /** @type {Grid | null} */
 let gridInstance;
 let p5Instance;
@@ -37,87 +41,57 @@ async function getCookie(key) {
   return cookies[key];
 }
 
-window.setPaintMode = (enabled) => {
-  console.log("Setting paint mode " + enabled);
-  //Translate true/false to "paint" / "place"
-  if (enabled) {
-    window.gridState = "paint";
+function createDebouncedAggregator(wait, onFlush) {
+  const items = new Set();
+  let timerId = null;
+
+  return function add(item) {
+    items.add(item);
+    clearTimeout(timerId);
+    timerId = setTimeout(() => {
+      // snapshot the set so your callback can mutate it if needed
+      const snapshot = new Set(items);
+      onFlush(snapshot);
+      items.clear();
+    }, wait);
+  };
+}
+
+function onZoomScroll(event) {
+  if (event.deltaY > 0) {
+    gridInstance.scale += 0.1;
   } else {
-    window.gridState = "place";
+    gridInstance.scale -= 0.1;
   }
-  console.log("window gridstate now: " + window.gridState);
-}
 
-function setErase() {
-  window.paint = "#fff";
-  window.gridState = "paint";
-}
-
-window.setPlace = () => {
-  window.gridState = "place";
-}
-
-window.setPaint = (paint) => {
-  console.log(paint);
-  window.paint = paint;
-}
-
-// Tristan Calay 4/2/25 - Toggles for employee paint/erase mode.
-// var isEmployeePaintEnabled = false;
-// var isEmployeeEraseEnabled = false;
-
-function setEmployeePaint(newPaint) {
-  // isEmployeePaintEnabled = newPaint;
-  // console.log("Employee paint mode is " + isEmployeePaintEnabled);
-  //var marker = document.getElementById("employeePaintEnabledMarker");
-  // if (isEmployeePaintEnabled) {
-  //     console.log("Setting marker green...")
-  //     //marker.style.color = "green";
-  //     window.gridState = 'employeeMode';
-  // }
-  // else {
-  //     console.log("Setting marker black...")
-  //     //marker.style.color = "black";
-  //     window.gridState = 'place';
-  // }
-}
-
-function setEmployeeErase(newErase) {
-  // isEmployeeEraseEnabled = newErase;
-  // if (isEmployeeEraseEnabled) {
-  //     window.gridState = 'employeeMode';
-  // }
-}
-
-//Tristan Calay 4/7/25
-//Remove a rack from the racks array by ID
-function deleteFixtureByID(id) {
-  const racks = this.fixtures;
-  console.log("Called delete rack with ID: " + id);
-  console.log("Fixtures: " + racks);
-  for (var i = 0; i < racks.length; i++) {
-    console.log("Checking index " + i);
-    const rack = this.fixtures[i];
-    if (rack.EDITOR_ID === id) {
-      console.log("Fixture deleted: " + id);
-      this.fixtures.splice(i, 1);
-      return;
-    }
-  }
+  gridInstance.scale = Math.max(0.1, gridInstance.scale);
+  gridInstance.resize();
 }
 
 function sketch(p5) {
   let mouseFixture, floorsetId;
 
+  const paintAggregator = createDebouncedAggregator(500, (fixtures) => {
+    fixtures.forEach((fixture) => {
+      updateFixtureInstance(fixture)
+        .then(console.log)
+        .catch(console.error);
+    });
+  });
+
   p5.preload = () => {
     p5Instance = p5;
     gridInstance = new Grid(p5);
+    window.grid = {};
 
     window.p5Instance = p5Instance;
     window.gridInstance = gridInstance;
 
-    window.gridState = "place";
-    window.paint = "#fff";
+    window.grid.state = "place";
+    window.grid.paint = {
+      COLOR: "#fff",
+      SUPERCATEGORY_TUID: 0
+    };
 
     const url = new URL(window.location.href);
 
@@ -137,7 +111,8 @@ function sketch(p5) {
   };
 
   p5.setup = () => {
-    p5.createCanvas(p5.windowWidth, p5.windowHeight);
+    const canvas = p5.createCanvas(p5.windowWidth, p5.windowHeight);
+
     p5.frameRate(30);
 
     document.oncontextmenu = function () {
@@ -148,6 +123,10 @@ function sketch(p5) {
         return false;
       }
     };
+
+    canvas.elt.addEventListener("wheel", onZoomScroll);
+
+    canvas.elt.addEventListener("mousewheel", onZoomScroll);
   };
 
   p5.draw = () => {
@@ -164,6 +143,8 @@ function sketch(p5) {
   };
 
   p5.mouseWheel = (event) => {
+    if (event.originalTarget.tagName !== "CANVAS") return;
+
     if (event.delta > 0) {
       gridInstance.scale += 0.1;
     } else {
@@ -175,7 +156,7 @@ function sketch(p5) {
   };
 
   p5.mousePressed = () => {
-    if (window.gridState === "place") {
+    if (window.grid.state === "place") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
       if (rack) {
@@ -185,7 +166,7 @@ function sketch(p5) {
           mouseFixture = rack;
         }
       }
-    } else if (window.gridState === "erase") {
+    } else if (window.grid.state === "erase") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
       if (rack) {
@@ -197,16 +178,21 @@ function sketch(p5) {
     } else {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) rack.COLOR = window.paint;
+      if (rack) rack.COLOR = window.grid.paint.COLOR;
     }
   };
 
-  p5.mouseDragged = () => {
-    if (window.gridState === "paint") {
+  p5.mouseDragged = async () => {
+    if (window.grid.state === "paint") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) rack.COLOR = window.paint;
-    } else if (window.gridState === "erase") {
+      if (rack) {
+        rack.COLOR = window.grid.paint.COLOR;
+        rack.SUPERCATEGORY_TUID = window.grid.paint.SUPERCATEGORY_TUID;
+
+        paintAggregator(rack);
+      }
+    } else if (window.grid.state === "erase") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
       if (rack) {
@@ -252,43 +238,43 @@ function sketch(p5) {
           window.draggedFixture = undefined;
         })
         .catch(console.error);
-    } else if(window.draggedFixture) {
-        const { x, y } = gridInstance.toGridCoordinates(
-            p5.mouseX,
-            p5.mouseY
-          );
+    } else if (window.draggedFixture) {
+      const { x, y } = gridInstance.toGridCoordinates(
+        p5.mouseX,
+        p5.mouseY
+      );
 
-        console.log({
-            ...window.draggedFixture,
-            COLOR: "#fff",
-            FLOORSET_TUID: floorsetId,
-            X_POS: x,
-            Y_POS: y,
-            ALLOCATED_LF: 1,
-            EDITOR_ID: gridInstance.fixtures.length + 1
-        })
-        createFixtureInstance(Fixture.from(p5, {
-            ...window.draggedFixture,
-            COLOR: "#fff",
-            FLOORSET_TUID: floorsetId,
-            X_POS: x,
-            Y_POS: y,
-            ALLOCATED_LF: 1,
-            EDITOR_ID: gridInstance.fixtures.length + 1
-        })).then((data) => {
-            console.log(data);
-            gridInstance.fixtures.push(Fixture.from(p5, {
-                ...window.draggedFixture,
-                COLOR: "#fff",
-                FLOORSET_TUID: floorsetId,
-                X_POS: x,
-                Y_POS: y,
-                ALLOCATED_LF: 1,
-                EDITOR_ID: gridInstance.fixtures.length + 1
-            }));
-            mouseFixture = undefined;
-            window.draggedFixture = undefined;
-        }).catch(console.error);
+      console.log({
+        ...window.draggedFixture,
+        COLOR: "#fff",
+        FLOORSET_TUID: floorsetId,
+        X_POS: x,
+        Y_POS: y,
+        ALLOCATED_LF: 1,
+        EDITOR_ID: gridInstance.fixtures.length + 1
+      })
+      createFixtureInstance(Fixture.from(p5, {
+        ...window.draggedFixture,
+        COLOR: "#fff",
+        FLOORSET_TUID: floorsetId,
+        X_POS: x,
+        Y_POS: y,
+        ALLOCATED_LF: 1,
+        EDITOR_ID: gridInstance.fixtures.length + 1
+      })).then((data) => {
+        console.log(data);
+        gridInstance.fixtures.push(Fixture.from(p5, {
+          ...window.draggedFixture,
+          COLOR: "#fff",
+          FLOORSET_TUID: floorsetId,
+          X_POS: x,
+          Y_POS: y,
+          ALLOCATED_LF: 1,
+          EDITOR_ID: gridInstance.fixtures.length + 1
+        }));
+        mouseFixture = undefined;
+        window.draggedFixture = undefined;
+      }).catch(console.error);
     }
   };
 }
@@ -302,15 +288,13 @@ function sketch(p5) {
 //   }
 // });
 
-function addFixtureOnLoad(id, x, y, width, length, color) {
-  setTimeout(function () {
-    let newFixture = new Fixture(p5Instance, x, y, width, length, id);
-    newFixture.color = color;
-    this.fixtures.push(newFixture);
-  }, 500);
-}
-
 window.initP5 = (elementId) => {
+  // Check if p5 is already rendered to prevent 
+  // ghosting issues when rendering.
+  if (window.p5Instance) {
+    window.p5Instance.remove();
+    window.p5Instance = null;
+  }
   new p5(sketch, elementId);
 };
 
@@ -334,12 +318,110 @@ window.updateStoreSize = (width, height) => {
   window.gridInstance.resize();
 };
 
+window.setPaintMode = (enabled) => {
+  console.log("Setting paint mode " + enabled);
+  //Translate true/false to "paint" / "place"
+  if (enabled) {
+    window.grid.state = "paint";
+  } else {
+    window.grid.state = "place";
+  }
+  console.log("window gridstate now: " + window.grid.state);
+}
+
+window.setErase = () => {
+  window.grid.paint.COLOR = "#fff";
+  window.grid.paint.SUPERCATEGORY_TUID = 0;
+  window.grid.state = "paint";
+}
+
+window.setPlace = () => {
+  window.grid.state = "place";
+}
+
+window.setPaint = (paint, supercategory_tuid) => {
+  window.grid.paint.COLOR = paint;
+  window.grid.paint.SUPERCATEGORY_TUID = supercategory_tuid;
+}
+
 window.createDraggable = (event) => {
   const WIDTH = Number(event.target.getAttribute("data-width")),
     LENGTH = Number(event.target.getAttribute("data-height")),
     NAME = String(event.target.getAttribute("data-name")),
     FIXTURE_TUID = Number(event.target.getAttribute("data-fixture-tuid")),
     STORE_TUID = Number(event.target.getAttribute("data-store-tuid"));
-  // window.draggedFixture = { width, height, name };
+
   window.draggedFixture = { WIDTH, LENGTH, NAME, FIXTURE_TUID, STORE_TUID };
+  console.log(window.draggedFixture);
+};
+
+
+//This method is used with the save button it copies the current floorset, creates another 
+// grid and canvas, scales the image so the whole floorset is shown and 
+// renders the copied floorset outside of the users visible UI. The image
+// created is used for the floorsets dashboard.- Michael Polhill
+window.captureFloorsetThumbnail = async () => {
+  return await new Promise((resolve, reject) => {
+    //Ensure grid is rendered
+    if (!window.gridInstance || !window.gridInstance.fixtures) {
+      console.error("gridInstance or fixtures not available");
+      reject("error page not rendered")
+      return;
+    }
+
+    // Resolution for the thumbnail. 
+    // 300~ kept breaking the blazor SignalR
+    // websocket so its set to 200. It works well.
+    const width = 200;
+    const height = 200;
+
+    //New p5 to render off screen
+    const sketch = (p5) => {
+      p5.setup = () => {
+        p5.createCanvas(width, height);
+        p5.background(255);
+
+        //Create a new grid and copy the primary grid dimensions
+        const grid = new Grid(p5);
+        grid.width = window.gridInstance.width;
+        grid.height = window.gridInstance.height;
+        // Set scale so entire floor plan will be in the image
+        grid.scale = Math.min
+          (
+            width / (grid.width * grid.size),
+            height / (grid.height * grid.size)
+          );
+        grid.resize();
+
+        //Clone fixtures on to the new grid
+        grid.fixtures = window.gridInstance.fixtures.map((f) => {
+          const fixture = Fixture.from(p5, f);
+          return fixture;
+        });
+
+        // Render the new floorset
+        p5.push();
+        grid.draw();
+        p5.pop();
+
+        // Wait for render, then capture image
+        setTimeout(() => {
+          const dataUrl = p5.canvas.toDataURL("image/png");
+          resolve(dataUrl);
+          p5.remove();//Clean up the grid
+        }, 100);
+      };
+    };
+
+
+    // Hidden container off screen to hold the 
+    // copied grid.
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '-9999px';
+    document.body.appendChild(container);
+
+    new p5(sketch, container);
+  });
 };
