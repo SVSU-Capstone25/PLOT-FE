@@ -150,15 +150,6 @@ function sketch(p5) {
 
     p5.frameRate(30);
 
-    document.oncontextmenu = function () {
-      const coords = gridInstance.toGridCoordinates(mouse);
-      //console.log("Determine if should display context menu: " + coords.x + ", " + coords.y)
-      if (gridInstance.isOnGrid(coords.x, coords.y)) {
-        //console.log("Should not display context menu: Is on grid!")
-        return false;
-      }
-    };
-
     canvas.elt.addEventListener("wheel", onZoomScroll);
 
     canvas.elt.addEventListener("mousewheel", onZoomScroll);
