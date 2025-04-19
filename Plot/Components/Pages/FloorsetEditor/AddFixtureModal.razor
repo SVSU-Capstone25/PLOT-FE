@@ -15,9 +15,8 @@
                 <label class="d-flex align-items-center flex-fill">
                     <span class="fw-bold me-2">Length</span>
                     <div class="flex-grow-1">
-                        <InputNumber @bind-Value="AddFixtureModel!.LENGTH"
-                        @oninput="HandleLengthChange"
-                        class="form-control" />
+                        <InputNumber @bind-Value="AddFixtureModel!.LENGTH" @oninput="HandleLengthChange"
+                            class="form-control" />
                     </div>
                 </label>
 
@@ -28,16 +27,15 @@
                 <label class="d-flex align-items-center flex-fill my-2">
                     <span class="fw-bold me-2">Width</span>
                     <div class="flex-grow-1">
-                        <InputNumber @bind-Value="AddFixtureModel!.WIDTH"
-                        @oninput="HandleWidthChange"
-                        class="form-control" />
+                        <InputNumber @bind-Value="AddFixtureModel!.WIDTH" @oninput="HandleWidthChange"
+                            class="form-control" />
                     </div>
                 </label>
             </div>
 
             <label class="w-100 d-flex my-2">
                 <span class="fw-bold">Linear Feet Capacity</span>
-                <InputNumber @bind-Value="AddFixtureModel!.LF_CAP"/>
+                <InputNumber class="form-control" @bind-Value="AddFixtureModel!.LF_CAP" />
             </label>
 
             <label class="w-100 d-flex">
@@ -96,7 +94,8 @@
         CalcLinearFeet(AddFixtureModel!.LENGTH, Width);
     }
 
-    public void CalcLinearFeet(int? length, int? width){
+    public void CalcLinearFeet(int? length, int? width)
+    {
         // Calculates linear feet (length * width) and sets text of bound
         // LinearFeet variable to result, or empty if length
         // or width is not defined
