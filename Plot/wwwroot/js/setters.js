@@ -1,19 +1,11 @@
-import EmployeeArea from "./EmployeeArea.js";
-import Fixture from "./Fixture.js";
-
 /**
- * @argument {Fixture} fixture
+ * @argument {object} fixture
  * @author Clayton Cook <work@claytonleonardcook.com>
  * @returns {Promise<boolean>}
  */
 export async function updateFixtureInstance(fixture) {
-  console.log(
-    JSON.stringify({
-      updateFixture: fixture.toObject(),
-    })
-  );
   return fetch(
-    `${window.location.protocol}//${window.location.host}:8085/api/fixtures/update-fixture-instance`,
+    `${window.location.protocol}//${window.location.hostname}:8085/api/fixtures/update-fixture-instance`,
     {
       method: "PATCH",
       headers: {
@@ -21,13 +13,15 @@ export async function updateFixtureInstance(fixture) {
         "Content-Type": "application/json; charset=utf-8",
       },
       credentials: "include",
-      body: JSON.stringify(fixture.toObject()),
+      body: JSON.stringify(fixture),
     }
-  ).then((data) => data.ok);
+  ).then((data) => {
+    if (!data.ok) throw new Error("Request responded with not OK!");
+  });
 }
 
 /**
- * @argument {Fixture} fixture
+ * @argument {object} fixture
  * @author Clayton Cook <work@claytonleonardcook.com>
  * @returns {Promise<boolean>}
  */
@@ -41,19 +35,21 @@ export async function createFixtureInstance(fixture) {
         "Content-Type": "application/json; charset=utf-8",
       },
       credentials: "include",
-      body: JSON.stringify(fixture.toObject()),
+      body: JSON.stringify(fixture),
     }
-  ).then((data) => data.ok);
+  ).then((data) => {
+    if (!data.ok) throw new Error("Request responded with not OK!");
+  });
 }
 
 /**
- * @argument {EmployeeArea[]} employeeAreas
+ * @argument {{FLOORSET_TUID: number, X1_POS: number, Y1_POS: number, X2_POS: number, Y2_POS: number}} employeeArea
  * @author Clayton Cook <work@claytonleonardcook.com>
  * @returns {Promise<boolean>}
  */
-export async function createEmployeeAreas(employeeAreas) {
+export async function bulkCreateEmployeeAreas(employeeArea) {
   return fetch(
-    `${window.location.protocol}//${window.location.hostname}:8085/api/fixtures/add-employee-areas`,
+    `${window.location.protocol}//${window.location.hostname}:8085/api/fixtures/bulk-add-employee-areas`,
     {
       method: "POST",
       headers: {
@@ -61,19 +57,21 @@ export async function createEmployeeAreas(employeeAreas) {
         "Content-Type": "application/json; charset=utf-8",
       },
       credentials: "include",
-      body: JSON.stringify(employeeAreas),
+      body: JSON.stringify(employeeArea),
     }
-  ).then((data) => data.ok);
+  ).then((data) => {
+    if (!data.ok) throw new Error("Request responded with not OK!");
+  });
 }
 
 /**
- * @argument {EmployeeArea[]} employeeAreas
+ * @argument {{FLOORSET_TUID: number, X1_POS: number, Y1_POS: number, X2_POS: number, Y2_POS: number}} employeeArea
  * @author Clayton Cook <work@claytonleonardcook.com>
  * @returns {Promise<boolean>}
  */
-export async function deleteEmployeeAreas(employeeAreas) {
+export async function bulkDeleteEmployeeAreas(employeeArea) {
   return fetch(
-    `${window.location.protocol}//${window.location.hostname}:8085/api/fixtures/delete-employee-areas`,
+    `${window.location.protocol}//${window.location.hostname}:8085/api/fixtures/bulk-delete-employee-areas`,
     {
       method: "DELETE",
       headers: {
@@ -81,7 +79,9 @@ export async function deleteEmployeeAreas(employeeAreas) {
         "Content-Type": "application/json; charset=utf-8",
       },
       credentials: "include",
-      body: JSON.stringify(employeeAreas),
+      body: JSON.stringify(employeeArea),
     }
-  ).then((data) => data.ok);
+  ).then((data) => {
+    if (!data.ok) throw new Error("Request responded with not OK!");
+  });
 }

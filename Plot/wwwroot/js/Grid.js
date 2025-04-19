@@ -6,6 +6,9 @@ import EmployeeArea from "./EmployeeArea.js";
  * @author Clayton Cook <work@claytonleonardcook.com>
  */
 class Grid {
+  /** @type {Fixture[]} */
+  fixtures;
+
   /** @type {Map<string, EmployeeArea>} */
   employeeAreas;
 
@@ -46,6 +49,25 @@ class Grid {
 
   /**
    * TODO: Write documentation
+   * @param {number} floorsetTuid
+   * @param {number} x1
+   * @param {number} y1
+   * @param {number} x2
+   * @param {number} y2
+   */
+  bulkAddEmployeeAreas(floorsetTuid, x1, y1, x2, y2) {
+    for (let y = y1; y < y2; y++) {
+      for (let x = x1; x < x2; x++) {
+        this.employeeAreas.set(
+          [x, y].join("-"),
+          new EmployeeArea(this.p5, floorsetTuid, x, y)
+        );
+      }
+    }
+  }
+
+  /**
+   * TODO: Write documentation
    * @param {EmployeeArea[]} employeeAreas
    */
   deleteEmployeeAreas(employeeAreas) {
@@ -56,31 +78,47 @@ class Grid {
     );
   }
 
-  toGridCoordinates(x, y) {
-    return {
-      x: Math.floor((x - this.translate.x) / (this.size * this.scale)),
-      y: Math.floor((y - this.translate.y) / (this.size * this.scale)),
-    };
+  /**
+   * TODO: Write documentation
+   * @param {number} floorsetTuid
+   * @param {number} x1
+   * @param {number} y1
+   * @param {number} x2
+   * @param {number} y2
+   */
+  bulkDeleteEmployeeAreas(x1, y1, x2, y2) {
+    for (let y = y1; y < y2; y++) {
+      for (let x = x1; x < x2; x++) {
+        this.employeeAreas.delete([x, y].join("-"));
+      }
+    }
   }
 
-  isOnGrid(gridX, gridY) {
-    if (gridX >= 0 && gridX < this.width && gridY >= 0 && gridY < this.height) {
+  toGridCoordinates(v) {
+    return this.p5.createVector(
+      Math.floor((v.x - this.translate.x) / (this.size * this.scale)),
+      Math.floor((v.y - this.translate.y) / (this.size * this.scale))
+    );
+  }
+
+  isOnGrid(x, y) {
+    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
       return true;
     }
     return false;
   }
 
   getFixtureAt(gridX, gridY) {
-    for (const rack of this.fixtures) {
-      const rackGridX = rack.X_POS;
-      const rackGridY = rack.Y_POS;
+    for (const fixture of this.fixtures) {
+      const x = fixture.X_POS;
+      const y = fixture.Y_POS;
       if (
-        gridX >= rackGridX &&
-        gridX < rackGridX + rack.WIDTH &&
-        gridY >= rackGridY &&
-        gridY < rackGridY + rack.LENGTH
+        gridX >= x &&
+        gridX < x + fixture.WIDTH &&
+        gridY >= y &&
+        gridY < y + fixture.LENGTH
       ) {
-        return rack;
+        return fixture;
       }
     }
     return null;
@@ -93,7 +131,8 @@ class Grid {
     };
   }
 
-  draw() {
+  draw(mouseFixture) {
+    this.p5.push();
     this.p5.fill(255, 255, 255);
     this.p5.stroke(0, 100);
     this.p5.strokeWeight(1);
@@ -116,9 +155,11 @@ class Grid {
       employeeArea.draw(this.size);
     }
 
-    for (const rack of this.fixtures) {
-      rack.draw(this.size);
-    }
+    this.fixtures.forEach((rack) => rack.draw(this.size));
+
+    mouseFixture?.draw(this.size);
+
+    this.p5.pop();
   }
 }
 

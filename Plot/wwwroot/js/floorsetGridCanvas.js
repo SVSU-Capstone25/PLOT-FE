@@ -5,8 +5,8 @@ import { getFixtureInstances, getEmployeeAreas } from "./getters.js";
 import {
   updateFixtureInstance,
   createFixtureInstance,
-  createEmployeeAreas,
-  deleteEmployeeAreas,
+  bulkCreateEmployeeAreas,
+  bulkDeleteEmployeeAreas,
 } from "./setters.js";
 
 /**
@@ -47,7 +47,14 @@ async function getCookie(key) {
   return cookies[key];
 }
 
+/**
+ * @template T
+ * @param {number} wait Wait time
+ * @param {(item: T) => void} onFlush
+ * @returns
+ */
 function createDebouncedAggregator(wait, onFlush) {
+  /** @type {Set<T>} */
   const items = new Set();
   let timerId = null;
 
@@ -55,12 +62,22 @@ function createDebouncedAggregator(wait, onFlush) {
     items.add(JSON.stringify(item));
     clearTimeout(timerId);
     timerId = setTimeout(() => {
-      // snapshot the set so your callback can mutate it if needed
       const snapshot = Array.from(items).map(JSON.parse);
       onFlush(snapshot);
       items.clear();
     }, wait);
   };
+}
+
+function drawEmployeeAreaSelector(p5, v1, v2) {
+  if (!v1) return;
+  if (!v2) return;
+
+  p5.push();
+  p5.noStroke();
+  p5.fill("#ff000066");
+  p5.rect(v1.x, v1.y, v2.x - v1.x, v2.y - v1.y);
+  p5.pop();
 }
 
 function onZoomScroll(event) {
@@ -75,31 +92,13 @@ function onZoomScroll(event) {
 }
 
 function sketch(p5) {
-  let mouseFixture, floorsetId;
+  let mouseFixture, floorsetId, employeeAreaSelection;
 
   const paintAggregator = createDebouncedAggregator(500, (fixtures) => {
     fixtures.forEach((fixture) => {
       updateFixtureInstance(fixture).then(console.log).catch(console.error);
     });
   });
-
-  const addEmployeeAreaPaintAggregator = createDebouncedAggregator(
-    500,
-    (employeeAreas) => {
-      createEmployeeAreas(employeeAreas)
-        .then(() => gridInstance.addEmployeeAreas(employeeAreas))
-        .catch(console.error);
-    }
-  );
-
-  const deleteEmployeeAreaPaintAggregator = createDebouncedAggregator(
-    500,
-    (employeeAreas) => {
-      deleteEmployeeAreas(employeeAreas)
-        .then(() => gridInstance.deleteEmployeeAreas(employeeAreas))
-        .catch(console.error);
-    }
-  );
 
   p5.preload = () => {
     p5Instance = p5;
@@ -108,6 +107,10 @@ function sketch(p5) {
 
     window.p5Instance = p5Instance;
     window.gridInstance = gridInstance;
+    employeeAreaSelection = {
+      v1: p5.createVector(0, 0),
+      v2: p5.createVector(0, 0),
+    };
 
     window.grid.state = "place";
     window.grid.paint = {
@@ -135,7 +138,6 @@ function sketch(p5) {
 
     getFixtureInstances(floorsetId)
       .then((fixtureInstances) => {
-        console.log(fixtureInstances);
         fixtureInstances.forEach((fixtureInstance) => {
           gridInstance.fixtures.push(Fixture.from(p5, fixtureInstance));
         });
@@ -149,7 +151,7 @@ function sketch(p5) {
     p5.frameRate(30);
 
     document.oncontextmenu = function () {
-      const coords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+      const coords = gridInstance.toGridCoordinates(mouse);
       //console.log("Determine if should display context menu: " + coords.x + ", " + coords.y)
       if (gridInstance.isOnGrid(coords.x, coords.y)) {
         //console.log("Should not display context menu: Is on grid!")
@@ -165,8 +167,12 @@ function sketch(p5) {
   p5.draw = () => {
     p5.background(220);
     p5.push();
-    gridInstance.draw();
-    mouseFixture?.draw(gridInstance.size);
+    gridInstance.draw(mouseFixture);
+    drawEmployeeAreaSelector(
+      p5,
+      employeeAreaSelection.v1,
+      employeeAreaSelection.v2
+    );
     p5.pop();
   };
 
@@ -176,116 +182,153 @@ function sketch(p5) {
   };
 
   p5.mousePressed = () => {
+    const mouse = p5.createVector(p5.mouseX, p5.mouseY);
+
     if (window.grid.state === "place") {
-      const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) {
-        const index = gridInstance.fixtures.indexOf(rack);
-        if (index > -1) {
-          gridInstance.fixtures.splice(index, 1);
-          mouseFixture = rack;
-        }
+      const { x, y } = gridInstance.toGridCoordinates(mouse);
+      const rack = gridInstance.getFixtureAt(x, y);
+
+      if (!rack) return;
+
+      const index = gridInstance.fixtures.indexOf(rack);
+      if (index > -1) {
+        gridInstance.fixtures.splice(index, 1);
+        mouseFixture = rack;
       }
+    } else if (
+      window.grid.state === "employee_area_paint" ||
+      window.grid.state === "employee_area_erase"
+    ) {
+      employeeAreaSelection.v1 = mouse;
+      employeeAreaSelection.v2 = mouse;
     } else if (window.grid.state === "erase") {
-      const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) {
-        const index = gridInstance.fixtures.indexOf(rack);
-        if (index > -1) {
-          gridInstance.fixtures.splice(index, 1);
-        }
+      const { x, y } = gridInstance.toGridCoordinates(mouse);
+      const rack = gridInstance.getFixtureAt(x, y);
+      if (!rack) return;
+
+      const index = gridInstance.fixtures.indexOf(rack);
+      if (index > -1) {
+        gridInstance.fixtures.splice(index, 1);
       }
     } else {
-      const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+      const gridCoords = gridInstance.toGridCoordinates(mouse);
       const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
       if (rack) rack.COLOR = window.grid.paint.COLOR;
     }
   };
 
   p5.mouseDragged = async () => {
+    const mouse = p5.createVector(p5.mouseX, p5.mouseY);
+
     if (window.grid.state === "paint") {
-      const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) {
-        rack.COLOR = window.grid.paint.COLOR;
-        rack.SUPERCATEGORY_TUID = window.grid.paint.SUPERCATEGORY_TUID;
+      const { x, y } = gridInstance.toGridCoordinates(mouse);
+      const rack = gridInstance.getFixtureAt(x, y);
 
-        paintAggregator(rack);
-      }
+      if (!rack) return;
+
+      rack.COLOR = window.grid.paint.COLOR;
+      rack.SUPERCATEGORY_TUID = window.grid.paint.SUPERCATEGORY_TUID;
+
+      paintAggregator(rack.toObject());
     } else if (window.grid.state === "erase") {
-      const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) {
-        const index = gridInstance.fixtures.indexOf(rack);
-        if (index > -1) {
-          gridInstance.fixtures.splice(index, 1);
-        }
-      }
-    } else if (window.grid.state === "employee_area_paint") {
-      const { x, y } = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      const isOnGrid = gridInstance.isOnGrid(x, y);
+      const { x, y } = gridInstance.toGridCoordinates(mouse);
+      const rack = gridInstance.getFixtureAt(x, y);
 
-      if (isOnGrid) {
-        const newEmployeeArea = new EmployeeArea(p5, floorsetId, x, y);
-        addEmployeeAreaPaintAggregator(newEmployeeArea.toObject());
-      }
-    } else if (window.grid.state === "employee_area_erase") {
-      const { x, y } = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      const isOnGrid = gridInstance.isOnGrid(x, y);
+      if (!rack) return;
 
-      if (isOnGrid) {
-        const newEmployeeArea = new EmployeeArea(p5, floorsetId, x, y);
-        deleteEmployeeAreaPaintAggregator(newEmployeeArea.toObject());
+      const index = gridInstance.fixtures.indexOf(rack);
+      if (index > -1) {
+        gridInstance.fixtures.splice(index, 1);
       }
+    } else if (
+      window.grid.state === "employee_area_paint" ||
+      window.grid.state === "employee_area_erase"
+    ) {
+      employeeAreaSelection.v2 = mouse;
     } else {
       if (mouseFixture) {
-        const { x: gridX, y: gridY } = gridInstance.toGridCoordinates(
-          p5.mouseX,
-          p5.mouseY
-        );
-        if (
-          gridX < 0 ||
-          gridX > gridInstance.x ||
-          gridY < 0 ||
-          gridY > gridInstance.y
-        )
-          return;
-        mouseFixture.X_POS = gridX;
-        mouseFixture.Y_POS = gridY;
+        const { x, y } = gridInstance.toGridCoordinates(mouse);
+
+        console.log(x, y);
+
+        if (!gridInstance.isOnGrid(x, y)) return;
+
+        mouseFixture.X_POS = x;
+        mouseFixture.Y_POS = y;
       }
-      // } else if (window.draggedFixture) {
-      //     const { width, height } = window.draggedFixture;
-      //     const { x: gridX, y: gridY } = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      //     if (gridX + width > gridInstance.x || gridY + height > gridInstance.y) return;
-      //     mouseFixture = new Fixture(p5,gridInstance.fixtures.length + 1,  gridX, gridY, width, height);
-      // }
     }
   };
 
   p5.mouseReleased = () => {
-    console.log(window.draggedFixture, mouseFixture);
+    if (window.grid.state === "employee_area_paint") {
+      const v1 = gridInstance.toGridCoordinates(employeeAreaSelection.v1),
+        v2 = gridInstance.toGridCoordinates(employeeAreaSelection.v2);
+
+      const X1_POS = Math.min(v1.x, v2.x),
+        Y1_POS = Math.min(v1.y, v2.y),
+        X2_POS = Math.max(v1.x, v2.x),
+        Y2_POS = Math.max(v1.y, v2.y);
+
+      console.log(X1_POS, Y1_POS, X2_POS, Y2_POS);
+
+      bulkCreateEmployeeAreas({
+        FLOORSET_TUID: floorsetId,
+        X1_POS,
+        Y1_POS,
+        X2_POS,
+        Y2_POS,
+      })
+        .then(() => {
+          gridInstance.bulkAddEmployeeAreas(
+            floorsetId,
+            X1_POS,
+            Y1_POS,
+            X2_POS,
+            Y2_POS
+          );
+        })
+        .catch(console.error);
+
+      employeeAreaSelection.v1 = undefined;
+      employeeAreaSelection.v2 = undefined;
+      return;
+    } else if (window.grid.state === "employee_area_erase") {
+      const v1 = gridInstance.toGridCoordinates(employeeAreaSelection.v1),
+        v2 = gridInstance.toGridCoordinates(employeeAreaSelection.v2);
+
+      const X1_POS = Math.min(v1.x, v2.x),
+        Y1_POS = Math.min(v1.y, v2.y),
+        X2_POS = Math.max(v1.x, v2.x),
+        Y2_POS = Math.max(v1.y, v2.y);
+
+      bulkDeleteEmployeeAreas({
+        FLOORSET_TUID: floorsetId,
+        X1_POS,
+        Y1_POS,
+        X2_POS,
+        Y2_POS,
+      })
+        .then(() => {
+          gridInstance.bulkDeleteEmployeeAreas(X1_POS, Y1_POS, X2_POS, Y2_POS);
+        })
+        .catch(console.error);
+
+      employeeAreaSelection.v1 = undefined;
+      employeeAreaSelection.v2 = undefined;
+      return;
+    }
 
     if (mouseFixture) {
-      updateFixtureInstance(mouseFixture)
+      updateFixtureInstance(mouseFixture.toObject())
         .then(() => {
-          console.log(mouseFixture);
           gridInstance.fixtures.push(mouseFixture);
           mouseFixture = undefined;
           window.draggedFixture = undefined;
         })
         .catch(console.error);
     } else if (window.draggedFixture) {
-      const { x, y } = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+      const { x, y } = gridInstance.toGridCoordinates(mouse);
 
-      console.log({
-        ...window.draggedFixture,
-        COLOR: "#fff",
-        FLOORSET_TUID: floorsetId,
-        X_POS: x,
-        Y_POS: y,
-        ALLOCATED_LF: 1,
-        EDITOR_ID: gridInstance.fixtures.length + 1,
-      });
       createFixtureInstance(
         Fixture.from(p5, {
           ...window.draggedFixture,
@@ -298,7 +341,6 @@ function sketch(p5) {
         })
       )
         .then((data) => {
-          console.log(data);
           gridInstance.fixtures.push(
             Fixture.from(p5, {
               ...window.draggedFixture,
@@ -317,15 +359,6 @@ function sketch(p5) {
     }
   };
 }
-
-//Test function to save the canvas as an image
-// document.addEventListener("keypress", (event) => {
-//   if (event.keyCode == 83) {
-//     // "S" Key
-//     p5Instance.saveCanvas("floorsetGrid", "jpg");
-//     console.log("Saving Image!");
-//   }
-// });
 
 window.initP5 = (elementId) => {
   // Check if p5 is already rendered to prevent
