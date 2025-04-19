@@ -1,3 +1,4 @@
+
 .dimension {
     width: 45%;
 }
@@ -10,4 +11,13 @@
 .add-btn {
     background-color: var(--platos-blue);
     color: white;
+}
+
+.label-text {
+    width: 75px; 
+    min-width: 75px;
+}
+
+.input-field {
+    flex: 1;
 }

@@ -7,38 +7,42 @@
     <ModalHeader Title="Add Fixture" />
     <EditForm Model="AddFixtureModel" OnValidSubmit="OnAddFixtureSubmit">
         <ModalBody>
-            <label class="w-100 d-flex">
-                <span class="mt-2 fw-bold">Name</span>
-                <InputText @bind-value="AddFixtureModel!.NAME">Three Way Rack</InputText>
-            </label>
-            <div class="row">
-                <div class="col-md-5">
-                    <label class="w-100 d-flex">
-                        <span class="mt-2 fw-bold">Length</span>
-                        <InputNumber @bind-Value="AddFixtureModel!.LENGTH" />
-                    </label>
+            <div class="w-100 d-flex flex-column gap-2">
+                <label class="d-flex align-items-center">
+                    <span class="mt-2 fw-bold label-text">Name</span>
+                    <InputText class="w-100 input-field" @bind-value="AddFixtureModel!.NAME">Three Way Rack</InputText>
+                </label>
+
+                <div class="row d-flex align-items-center gx-0">
+                    <div class="col-5">
+                        <label class="d-flex align-items-center">
+                            <span class="fw-bold label-text">Length</span>
+                            <InputNumber class="form-control" @bind-Value="AddFixtureModel!.LENGTH" />
+                        </label>
+                    </div>
+                    <div class="col-auto my-auto mx-4">
+                        <i class="fa-solid fa-xmark mx-2"></i>
+                    </div>
+                    <div class="col-5">
+                        <label class="d-flex align-items-center">
+                            <span class="fw-bold label-text">Width</span>
+                            <InputNumber class="form-control" @bind-Value="AddFixtureModel!.WIDTH" />
+                        </label>
+                    </div>
                 </div>
-                <div class="col-md-auto my-auto">
-                    <i class="fa-solid fa-xmark mx-auto mt-4 ms-3"></i>
-                </div>
-                <div class="col-md-5">
-                    <label class="w-100 d-flex">
-                        <span class="mt-2 fw-bold">Width</span>
-                        <InputNumber @bind-Value="AddFixtureModel!.WIDTH" />
-                    </label>
-                </div>
+
+
+                <label class="w-100 d-flex">
+                    <span class="mt-2 fw-bold label-text">Linear Feet Capacity</span>
+                    <InputNumber class="w-100 input-field" @bind-Value="AddFixtureModel!.LF_CAP" />
+                </label>
+
+                <label class="w-100 d-flex">
+                    <span class="fw-bold">Linear Feet: @AddFixtureModel!.WIDTH * @AddFixtureModel!.LENGTH</span>
+                </label>
+
+                <InputFile OnChange="OnImageUpload" />
             </div>
-
-            <label class="w-100 d-flex">
-                <span class="mt-2 fw-bold">Linear Feet Capacity</span>
-                <InputNumber @bind-Value="AddFixtureModel!.LF_CAP" />
-            </label>
-
-            <label class="w-100 d-flex">
-                <span class="fw-bold">Linear Feet: @AddFixtureModel!.WIDTH * @AddFixtureModel!.LENGTH</span>
-            </label>
-
-            <InputFile OnChange="OnImageUpload" />
         </ModalBody>
         <ModalFooter OnCancelClick="ClearAddFixtureModel">
             <Button class="btn add-btn ms-auto" Variant="primary" type="submit" data-bs-dismiss="modal">Add</Button>
