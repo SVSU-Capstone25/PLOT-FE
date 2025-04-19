@@ -1,4 +1,6 @@
 @inject StoresHttpClient StoresHttpClient
+@inject UsersHttpClient UsersHttpClient
+
 
 <Modal @attributes="Attributes" SizeClass="modal-lg">
     <ModalHeader Title="Update Store Information" />
@@ -6,7 +8,7 @@
 
         <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId" />
 
-        <ModalFooter OnCancelClick="ClearEditStoreModel">
+        <ModalFooter>
             <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
                 Update Store
             </Button>
@@ -18,6 +20,7 @@
     [Parameter] public required Data.Models.Stores.Store Store { get; set; }
     [Parameter] public required EventCallback UpdateStores { get; set; }
     [Parameter] public required int StoreId { get; set; }
+    [Parameter] public required List<Data.Models.Users.UserDTO> usersToAdd { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? EditStoreModel { get; set; }
 
@@ -45,6 +48,20 @@
 
         if (EditStoreModel == null) return;
 
+
+        if (usersToAdd.Count > 0)
+        {
+            EditStoreModel.USER_TUIDS = "";
+            foreach (var user in usersToAdd)
+            {
+                EditStoreModel.USER_TUIDS += user.TUID + ",";
+            }
+            if (EditStoreModel.USER_TUIDS != null)
+            {
+                EditStoreModel.USER_TUIDS = EditStoreModel.USER_TUIDS.TrimEnd(',');
+            }
+        }
+
         var response = await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
 
         Console.WriteLine(response);
@@ -53,7 +70,11 @@
 
         await UpdateStores.InvokeAsync();
 
-        ClearEditStoreModel();
+        usersToAdd.Clear();
+
+        //ClearEditStoreModel();
+
+        StateHasChanged();
     }
 
     private void ClearEditStoreModel()
