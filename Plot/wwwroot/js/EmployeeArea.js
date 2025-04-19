@@ -18,8 +18,8 @@ class EmployeeArea {
   draw(gridSize) {
     this.p5.push();
     this.p5.fill("red");
-    this.p5.stroke(0);
-    this.p5.strokeWeight(3);
+    // this.p5.stroke(0);
+    // this.p5.strokeWeight(3);
     this.p5.rect(
       this.X_POS * gridSize,
       this.Y_POS * gridSize,

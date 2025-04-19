@@ -13,7 +13,7 @@ export async function updateFixtureInstance(fixture) {
     })
   );
   return fetch(
-    `${window.location.origin}:8085/api/fixtures/update-fixture-instance`,
+    `${window.location.protocol}//${window.location.host}:8085/api/fixtures/update-fixture-instance`,
     {
       method: "PATCH",
       headers: {
@@ -33,7 +33,7 @@ export async function updateFixtureInstance(fixture) {
  */
 export async function createFixtureInstance(fixture) {
   return fetch(
-    `${window.location.origin}:8085/api/fixtures/create-fixture-instance`,
+    `${window.location.protocol}//${window.location.hostname}:8085/api/fixtures/create-fixture-instance`,
     {
       method: "POST",
       headers: {
@@ -52,11 +52,30 @@ export async function createFixtureInstance(fixture) {
  * @returns {Promise<boolean>}
  */
 export async function createEmployeeAreas(employeeAreas) {
-  console.log(employeeAreas);
   return fetch(
-    `${window.location.origin}:8085/api/fixtures/add-employee-areas`,
+    `${window.location.protocol}//${window.location.hostname}:8085/api/fixtures/add-employee-areas`,
     {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${await getCookie("Auth")}`,
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      credentials: "include",
+      body: JSON.stringify(employeeAreas),
+    }
+  ).then((data) => data.ok);
+}
+
+/**
+ * @argument {EmployeeArea[]} employeeAreas
+ * @author Clayton Cook <work@claytonleonardcook.com>
+ * @returns {Promise<boolean>}
+ */
+export async function deleteEmployeeAreas(employeeAreas) {
+  return fetch(
+    `${window.location.protocol}//${window.location.hostname}:8085/api/fixtures/delete-employee-areas`,
+    {
+      method: "DELETE",
       headers: {
         Authorization: `Bearer ${await getCookie("Auth")}`,
         "Content-Type": "application/json; charset=utf-8",

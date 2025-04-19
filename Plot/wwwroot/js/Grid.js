@@ -6,13 +6,14 @@ import EmployeeArea from "./EmployeeArea.js";
  * @author Clayton Cook <work@claytonleonardcook.com>
  */
 class Grid {
+  /** @type {Map<string, EmployeeArea>} */
+  employeeAreas;
+
   /**
    * @param {number} size
    * @param {number} scale
    * @param {number} width
    * @param {number} height
-   * @param {Fixture[]} fixtures
-   * @param {EmployeeArea[]} employeeAreas
    * @param {p5.Color | string} color
    */
   constructor(p5) {
@@ -20,7 +21,7 @@ class Grid {
     this.size = 30;
     this.scale = 1;
     this.fixtures = [];
-    this.employeeAreas = [];
+    this.employeeAreas = new Map();
     this.width = 1;
     this.height = 1;
     this.resize();
@@ -28,6 +29,31 @@ class Grid {
 
   addFixtureInstanceToGrid(...args) {
     this.fixtures.push(new Fixture(this.p5, ...args));
+  }
+
+  /**
+   * TODO: Write documentation
+   * @param {EmployeeArea[]} employeeAreas
+   */
+  addEmployeeAreas(employeeAreas) {
+    employeeAreas.forEach((employeeArea) =>
+      this.employeeAreas.set(
+        [employeeArea.X_POS, employeeArea.Y_POS].join("-"),
+        EmployeeArea.from(this.p5, employeeArea)
+      )
+    );
+  }
+
+  /**
+   * TODO: Write documentation
+   * @param {EmployeeArea[]} employeeAreas
+   */
+  deleteEmployeeAreas(employeeAreas) {
+    employeeAreas.forEach((employeeArea) =>
+      this.employeeAreas.delete(
+        [employeeArea.X_POS, employeeArea.Y_POS].join("-")
+      )
+    );
   }
 
   toGridCoordinates(x, y) {
@@ -84,7 +110,11 @@ class Grid {
       this.p5.line(0, y * this.size, this.width * this.size, y * this.size);
     }
 
-    this.employeeAreas.forEach((employeeArea) => employeeArea.draw(this.size));
+    const employeeAreas = this.employeeAreas.values();
+
+    for (const employeeArea of employeeAreas) {
+      employeeArea.draw(this.size);
+    }
 
     for (const rack of this.fixtures) {
       rack.draw(this.size);

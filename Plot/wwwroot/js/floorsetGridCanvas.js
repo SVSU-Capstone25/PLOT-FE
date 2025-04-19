@@ -1,11 +1,12 @@
 import Fixture from "./Fixture.js";
 import EmployeeArea from "./EmployeeArea.js";
 import Grid from "./Grid.js";
-import { getFixtureInstances } from "./getters.js";
+import { getFixtureInstances, getEmployeeAreas } from "./getters.js";
 import {
   updateFixtureInstance,
   createFixtureInstance,
   createEmployeeAreas,
+  deleteEmployeeAreas,
 } from "./setters.js";
 
 /**
@@ -82,10 +83,21 @@ function sketch(p5) {
     });
   });
 
-  const employeeAreaPaintAggregator = createDebouncedAggregator(
+  const addEmployeeAreaPaintAggregator = createDebouncedAggregator(
     500,
     (employeeAreas) => {
-      createEmployeeAreas(employeeAreas).then(console.log).catch(console.error);
+      createEmployeeAreas(employeeAreas)
+        .then(() => gridInstance.addEmployeeAreas(employeeAreas))
+        .catch(console.error);
+    }
+  );
+
+  const deleteEmployeeAreaPaintAggregator = createDebouncedAggregator(
+    500,
+    (employeeAreas) => {
+      deleteEmployeeAreas(employeeAreas)
+        .then(() => gridInstance.deleteEmployeeAreas(employeeAreas))
+        .catch(console.error);
     }
   );
 
@@ -109,6 +121,17 @@ function sketch(p5) {
       .replace("/floorset-editor/", "")
       .split("/")
       .map(Number)[1];
+
+    getEmployeeAreas(floorsetId)
+      .then((employeeAreas) => {
+        employeeAreas.forEach((employeeArea) => {
+          gridInstance.employeeAreas.set(
+            [employeeArea.X_POS, employeeArea.Y_POS].join("-"),
+            EmployeeArea.from(p5, employeeArea)
+          );
+        });
+      })
+      .catch(console.error);
 
     getFixtureInstances(floorsetId)
       .then((fixtureInstances) => {
@@ -217,12 +240,16 @@ function sketch(p5) {
 
       if (isOnGrid) {
         const newEmployeeArea = new EmployeeArea(p5, floorsetId, x, y);
-        employeeAreaPaintAggregator(newEmployeeArea.toObject());
+        addEmployeeAreaPaintAggregator(newEmployeeArea.toObject());
       }
-
-      console.log("Employee Area Paint");
     } else if (window.grid.state === "employee_area_erase") {
-      console.log("Employee Area Erase");
+      const { x, y } = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
+      const isOnGrid = gridInstance.isOnGrid(x, y);
+
+      if (isOnGrid) {
+        const newEmployeeArea = new EmployeeArea(p5, floorsetId, x, y);
+        deleteEmployeeAreaPaintAggregator(newEmployeeArea.toObject());
+      }
     } else {
       if (mouseFixture) {
         const { x: gridX, y: gridY } = gridInstance.toGridCoordinates(
