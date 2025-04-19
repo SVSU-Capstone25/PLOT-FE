@@ -55,6 +55,9 @@
     @* [Parameter] public EventCallback UpdateFixtures { get; set; } *@
 
     // private int TotalLinearFeet = 0;
+    [Parameter] public required Data.Models.Fixtures.FixtureModel FixtureModal { get; set; }
+    [Parameter] public required EventCallback UpdateFixtureModel { get; set; }
+    [Parameter] public required int FixtureTUID { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; }
 
