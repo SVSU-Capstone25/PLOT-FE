@@ -1,70 +1,56 @@
 @* @inject IJSRuntime JS *@
-<!-- Author: Tristan Calay
+<!-- Author: Andrew Fulton, Andrew Kennedy
 The floorset fixture config modal allows right-click editing of a fixture on the floorset grid.
 It allows changing the category, hanging, and notes of a fixture.
 It also allows you to delete a fixture on the grid. -->
 @* Add fixture edit modal to the floorset editor. - Tristan Calay *@
 
-<div id="fixtureContextMenu" class="dropdown-menu" role="menu">
+<div id="fixtureContextMenu" class="dropdown-menu z-0  flex-column  justify-content-center" role="menu">
     
-    <p class="dropdown-header">Fixture Configuration</p>
-    <h6 class="dropdown-item">Two Way Rack</h6>
+    <div >
+        <p class="px-4 dropdown-header">Fixture Configuration</p>
+        <h5 class="px-4">Two Way Rack</h5>
+    </div>
 
     <div class="dropdown-divider"></div>
 
-    <div class="d-flex flex-row gap-2 align-items-center px-2">
-            <p class="d-flex justify-content-center m-0" for="exampleFormControlSelect1">Select Category</p>
-    </div>
+    <div class="d-flex flex-column gap-2 px-2">
+        <div class="d-flex flex-row gap-2 align-items-center px-2">
+                <p class="d-flex justify-content-center m-0 w-100" for="exampleFormControlSelect1">Select Category</p>
+        </div>
 
-    <OptionInput ID="categorySelectOptionInput" Class="optionInput" label=""
-                optionsText="@menuCategoryItems" optionsValues="@menuCategoryItems"
-                OnSelectFunction="SetFixtureCategory" />
+        <OptionInput ID="categorySelectOptionInput" Class="optionInput" label=""
+                    optionsText="@menuCategoryItems" optionsValues="@menuCategoryItems"
+                    OnSelectFunction="SetFixtureCategory" />
+    </div>
+    
 
     <br>
 
-    <div class="d-flex flex-row gap-2 align-items-center px-2">
-        <div class="col-auto pe-0">
-            <i class="fa-solid fa-chevron-down"></i>
+
+    <div class="d-flex flex-column gap-2 px-2">
+        <div class="d-flex flex-row gap-2 align-items-center px-2">
+                <p class="d-flex justify-content-center m-0 w-100" for="exampleFormControlSelect1">Select Hanging</p>
         </div>
 
-        <div class="col ps-0">
-            <div class="form-group">
-
-                <select style="border: none;" class="form-control" id="CategorySelectFormGroup">
-                    <option>Single Hung</option>
-                    <option>Double Hung</option>
-                    <option>Triple Hung</option>
-                    <option>Quadruple Hung</option>
-                </select>
-                        
-                
-                <!-- <OptionInput ID="hangingSelectOptionInput" Class="optionInput" label="Select fixture hanging"
-                optionsText="@menuHangingOptions" optionsValues="@menuHangingOptions"
-                OnSelectFunction="SetFixtureHanging" /> -->
-                
-                <!-- <select style="border: none;" class="form-control" id="CategorySelectFormGroup">
-                    @foreach(string option in menuHangingOptions)
-                    {
-                        <option>@option</option>
-                    }
-                </select> -->
-                <label class="dropdown-header" for="exampleFormControlSelect1">Select Hanging</label>
-            </div>
-        </div>
+        <OptionInput ID="hangingSelectOptionInput" Class="optionInput" label=""
+                    optionsText="@menuHangingOptions" optionsValues="@menuHangingOptions"
+                    OnSelectFunction="SetFixtureHanging" />
     </div>
+    
 
     <div class="dropdown-divider"></div>
 
 
-    <div class="d-flex flex-row gap-2 align-items-center px-2">
+    <div class="d-flex flex-column gap-2 px-2">
+        <div class="d-flex flex-row gap-2 align-items-center px-2">
             <i class="fa-solid fa-pencil"></i>
             <p class="d-flex justify-content-center m-0">Fixture Notes</p>
+        </div>
+        <textarea class=" d-flex justify-self-center"  style="border: none;" placeholder="Notes">@strFixtureNotes</textarea>
     </div>
 
-    <!-- <textarea style="border: none;" placeholder="Notes">@strFixtureNotes</textarea> -->
-    <div class="d-flex flex-row gap-2 align-items-center px-2">
-        <textarea style="border: none;" placeholder="Notes">@strFixtureNotes</textarea>
-    </div>
+
 
 
     <div class="dropdown-divider"></div>

@@ -154,6 +154,10 @@ function sketch(p5) {
 
     canvas.elt.addEventListener("mousewheel", onZoomScroll);
 
+    // Prevent the browser context menu from showing on right click
+    document.getElementsByTagName("canvas")[0].addEventListener("contextmenu", (e) => e.preventDefault());
+
+
   };
 
   p5.draw = () => {
@@ -175,8 +179,12 @@ function sketch(p5) {
 
   p5.mousePressed = () => {
     const mouse = p5.createVector(p5.mouseX, p5.mouseY);
-
+    let fixtureMenu = document.getElementById("fixtureContextMenu");
     if (p5.mouseButton === "left") {
+      if (!isOverElement(p5.mouseX, p5.mouseY, fixtureMenu.getBoundingClientRect())) {
+        showDropdown(false);
+      }
+
       if (window.grid.state === "place") {
         const { x, y } = gridInstance.toGridCoordinates(mouse);
         const rack = gridInstance.getFixtureAt(x, y);
@@ -188,11 +196,11 @@ function sketch(p5) {
           gridInstance.fixtures.splice(index, 1);
           mouseFixture = rack;
         }
-    } else if (
-      window.grid.state === "employee_area_paint" ||
-      window.grid.state === "employee_area_erase"
-    ) {
-      employeeAreaSelection.v1 = mouse;
+      } else if (
+        window.grid.state === "employee_area_paint" ||
+        window.grid.state === "employee_area_erase"
+      ) {
+        employeeAreaSelection.v1 = mouse;
         employeeAreaSelection.v2 = mouse;
       } else if (window.grid.state === "erase") {
         const { x, y } = gridInstance.toGridCoordinates(mouse);
@@ -202,17 +210,18 @@ function sketch(p5) {
         const index = gridInstance.fixtures.indexOf(rack);
         if (index > -1) {
           gridInstance.fixtures.splice(index, 1);
-          }
+        }
       } else {
         const gridCoords = gridInstance.toGridCoordinates(mouse);
         const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
         if (rack) rack.COLOR = window.grid.paint.COLOR;
       }
+
     }
 
     if (p5.mouseButton === "right") {
       const gridCoords = gridInstance.toGridCoordinates(p5.mouseX, p5.mouseY);
-      showDropdown(p5.mouseX, p5.mouseY);
+      fixtureMenu = showDropdown(true, p5.mouseX, p5.mouseY);
     }
 
   };
@@ -357,17 +366,50 @@ function sketch(p5) {
         })
         .catch(console.error);
     }
+
   };
 }
 
-function showDropdown(x, y) {
-  console.log(x, y);
+function showDropdown(isShowing, x = 0, y = 0) {
   let dropdown = document.getElementById('fixtureContextMenu');
-  dropdown.style.left = (x + 40) + 'px';
-  dropdown.style.top = y + 'px';
-  dropdown.style.position = "absolute";
-  dropdown.style.display = 'block';
+  const menuWidth = 288;
+  console.log(isShowing);
+  if (isShowing) {
+    if (x < window.innerWidth - (window.innerWidth * 0.2)) {
+      dropdown.style.left = (x + 40) + 'px';
+    }
+    else {
+      dropdown.style.left = (x - menuWidth - 40) + 'px';
+    }
+
+    if (y < window.innerHeight - (window.innerHeight * 0.5)) {
+      dropdown.style.top = y + 'px';
+    }
+    else {
+      dropdown.style.top = (y - (window.innerHeight*0.4)) + 'px';
+    }
+    dropdown.style.position = "absolute";
+    dropdown.style.display = 'flex';
+    dropdown.style.width = menuWidth + "px";
+    console.log(x, y);
+  }
+  else {
+    dropdown.style.display = 'none';
+  }
+
+
 }
+
+function isOverElement(mouseX, mouseY, menuRect) {
+  return (
+    mouseY < menuRect.bottom &&
+    mouseY > menuRect.top &&
+    mouseX < menuRect.right &&
+    mouseX > menuRect.left
+  );
+}
+
+
 
 //Test function to save the canvas as an image
 // document.addEventListener("keypress", (event) => {
@@ -477,6 +519,7 @@ window.captureFloorsetThumbnail = async () => {
       p5.setup = () => {
         p5.createCanvas(width, height);
         p5.background(255);
+
 
         //Create a new grid and copy the primary grid dimensions
         const grid = new Grid(p5);
