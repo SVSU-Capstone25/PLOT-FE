@@ -23,5 +23,5 @@ public record UpdateFixtureModel
     public int? HEIGHT { get; set; }
     public int? LF_CAP { get; set; }
     public int? STORE_TUID { get; set; }
-    public IFormFile? ICON { get; set; }
+    public byte[]? ICON { get; set; }
 }
