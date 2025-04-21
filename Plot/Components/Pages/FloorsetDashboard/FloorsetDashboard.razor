@@ -71,7 +71,7 @@ Author: Andrew Fulton (3/13/2025)  *@
                     <span class="d-inline-block text-truncate" style="max-width: 100%;">@Floorset.NAME</span>
                 </a>
             </CardTitle>
-            <Dropdown Class="Dropdown" Id="@Floorset.TUID.ToString()" LabelText="Floorset">
+            <Dropdown id="@Floorset.TUID.ToString()" LabelText="Floorset">
                 <DropdownLink data-bs-toggle="modal" data-bs-target="@($"#edit-floorset-{Floorset.TUID}")"
                     Icon="fa-solid fa-pen-to-square">
                     Edit
