@@ -1,0 +1,15 @@
+.my-2 {
+    margin-right: 4.5rem;
+}
+
+.mt-2 {
+    margin-right: 4.5rem;
+}
+.label-text {
+    width: 80px; 
+    min-width: 80px;
+}
+
+.input-field {
+    flex: 1;
+}

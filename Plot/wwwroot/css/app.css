@@ -581,11 +581,16 @@ h1:focus {
     background-color: rgb(235, 116, 116);
 }
 
+.circle.no-hover:hover {
+    background-color: #d8d8d8;
+}
+
 /* CSS for name under circle */
 .circle-name {
     margin-top: 8px;
     font-size: 14px;
 }
+
 
 /* utility width class */
 .w-85 {

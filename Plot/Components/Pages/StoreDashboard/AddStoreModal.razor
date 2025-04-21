@@ -1,4 +1,5 @@
 @inject StoresHttpClient StoresHttpClient
+@inject UsersHttpClient UsersHttpClient
 
 <Modal @attributes="Attributes" SizeClass="modal-lg">
     <ModalHeader Title="Create Store" />
@@ -16,6 +17,8 @@
 
 @code {
     [Parameter] public required EventCallback UpdateStores { get; set; }
+
+    [Parameter] public required List<Data.Models.Users.UserDTO> usersToAdd { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? AddStoreModel { get; set; }
 
@@ -50,8 +53,25 @@
                 USER_TUIDS = ""
             };
 
-            await StoresHttpClient.CreateStore(Store);
+            if (usersToAdd.Count > 0)
+            {
+                foreach (var user in usersToAdd)
+                {
+                    Store.USER_TUIDS += user.TUID + ",";
+                }
+                if (Store.USER_TUIDS != null)
+                {
+                    Store.USER_TUIDS = Store.USER_TUIDS.TrimEnd(',');
+                }
+            }
 
+            Console.WriteLine(Store.USER_TUIDS);
+
+            Console.WriteLine(Store);
+
+
+            var response = await StoresHttpClient.CreateStore(Store);
+            Console.WriteLine("CREATE STORE RESPONSE: " + response);
             await UpdateStores.InvokeAsync();
 
             ClearAddStoreModel();
@@ -62,4 +82,6 @@
     {
         AddStoreModel = new();
     }
+
+
 }

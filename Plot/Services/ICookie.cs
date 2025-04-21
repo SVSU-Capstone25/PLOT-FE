@@ -1,27 +1,38 @@
 using Microsoft.JSInterop;
+using Plot.Data.Models.Env;
 
 namespace Plot.Services;
 
 public interface ICookie
 {
-    public Task SetValue(string key, string value, int? days = null);
+    public Task SetValue(string key, string value, int? minuets = null);
     public Task<string> GetValue(string key, string def = "");
 }
 
 public class Cookie : ICookie
 {
+    private const int _DEFAULT_EXPIRATION_TIME = 30;
     readonly IJSRuntime JSRuntime;
     string expires = "";
+    
 
-    public Cookie(IJSRuntime jsRuntime)
+    public Cookie(IJSRuntime jsRuntime,EnvironmentSettings envSettings)
     {
         JSRuntime = jsRuntime;
-        ExpireDays = 300;
+        
+        if (int.TryParse(envSettings.auth_expiration_time, out int auth_expiration_time))
+        {
+            ExpireMinutes = auth_expiration_time;
+        }
+        else
+        {
+            ExpireMinutes = _DEFAULT_EXPIRATION_TIME;
+        }
     }
 
-    public async Task SetValue(string key, string value, int? days = null)
+    public async Task SetValue(string key, string value, int? minutes = null)
     {
-        var curExp = (days != null) ? (days > 0 ? DateToUTC(days.Value) : "") : expires;
+        var curExp = (minutes != null) ? (minutes > 0 ? DateToUTC(minutes.Value) : "") : expires;
         await SetCookie($"{key}={value}; expires={curExp}; path=/");
     }
 
@@ -48,10 +59,10 @@ public class Cookie : ICookie
         return await JSRuntime.InvokeAsync<string>("eval", $"document.cookie");
     }
 
-    public int ExpireDays
+    public int ExpireMinutes
     {
         set => expires = DateToUTC(value);
     }
 
-    private static string DateToUTC(int days) => DateTime.Now.AddDays(days).ToUniversalTime().ToString("R");
+    private static string DateToUTC(int minuets) => DateTime.Now.AddMinutes(minuets).ToUniversalTime().ToString("R");
 }
