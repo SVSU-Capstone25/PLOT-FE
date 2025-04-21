@@ -2,8 +2,8 @@
     <div class="d-flex flex-row gap-2">
         <div class="d-flex flex-column gap-2">
             <label class="w-100 d-flex gap-2">
-                
-                
+
+
 
 
                 <span class="fw-bold">Name</span>
@@ -74,18 +74,18 @@
 </ModalBody>
 
 @code {
-    [Parameter] public Data.Models.Stores.UpdatePublicInfoStore? AddUpdateStoreModel { get; set; }
-    [Parameter] public string? StoreName { get; set; } = "";
-    [Parameter] public required int StoreId { get; set; }
+    [Parameter] public Data.Models.Fixtures.UpdateFixtureModel? AddUpdateFixtureModel { get; set; }
+    [Parameter] public string? FixtureModelName { get; set; } = "";
+    [Parameter] public required int FixtureModelId { get; set; }
 
     private string ImageSrc = "";
 
     protected override void OnInitialized()
     {
-        if (AddUpdateStoreModel != null)
+        if (AddUpdateFixtureModel != null)
         {
-            ImageSrc = AddUpdateStoreModel.BLUEPRINT_IMAGE != null ?
-            $"data:image/jpeg;base64,{Convert.ToBase64String(AddUpdateStoreModel.BLUEPRINT_IMAGE)}" : "";
+            ImageSrc = AddUpdateFixtureModel.ICON != null ?
+            $"data:image/jpeg;base64,{Convert.ToBase64String(AddUpdateFixtureModel.ICON)}" : "";
         }
 
     }
@@ -97,9 +97,9 @@
         await e.File.OpenReadStream().CopyToAsync(ms);
         var bytes = ms.ToArray();
 
-        if (AddUpdateStoreModel != null)
+        if (AddUpdateFixtureModel != null)
         {
-            AddUpdateStoreModel!.BLUEPRINT_IMAGE = bytes;
+            AddUpdateStoreModel!.ICON = bytes;
         }
     }
 }
