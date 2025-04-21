@@ -1,0 +1,16 @@
+<h5 @attributes="Attributes">
+    @if (Icon != null)
+    {
+        <i class="fa-fw @Icon"></i>
+    }
+    @ChildContent
+</h5>
+
+@code {
+    //String reference to a FontAwesome icon to display next to the label.
+    [Parameter] public String? Icon { get; set; }
+
+    [Parameter] public required RenderFragment ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+}
