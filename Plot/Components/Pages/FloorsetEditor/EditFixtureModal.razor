@@ -9,7 +9,7 @@
         @*
         <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId" />
         *@
-
+        <AddUpdateFixtureModalBody />
         <ModalFooter OnCancelClick="ClearEditStoreModel">
             <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
                 Update Store
@@ -74,30 +74,65 @@
 }
 
 @code {
-
-    @* [Parameter] public EventCallback UpdateFixtures { get; set; } *@
-
-    // private int TotalLinearFeet = 0;
-    [Parameter] public required Data.Models.Fixtures.FixtureModel FixtureModal { get; set; }
+    [Parameter] public required Data.Models.Fixtures.FixtureModel Model { get; set; }
     [Parameter] public required EventCallback UpdateFixtureModel { get; set; }
-    [Parameter] public required int FixtureTUID { get; set; }
+    [Parameter] public required int FixtureModelId { get; set; }
 
-    [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; }
+    [SupplyParameterFromForm] private Data.Models.Fixtures.UpdateFixtureModel? EditFixtureModel { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
     protected override void OnInitialized()
     {
-        EditFixtureModel ??= new();
+        EditFixtureModel ??= new Data.Models.Fixtures.UpdateFixtureModel
+        {
+            NAME = Model.NAME!,
+            WIDTH = Model.WIDTH,
+            HEIGHT = Model.HEIGHT,
+            LF_CAP = Model.LF_CAP,
+
+            ICON = Model.ICON,
+
+        };
     }
 
-    public async Task OnEditFixtureSubmit()
+    private async Task OnEditStoreSubmit()
     {
-        await Task.Run(() => Console.WriteLine("Edit Fixture"));
+        await Task.Run(() => Console.WriteLine("Update store: " + StoreId));
 
-        // TODO: Change User.TUID to store ID
-        /* if (EditFixtureModel != null)
+        if (EditStoreModel == null) return;
+
+
+        if (usersToAdd.Count > 0)
         {
-        var response = await FixturesHttpClient.UpdateFixtureModel(User.TUID, EditFixtureModel);
-        await UpdateFixtures.InvokeAsync();
-        } */
+            EditStoreModel.USER_TUIDS = "";
+            foreach (var user in usersToAdd)
+            {
+                EditStoreModel.USER_TUIDS += user.TUID + ",";
+            }
+            if (EditStoreModel.USER_TUIDS != null)
+            {
+                EditStoreModel.USER_TUIDS = EditStoreModel.USER_TUIDS.TrimEnd(',');
+            }
+        }
+
+        var response = await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
+
+        Console.WriteLine(response);
+
+        if (response != System.Net.HttpStatusCode.OK) return;
+
+        await UpdateStores.InvokeAsync();
+
+        usersToAdd.Clear();
+
+        //ClearEditStoreModel();
+
+        StateHasChanged();
+    }
+
+    private void ClearEditStoreModel()
+    {
+        EditStoreModel = new();
     }
 }
