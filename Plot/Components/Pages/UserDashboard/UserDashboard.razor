@@ -78,7 +78,7 @@ Added a loader popup when a user is added.
 
                                 @* Role Options Dropdown menu with id  dynamically reflecting the id of the user Provides Edit and Delete options which open Edit User and Delete User Modals *@
 
-                                <Dropdown Id="@($"Dropdown-{user.TUID}")" LabelText="Role">
+                                <Dropdown id="@($"Dropdown-{user.TUID}")" LabelText="Role">
                                     <DropdownLink Icon="fa-solid fa-pen-to-square" data-bs-toggle="modal"
                                         data-bs-target="@($"#update-user-modal-{user.TUID}")">Edit</DropdownLink>
                                     <DropdownLink Icon="fa-regular fa-trash-can" data-bs-toggle="modal"
