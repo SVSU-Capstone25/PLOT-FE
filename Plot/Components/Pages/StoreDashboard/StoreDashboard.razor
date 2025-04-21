@@ -21,6 +21,7 @@ Author: Andrew Fulton (3/12/2025)
 @inject IAuthorizationService AuthorizationService
 @inject JwtService JwtService
 @inject IJSRuntime JS
+@inject ClaimParserService ClaimParserService
 
 @using System.Drawing;
 @using System.IO;
@@ -254,11 +255,18 @@ Author: Andrew Fulton (3/12/2025)
 
             if(authResult.Succeeded)
             {
-                Console.WriteLine("Manager good");
+                Console.WriteLine("Manager good ");
+                response = await StoresHttpClient.GetListOfStores();
+                Console.WriteLine(response != null ? response.ToString() : "Response is null");
                 //response = await StoresHttpClient.GetStoreAccessByUserId(currentUser.TUID);
             }else
             {
-                response = await StoresHttpClient.GetListOfStores();
+                var currentUserTUID=ClaimParserService.GetUserId(userPrincipal);
+
+                if(currentUserTUID !=null)
+                {
+                    response = await StoresHttpClient.GetStoreAccessByUserId(currentUserTUID.Value);
+                }
             }
 
             if (response != null)
@@ -296,11 +304,16 @@ Author: Andrew Fulton (3/12/2025)
         StateHasChanged();
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        dotNet = DotNetObjectReference.Create(this);
-        await UpdateStores();
-        await UpdateUsers();
+        if(firstRender)
+        {
+            dotNet = DotNetObjectReference.Create(this);
+            await UpdateStores();
+            await UpdateUsers();
+            StateHasChanged();
+        }
+        
     }
 
     private async Task OnEditClick(Data.Models.Stores.Store store)
