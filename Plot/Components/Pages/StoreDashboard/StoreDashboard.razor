@@ -13,10 +13,13 @@ Author: Andrew Fulton (3/12/2025)
 *@
 
 @page "/store-dashboard"
-
+@using Plot.Services
 @inject NavigationManager Navigation
 @inject StoresHttpClient StoresHttpClient
 @inject UsersHttpClient UsersHttpClient
+@inject ICookie cookie
+@inject IAuthorizationService AuthorizationService
+@inject JwtService JwtService
 @inject IJSRuntime JS
 
 @using System.Drawing;
@@ -222,13 +225,46 @@ Author: Andrew Fulton (3/12/2025)
 
 
 
+    // private async Task UpdateStores()
+    // {
+    //     var response = await StoresHttpClient.GetListOfStores();
+
+    //     if (response != null)
+    //     {
+    //         stores = response;
+    //     }
+    // }
+
+
     private async Task UpdateStores()
     {
-        var response = await StoresHttpClient.GetListOfStores();
+        var token = await cookie.GetValue("Auth");
 
-        if (response != null)
+        var userPrincipal = JwtService.GetValidClaims(token);
+
+        //var currentUser = await AuthHttpClient.GetCurrentUser();
+
+        if (userPrincipal != null)
         {
-            stores = response;
+            //ar role = currentUser.ROLE;
+
+            var authResult = await AuthorizationService.AuthorizeAsync(userPrincipal, "Manager");
+
+            var response= new List<Data.Models.Stores.Store>();
+
+            if(authResult.Succeeded)
+            {
+                Console.WriteLine("Manager good");
+                //response = await StoresHttpClient.GetStoreAccessByUserId(currentUser.TUID);
+            }else
+            {
+                response = await StoresHttpClient.GetListOfStores();
+            }
+
+            if (response != null)
+            {
+                stores = response;
+            }
         }
     }
 

@@ -12,7 +12,7 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [AllowAnonymous]
 @inject NavigationManager Navigation
-@inject AuthService AuthService
+@inject AuthHttpClient AuthHttpClient
 @inject ICookie cookie
 
 
@@ -84,12 +84,13 @@
     {
         if (LoginModel != null)
         {
-            var token = await AuthService.LoginAsync(LoginModel);
+            var token = await AuthHttpClient.LoginAsync(LoginModel);
 
             Console.WriteLine(token);
 
             if (token != null)
             {
+                
                 await cookie.SetValue("Auth", token.Token);
             }
         }

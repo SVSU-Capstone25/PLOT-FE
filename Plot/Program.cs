@@ -45,6 +45,8 @@ builder.Services.AddScoped<StoresHttpClient>();
 builder.Services.AddScoped<UsersHttpClient>();
 builder.Services.AddScoped<SalesHttpClient>();
 builder.Services.AddScoped<ICookie, Cookie>();
+builder.Services.AddScoped<JwtService>();
+
 
 
 
