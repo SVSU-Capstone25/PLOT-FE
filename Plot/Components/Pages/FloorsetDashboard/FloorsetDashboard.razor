@@ -95,16 +95,16 @@ Author: Andrew Fulton (3/13/2025)  *@
         <Modal id="@($"delete-floorset-{Floorset.TUID}")" class="standard">
             <ModalHeader Title="Confirm Deletion" Variant="danger" />
             <form @onsubmit="async () => {
-                await OnDeleteFloorsetSubmit(Floorset.TUID);
-                deleteTextInput = string.Empty;}">
+                        await OnDeleteFloorsetSubmit(Floorset.TUID);
+                        deleteTextInput = string.Empty;}">
             @code {
                 private string? deleteTextInput;
                 private bool isDisabled => deleteTextInput != "DELETE";
             }
             <ModalBody>
                 <h5>Are you SURE you want to delete this Floorset?</h5>
-                <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
-                    @bind-value="deleteTextInput" @bind-value:event="oninput" />
+                <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required
+                    pattern="DELETE" @bind-value="deleteTextInput" @bind-value:event="oninput" />
             </ModalBody>
 
             <ModalFooter>
@@ -130,7 +130,7 @@ Author: Andrew Fulton (3/13/2025)  *@
 @code {
     [Parameter] public required int StoreId { get; set; }
     private List<Data.Models.Floorsets.Floorset> floorsets = new List<Data.Models.Floorsets.Floorset>();
-    private Data.Models.Stores.Store? Store {get;set;}
+    private Data.Models.Stores.Store? Store { get; set; }
 
     string StoreImageSrc = "";
 
@@ -151,7 +151,7 @@ Author: Andrew Fulton (3/13/2025)  *@
         if (response != null)
         {
             Store = response;
-            
+
             StoreImageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(response.BLUEPRINT_IMAGE!)}";
         }
 
@@ -186,13 +186,20 @@ Author: Andrew Fulton (3/13/2025)  *@
             FLOORSET_IMAGE = Floorset.FLOORSET_IMAGE
         };
 
-        await FloorsetsHttpClient.CreateFloorset(createFloorset);
+        // Create new floorset and return tuid
+        int NewFloorsetTUID = await FloorsetsHttpClient.CreateFloorset(createFloorset);
 
-        // TODO: get floorset fixture information for floorset and associate it to the 
-        // new floorset
-        await FixturesHttpClient.GetFloorsetFixtureInformation(Floorset.TUID);
+        Data.Models.Fixtures.Fixtures_State FixtureOnFloorsetState = new();
+
+        // Get Fixtures on old Floorset
+        List<Data.Models.Fixtures.FixtureInstance>? FixturesOnFloorset = await FixturesHttpClient.GetFloorsetFixtureInformation(Floorset!.TUID);
+
+        // Put list of fixtures in state
+        FixtureOnFloorsetState.CurrentFixtures = FixturesOnFloorset!;
+
+        // Update information
+        await FixturesHttpClient.UpdateFixtureInformation(NewFloorsetTUID, FixtureOnFloorsetState);
 
         await UpdateFloorsets();
     }
-
 }
