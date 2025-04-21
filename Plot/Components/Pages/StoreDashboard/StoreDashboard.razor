@@ -13,14 +13,14 @@ Author: Andrew Fulton (3/12/2025)
 *@
 
 @page "/Store-dashboard"
-
 @inject NavigationManager Navigation
 @inject StoresHttpClient StoresHttpClient
+@attribute [Authorize]
 
 @using System.Drawing;
 @using System.IO;
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
+@using Plot.Components.PartialComponents.Card
 
 <PageTitle>Store Dashboard</PageTitle>
 
@@ -39,7 +39,7 @@ Author: Andrew Fulton (3/12/2025)
                 <CardImage Image="@ImageSrc" />
             </a>
             <CardBody>
-                <CardTitle>
+                <CardTitle class="flex-grow-1">
                     <a class="text-truncate" href="@($"/floorsets/{Store.TUID}")">
                         @Store.CITY , @Store.STATE
                     </a>
@@ -69,7 +69,7 @@ Author: Andrew Fulton (3/12/2025)
     <AddStoreModal id="create-store" UpdateStores="UpdateStores" />
 
     <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary" Icon="fa-solid fa-plus"
-        data-bs-toggle="modal" data-bs-target="#create-store" OnClickFunction="OnCreateClick">
+        data-bs-toggle="modal" data-bs-target="#create-store">
         Add Store
     </Button>
 </div>
@@ -84,11 +84,6 @@ Author: Andrew Fulton (3/12/2025)
         if (response != null)
         {
             Stores = response;
-
-            foreach (var Store in Stores)
-            {
-                Console.WriteLine(Store.USER_TUIDS);
-            }
         }
     }
 
@@ -99,17 +94,8 @@ Author: Andrew Fulton (3/12/2025)
 
     private async Task OnEditClick(Data.Models.Stores.Store Store)
     {
-        await Task.Run(() => Console.WriteLine("Edit Store"));
         await UpdateStores();
 
-        StateHasChanged();
-
-    }
-
-    private void OnCreateClick()
-    {
-        @* usersToAdd.Clear(); *@
-        @* UpdateUserOptions(); *@
         StateHasChanged();
     }
 }

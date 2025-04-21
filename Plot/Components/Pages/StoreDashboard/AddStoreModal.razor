@@ -21,12 +21,12 @@
 
 @code {
     [Parameter] public required EventCallback UpdateStores { get; set; }
-
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? AddStoreModel { get; set; }
 
     private Dictionary<int, Data.Models.Users.UserDTO> Users = new Dictionary<int, Data.Models.Users.UserDTO>();
+    public int StoreId = -1;
 
     private async Task UpdateUsers()
     {
@@ -63,8 +63,6 @@
             WIDTH = 1,
         };
     }
-
-    public int StoreId = -1;
 
     private async Task OnAddEmployeesSubmit(string[] employees)
     {

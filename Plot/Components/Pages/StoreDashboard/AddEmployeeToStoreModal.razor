@@ -38,9 +38,7 @@
     }
 
     [Parameter] public required string AddEmployeeTarget { get; set; }
-
     [Parameter] public required EventCallback<string[]> OnAddEmployeesSubmit { get; set; }
-
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
     [SupplyParameterFromForm] private AddEmployees? AddEmployeesModel { get; set; }
