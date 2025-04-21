@@ -7,22 +7,42 @@ using Plot.Data.Models.Env;
 
 namespace Plot.Services;
 
-
+/// <summary>
+/// Filename: JwtService.cs
+/// Part of Project: PLOT/PLOT-FE/Plot/Services
+///
+/// File Purpose:
+/// This file defines the JwtService class, responsible 
+/// validating JSON Web Tokens (JWT) for authorization.
+///
+/// Class Purpose:
+/// This class validates a jwt and returns a users
+/// claims. Used to validate and get claims from the jwt
+/// in the auth cookie.
+///
+/// Written by: Michael Polhill
+/// </summary>
 public class JwtService
 {
     // VARIABLES -- VARIABLES -- VARIABLES -- VARIABLES -- VARIABLES ------
 
-    // Stores token issuer from settings.
+    // Stores token issuer from env.
     private readonly string _issuer;
 
-    // Stores token audience from settings.
+    // Stores token audience from env.
     private readonly string _audience;
 
     // Stores secret key for signing tokens
     private readonly string _authSecretKey;
 
+    // Injected class to get env settings
     private readonly EnvironmentSettings _envSettings;
 
+
+    // METHODS -- METHODS -- METHODS -- METHODS -- METHODS ------
+
+    //Constructor, local vars are set using env during
+    // injection.
     public JwtService(EnvironmentSettings envSettings)
     {
         _envSettings = envSettings;
@@ -32,11 +52,11 @@ public class JwtService
     }
 
     /// <summary>
-    /// This method validates a JWT token and returns the user's email if
-    /// valid. Used to validate the token in the password reset url.
+    /// This method validates a JWT token and returns the user's claims if
+    /// valid. 
     /// </summary>
     /// <param name="token">Jwt token to validate</param>
-    /// <returns>Valid Token: Users email. Else: null</returns>
+    /// <returns>Users claims</returns>
     public ClaimsPrincipal? GetValidClaims(string token)
     {
         // Token handler to validate the token.

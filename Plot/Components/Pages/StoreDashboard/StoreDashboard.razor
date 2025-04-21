@@ -226,51 +226,48 @@ Author: Andrew Fulton (3/12/2025)
 
 
 
-    // private async Task UpdateStores()
-    // {
-    //     var response = await StoresHttpClient.GetListOfStores();
 
-    //     if (response != null)
-    //     {
-    //         stores = response;
-    //     }
-    // }
-
-
+    // <summary>
+    /// This method gets a list of stores that is rendered on the 
+    /// dashboard based off of users role.
+    /// </summary>
+    /// <returns></returns>
     private async Task UpdateStores()
     {
+        //Get jwt from cookie
         var token = await cookie.GetValue("Auth");
 
+        //Get the users claims
         var userPrincipal = JwtService.GetValidClaims(token);
 
-        //var currentUser = await AuthHttpClient.GetCurrentUser();
 
         if (userPrincipal != null)
         {
-            //ar role = currentUser.ROLE;
-
-            var authResult = await AuthorizationService.AuthorizeAsync(userPrincipal, "Manager");
+            //Determine if user is an owner
+            var authResult = await AuthorizationService.AuthorizeAsync(userPrincipal, "Owner");
 
             var response= new List<Data.Models.Stores.Store>();
 
             if(authResult.Succeeded)
             {
-                Console.WriteLine("Manager good ");
+                //Get a list of all the stores for the owner
                 response = await StoresHttpClient.GetListOfStores();
-                Console.WriteLine(response != null ? response.ToString() : "Response is null");
-                //response = await StoresHttpClient.GetStoreAccessByUserId(currentUser.TUID);
+                
             }else
             {
+                
                 var currentUserTUID=ClaimParserService.GetUserId(userPrincipal);
 
                 if(currentUserTUID !=null)
                 {
+                    //Get list of stores based off of user TUID
                     response = await StoresHttpClient.GetStoreAccessByUserId(currentUserTUID.Value);
                 }
             }
 
             if (response != null)
             {
+                //Update stores list to be rendered.
                 stores = response;
             }
         }
@@ -304,13 +301,19 @@ Author: Andrew Fulton (3/12/2025)
         StateHasChanged();
     }
 
+    // Method to get inital store/user info for the dashboard
+    // must be done after first render due to js Runtime(cookie)
+    // in UpdateStores
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        //Get instance information for the dashboard
         if(firstRender)
         {
             dotNet = DotNetObjectReference.Create(this);
             await UpdateStores();
             await UpdateUsers();
+
+            //Notify state change to rerender.
             StateHasChanged();
         }
         
