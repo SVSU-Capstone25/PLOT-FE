@@ -1,11 +1,10 @@
-<p class="card-title" @attributes="Attributes">@ChildContent</p>
+<p @attributes="Attributes" class="card-title @Class">@ChildContent</p>
 
 @code {
-    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> Attributes { get; set; } = new
+    Dictionary<string, object>();
+    [Parameter] public required RenderFragment ChildContent { get; set; }
 
-    //dropdown component should be passed through this childcontent
-    //parameter
-    [Parameter]
-    public required RenderFragment ChildContent { get; set; }
-
+    private string? Class => Attributes.TryGetValue("class", out var val) ? val.ToString() : string.Empty;
 }

@@ -45,8 +45,8 @@ builder.Services.AddScoped<StoresHttpClient>();
 builder.Services.AddScoped<UsersHttpClient>();
 builder.Services.AddScoped<SalesHttpClient>();
 builder.Services.AddScoped<ICookie, Cookie>();
-
-
+builder.Services.AddScoped<ClaimParserService>();
+builder.Services.AddScoped<JwtService>();
 
 // Add JWT authentication and authorization 
 builder.Services.AddAuthentication(options =>
@@ -89,7 +89,7 @@ builder.Services.AddAuthentication(options =>
             // Return 401 or redirect to frontend login page
             context.Response.StatusCode = 401; // Unauthorized
 
-             // Redirect to login
+            // Redirect to login
             context.Response.Redirect("/login");
             return Task.CompletedTask;
         }

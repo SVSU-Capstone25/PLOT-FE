@@ -19,49 +19,49 @@ Added code to turn off disabled icon when button is re-enabled.
 
 <!--Button Component-->
 
-    <!--
+<!--
     If Statement to set alignment for
     icons and text for The button
     -->
-    @if (TextAlignment is not null)
+@if (TextAlignment is not null)
+{
+    @if (TextAlignment.Equals("right"))
     {
-        @if (TextAlignment.Equals("right"))
-        {
-            alignment = "text-end";
-        }
-        else if (TextAlignment.Equals("center"))
-        {
-            alignment = "text-center";
-        }
+        alignment = "text-end";
     }
-    <!--Add additional class If The button is disabled-->
-    @if (IsDisabled)
+    else if (TextAlignment.Equals("center"))
     {
-        disabledClass = "disabled-btn";
+        alignment = "text-center";
+    }
+}
+<!--Add additional class If The button is disabled-->
+@if (IsDisabled)
+{
+    disabledClass = "disabled-btn";
 
-    }
-    else
-    {
-        disabledClass = ""; // Remove if re-enabled
-    }
-    <!--Button class, adds classes based on data passed icon
+}
+else
+{
+    disabledClass = ""; // Remove if re-enabled
+}
+<!--Button class, adds classes based on data passed icon
     via parameters
     -->
-    <button @onclick="OnClickFunc" class="btn btn-@Variant  @Class @alignment @disabledClass" disabled="@IsDisabled" id="@Id"
-        type="@Type" @attributes="Attributes">
-        <!--Button content-->
-        @if (Icon != null)
-        {
-            <span class="icon">
-                <i class="@Icon"></i>
-            </span>
-        }
+<button @onclick="OnClickFunc" class="btn btn-@Variant @Class @alignment @disabledClass" disabled="@IsDisabled" id="@Id"
+    type="@Type" @attributes="Attributes">
+    <!--Button content-->
+    @if (Icon != null)
+    {
+        <span class="icon">
+            <i class="@Icon"></i>
+        </span>
+    }
 
-        @if (ChildContent != null)
-        {
-            <span>@ChildContent</span>
-        }
-    </button>
+    @if (ChildContent != null)
+    {
+        <span>@ChildContent</span>
+    }
+</button>
 
 @code {
     // all of these are parameters to set up the button dynamically
