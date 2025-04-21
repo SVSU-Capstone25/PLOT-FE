@@ -89,7 +89,6 @@ public class PlotHttpClient : HttpClient
     public async Task<HttpStatusCode> SendPatchAsync(string endpoint, JsonContent body)
     {
         var response = await SendAsync(endpoint, HttpMethod.Patch, body);
-
         return response.StatusCode;
     }
 

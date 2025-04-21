@@ -1,0 +1,16 @@
+<div @attributes="Attributes" class="fw-bold @Attributes?.GetValueOrDefault("class")">
+    @if (Icon != null)
+    {
+        <i class="@Icon me-2"></i>
+    }
+    @ChildContent
+</div>
+
+@code {
+    //FontAwesome icon to display before the text.
+    [Parameter] public String? Icon { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+}

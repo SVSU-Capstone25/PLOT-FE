@@ -15,11 +15,9 @@ class Fixture {
    * @property {number} LENGTH
    * @property {number} WIDTH
    * @property {number} HANGER_STACK
-   * @property {number} TOT_LF
    * @property {number} SUPERCATEGORY_TUID
    * @property {string} SUBCATEGORY
    * @property {number} SUBCATEGORY_NAME
-   * @property {number} TOTAL_SALES
    * @property {string} NOTE
    * @property {number} ALLOCATED_LF
    */
@@ -32,17 +30,15 @@ class Fixture {
     FLOORSET_TUID,
     X_POS,
     Y_POS,
-    COLOR = '#fff',
+    COLOR = "#fff",
     LENGTH,
     WIDTH,
-    HANGER_STACK,
-    TOT_LF,
-    SUPERCATEGORY_TUID,
+    HANGER_STACK = 1,
+    SUPERCATEGORY_TUID = 0,
     SUBCATEGORY,
     SUBCATEGORY_NAME,
-    TOTAL_SALES,
     NOTE,
-    ALLOCATED_LF
+    ALLOCATED_LF = 0
   ) {
     this.p5 = p5;
     this.TUID = TUID;
@@ -55,24 +51,16 @@ class Fixture {
     this.LENGTH = LENGTH;
     this.WIDTH = WIDTH;
     this.HANGER_STACK = HANGER_STACK;
-    this.TOT_LF = TOT_LF;
     this.SUPERCATEGORY_TUID = SUPERCATEGORY_TUID;
     this.SUBCATEGORY = SUBCATEGORY;
     this.SUBCATEGORY_NAME = SUBCATEGORY_NAME;
-    this.TOTAL_SALES = TOTAL_SALES;
     this.NOTE = NOTE;
     this.ALLOCATED_LF = ALLOCATED_LF;
     this.COLOR = COLOR;
-    // this.isEmployee = isEmployee;
-    // if (isEmployee) {
-    //     this.color = this.p5.color(255, 0, 0, 100);
-    // }
-    // else {
-    //     this.color = this.p5.color(255, 255, 255);
-    // }
   }
 
   draw(gridSize) {
+    this.p5.push();
     this.p5.fill(this.COLOR);
     this.p5.stroke(0);
     this.p5.strokeWeight(3);
@@ -82,41 +70,27 @@ class Fixture {
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
-    this.p5.push();
-    this.p5.fill(this.COLOR);
-    this.p5.stroke(0);
-    // if (!this.isEmployee) {
-    //     this.p5.strokeWeight(3);
-    // }
-    // this.p5.rect(
-    //   this.X_POS,
-    //   this.Y_POS,
-    //   this.WIDTH * gridSize,
-    //   this.LENGTH * gridSize
-    // );
     this.p5.pop();
   }
 
   toObject() {
     return {
-        TUID: this.TUID,
-        EDITOR_ID: this.EDITOR_ID,
-        NAME: this.NAME,
-        FIXTURE_TUID: this.FIXTURE_TUID,
-        FLOORSET_TUID: this.FLOORSET_TUID,
-        X_POS: this.X_POS,
-        Y_POS: this.Y_POS,
-        LENGTH: this.LENGTH,
-        WIDTH: this.WIDTH,
-        HANGER_STACK: this.HANGER_STACK,
-        TOT_LF: this.TOT_LF,
-        SUPERCATEGORY_TUID: this.SUPERCATEGORY_TUID,
-        SUBCATEGORY: this.SUBCATEGORY,
-        SUBCATEGORY_NAME: this.SUBCATEGORY_NAME,
-        TOTAL_SALES: this.TOTAL_SALES,
-        NOTE: this.NOTE,
-        ALLOCATED_LF: this.ALLOCATED_LF,
-        COLOR: this.COLOR,
+      TUID: this.TUID,
+      EDITOR_ID: this.EDITOR_ID,
+      NAME: this.NAME,
+      FIXTURE_TUID: this.FIXTURE_TUID,
+      FLOORSET_TUID: this.FLOORSET_TUID,
+      X_POS: this.X_POS,
+      Y_POS: this.Y_POS,
+      LENGTH: this.LENGTH,
+      WIDTH: this.WIDTH,
+      HANGER_STACK: this.HANGER_STACK,
+      SUPERCATEGORY_TUID: this.SUPERCATEGORY_TUID,
+      SUBCATEGORY: this.SUBCATEGORY,
+      SUBCATEGORY_NAME: this.SUBCATEGORY_NAME,
+      NOTE: this.NOTE,
+      ALLOCATED_LF: this.ALLOCATED_LF,
+      COLOR: this.COLOR,
     };
   }
 
@@ -137,13 +111,11 @@ class Fixture {
       object.LENGTH,
       object.WIDTH,
       object.HANGER_STACK,
-      object.TOT_LF,
       object.SUPERCATEGORY_TUID,
       object.SUBCATEGORY,
       object.SUBCATEGORY_NAME,
-      object.TOTAL_SALES,
       object.NOTE,
-      object.ALLOCATED_LF,
+      object.ALLOCATED_LF
     );
   }
 }

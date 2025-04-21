@@ -442,6 +442,73 @@ function flipOrder() {
 }
 
 /*
+    This function grabs the current canvas image from an open floorset and returns it
+*/
+
+function getCanvasImage(callback) {
+    const canvas = document.querySelector('canvas');
+    if (!canvas) {
+        console.error("Canvas not found!");
+        return null;
+    }
+
+    //save current zoom
+    const p5 = window.p5Instance;
+    const grid = window.gridInstance;
+
+    const originalScale = grid.scale;
+    const originalWidth = p5.width;
+    const originalHeight = p5.height;
+
+
+
+    //set scale and center the grid manually
+    grid.scale = 1;
+    const fullWidth = grid.width * grid.size;
+    const fullHeight = grid.height * grid.size;
+    p5.resizeCanvas(fullWidth, fullHeight);
+    grid.resize();
+
+    //freeze drawing
+    p5.noLoop();
+    //force draw with requestAnimationFrame to get the full canvas size
+    requestAnimationFrame(() => {
+        p5.redraw();
+        const image = canvas.toDataURL("image/png");
+
+        //Restore everything
+        p5.resizeCanvas(originalWidth, originalHeight);
+        grid.scale = originalScale;
+        grid.resize();
+        p5.redraw();
+        p5.loop();
+
+        callback(image);
+    });
+}
+
+/*
+    The downloadCanvasImage function grabs the main canvas and downloads its image 
+    to the user's device when the Print button is clicked
+*/
+function downloadCanvasImage(floorsetName) {
+    getCanvasImage((image) => {
+        if (!image) {
+            console.error("No image data available.");
+            return;
+        }
+
+        const link = document.createElement("a");
+        link.href = image;
+        const name = floorsetName.replace(/[^a-z0-9_\-]/gi, "_").toLowerCase();
+        link.download = `${name}_Layout.png`;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+}
+/*
     The addFixtureClose function adds an event listener to the add button in the Add Fixture modal.
 */
 function addFixtureClose(dotNet) {
@@ -507,7 +574,7 @@ function SetBackgroundImage(elementId, strUrl) {
     console.log("here");
     if (element) {
         console.log(strUrl.includes("url"));
-        element.style.backgroundImage = "url("+strUrl+")";
+        element.style.backgroundImage = "url(" + strUrl + ")";
         element.style.backgroundSize = "cover";
         element.style.backgroundPosition = "center";
         element.classList.remove("dashed-border");
@@ -588,6 +655,14 @@ function displayAlert(msg) {
 function UpdateGridDimensions(passedLength, passedWidth) {
     window.gridHeight = passedLength;
     window.gridWidth = passedWidth;
+}
+
+/*  Andrew Kennedy - 4/15/2025
+    The openSaveToast method opens a bootstrap toast.
+*/
+function openSaveToast(toastID) {
+    var saveToast = bootstrap.Toast.getOrCreateInstance(document.getElementById(toastID));
+    saveToast.show();
 }
 
 // function createDraggable(event) {

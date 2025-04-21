@@ -53,7 +53,7 @@ public class FixturesHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(fixtureModel);
 
-        return await SendPostAsync<HttpStatusCode>($"/create-fixture/{storeId}", body);
+        return await SendPostAsync<HttpStatusCode>($"/create-fixture-model/{storeId}", body);
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ public class FixturesHttpClient : PlotHttpClient
     /// <returns>Http response</returns>
     public async Task<HttpStatusCode> DeleteFixtureModel(int modelId)
     {
-        return await SendDeleteAsync($"/delete-model/{modelId}");
+        return await SendDeleteAsync($"/delete-fixture-model/{modelId}");
     }
 
 

@@ -18,6 +18,9 @@ Author (Developed from skeleton): Andrew Miller (3/14/2025)
 Note: A small amount of skeleton code was present before. 
 No author was given.
 
+Andrew Kenendy (4/17/2025)
+Added a loader popup when a user is added.
+
 */
 
 *@
@@ -31,6 +34,8 @@ No author was given.
 @using System;
 @using System.Collections.Generic;
 @using System.Net.Mail;
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
 <div class="d-flex flex-column align-content-between user-dashboard">
     <div class="mb-4 table-set">
@@ -93,7 +98,7 @@ No author was given.
         </table>
     </div>
 
-    <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" />
+    <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" AddingUser="ToggleLoader" />
 
     <div class="add-btn-container">
         <Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary"
@@ -103,22 +108,39 @@ No author was given.
     </div>
 </div>
 
+@* If adding a user, show the loader *@
+@if (isAddingUser)
+{
+    <div class="w-100 h-100 d-flex justify-content-center align-items-center top-0 start-0 position-fixed"
+        style="background-color: rgba(0,0,0,.5);">
+        <Loader class="p-5 rounded shadow-lg d-flex flex-column align-items-center" style="background-color: white;">
+            Adding User...
+        </Loader>
+    </div>
+
+}
 
 
 @code {
     private List<Data.Models.Users.UserDTO> users = new List<Data.Models.Users.UserDTO>();
+    private bool isAddingUser = false;
 
     private async Task UpdateUsers()
     {
         var response = await UsersHttpClient.GetAllUsers();
-
-        Console.WriteLine(response);
 
         if (response != null)
         {
             users = response;
         }
     }
+
+    @* This method sets the boolean to toggle the add user loader. *@
+    private void ToggleLoader(bool isAdding)
+    {
+        isAddingUser = isAdding;
+    }
+
 
     protected override async Task OnInitializedAsync()
     {

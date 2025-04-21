@@ -1,3 +1,8 @@
+html,
+body {
+    overflow: hidden; /* ? Removes extra wiggle room on application  */
+}
+
 ::deep .add-fixture>button {
     background: var(--platos-blue);
     color: white;
