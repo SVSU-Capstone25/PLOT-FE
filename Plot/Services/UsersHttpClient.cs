@@ -58,4 +58,11 @@ public class UsersHttpClient : PlotHttpClient
     {
         return await SendGetAsync<Store>($"/stores/{userId}");
     }
+
+    public async Task<List<UserDTO>?> GetUsersByString(UsersByStringRequest usersByStringRequest)
+    {
+        JsonContent body = JsonContent.Create(usersByStringRequest);
+
+        return await SendPostAsync<List<UserDTO>>("/get-users-by-string", body);
+    }
 }
