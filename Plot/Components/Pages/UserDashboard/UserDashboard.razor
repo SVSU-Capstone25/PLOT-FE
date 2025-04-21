@@ -32,14 +32,14 @@ No author was given.
 @using System.Collections.Generic;
 @using System.Net.Mail;
 
-<div class="d-flex flex-column align-content-between user-dashboard">
-    <div class="mb-4 table-set">
+<div class="d-flex flex-column align-content-between user-dashboard vh-95">
+    <div class="mb-4 table-set h-100">
         @* Users Table *@
         <table class="table w-100">
             <thead>
                 <tr>
                     @* Headers *@
-                    <th scope="col" class="border border-light border-2">
+                    <th scope="col" class="border border-light border-2 w-25">
                         Employee Name
                     </th>
                     <th scope="col" class="border border-light border-2">
@@ -62,15 +62,15 @@ No author was given.
 
                         @* User Id *@
                         <td class="border border-light border-2">
-                            @user.TUID
+                            @DisplayTUID(user.TUID)
                         </td>
 
                         @* Role and Dropdown menu for editing or deleting the user *@
                         <td class="border border-light border-2">
                             <div class="d-flex flex-row">
                                 @* Role of User*@
-                                <span class="flex-grow-1 align-self-center">@user.ROLE</span>
-
+                                <span class="align-self-center bg-light border p-2 rounded">@user.ROLE</span>
+                                <div class="flex-grow-1"></div>
                                 @* Role Options Dropdown menu with id  dynamically reflecting the id of the user Provides Edit and Delete options which open Edit User and Delete User Modals *@
 
                                 <Dropdown Id="@($"Dropdown-{user.TUID}")" LabelText="Role">
@@ -86,14 +86,20 @@ No author was given.
 
                         <UpdateUserModal id="@($"update-user-modal-{user.TUID}")" User="user" UpdateUsers="UpdateUsers" />
                         <DeleteUserModal id="@($"delete-user-modal-{user.TUID}")" userTuid="user.TUID"
-                            UpdateUsers="UpdateUsers" />
+                            UpdateUsers="UpdateUsers"
+                            />
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
-    <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" />
+    <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers"
+    ShowLoadingModal="ShowLoadingOnDash" 
+    HideLoadingModal="HideLoadingOnDash"
+    />
+
+    <LoadMessageModal id="load-message" @ref="LoadMessageModal"/>
 
     <div class="add-btn-container">
         <Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary"
@@ -103,9 +109,9 @@ No author was given.
     </div>
 </div>
 
-
-
 @code {
+
+    private LoadMessageModal? LoadMessageModal;
 
     private List<Data.Models.Users.UserDTO> users = new List<Data.Models.Users.UserDTO>();
 
@@ -123,4 +129,20 @@ No author was given.
     {
         await UpdateUsers();
     }
+
+    public string DisplayTUID(int Id)
+    {
+        return '#' + Id.ToString().PadLeft(10,'0');
+    }
+
+    public async Task ShowLoadingOnDash()
+    {
+        await LoadMessageModal!.ShowModal();
+    }
+
+    public async Task HideLoadingOnDash()
+    {
+        await LoadMessageModal!.HideModal();
+    }
+
 }

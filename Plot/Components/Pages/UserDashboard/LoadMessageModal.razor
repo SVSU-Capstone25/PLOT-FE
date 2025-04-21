@@ -1,0 +1,43 @@
+@inject IJSRuntime JS
+@using Microsoft.JSInterop
+
+@* data-bs-backdrop="static" prevents closing when the user clicks outside of it
+data-bs-keyboard="false" prevents closing when the user clicks the escape key
+*@
+
+<Modal SizeClass="modal-sm" @attributes="Attributes" Backdrop="static" Keyboard="false">
+    <Loader>Please wait while PLOT updates user information...</Loader>
+</Modal>
+
+<script>
+
+    window.getModalInstance = function (selector) {
+        return window.bootstrap.Modal.getOrCreateInstance(document.querySelector(selector));
+    };
+</script>
+
+@code {
+    public IJSObjectReference? LoadModalRef;
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    public async Task ShowModal()
+    {
+        if (LoadModalRef == null)
+        {
+            LoadModalRef = await JS.InvokeAsync<IJSObjectReference>("window.bootstrap.Modal.getOrCreateInstance",
+            "#load-message");
+        }
+        await LoadModalRef.InvokeVoidAsync("show");
+    }
+
+    public async Task HideModal()
+    {
+        if (LoadModalRef == null)
+        {
+            LoadModalRef = await JS.InvokeAsync<IJSObjectReference>("window.bootstrap.Modal.getOrCreateInstance",
+            "#load-message");
+        }
+        await LoadModalRef.InvokeVoidAsync("hide");
+    }
+}

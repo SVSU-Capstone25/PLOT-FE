@@ -21,7 +21,8 @@ public class UsersHttpClient : PlotHttpClient
         return await SendGetAsync<UserDTO>($"/get-users-by-id/{userId}");
     }
 
-    public async Task<UserDTO?> GetUserByEmail(string userEmail){
+    public async Task<UserDTO?> GetUserByEmail(string userEmail)
+    {
         //Console.WriteLine("user email in client " + userEmail);
         var response = await SendGetAsync<UserDTO?>($"/get-user-by-email/{Uri.EscapeDataString(userEmail)}");
         //Console.WriteLine("The response in GetUserByEmail is " + response);

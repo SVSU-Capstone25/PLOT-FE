@@ -1,11 +1,10 @@
 @inject UsersHttpClient UsersHttpClient
 @inject StoresHttpClient StoresHttpClient
+@inject IJSRuntime JS
 @using Data.Models.Users
 
 <ModalBody>
 
-    @* <h3>@userModalDetails.Header</h3>
-                <p>@userModalDetails.Description</p> *@
     <label class="w-100 d-flex">
         First Name:
         <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.FIRST_NAME" />
@@ -49,143 +48,195 @@
 
     <p>To select multiple stores use Ctrl-click</p>
 
-    <label>
-        Available Stores:
-        <select size="6" multiple @onchange="HandleSelectionFromNotUserStores">
-            @if (NotUserStores != null)
+    <div class="w-100 d-flex justify-content-around">
+    <label class="w-25">
+        Available Stores
+        <select class="form-select mb-4 h-50 w-100" id="unassigned-stores" size="3" multiple @onchange="UnassignedStoresSelection">
+
+            @foreach (var store in UnassignedStores!)
             {
-                @foreach (var store in NotUserStores)
-                {
-                    <option value="@store.TUID">@store.NAME</option>
-                }
+                <option value="@store.TUID">@store.NAME</option>
             }
+
         </select>
-        <Button Variant="primary" TextAlignment="center" @onclick="SelectStoresForUser">
+        <Button Variant="primary" TextAlignment="center" @onclick="SelectStoresForUser"
+            disabled="@IsSelectButtonsDisabled">
             Select Store
         </Button>
 
     </label>
 
-    <label>
-        Selected Stores:
-        <select size="6" multiple @onchange="HandleSelectionFromUserStores">
-            @if (UserStores != null)
-            {
-                @foreach (var store in UserStores)
+    <label class="w-25">
+            Selected Stores
+            <select class="form-select mb-4 h-50 w-100" id="assigned-stores" size="3" multiple @onchange="AssignedStoresSelection">
+
+                @foreach (var store in AssignedStores!)
                 {
                     <option value="@store.TUID">@store.NAME</option>
                 }
-            }
-        </select>
-        <Button Variant="primary" TextAlignment="center" @onclick="RemoveStoresFromUser">
-            Remove Store
-        </Button>
+            </select>
+            <Button Variant="primary" TextAlignment="center" @onclick="RemoveStoresFromUser"
+                disabled="@IsSelectButtonsDisabled">
+                Remove Store
+            </Button>
     </label>
+    </div>
 
 </ModalBody>
 
+@* TODO: Why won't it select it?*@
+<script>
+    function selectFirstItem(selectElementId) {
+        // Select the first item
+        var selectElement = document.getElementById(selectElementId);
+        for (var i = 0; i < selectElement.options.length; i++) {
+            selectElement.options[i].selected = false;
+        }
+        if (selectElement && selectElement.options.length > 0) {
+            selectElement.options[0].selected = true;
+        }
+
+        // Trigger the onchange event
+        var event = new Event('change', { bubbles: true });
+        selectElement.dispatchEvent(event);
+    }
+</script>
+
 @code {
 
-    [Parameter] public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; } = new();
+    // Parameters
+    [Parameter] public EventCallback OnInit { get; set; }
+
+    [Parameter] public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; }
 
     [Parameter] public List<Data.Models.Users.AddUserToStoreRequest>? AddUpdateUserStoreRequestModels { get; set; }
 
-    [Parameter] public List<Data.Models.Stores.Store>? UserStores { get; set; }
+    // Stores Assigned or unassigned - Used for tracking assignment/unassignment in the modal before submit
+    // and for submitting the data when submit is clicked
+    [Parameter] public List<Data.Models.Stores.Store>? AssignedStores { get; set; }
 
-    [Parameter] public List<Data.Models.Stores.Store>? NotUserStores { get; set; }
-
-    public List<int> selectedNotUserStoreTUIDs { get; set; } = new();
-    public List<int> selectedUserStoreTUIDs { get; set; } = new();
+    [Parameter] public List<Data.Models.Stores.Store>? UnassignedStores { get; set; }
 
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
-    [Parameter] public EventCallback<List<Data.Models.Stores.Store>?> OnUserStoresChanged { get; set; }
-    [Parameter] public EventCallback<List<Data.Models.Stores.Store>?> OnNotUserStoresChanged { get; set; }
+    [Parameter] public EventCallback<List<Data.Models.Stores.Store>?> SignalParentAssignedStoresChanged { get; set; }
 
+    [Parameter] public EventCallback<List<Data.Models.Stores.Store>?> SignalParentUnassignedStoresChanged { get; set; }
+
+    // Parameter to disable submit button in parent modal
+    // Needed briefly in case of moving stores between select boxes,
+    // pressing submit too quickly after selecting stores can cause stores not to update
+    [Parameter] public EventCallback<bool> DisableSubmitInParent { get; set; }
+
+    private const int NEW_USER = 0; // Indicates new user when initializing stores
+
+    private bool IsSelectButtonsDisabled = false; // For disabling select buttons --- Needed to ensure related data is updated
+    // Prevents error where clicking the button does nothing due to it not having updated
+
+    // Lists of store tuids representing stores currently selected in either "Available Stores"
+    // or in "Selected Stores"
+    public List<int> selectedUnassignedTUIDs { get; set; } = new();
+
+    public List<int> selectedAssignedTUIDs { get; set; } = new();
+
+    public void StateHasChangedFromParent()
+    {
+        // Signal StateHasChanged from parent
+        StateHasChanged();
+    }
 
     public async Task SelectStoresForUser()
     {
-        var storesToMove = NotUserStores?.Where(store => selectedNotUserStoreTUIDs.Contains(store.TUID)).ToList();
-        if (storesToMove == null) { Console.WriteLine("No stores to move"); return; }
+        Console.WriteLine("Select store for user");
+        // Stores selected in select box from "Available Stores" moved to "Selected Stores"
+        // Stores selected from UnassignedStores are moved to AssignedStores
+
+        // Disable submit button in parent component while stores are
+        // moved between select boxes
+
+        await DisableSubmitInParent.InvokeAsync(true);
+
+        await Task.Delay(10); // Give onchange event for selection time to work
+
+        var storesToMove = UnassignedStores?.Where(store => selectedUnassignedTUIDs.Contains(store.TUID)).ToList();
+        if (storesToMove == null) { return; }
 
         foreach (var store in storesToMove)
         {
-            Console.WriteLine(store.NAME + " selected for selection");
-            UserStores?.Add(store);
-            NotUserStores?.Remove(store);
+            AssignedStores?.Add(store);
+            UnassignedStores?.Remove(store);
         }
-        selectedNotUserStoreTUIDs.Clear();
-
-        await OnUserStoresChanged.InvokeAsync(UserStores);
-        await OnNotUserStoresChanged.InvokeAsync(NotUserStores);
+        selectedUnassignedTUIDs.Clear();
 
         StateHasChanged();
-        if (UserStores != null)
-        {
-            foreach (var store in UserStores)
-            {
-                Console.WriteLine("SelectStoresForUser: Store of Name: " + store.NAME + " in UserStores");
-            }
-        }
+        await JS.InvokeVoidAsync("selectFirstItem", "unassigned-stores");
+        StateHasChanged();
 
-        if (NotUserStores != null)
-        {
-            foreach (var store in NotUserStores)
-            {
-                Console.WriteLine("SelectStoresForUser: Store of Name: " + store.NAME + " in NotUserStores");
-            }
-        }
+        // Signal parent component to update stores lists
+        await SignalParentAssignedStoresChanged.InvokeAsync(AssignedStores);
+        await SignalParentUnassignedStoresChanged.InvokeAsync(UnassignedStores);
+
+        // Re-enable submit button in parent component
+        await DisableSubmitInParent.InvokeAsync(false);
+
+        StateHasChanged();
     }
 
     public async Task RemoveStoresFromUser()
     {
-        var storesToMove = UserStores?.Where(store => selectedUserStoreTUIDs.Contains(store.TUID)).ToList();
+        Console.WriteLine("Remove store from user");
+        // Disable submit button while stores are
+        // moved between select boxes
+        await DisableSubmitInParent.InvokeAsync(true);
+
+        var storesToMove = AssignedStores?.Where(store => selectedAssignedTUIDs.Contains(store.TUID)).ToList();
         if (storesToMove == null) return;
 
         foreach (var store in storesToMove)
         {
-            Console.WriteLine("RemoveStoresFromUser: " + store.NAME + " selected for removal");
-            NotUserStores?.Add(store);
-            UserStores?.Remove(store);
+            UnassignedStores?.Add(store);
+            AssignedStores?.Remove(store);
         }
 
-        selectedUserStoreTUIDs.Clear();
+        selectedAssignedTUIDs.Clear();
 
-        await OnUserStoresChanged.InvokeAsync(UserStores);
-        await OnNotUserStoresChanged.InvokeAsync(NotUserStores);
-        
+        StateHasChanged();
+        await JS.InvokeVoidAsync("selectFirstItem", "assigned-stores");
         StateHasChanged();
 
-        if (UserStores != null)
-        {
-            foreach (var store in UserStores)
-            {
-                Console.WriteLine("RemoveStoresFromUser: Store of Name: " + store.NAME + " in UserStores");
-            }
-        }
+        // Signal parent component to update stores lists
+        await SignalParentAssignedStoresChanged.InvokeAsync(AssignedStores);
+        await SignalParentUnassignedStoresChanged.InvokeAsync(UnassignedStores);
 
-        if (NotUserStores != null)
-        {
-            foreach (var store in NotUserStores)
-            {
-                Console.WriteLine("Store of Name: " + store.NAME + " in NotUserStores");
-            }
-        }
+        // Re-enable submit button in parent component
+        await DisableSubmitInParent.InvokeAsync(false);
 
+        StateHasChanged();
     }
 
-    public void HandleSelectionFromUserStores(ChangeEventArgs e)
-    {
-        selectedUserStoreTUIDs = ExtractSelectedIds(e);
+    // Methods handle selection of store TUIDs in select boxes
+    public void AssignedStoresSelection(ChangeEventArgs e)
+    { // Selected from list of assigned stores for potential removal
+      // and placement in list of unassigned stores
+        selectedAssignedTUIDs = ExtractSelectedIds(e);
+        Console.WriteLine($"Selected Assigned Stores: {string.Join(", ", selectedAssignedTUIDs)}");
+
+        StateHasChanged();
     }
 
-    public void HandleSelectionFromNotUserStores(ChangeEventArgs e)
+    public void UnassignedStoresSelection(ChangeEventArgs e)
     {
-        selectedNotUserStoreTUIDs = ExtractSelectedIds(e);
+        // Selected from list of unassigned stores for potential
+        // selection adn placement in list of assigned stores
+        selectedUnassignedTUIDs = ExtractSelectedIds(e);
+        Console.WriteLine($"Selected Unassigned Stores: {string.Join(", ", selectedUnassignedTUIDs)}");
+
+        StateHasChanged();
     }
 
     private List<int> ExtractSelectedIds(ChangeEventArgs e)
     {
+        // Put selected options into list of store ids
         var selected = new List<int>();
         if (e.Value is IEnumerable<object> values)
         {
@@ -198,28 +249,10 @@
         return selected;
     }
 
-    /* Newly added */
-    public void ResetUserStoreModel(int userTUID)
-    {
-        if (AddUpdateUserStoreRequestModels != null)
-        {
-            // Clear the model
-            AddUpdateUserStoreRequestModels!.Clear();
-
-            // Add current store access
-            foreach (var store in UserStores!)
-            {
-                AddUpdateUserStoreRequestModels!.Add(new Data.Models.Users.AddUserToStoreRequest
-                {
-                    USER_TUID = userTUID,
-                    STORE_TUID = store.TUID
-                });
-            }
-        }
-    }
-
     public async Task UpdateUser(int userTUID)
     {
+        // Updates information for user including first name, last name, email, and role
+
         if (AddUpdateUserModel != null)
         {
             var response = await UsersHttpClient.UpdateUserPublicInfo(userTUID, AddUpdateUserModel!);
@@ -228,86 +261,65 @@
         StateHasChanged();
     }
 
-    public async Task UpdateUserStores(int userTUID)
-    {
-        Console.WriteLine("Updating stores for user of tuid " + userTUID);
-        // Updates user store access
-
-        // TODO: Set Store Tuids to UserStores instead of below
-        if (UserStores != null)
-        {
-            var storeTUIDs = UserStores
-            .Select(store => store!.TUID)
-            .ToList();
-
-            foreach (var store in UserStores)
-            {
-                Console.WriteLine("Updating with store of Name " + store!.NAME);
-            }
-
-            var request = new UpdateAccessListRequest
-            {
-                USER_TUID = userTUID,
-                STORE_TUIDS = storeTUIDs
-            };
-
-            var response = await UsersHttpClient.UpdateAccessList(request);
-            Console.WriteLine("Response when updating user stores is " + response);
-        }
-
-        StateHasChanged();
-    }
-
     public async Task InitUserStores(int userTUID)
     {
-        await InitUserStoresAssigned(userTUID);
+        // Initializes stores for user of TUID, userTUID
 
-        await InitUsersStoresNotAssigned(userTUID);
+        await InitAssignedStores(userTUID);
+        await InitUnassignedStores(userTUID);
+
+        StateHasChanged();
+
+        // Indicate to Parent component that initialization of stores is successful
+        // and we know this component has been rendered
+        await OnInit.InvokeAsync();
     }
 
-    private async Task InitUserStoresAssigned(int userTUID)
+    private async Task InitAssignedStores(int userTUID)
     {
-        if (userTUID == 0)
+        // Initialize assigned stores for select box in add user or update user modal
+
+        AssignedStores!.Clear(); // Clear assigned stores list
+
+        if (userTUID != NEW_USER)
         {
-            UserStores!.Clear();
-        }
-        else
-        {
+            // If the user is not new, get and add new stores
+            // Get stores by user id
             var response = await UsersHttpClient.GetStoreOfUserById(userTUID);
 
             if (response != null)
             {
-                UserStores = response.ToList();
+                AssignedStores!.AddRange(response); // Add stores to assigned stores
             }
         }
-
-        StateHasChanged();
     }
 
-    private async Task InitUsersStoresNotAssigned(int userId)
+    private async Task InitUnassignedStores(int userId)
     {
-        if (userId != 0)
-        {
-            var response = await UsersHttpClient.GetStoresNotForUser(userId);
+        // Initialize unassigned stores for select box in add user or update user modal
 
+        UnassignedStores!.Clear(); // Clear unassigned stores list
+        if (userId == NEW_USER)
+        {
+            // New user - Fill available stores list
+
+            var response = await StoresHttpClient.GetListOfStores();
             if (response != null)
             {
-                NotUserStores = response.ToList();
+                UnassignedStores!.AddRange(response);
             }
         }
         else
         {
-            // New user - Fill available stores list
-            NotUserStores = await StoresHttpClient.GetListOfStores();
+            // Previously existing user
+
+            // Get stores not for user of userId
+            var response = await UsersHttpClient.GetStoresNotForUser(userId);
+
+            if (response != null)
+            {
+                UnassignedStores.AddRange(response); // Add stores to unassigned stores
+            }
         }
-
-        StateHasChanged();
     }
-
-    public void ClearAddUpdateUserModel(int userTUID)
-    {
-        AddUpdateUserModel = new();
-        ResetUserStoreModel(userTUID);
-    }
-
 }
