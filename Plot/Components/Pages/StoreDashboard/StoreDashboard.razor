@@ -34,16 +34,16 @@ Author: Andrew Fulton (3/12/2025)
         $"data:image/jpeg;base64,{Convert.ToBase64String(store.BLUEPRINT_IMAGE)}" :
         "https://placecats.com/300/200";
 
-        <Card>
-            <a href="@($"/floorsets/{store.TUID}")" class="w-100 ratio ratio-4x3">
-                <CardImage Image="@ImageSrc" />
-            </a>
-            <CardBody>
-                <CardTitle>
-                    <a class="text-truncate" href="@($"/floorsets/{store.TUID}")">
-                        @store.CITY, @store.STATE
-                    </a>
-                </CardTitle>
+    <Card>
+        <a href="@($"/floorsets/{store.TUID}")" class="w-100 ratio ratio-4x3">
+            <CardImage Image="@ImageSrc" />
+        </a>
+        <CardBody>
+            <CardTitle>
+                <a class="text-truncate" href="@($"/floorsets/{store.TUID}")">
+                    @store.CITY, @store.STATE
+                </a>
+            </CardTitle>
 
                 <AuthorizeView Policy="Manager">
                     <Dropdown Class="Dropdown" Id="@($"{store.NAME}{store.TUID}Dropdown")" LabelText="Store">
@@ -65,41 +65,42 @@ Author: Andrew Fulton (3/12/2025)
         </Card>
 
         <AuthorizeView Policy="Manager">
-            <EditStoreModal id="@($"edit-store-{store.TUID}")" Store="store" UpdateStores="UpdateStores" StoreId="store.TUID" />
-        
+            <EditStoreModal id="@($"edit-store-{store.TUID}")" Store="store" UpdateStores="UpdateStores"
+                StoreId="store.TUID" />
+
 
             @* Delete store modal *@
             <Modal id="@($"delete-store-{store.TUID}")" class="standard">
                 <ModalHeader Title="Confirm Deletion" Variant="danger" />
                 <form @onsubmit="async () => {
-                    await OnDeleteStoreSubmit(store.TUID);
-                    deleteTextInput = string.Empty;}">
-                    @code {
-                        private string? deleteTextInput;
-                        private bool isDisabled => deleteTextInput != "DELETE";
-                    }
-                    <ModalBody>
-                        <h5>Are you SURE you want to delete this Store?</h5>
-                        <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required
-                            pattern="DELETE" @bind-value="deleteTextInput" @bind-value:event="oninput" />
-                    </ModalBody>
+                        await OnDeleteStoreSubmit(store.TUID);
+                        deleteTextInput = string.Empty;}">
+                @code {
+                    private string? deleteTextInput;
+                    private bool isDisabled => deleteTextInput != "DELETE";
+                }
+                <ModalBody>
+                    <h5>Are you SURE you want to delete this Store?</h5>
+                    <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required
+                        pattern="DELETE" @bind-value="deleteTextInput" @bind-value:event="oninput" />
+                </ModalBody>
 
-                    <ModalFooter>
-                        <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
-                            data-bs-dismiss="modal">
-                            Yes, Delete
-                        </Button>
-                    </ModalFooter>
-                </form>
-            </Modal>
-        </AuthorizeView>
-    }
+                <ModalFooter>
+                    <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
+                        data-bs-dismiss="modal">
+                        Yes, Delete
+                    </Button>
+                </ModalFooter>
+            </form>
+        </Modal>
+    </AuthorizeView>
+        }
 
-    <AuthorizeView Policy="Manager">
+    <AuthorizeView Policy="Owner">
         <AddStoreModal id="create-store" UpdateStores="UpdateStores" />
 
-        <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary" Icon="fa-solid fa-plus"
-            data-bs-toggle="modal" data-bs-target="#create-store">
+        <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary"
+            Icon="fa-solid fa-plus" data-bs-toggle="modal" data-bs-target="#create-store">
             Add Store
         </Button>
     </AuthorizeView>
