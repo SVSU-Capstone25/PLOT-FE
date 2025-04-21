@@ -23,10 +23,9 @@
     [Parameter] public required Data.Models.Stores.Store Store { get; set; }
     [Parameter] public required EventCallback UpdateStores { get; set; }
     [Parameter] public required int StoreId { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? EditStoreModel { get; set; }
-
-    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
     private Dictionary<int, Data.Models.Users.UserDTO> Users = new Dictionary<int, Data.Models.Users.UserDTO>();
 

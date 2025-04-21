@@ -1,6 +1,7 @@
-@using Plot.Data.Models.Users
 @inject UsersHttpClient UsersHttpClient
 @inject StoresHttpClient StoresHttpClient
+
+@using Plot.Data.Models.Users
 
 <ModalBody>
     <div class="d-flex flex-row gap-2">
@@ -112,11 +113,10 @@
     [Parameter] public string? StoreName { get; set; } = "";
     [Parameter] public required int StoreId { get; set; }
     [Parameter] public required string AddEmployeeTarget { get; set; }
-
-    private string ImageSrc = "";
-
     [Parameter] public List<Data.Models.Users.UserDTO> Users { get; set; } = new();
     [Parameter] public required EventCallback<int> DeleteUser { get; set; }
+
+    private string ImageSrc = "";
 
     protected override void OnInitialized()
     {
