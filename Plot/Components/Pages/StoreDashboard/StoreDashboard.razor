@@ -15,12 +15,18 @@ Author: Andrew Fulton (3/12/2025)
 @page "/Store-dashboard"
 @inject NavigationManager Navigation
 @inject StoresHttpClient StoresHttpClient
+@inject ICookie Cookie
+@inject JwtService JwtService
+@inject ClaimParserService ClaimParserService
+@inject IAuthorizationService AuthorizationService
 @attribute [Authorize]
 
 @using System.Drawing;
 @using System.IO;
 @using Microsoft.AspNetCore.Authorization
 @using Plot.Components.PartialComponents.Card
+@using Plot.Services
+@using Plot.Data.Models.Stores
 
 <PageTitle>Store Dashboard</PageTitle>
 
@@ -79,17 +85,51 @@ Author: Andrew Fulton (3/12/2025)
 
     private async Task UpdateStores()
     {
-        var response = await StoresHttpClient.GetListOfStores();
+        //Get jwt from cookie
+        var token = await Cookie.GetValue("Auth");
 
-        if (response != null)
+        //Get the users claims
+        var userPrincipal = JwtService.GetValidClaims(token);
+
+
+        if (userPrincipal != null)
         {
-            Stores = response;
+            //Determine if user is an owner
+            var authResult = await AuthorizationService.AuthorizeAsync(userPrincipal, "Owner");
+
+            if (authResult.Succeeded)
+            {
+                //Get a list of all the stores for the owner
+                var response = await StoresHttpClient.GetListOfStores();
+
+                Stores = response ?? new();
+
+            }
+            else
+            {
+
+                var currentUserTUID = ClaimParserService.GetUserId(userPrincipal);
+
+                if (currentUserTUID != null)
+                {
+                    //Get list of stores based off of user TUID
+                    var response = await StoresHttpClient.GetStoreAccessByUserId(currentUserTUID.Value);
+
+                    Stores = response ?? new();
+                }
+            }
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await UpdateStores();
+        //Get instance information for the dashboard
+        if (firstRender)
+        {
+            await UpdateStores();
+            StateHasChanged();
+        }
+
     }
 
     private async Task OnEditClick(Data.Models.Stores.Store Store)
