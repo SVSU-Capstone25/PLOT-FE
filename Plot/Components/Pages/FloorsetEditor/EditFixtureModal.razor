@@ -1,6 +1,29 @@
 @inject IJSRuntime JS
 
 @* Edit Fixture Modal *@
+
+
+<Modal @attributes="Attributes" SizeClass="modal-lg">
+    <ModalHeader Title="Update Fixture Information" />
+    <EditForm Model="EditFixtureModel" OnValidSubmit="async () => await OnEditFixtureSubmit()">
+        @*
+        <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId" />
+        *@
+
+        <ModalFooter OnCancelClick="ClearEditStoreModel">
+            <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
+                Update Store
+            </Button>
+        </ModalFooter>
+    </EditForm>
+</Modal>
+
+
+
+
+
+
+
 @{
     <Modal class="modal-xl fixture-modal" id="EditFixture">
         <ModalHeader Title="Edit Fixture" />
