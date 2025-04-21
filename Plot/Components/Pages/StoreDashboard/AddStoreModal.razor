@@ -5,7 +5,8 @@
     <ModalHeader Title="Create Store" />
     <EditForm Model="AddStoreModel" OnValidSubmit="async () => await OnAddStoreSubmit()">
 
-        <AddUpdateStoreModalBody AddUpdateStoreModel="AddStoreModel" StoreId="StoreId" />
+        <AddUpdateStoreModalBody AddUpdateStoreModel="AddStoreModel" StoreId="StoreId"
+            AddEmployeeTarget="#create-store-add-employee" Users="Users.Values.ToList()" DeleteUser="DeleteUser" />
 
         <ModalFooter OnCancelClick="ClearAddStoreModel">
             <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
@@ -15,14 +16,44 @@
     </EditForm>
 </Modal>
 
+<AddEmployeeToStoreModal id="create-store-add-employee" AddEmployeeTarget="#create-store"
+    OnAddEmployeesSubmit="OnAddEmployeesSubmit" />
+
 @code {
     [Parameter] public required EventCallback UpdateStores { get; set; }
 
-    [Parameter] public required List<Data.Models.Users.UserDTO> usersToAdd { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? AddStoreModel { get; set; }
 
-    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+    private Dictionary<int, Data.Models.Users.UserDTO> Users = new Dictionary<int, Data.Models.Users.UserDTO>();
+
+    private async Task UpdateUsers()
+    {
+        if (AddStoreModel != null)
+        {
+            if (AddStoreModel.USER_TUIDS != null && AddStoreModel.USER_TUIDS != string.Empty)
+            {
+                var addedUsers = await UsersHttpClient.GetUsersByString(new Data.Models.Users.UsersByStringRequest()
+                {
+                    TUIDS = AddStoreModel.USER_TUIDS
+                });
+
+                if (addedUsers != null)
+                {
+                    addedUsers.ForEach((addedUser) =>
+                    {
+                        Users.TryAdd(addedUser.TUID, addedUser);
+                    });
+                }
+            }
+        }
+    }
+
+    private async Task DeleteUser(int tuid)
+    {
+        await Task.Run(() => Users.Remove(tuid));
+    }
 
     protected override void OnInitialized()
     {
@@ -34,6 +65,17 @@
     }
 
     public int StoreId = -1;
+
+    private async Task OnAddEmployeesSubmit(string[] employees)
+    {
+        List<string> employeesList = new List<string>(employees);
+
+        string joinedEmployees = string.Join(",", employeesList);
+
+        AddStoreModel!.USER_TUIDS = joinedEmployees;
+
+        await UpdateUsers();
+    }
 
     private async Task OnAddStoreSubmit()
     {
@@ -50,31 +92,12 @@
                 WIDTH = AddStoreModel.WIDTH,
                 STATE = AddStoreModel.STATE!,
                 ZIP = AddStoreModel.ZIP!,
-                USER_TUIDS = ""
+                USER_TUIDS = AddStoreModel.USER_TUIDS!
             };
 
-            if (usersToAdd.Count > 0)
-            {
-                foreach (var user in usersToAdd)
-                {
-                    Store.USER_TUIDS += user.TUID + ",";
-                }
-                if (Store.USER_TUIDS != null)
-                {
-                    Store.USER_TUIDS = Store.USER_TUIDS.TrimEnd(',');
-                }
-            }
-
-            Console.WriteLine(Store.USER_TUIDS);
-
-            Console.WriteLine(Store);
-
-
             var response = await StoresHttpClient.CreateStore(Store);
-            Console.WriteLine("CREATE STORE RESPONSE: " + response);
-            await UpdateStores.InvokeAsync();
 
-            ClearAddStoreModel();
+            await UpdateStores.InvokeAsync();
         }
     }
 
@@ -82,6 +105,4 @@
     {
         AddStoreModel = new();
     }
-
-
 }

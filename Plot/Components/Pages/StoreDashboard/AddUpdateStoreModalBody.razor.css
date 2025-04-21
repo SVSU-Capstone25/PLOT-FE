@@ -13,3 +13,17 @@
 .input-field {
     flex: 1;
 }
+
+.btn-circle {
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    width: 64px;
+}
+
+.minus-badge {
+    visibility: hidden;
+}
+
+.btn-circle:hover > .minus-badge {
+    visibility: visible;
+}
