@@ -1,12 +1,12 @@
 @inject StoresHttpClient StoresHttpClient
 @inject UsersHttpClient UsersHttpClient
 
-
 <Modal @attributes="Attributes" SizeClass="modal-lg">
     <ModalHeader Title="Update Store Information" />
     <EditForm Model="EditStoreModel" OnValidSubmit="async () => await OnEditStoreSubmit()">
 
-        <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId" />
+        <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId"
+            AddEmployeeTarget="@($"#add-employee-{StoreId}")" Users="Users.Values.ToList()" DeleteUser="DeleteUser" />
 
         <ModalFooter>
             <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
@@ -16,16 +16,56 @@
     </EditForm>
 </Modal>
 
+<AddEmployeeToStoreModal id="@($"add-employee-{Store.TUID}")" AddEmployeeTarget="@($"#edit-store-{Store.TUID}")"
+    OnAddEmployeesSubmit="OnAddEmployeesSubmit" />
+
 @code {
     [Parameter] public required Data.Models.Stores.Store Store { get; set; }
     [Parameter] public required EventCallback UpdateStores { get; set; }
     [Parameter] public required int StoreId { get; set; }
-    [Parameter] public required List<Data.Models.Users.UserDTO> usersToAdd { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? EditStoreModel { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
+    private Dictionary<int, Data.Models.Users.UserDTO> Users = new Dictionary<int, Data.Models.Users.UserDTO>();
+
+    private async Task UpdateUsers()
+    {
+        var currentUsers = await StoresHttpClient.GetUsersAtStore(StoreId);
+
+        if (currentUsers != null)
+        {
+            currentUsers.ForEach((currentUser) =>
+            {
+                Users.TryAdd(currentUser.TUID, currentUser);
+            });
+        }
+
+        if (EditStoreModel != null)
+        {
+            if (EditStoreModel.USER_TUIDS != null && EditStoreModel.USER_TUIDS != string.Empty)
+            {
+                var addedUsers = await UsersHttpClient.GetUsersByString(new Data.Models.Users.UsersByStringRequest()
+                {
+                    TUIDS = EditStoreModel.USER_TUIDS
+                });
+
+                if (addedUsers != null)
+                {
+                    addedUsers.ForEach((addedUser) =>
+                    {
+                        Users.TryAdd(addedUser.TUID, addedUser);
+                    });
+                }
+            }
+        }
+    }
+
+    private async Task DeleteUser(int tuid)
+    {
+        await Task.Run(() => Users.Remove(tuid));
+    }
     protected override void OnInitialized()
     {
         EditStoreModel ??= new Data.Models.Stores.UpdatePublicInfoStore
@@ -38,41 +78,39 @@
             WIDTH = Store.WIDTH,
             LENGTH = Store.LENGTH,
             BLUEPRINT_IMAGE = Store.BLUEPRINT_IMAGE,
-            USER_TUIDS = ""
+            USER_TUIDS = string.Empty
         };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateUsers();
+    }
+
+    private async Task OnAddEmployeesSubmit(string[] employees)
+    {
+        List<string> employeesList = new List<string>(employees);
+
+        string joinedEmployees = string.Join(",", employeesList);
+
+        EditStoreModel!.USER_TUIDS = joinedEmployees;
+
+        await UpdateUsers();
     }
 
     private async Task OnEditStoreSubmit()
     {
-        await Task.Run(() => Console.WriteLine("Update store: " + StoreId));
-
         if (EditStoreModel == null) return;
 
+        string joinedEmployees = string.Join(",", Users.Keys.ToList());
 
-        if (usersToAdd.Count > 0)
-        {
-            EditStoreModel.USER_TUIDS = "";
-            foreach (var user in usersToAdd)
-            {
-                EditStoreModel.USER_TUIDS += user.TUID + ",";
-            }
-            if (EditStoreModel.USER_TUIDS != null)
-            {
-                EditStoreModel.USER_TUIDS = EditStoreModel.USER_TUIDS.TrimEnd(',');
-            }
-        }
+        EditStoreModel!.USER_TUIDS = joinedEmployees;
 
         var response = await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
-
-        Console.WriteLine(response);
 
         if (response != System.Net.HttpStatusCode.OK) return;
 
         await UpdateStores.InvokeAsync();
-
-        usersToAdd.Clear();
-
-        //ClearEditStoreModel();
 
         StateHasChanged();
     }
