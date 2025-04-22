@@ -29,6 +29,7 @@ Author: Andrew Fulton (3/12/2025)
 @using Plot.Components.PartialComponents.Card
 @using Plot.Services
 @using Plot.Data.Models.Stores
+@using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Store Dashboard</PageTitle>
 
@@ -49,7 +50,7 @@ Author: Andrew Fulton (3/12/2025)
             <CardBody>
                 <CardTitle class="flex-grow-1">
                     <a class="text-truncate" href="@($"/floorsets/{Store.TUID}")">
-                        @Store.CITY , @Store.STATE
+                        @Store.CITY, @Store.STATE
                     </a>
                 </CardTitle>
 

@@ -37,6 +37,9 @@ Added a loader popup when a user is added.
 @using System;
 @using System.Collections.Generic;
 @using System.Net.Mail;
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
 
 <div class="d-flex flex-column align-content-between user-dashboard">
     <div class="mb-4 table-set">

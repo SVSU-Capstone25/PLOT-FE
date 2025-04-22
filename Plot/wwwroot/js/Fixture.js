@@ -70,6 +70,36 @@ class Fixture {
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
+    this.p5.strokeWeight(1);
+    this.p5.fill("black");
+    this.p5.textSize(24);
+    this.p5.text(
+      this.HANGER_STACK,
+      this.X_POS * gridSize + this.WIDTH * gridSize - 24,
+      this.Y_POS * gridSize + 8,
+      this.WIDTH * gridSize,
+      this.LENGTH * gridSize
+    );
+    this.p5.strokeWeight(0.75);
+    this.p5.textSize(8);
+    this.p5.textAlign(this.p5.CENTER, this.p5.CENTER);
+    this.p5.text(
+      this.SUBCATEGORY ?? "",
+      this.X_POS * gridSize,
+      this.Y_POS * gridSize,
+      this.WIDTH * gridSize,
+      this.LENGTH * gridSize
+    );
+    this.p5.strokeWeight(0.1);
+    this.p5.textSize(4);
+    this.p5.textAlign(this.p5.CENTER, this.p5.BOTTOM);
+    this.p5.text(
+      this.NOTE ?? "",
+      this.X_POS * gridSize,
+      this.Y_POS * gridSize - 4,
+      this.WIDTH * gridSize,
+      this.LENGTH * gridSize
+    );
     this.p5.pop();
   }
 
