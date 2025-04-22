@@ -46,7 +46,7 @@
             var ImageSrc = fixtureModel.ICON != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(fixtureModel.ICON)}" :
             "https://placecats.com/200/200";
 
-                <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-name="@fixtureModel.NAME"
+            <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-name="@fixtureModel.NAME"
                     data-fixture-tuid="@fixtureModel.TUID" data-store-tuid="@fixtureModel.STORE_TUID"
                     data-width="@fixtureModel.WIDTH" data-height="@fixtureModel.LENGTH" draggable="true"
                     ondragstart="window.createDraggable(event)" @ondragenter="() => FixtureDragged(fixtureModel)">
@@ -67,7 +67,7 @@
             </Dropdown>
         </div>
 
-        <EditFixtureModal id="@($"edit-fixture-{fixtureModel.TUID}")" Fixture="fixtureModel" UpdateFixtureModel="UpdateFixtureModels" StoreId="StoreId" FixtureId="fixtureModel.TUID"/>
+                    <EditFixtureModal id="@($"edit-fixture-{fixtureModel.TUID}")" Fixture="fixtureModel" UpdateFixtureModel="UpdateFixtureModels" StoreId="StoreId" FixtureId="fixtureModel.TUID"/>
 
 
                 }
