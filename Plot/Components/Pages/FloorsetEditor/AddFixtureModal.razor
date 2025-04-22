@@ -19,6 +19,7 @@
     [Parameter] public EventCallback UpdateFixtureModels { get; set; }
 
     [Parameter] public required int FixtureId { get; set; }
+    [Parameter] public required int StoreId { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? AddFixtureModel { get; set; }
 

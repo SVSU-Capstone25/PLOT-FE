@@ -21,20 +21,23 @@
     [Parameter] public EventCallback UpdateFixtureModels { get; set; }
 
     [Parameter] public required int FixtureId { get; set; }
-
+    [Parameter] public required int StoreId { get; set; }
     [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; }
 
     protected override void OnInitialized()
     {
-        EditFixtureModel ??= new Data.Models.Fixtures.CreateFixtureModel
+        if (Fixture != null)
         {
-            NAME = Fixture.NAME!,
-            WIDTH = Fixture.WIDTH!,
-            LENGTH = Fixture.LENGTH!,
-            LF_CAP = Fixture.LF_CAP!,
-            STORE_TUID = Fixture.STORE_TUID!,
-            ICON = Fixture.ICON,
-        };
+            EditFixtureModel ??= new Data.Models.Fixtures.CreateFixtureModel
+            {
+                NAME = Fixture.NAME!,
+                WIDTH = Fixture.WIDTH!,
+                LENGTH = Fixture.LENGTH!,
+                LF_CAP = Fixture.LF_CAP!,
+                STORE_TUID = Fixture.STORE_TUID!,
+                ICON = Fixture.ICON,
+            };
+        }
     }
 
     public async Task OnEditFixtureSubmit()

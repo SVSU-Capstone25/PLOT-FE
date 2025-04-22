@@ -67,7 +67,9 @@
                 </DropdownLink>
             </Dropdown>
         </div>
-        <EditFixtureModal id="edit-fixture-{fixtureModel.TUID}" Model="fixtureModel" UpdateFixtureModel="UpdateFixtureModels" />
+
+        <EditFixtureModal id="edit-fixture-{fixtureModel.TUID}" Fixture="fixtureModel" UpdateFixtureModel="UpdateFixtureModels" StoreId="@fixtureModel.STORE_TUID" FixtureId="@fixtureModel.TUID"/>
+
  @*  *@
                 }
     </div>
