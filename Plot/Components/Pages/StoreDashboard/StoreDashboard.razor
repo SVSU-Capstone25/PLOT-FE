@@ -50,34 +50,41 @@ Author: Andrew Fulton (3/12/2025)
                         @Store.CITY , @Store.STATE
                     </a>
                 </CardTitle>
-                <Dropdown LabelText="Store">
-                    <DropdownLink href="@($"/floorsets/{Store.TUID}")" Icon="fa-solid fa-note-sticky">
+    
+                <AuthorizeView Policy="Manager">
+                    <Dropdown LabelText="Store">
+                            <DropdownLink href="@($"/floorsets/{Store.TUID}")" Icon="fa-solid fa-note-sticky">
                         Floorsets
-                    </DropdownLink>
+                            </DropdownLink>
 
                     <DropdownLink @onclick="async () => await OnEditClick(Store)" Icon="fa-solid fa-pen-to-square"
                         data-bs-target="@($"#edit-store-{Store.TUID}")" data-bs-toggle="modal">
                         Edit</DropdownLink>
 
-                    <DropdownLink Icon="fa-solid fa-trash-can" data-bs-target="@($"#delete-store-{Store.TUID}")"
-                        data-bs-toggle="modal">
-                        Delete
-                    </DropdownLink>
-                </Dropdown>
+                        <DropdownLink Icon="fa-solid fa-trash-can" data-bs-target="@($"#delete-store-{Store.TUID}")"
+                            data-bs-toggle="modal">
+                            Delete
+                        </DropdownLink>
+                    </Dropdown>
+                </AuthorizeView>
             </CardBody>
         </Card>
 
-        <EditStoreModal id="@($"edit-store-{Store.TUID}")" Store="Store" UpdateStores="UpdateStores" StoreId="Store.TUID" />
+        <AuthorizeView Policy="Manager">
+            <EditStoreModal id="@($"edit-store-{Store.TUID}")" Store="Store" UpdateStores="UpdateStores" StoreId="Store.TUID" />
 
-        <DeleteStoreModal Store="Store" UpdateStores="UpdateStores" />
+            <DeleteStoreModal Store="Store" UpdateStores="UpdateStores" />
+        </AuthorizeView>
     }
 
-    <AddStoreModal id="create-store" UpdateStores="UpdateStores" />
+    <AuthorizeView Policy="Owner">
+        <AddStoreModal id="create-store" UpdateStores="UpdateStores" />
 
-    <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary" Icon="fa-solid fa-plus"
-        data-bs-toggle="modal" data-bs-target="#create-store">
-        Add Store
-    </Button>
+        <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary"
+            Icon="fa-solid fa-plus" data-bs-toggle="modal" data-bs-target="#create-store">
+            Add Store
+        </Button>
+    </AuthorizeView>
 </div>
 
 @code {

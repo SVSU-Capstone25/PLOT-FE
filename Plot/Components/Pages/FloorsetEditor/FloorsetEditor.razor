@@ -23,7 +23,7 @@
 @inject IJSRuntime JS
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
-@inject FloorsetsHttpClient FloorsetsHttpClient;
+@inject FloorsetsHttpClient FloorsetsHttpClient
 @inject AuthHttpClient AuthHttpClient
 
 @using Plot.Components.PartialComponents.SlideOut
@@ -36,7 +36,7 @@
 @attribute [Authorize]
 @using Plot.Data.Models.Users
 @using Plot.Data.Models.Floorsets
-
+@using Microsoft.AspNetCore.Components.Authorization
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/copyFloorsetCard.js"></script>
@@ -70,18 +70,22 @@
         <div class="d-flex flex-column gap-2">
             @if (!addFixtureExpanded)
             {
-                <Button Class="Button button-with-spacing" Id="buttonAddFixture" Variant="primary"
-                    OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" TextAlignment="center">
-                    Add Fixture
-                </Button>
+                <AuthorizeView Policy="Manager">
+                    <Button Class="Button button-with-spacing" Id="buttonAddFixture" Variant="primary"
+                        OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" TextAlignment="center">
+                        Add Fixture
+                    </Button>
+                </AuthorizeView>
             }
 
             @if (!buildingWallsExpanded)
             {
-                <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
-                    OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" TextAlignment="center">
-                    Edit Building Walls
-                </Button>
+                <AuthorizeView Policy="Manager">
+                    <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
+                        OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" TextAlignment="center">
+                        Edit Building Walls
+                    </Button>
+                </AuthorizeView>
             }
 
             <Button Class="Button" Id="buttonViewAllocations" Variant="primary" OnClickFunction="ToggleAllocations"
@@ -89,10 +93,12 @@
                 View Allocations
             </Button>
 
-            <Button Class="Button" Id="buttonImportFile" Variant="primary" data-bs-target="#import-excel-modal"
-                data-bs-toggle="modal" Icon="fa-solid fa-file-import" TextAlignment="center">
-                Import Excel File
-            </Button>
+            <AuthorizeView Policy="Manager">
+                <Button Class="Button" Id="buttonImportFile" Variant="primary" data-bs-target="#import-excel-modal"
+                    data-bs-toggle="modal" Icon="fa-solid fa-file-import" TextAlignment="center">
+                    Import Excel File
+                </Button>
+            </AuthorizeView>
 
             <Button Icon="fa-solid fa-print" Id="printLayout" Variant="primary" TextAlignment="center"
                 data-bs-toggle="modal" data-bs-target="#print-modal">

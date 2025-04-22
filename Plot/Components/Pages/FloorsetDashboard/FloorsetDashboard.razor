@@ -19,6 +19,7 @@ Author: Andrew Fulton (3/13/2025)  *@
 @inject NavigationManager Navigation
 @inject FloorsetsHttpClient FloorsetsHttpClient
 @inject StoresHttpClient StoresHttpClient
+@using Microsoft.AspNetCore.Components.Authorization
 
 @* Top portion of the page (Showing store, location, and image for the current floorset) *@
 <div class="row mb-4 align-items-center">
@@ -61,68 +62,74 @@ Author: Andrew Fulton (3/13/2025)  *@
             ImageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(fimage)}";
         }
 
-    <Card>
-        <a href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")" class="w-100 ratio ratio-4x3">
-            <CardImage Image="@ImageSrc" />
-        </a>
-        <CardBody>
-            <CardTitle class="over-hidden" style="width: 100%;">
-                <a class="text-truncate" href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")">
-                    <span class="d-inline-block text-truncate" style="max-width: 100%;">@Floorset.NAME</span>
-                </a>
-            </CardTitle>
-            <Dropdown id="@Floorset.TUID.ToString()" LabelText="Floorset">
-                <DropdownLink data-bs-toggle="modal" data-bs-target="@($"#edit-floorset-{Floorset.TUID}")"
-                    Icon="fa-solid fa-pen-to-square">
-                    Edit
-                </DropdownLink>
-                <DropdownLink Icon="fa-solid fa-copy" @onclick="async () => await OnCopyFloorsetClick(Floorset)">
-                    Copy
-                </DropdownLink>
-                <DropdownLink Icon="fa-solid fa-trash-can" data-bs-toggle="modal"
-                    data-bs-target="@($"#delete-floorset-{Floorset.TUID}")">
-                    Delete
-                </DropdownLink>
-            </Dropdown>
-        </CardBody>
-        @* <a href="@($"/floorset-editor/{floorset.TUID}")"></a> *@
-    </Card>
+        <Card>
+            <a href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")" class="w-100 ratio ratio-4x3">
+                <CardImage Image="@ImageSrc" />
+            </a>
+            <CardBody>
+                <CardTitle class="over-hidden" style="width: 100%;">
+                    <a class="text-truncate" href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")">
+                        <span class="d-inline-block text-truncate" style="max-width: 100%;">@Floorset.NAME</span>
+                    </a>
+                </CardTitle>
 
-        <EditFloorsetModal id="@($"edit-store-{Floorset.TUID}")" Floorset="Floorset" UpdateFloorsets="UpdateFloorsets"
-            FloorsetId="Floorset.TUID" />
+                <AuthorizeView Policy="Manager">
+                    <Dropdown Class="Dropdown" Id="@Floorset.TUID.ToString()" LabelText="Floorset">
+                        <DropdownLink data-bs-toggle="modal" data-bs-target="@($"#edit-floorset-{Floorset.TUID}")"
+                            Icon="fa-solid fa-pen-to-square">
+                            Edit
+                        </DropdownLink>
+                        <DropdownLink Icon="fa-solid fa-copy" @onclick="async () => await OnCopyFloorsetClick(Floorset)">
+                            Copy
+                        </DropdownLink>
+                        <DropdownLink Icon="fa-solid fa-trash-can" data-bs-toggle="modal"
+                            data-bs-target="@($"#delete-floorset-{Floorset.TUID}")">
+                            Delete
+                        </DropdownLink>
+                    </Dropdown>
+                </AuthorizeView>
+            </CardBody>
+            @* <a href="@($"/floorset-editor/{floorset.TUID}")"></a> *@
+        </Card>
 
-        <Modal id="@($"delete-floorset-{Floorset.TUID}")" class="standard">
-            <ModalHeader Title="Confirm Deletion" Variant="danger" />
-            <form @onsubmit="async () => {
-                await OnDeleteFloorsetSubmit(Floorset.TUID);
-                deleteTextInput = string.Empty;}">
-            @code {
-                private string? deleteTextInput;
-                private bool isDisabled => deleteTextInput != "DELETE";
-            }
-            <ModalBody>
-                <h5>Are you SURE you want to delete this Floorset?</h5>
-                <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
-                    @bind-value="deleteTextInput" @bind-value:event="oninput" />
-            </ModalBody>
+        <AuthorizeView Policy="Manager">
+            <EditFloorsetModal id="@($"edit-store-{Floorset.TUID}")" Floorset="Floorset" UpdateFloorsets="UpdateFloorsets"
+                FloorsetId="Floorset.TUID" />
 
-            <ModalFooter>
-                <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
-                    data-bs-dismiss="modal">
-                    Yes, Delete
-                </Button>
-            </ModalFooter>
-        </form>
-    </Modal>
-        }
+            <Modal id="@($"delete-floorset-{Floorset.TUID}")" class="standard">
+                <ModalHeader Title="Confirm Deletion" Variant="danger" />
+                <form @onsubmit="async () => {
+                    await OnDeleteFloorsetSubmit(Floorset.TUID);
+                    deleteTextInput = string.Empty;}">
+                    @code {
+                        private string? deleteTextInput;
+                        private bool isDisabled => deleteTextInput != "DELETE";
+                    }
+                    <ModalBody>
+                        <h5>Are you SURE you want to delete this Floorset?</h5>
+                        <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
+                            @bind-value="deleteTextInput" @bind-value:event="oninput" />
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
+                            data-bs-dismiss="modal">
+                            Yes, Delete
+                        </Button>
+                    </ModalFooter>
+                </form>
+            </Modal>
+        </AuthorizeView>
+    }
 </div>
+<AuthorizeView Policy="Manager">
+    <AddFloorsetModal id="create-floorset" UpdateFloorsets="UpdateFloorsets" StoreId="StoreId" />
 
-<AddFloorsetModal id="create-floorset" UpdateFloorsets="UpdateFloorsets" StoreId="StoreId" />
-
-<Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary" Icon="fa-solid fa-plus"
-    data-bs-toggle="modal" data-bs-target="#create-floorset">
-    Add Floorset
-</Button>
+    <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary" Icon="fa-solid fa-plus"
+        data-bs-toggle="modal" data-bs-target="#create-floorset">
+        Add Floorset
+    </Button>
+</AuthorizeView>
 
 <script src="js/copyFloorsetCard.js"></script>
 
