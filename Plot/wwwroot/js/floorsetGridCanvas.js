@@ -81,14 +81,39 @@ function drawEmployeeAreaSelector(p5, v1, v2) {
 }
 
 function onZoomScroll(event) {
-  if (event.deltaY > 0) {
-    gridInstance.scale += 0.1;
+  if (!gridInstance) return;
+
+  const mouseX = event.clientX;
+  const mouseY = event.clientY;
+
+  const gridSpaceBeforeZoom = gridInstance.screenToGridSpace(mouseX, mouseY);
+
+  if (event.shiftKey) {
+    const zoomSensitivity = 0.001;
+    const newScale = gridInstance.scale * (1 + event.deltaY * zoomSensitivity);
+
+    gridInstance.scale = Math.max(0.1, Math.min(10, newScale));
+    gridInstance.resize();
+
+    const gridSpaceAfterZoom = gridInstance.screenToGridSpace(mouseX, mouseY);
+
+    gridInstance.xOffset +=
+      (gridSpaceAfterZoom.x - gridSpaceBeforeZoom.x) *
+      gridInstance.size *
+      gridInstance.scale;
+    gridInstance.yOffset +=
+      (gridSpaceAfterZoom.y - gridSpaceBeforeZoom.y) *
+      gridInstance.size *
+      gridInstance.scale;
+
+    gridInstance.scale = Math.max(0.1, Math.min(10, newScale));
   } else {
-    gridInstance.scale -= 0.1;
+    gridInstance.xOffset += event.deltaX * 0.6 * gridInstance.scale;
+    gridInstance.yOffset += event.deltaY * 0.3 * gridInstance.scale;
   }
 
-  gridInstance.scale = Math.max(0.1, gridInstance.scale);
   gridInstance.resize();
+  event.preventDefault();
 }
 
 function sketch(p5) {
@@ -116,6 +141,7 @@ function sketch(p5) {
     window.grid.paint = {
       COLOR: "#fff",
       SUPERCATEGORY_TUID: 0,
+      SUBCATEGORY: "None",
     };
 
     const url = new URL(window.location.href);
@@ -153,6 +179,16 @@ function sketch(p5) {
     canvas.elt.addEventListener("wheel", onZoomScroll);
 
     canvas.elt.addEventListener("mousewheel", onZoomScroll);
+
+    canvas.elt.addEventListener("click", () => {
+      window.showDropdown(false);
+    });
+
+    canvas.elt.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    });
   };
 
   p5.draw = () => {
@@ -175,36 +211,57 @@ function sketch(p5) {
   p5.mousePressed = () => {
     const mouse = p5.createVector(p5.mouseX, p5.mouseY);
 
-    if (window.grid.state === "place") {
+    if (p5.mouseButton === "left") {
+      if (window.grid.state === "place") {
+        const { x, y } = gridInstance.toGridCoordinates(mouse);
+        const rack = gridInstance.getFixtureAt(x, y);
+
+        if (!rack) return;
+
+        const index = gridInstance.fixtures.indexOf(rack);
+        if (index > -1) {
+          gridInstance.fixtures.splice(index, 1);
+          mouseFixture = rack;
+        }
+      } else if (
+        window.grid.state === "employee_area_paint" ||
+        window.grid.state === "employee_area_erase"
+      ) {
+        employeeAreaSelection.v1 = mouse;
+        employeeAreaSelection.v2 = mouse;
+      } else if (window.grid.state === "erase") {
+        const { x, y } = gridInstance.toGridCoordinates(mouse);
+        const rack = gridInstance.getFixtureAt(x, y);
+        if (!rack) return;
+
+        const index = gridInstance.fixtures.indexOf(rack);
+        if (index > -1) {
+          gridInstance.fixtures.splice(index, 1);
+        }
+      } else {
+        const gridCoords = gridInstance.toGridCoordinates(mouse);
+        const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
+        if (rack) rack.COLOR = window.grid.paint.COLOR;
+      }
+    }
+
+    if (p5.mouseButton === "right") {
       const { x, y } = gridInstance.toGridCoordinates(mouse);
       const rack = gridInstance.getFixtureAt(x, y);
 
       if (!rack) return;
 
-      const index = gridInstance.fixtures.indexOf(rack);
-      if (index > -1) {
-        gridInstance.fixtures.splice(index, 1);
-        mouseFixture = rack;
-      }
-    } else if (
-      window.grid.state === "employee_area_paint" ||
-      window.grid.state === "employee_area_erase"
-    ) {
-      employeeAreaSelection.v1 = mouse;
-      employeeAreaSelection.v2 = mouse;
-    } else if (window.grid.state === "erase") {
-      const { x, y } = gridInstance.toGridCoordinates(mouse);
-      const rack = gridInstance.getFixtureAt(x, y);
-      if (!rack) return;
+      window.showDropdown(true, p5.mouseX, p5.mouseY);
 
-      const index = gridInstance.fixtures.indexOf(rack);
-      if (index > -1) {
-        gridInstance.fixtures.splice(index, 1);
-      }
-    } else {
-      const gridCoords = gridInstance.toGridCoordinates(mouse);
-      const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
-      if (rack) rack.COLOR = window.grid.paint.COLOR;
+      window.dotNetReference?.invokeMethodAsync(
+        "GetFixture",
+        rack.TUID,
+        rack.EDITOR_ID,
+        rack.NAME,
+        rack.HANGER_STACK,
+        rack.SUBCATEGORY,
+        rack.NOTE ?? ""
+      );
     }
   };
 
@@ -219,6 +276,7 @@ function sketch(p5) {
 
       rack.COLOR = window.grid.paint.COLOR;
       rack.SUPERCATEGORY_TUID = window.grid.paint.SUPERCATEGORY_TUID;
+      rack.SUBCATEGORY = window.grid.paint.SUBCATEGORY;
 
       paintAggregator(rack.toObject());
     } else if (window.grid.state === "erase") {
@@ -240,8 +298,6 @@ function sketch(p5) {
       if (mouseFixture) {
         const { x, y } = gridInstance.toGridCoordinates(mouse);
 
-        console.log(x, y);
-
         if (!gridInstance.isOnGrid(x, y)) return;
 
         mouseFixture.X_POS = x;
@@ -259,8 +315,6 @@ function sketch(p5) {
         Y1_POS = Math.min(v1.y, v2.y),
         X2_POS = Math.max(v1.x, v2.x),
         Y2_POS = Math.max(v1.y, v2.y);
-
-      console.log(X1_POS, Y1_POS, X2_POS, Y2_POS);
 
       bulkCreateEmployeeAreas({
         FLOORSET_TUID: floorsetId,
@@ -318,6 +372,7 @@ function sketch(p5) {
         })
         .catch(console.error);
     } else if (window.draggedFixture) {
+      const mouse = p5.createVector(p5.mouseX, p5.mouseY);
       const { x, y } = gridInstance.toGridCoordinates(mouse);
 
       createFixtureInstance(
@@ -329,7 +384,7 @@ function sketch(p5) {
           Y_POS: y,
           ALLOCATED_LF: 1,
           EDITOR_ID: gridInstance.fixtures.length + 1,
-        })
+        }).toObject()
       )
         .then((data) => {
           gridInstance.fixtures.push(
@@ -382,14 +437,7 @@ window.updateStoreSize = (width, height) => {
 };
 
 window.setPaintMode = (enabled) => {
-  console.log("Setting paint mode " + enabled);
-  //Translate true/false to "paint" / "place"
-  if (enabled) {
-    window.grid.state = "paint";
-  } else {
-    window.grid.state = "place";
-  }
-  console.log("window gridstate now: " + window.grid.state);
+  window.grid.state = enabled ? "paint" : "place";
 };
 
 window.setErase = () => {
@@ -410,9 +458,10 @@ window.setEmployeeAreaErase = () => {
   window.grid.state = "employee_area_erase";
 };
 
-window.setPaint = (paint, supercategory_tuid) => {
+window.setPaint = (paint, supercategory_tuid, subcategory) => {
   window.grid.paint.COLOR = paint;
   window.grid.paint.SUPERCATEGORY_TUID = supercategory_tuid;
+  window.grid.paint.SUBCATEGORY = subcategory;
 };
 
 window.createDraggable = (event) => {
@@ -423,7 +472,36 @@ window.createDraggable = (event) => {
     STORE_TUID = Number(event.target.getAttribute("data-store-tuid"));
 
   window.draggedFixture = { WIDTH, LENGTH, NAME, FIXTURE_TUID, STORE_TUID };
-  console.log(window.draggedFixture);
+};
+
+window.setDotnetReference = (dotNetReference) => {
+  window.dotNetReference = dotNetReference;
+};
+
+window.showDropdown = (isShowing, x = 0, y = 0) => {
+  const dropdown = new bootstrap.Dropdown(
+    document.querySelector("#fixtureContextMenu")
+  );
+
+  const menuWidth = 350;
+
+  if (x < window.innerWidth - window.innerWidth * 0.2) {
+    dropdown._element.style.left = x + 40 + "px";
+  } else {
+    dropdown._element.style.left = x - menuWidth - 40 + "px";
+  }
+
+  if (y < window.innerHeight - window.innerHeight * 0.5) {
+    dropdown._element.style.top = y + "px";
+  } else {
+    dropdown._element.style.top = y - window.innerHeight * 0.4 + "px";
+  }
+
+  if (isShowing) {
+    dropdown.show();
+  } else {
+    dropdown.hide();
+  }
 };
 
 //This method is used with the save button it copies the current floorset, creates another

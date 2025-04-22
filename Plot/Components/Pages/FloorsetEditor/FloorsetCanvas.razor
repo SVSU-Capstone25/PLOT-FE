@@ -1,16 +1,44 @@
-@inject IJSRuntime JS
+@inject IJSRuntime JSRuntime
 
-<div id="@_containerId" class="position-absolute top-0 start-0"></div>
+@using Plot.Data.Models.Fixtures
+
+<div id="@_containerId" class="position-absolute top-0 start-0">
+</div>
+
+<FixtureConfigModal FloorsetId="FloorsetId" FixtureInstance="FixtureInstance" />
 
 @code {
+    [Parameter] public required int FloorsetId { get; set; }
+    private FixtureInstance? FixtureInstance { get; set; }
+
     private string _containerId = $"p5_{Guid.NewGuid():N}";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // call the JS helper you loaded in App.razor
-            await JS.InvokeVoidAsync("initP5", _containerId);
+            var DotNetReference = DotNetObjectReference.Create(this);
+
+            await JSRuntime.InvokeVoidAsync("window.initP5", _containerId);
+            await JSRuntime.InvokeVoidAsync("window.setDotnetReference", DotNetReference);
         }
+    }
+
+    [JSInvokable("GetFixture")]
+    public void GetFixture(int Tuid, int EditorTuid, string? Name, int? HangerStack, string? Subcategory, string? Note)
+    {
+
+        FixtureInstance = new FixtureInstance
+        {
+            TUID = Tuid,
+            NAME = Name,
+            FLOORSET_TUID = FloorsetId,
+            EDITOR_ID = EditorTuid,
+            HANGER_STACK = HangerStack,
+            NOTE = Note,
+            SUBCATEGORY = Subcategory
+        };
+
+        StateHasChanged();
     }
 }

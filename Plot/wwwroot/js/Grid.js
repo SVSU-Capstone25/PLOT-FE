@@ -23,6 +23,8 @@ class Grid {
     this.p5 = p5;
     this.size = 30;
     this.scale = 1;
+    this.xOffset = 0;
+    this.yOffset = 0;
     this.fixtures = [];
     this.employeeAreas = new Map();
     this.width = 1;
@@ -95,10 +97,17 @@ class Grid {
   }
 
   toGridCoordinates(v) {
-    return this.p5.createVector(
-      Math.floor((v.x - this.translate.x) / (this.size * this.scale)),
-      Math.floor((v.y - this.translate.y) / (this.size * this.scale))
-    );
+    const scaleSize = this.size * this.scale;
+    const x = Math.floor((v.x - this.translate.x) / scaleSize);
+    const y = Math.floor((v.y - this.translate.y) / scaleSize);
+    return this.p5.createVector(x, y);
+  }
+
+  screenToGridSpace(x, y) {
+    return {
+      x: (x - this.translate.x) / (this.size * this.scale),
+      y: (y - this.translate.y) / (this.size * this.scale),
+    };
   }
 
   isOnGrid(x, y) {
@@ -106,6 +115,33 @@ class Grid {
       return true;
     }
     return false;
+  }
+
+  deleteFixtureByEditorTuid(editorTuid) {
+    this.fixtures = this.fixtures.filter(
+      (fixture) => fixture.EDITOR_ID != editorTuid
+    );
+  }
+
+  updateFixtureByEditorTuid(
+    editorTuid,
+    hangerStack,
+    subcategory,
+    supercategoryTuid,
+    supercategoryColor,
+    note
+  ) {
+    this.fixtures = this.fixtures.map((fixture) => {
+      if (fixture.EDITOR_ID == editorTuid) {
+        fixture.HANGER_STACK = hangerStack;
+        fixture.SUBCATEGORY = subcategory;
+        fixture.SUPERCATEGORY_TUID = supercategoryTuid;
+        fixture.COLOR = supercategoryColor;
+        fixture.NOTE = note;
+      }
+
+      return fixture;
+    });
   }
 
   getFixtureAt(gridX, gridY) {
@@ -126,8 +162,14 @@ class Grid {
 
   resize() {
     this.translate = {
-      x: this.p5.width / 2 - (this.size * this.width * this.scale) / 2,
-      y: this.p5.height / 2 - (this.size * this.height * this.scale) / 2,
+      x:
+        this.p5.width / 2 -
+        (this.size * this.width * this.scale) / 2 +
+        this.xOffset,
+      y:
+        this.p5.height / 2 -
+        (this.size * this.height * this.scale) / 2 +
+        this.yOffset,
     };
   }
 
