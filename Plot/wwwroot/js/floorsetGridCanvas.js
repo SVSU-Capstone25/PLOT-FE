@@ -390,6 +390,7 @@ function sketch(p5) {
           gridInstance.fixtures.push(
             Fixture.from(p5, {
               ...window.draggedFixture,
+              TUID: data,
               COLOR: "#fff",
               FLOORSET_TUID: floorsetId,
               X_POS: x,
