@@ -11,21 +11,18 @@ and allocate floorsets for Platos Closet.
 Author: Andrew Fulton (3/12/2025)
 
 *@
-
 @page "/Store-dashboard"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
-@attribute [Authorize]
-
 @inject NavigationManager Navigation
 @inject StoresHttpClient StoresHttpClient
 @inject ICookie Cookie
 @inject JwtService JwtService
 @inject ClaimParserService ClaimParserService
 @inject IAuthorizationService AuthorizationService
+@attribute [Authorize]
 
 @using System.Drawing;
 @using System.IO;
+@using Microsoft.AspNetCore.Authorization
 @using Plot.Components.PartialComponents.Card
 @using Plot.Services
 @using Plot.Data.Models.Stores

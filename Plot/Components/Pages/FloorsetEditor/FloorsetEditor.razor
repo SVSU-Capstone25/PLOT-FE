@@ -17,10 +17,6 @@
 *@
 
 @page "/floorset-editor/{StoreId:int}/{FloorsetId:int}"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
-@attribute [Authorize]
-
 @layout Plot.Components.Layout.FloorsetEditorLayout
 @rendermode InteractiveServer
 
@@ -36,8 +32,11 @@
 @using Plot.Components.PartialComponents.TextInput
 @using Plot.Components.PartialComponents.Modal
 @using Plot.Components.PartialComponents.FileInput
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @using Plot.Data.Models.Users
 @using Plot.Data.Models.Floorsets
+@using Microsoft.AspNetCore.Components.Authorization
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/copyFloorsetCard.js"></script>

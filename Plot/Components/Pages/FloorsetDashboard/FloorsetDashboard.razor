@@ -14,12 +14,12 @@ Author: Andrew Fulton (3/13/2025)  *@
 
 @page "/floorsets/{StoreId:int}"
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
 @attribute [Authorize]
 
 @inject NavigationManager Navigation
 @inject FloorsetsHttpClient FloorsetsHttpClient
 @inject StoresHttpClient StoresHttpClient
+@using Microsoft.AspNetCore.Components.Authorization
 
 @* Top portion of the page (Showing store, location, and image for the current floorset) *@
 <div class="row mb-4 align-items-center">
@@ -99,8 +99,8 @@ Author: Andrew Fulton (3/13/2025)  *@
             <Modal id="@($"delete-floorset-{Floorset.TUID}")" class="standard">
                 <ModalHeader Title="Confirm Deletion" Variant="danger" />
                 <form @onsubmit="async () => {
-                                await OnDeleteFloorsetSubmit(Floorset.TUID);
-                                deleteTextInput = string.Empty;}">
+                                        await OnDeleteFloorsetSubmit(Floorset.TUID);
+                                        deleteTextInput = string.Empty;}">
                 @code {
                     private string? deleteTextInput;
                     private bool isDisabled => deleteTextInput != "DELETE";
