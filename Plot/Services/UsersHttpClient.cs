@@ -67,10 +67,4 @@ public class UsersHttpClient : PlotHttpClient
     {
         return await SendGetAsync<IEnumerable<Store>?>($"/stores/{userId}");
     }
-
-    public async Task<IEnumerable<Store>?> GetStoresNotForUser(int userId)
-    {
-        return await SendGetAsync<IEnumerable<Store>?>($"/stores-not/{userId}");
-    }
-
 }

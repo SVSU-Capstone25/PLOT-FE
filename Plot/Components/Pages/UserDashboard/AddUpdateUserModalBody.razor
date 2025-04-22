@@ -1,8 +1,3 @@
-@inject UsersHttpClient UsersHttpClient
-@inject StoresHttpClient StoresHttpClient
-@inject IJSRuntime JS
-@using Data.Models.Users
-
 <ModalBody>
 
     <label class="w-100 d-flex">
@@ -28,9 +23,9 @@
         </div>
     </label>
 
-    <label>
-        Role:
-        <InputSelect @bind-value="AddUpdateUserModel!.ROLE_NAME">
+    <label class="w-100 d-flex my-2">
+        <span class="mt-2 fw-bold">Role</span>
+        <InputSelect class="w-85 form-select ms-auto" @bind-value="AddUpdateUserModel!.ROLE_NAME">
             <option value="Owner">Owner</option>
             <option value="Manager">Manager</option>
             <option value="Employee">Employee</option>

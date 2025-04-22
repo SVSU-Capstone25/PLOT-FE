@@ -23,7 +23,7 @@
 @inject IJSRuntime JS
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
-@inject FloorsetsHttpClient FloorsetsHttpClient;
+@inject FloorsetsHttpClient FloorsetsHttpClient
 @inject AuthHttpClient AuthHttpClient
 
 @using Plot.Components.PartialComponents.SlideOut
@@ -32,14 +32,16 @@
 @using Plot.Components.PartialComponents.TextInput
 @using Plot.Components.PartialComponents.Modal
 @using Plot.Components.PartialComponents.FileInput
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @using Plot.Data.Models.Users
 @using Plot.Data.Models.Floorsets
-
+@using Microsoft.AspNetCore.Components.Authorization
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/copyFloorsetCard.js"></script>
 <script src="js/floorsetEditor.js"></script>
-<FloorsetCanvas />
+<FloorsetCanvas FloorsetId="FloorsetId" />
 
 @* Sidebar *@
 <SlideOut>
@@ -47,7 +49,7 @@
     {
         <AllocationsSidebar FloorsetId="FloorsetId" />
 
-        <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations" EraseClicked="EraseCategoryClicked" />
+        <ToolbarButtons ToggleAllocationsOpen="ToggleAllocations" />
     }
     else
     {
@@ -68,18 +70,22 @@
         <div class="d-flex flex-column gap-2">
             @if (!addFixtureExpanded)
             {
-                <Button Class="Button button-with-spacing" Id="buttonAddFixture" Variant="primary"
-                    OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" TextAlignment="center">
-                    Add Fixture
-                </Button>
+                <AuthorizeView Policy="Manager">
+                    <Button Class="Button button-with-spacing" Id="buttonAddFixture" Variant="primary"
+                        OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" TextAlignment="center">
+                        Add Fixture
+                    </Button>
+                </AuthorizeView>
             }
 
             @if (!buildingWallsExpanded)
             {
-                <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
-                    OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" TextAlignment="center">
-                    Edit Building Walls
-                </Button>
+                <AuthorizeView Policy="Manager">
+                    <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
+                        OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" TextAlignment="center">
+                        Edit Building Walls
+                    </Button>
+                </AuthorizeView>
             }
 
             <Button Class="Button" Id="buttonViewAllocations" Variant="primary" OnClickFunction="ToggleAllocations"
@@ -87,10 +93,12 @@
                 View Allocations
             </Button>
 
-            <Button Class="Button" Id="buttonImportFile" Variant="primary" data-bs-target="#import-excel-modal"
-                data-bs-toggle="modal" Icon="fa-solid fa-file-import" TextAlignment="center">
-                Import Excel File
-            </Button>
+            <AuthorizeView Policy="Manager">
+                <Button Class="Button" Id="buttonImportFile" Variant="primary" data-bs-target="#import-excel-modal"
+                    data-bs-toggle="modal" Icon="fa-solid fa-file-import" TextAlignment="center">
+                    Import Excel File
+                </Button>
+            </AuthorizeView>
 
             <Button Icon="fa-solid fa-print" Id="printLayout" Variant="primary" TextAlignment="center"
                 data-bs-toggle="modal" data-bs-target="#print-modal">
@@ -115,8 +123,6 @@
                     </div>
                 </div>
             </div>
-
-            <FixtureConfigModal />
         </div>
     }
 </SlideOut>
@@ -253,6 +259,71 @@
     @* private int? selectedFixtureID; *@
     @* private FixtureConfigModal? configModal; *@
 
+    @* Tristan Calay 4/7/25
+    Hold a reference to the fixture model that gets dragged onto the grid, so that when the JS 
+    calls for a new ID, an instance is ready to be created.*@
+
+    private Data.Models.Fixtures.FixtureModel? currentDraggedFixture { get; set; }
+
+    @*
+    Tristan Calay 4/7/25
+    To be called by the AddFixturePanel : FixtureDraggedEvent callback. 
+    Caches a fixture model to be used as a FixtureInstance and sent to the grid.*@
+    public void OnFixtureDragged(Data.Models.Fixtures.FixtureModel model)
+    {
+        currentDraggedFixture = model;
+    }
+
+
+    /* Tristan Calay 3/28/25
+    The allocations sidebar reference allows methods to be called from here to the sidebar.
+    It should be set by @ref in the page layout above.
+    */
+    //private AllocationsSidebar? allocationsSidebar;
+
+    /*Tristan Calay 4/7/25
+    Compute the totals for each category in the allocation sidebar, based on the fixtures dict*/
+    private void ComputeAllocationTotals()
+    {
+        //Break if the allocations sidebar reference is null.
+        @* if (allocationsSidebar == null)
+        {
+            return;
+        } *@
+
+        Console.WriteLine("Compute Allocation Totals");
+
+        //List<Category> categories = allocationsSidebar.getAllCategories();
+        //Set all start values to zero. They are computed by adding the fixture LF to the categories.
+
+        @* foreach (Category category in categories)
+        {
+            category.currentValue = 0;
+        } *@
+        @* foreach (Data.Models.Fixtures.FixtureInstance fixture in fixturesDict.Values)
+        {
+            //Find the progress bar representing the category, and add the current hanging capacity to it.
+            foreach (Category category in categories)
+            {
+                if (category.isHeader)
+                {
+                    if (category.headerCategory == fixture.CATEGORY)
+                    {
+                        category.currentValue += fixture.TOT_LF;
+                    }
+                }
+                else if (category.headerCategory == fixture.CATEGORY && category.text == fixture.CATEGORY)
+                {
+                    category.currentValue += fixture.TOT_LF;
+                }
+
+
+            }
+        } *@
+
+        //allocationsSidebar.notifyCategoryUpdates();
+    }
+
 
     /*
     The UpdateImage function updates the image data in a fixture.
@@ -296,28 +367,5 @@
     private void OpenPrintLayout()
     {
         printLayoutOpen = !printLayoutOpen;
-    }
-
-    private async Task editFixture()
-    {
-        Console.WriteLine("Edit Fixture Function");
-        await JS.InvokeVoidAsync("setPlace");
-        allocationsOpen = false;
-    }
-
-    private async Task OpenPrint()
-    {
-        await Task.Run(() => Console.WriteLine("Open Print"));
-    }
-
-    private async Task OpenImportModal()
-    {
-        await Task.Run(() => Console.WriteLine("Open Import"));
-    }
-
-    private void EraseCategoryClicked()
-    {
-        Console.WriteLine("Erase Category Function");
-        JS.InvokeVoidAsync("setErase");
     }
 }

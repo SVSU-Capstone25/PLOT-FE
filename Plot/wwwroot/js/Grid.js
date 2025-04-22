@@ -1,90 +1,208 @@
 import Fixture from "./Fixture.js";
+import EmployeeArea from "./EmployeeArea.js";
 
 /**
  * Create a new grid
  * @author Clayton Cook <work@claytonleonardcook.com>
  */
 class Grid {
-    /**
-    * @param {number} size
-    * @param {number} scale
-    * @param {number} width 
-    * @param {number} height
-    * @param {Fixture} height
-    * @param {p5.Color | string} color 
-    */
-    constructor(p5) {
-        this.p5 = p5;
-        this.size = 30;
-        this.scale = 1;
-        this.fixtures = [];
-        this.width = 1;
-        this.height = 1;
-        this.resize();
+  /** @type {Fixture[]} */
+  fixtures;
+
+  /** @type {Map<string, EmployeeArea>} */
+  employeeAreas;
+
+  /**
+   * @param {number} size
+   * @param {number} scale
+   * @param {number} width
+   * @param {number} height
+   * @param {p5.Color | string} color
+   */
+  constructor(p5) {
+    this.p5 = p5;
+    this.size = 30;
+    this.scale = 1;
+    this.xOffset = 0;
+    this.yOffset = 0;
+    this.fixtures = [];
+    this.employeeAreas = new Map();
+    this.width = 1;
+    this.height = 1;
+    this.resize();
+  }
+
+  addFixtureInstanceToGrid(...args) {
+    this.fixtures.push(new Fixture(this.p5, ...args));
+  }
+
+  /**
+   * TODO: Write documentation
+   * @param {EmployeeArea[]} employeeAreas
+   */
+  addEmployeeAreas(employeeAreas) {
+    employeeAreas.forEach((employeeArea) =>
+      this.employeeAreas.set(
+        [employeeArea.X_POS, employeeArea.Y_POS].join("-"),
+        EmployeeArea.from(this.p5, employeeArea)
+      )
+    );
+  }
+
+  /**
+   * TODO: Write documentation
+   * @param {number} floorsetTuid
+   * @param {number} x1
+   * @param {number} y1
+   * @param {number} x2
+   * @param {number} y2
+   */
+  bulkAddEmployeeAreas(floorsetTuid, x1, y1, x2, y2) {
+    for (let y = y1; y < y2; y++) {
+      for (let x = x1; x < x2; x++) {
+        this.employeeAreas.set(
+          [x, y].join("-"),
+          new EmployeeArea(this.p5, floorsetTuid, x, y)
+        );
+      }
+    }
+  }
+
+  /**
+   * TODO: Write documentation
+   * @param {EmployeeArea[]} employeeAreas
+   */
+  deleteEmployeeAreas(employeeAreas) {
+    employeeAreas.forEach((employeeArea) =>
+      this.employeeAreas.delete(
+        [employeeArea.X_POS, employeeArea.Y_POS].join("-")
+      )
+    );
+  }
+
+  /**
+   * TODO: Write documentation
+   * @param {number} floorsetTuid
+   * @param {number} x1
+   * @param {number} y1
+   * @param {number} x2
+   * @param {number} y2
+   */
+  bulkDeleteEmployeeAreas(x1, y1, x2, y2) {
+    for (let y = y1; y < y2; y++) {
+      for (let x = x1; x < x2; x++) {
+        this.employeeAreas.delete([x, y].join("-"));
+      }
+    }
+  }
+
+  toGridCoordinates(v) {
+    const scaleSize = this.size * this.scale;
+    const x = Math.floor((v.x - this.translate.x) / scaleSize);
+    const y = Math.floor((v.y - this.translate.y) / scaleSize);
+    return this.p5.createVector(x, y);
+  }
+
+  screenToGridSpace(x, y) {
+    return {
+      x: (x - this.translate.x) / (this.size * this.scale),
+      y: (y - this.translate.y) / (this.size * this.scale),
+    };
+  }
+
+  isOnGrid(x, y) {
+    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+      return true;
+    }
+    return false;
+  }
+
+  deleteFixtureByEditorTuid(editorTuid) {
+    this.fixtures = this.fixtures.filter(
+      (fixture) => fixture.EDITOR_ID != editorTuid
+    );
+  }
+
+  updateFixtureByEditorTuid(
+    editorTuid,
+    hangerStack,
+    subcategory,
+    supercategoryTuid,
+    supercategoryColor,
+    note
+  ) {
+    this.fixtures = this.fixtures.map((fixture) => {
+      if (fixture.EDITOR_ID == editorTuid) {
+        fixture.HANGER_STACK = hangerStack;
+        fixture.SUBCATEGORY = subcategory;
+        fixture.SUPERCATEGORY_TUID = supercategoryTuid;
+        fixture.COLOR = supercategoryColor;
+        fixture.NOTE = note;
+      }
+
+      return fixture;
+    });
+  }
+
+  getFixtureAt(gridX, gridY) {
+    for (const fixture of this.fixtures) {
+      const x = fixture.X_POS;
+      const y = fixture.Y_POS;
+      if (
+        gridX >= x &&
+        gridX < x + fixture.WIDTH &&
+        gridY >= y &&
+        gridY < y + fixture.LENGTH
+      ) {
+        return fixture;
+      }
+    }
+    return null;
+  }
+
+  resize() {
+    this.translate = {
+      x:
+        this.p5.width / 2 -
+        (this.size * this.width * this.scale) / 2 +
+        this.xOffset,
+      y:
+        this.p5.height / 2 -
+        (this.size * this.height * this.scale) / 2 +
+        this.yOffset,
+    };
+  }
+
+  draw(mouseFixture) {
+    this.p5.push();
+    this.p5.fill(255, 255, 255);
+    this.p5.stroke(0, 100);
+    this.p5.strokeWeight(1);
+    this.p5.translate(this.translate.x, this.translate.y);
+    this.p5.scale(this.scale);
+
+    this.p5.rect(0, 0, this.width * this.size, this.height * this.size);
+
+    for (let x = 1; x < this.width; x++) {
+      this.p5.line(x * this.size, 0, x * this.size, this.height * this.size);
     }
 
-    addFixtureInstanceToGrid(...args) {
-        this.fixtures.push(new Fixture(this.p5, ...args));
+    for (let y = 1; y < this.height; y++) {
+      this.p5.line(0, y * this.size, this.width * this.size, y * this.size);
     }
 
-    toGridCoordinates(x, y) {
-        return {
-            x: Math.floor((x - this.translate.x) / (this.size * this.scale)),
-            y: Math.floor((y - this.translate.y) / (this.size * this.scale)),
-        };
+    const employeeAreas = this.employeeAreas.values();
+
+    for (const employeeArea of employeeAreas) {
+      employeeArea.draw(this.size);
     }
 
-    isOnGrid(gridX, gridY) {
-        if (gridX >= 0 && gridX < this.width && gridY >= 0 && gridY < this.height) {
-            return true;
-        }
-        return false;
-    }
+    this.fixtures.forEach((rack) => rack.draw(this.size));
 
-    getFixtureAt(gridX, gridY) {
-        for (const rack of this.fixtures) {
-            const rackGridX = rack.X_POS;
-            const rackGridY = rack.Y_POS;
-            if (
-                gridX >= rackGridX &&
-                gridX < rackGridX + rack.WIDTH &&
-                gridY >= rackGridY &&
-                gridY < rackGridY + rack.LENGTH
-            ) {
-                return rack;
-            }
-        }
-        return null;
-    }
+    mouseFixture?.draw(this.size);
 
-    resize() {
-        this.translate = {
-            x: this.p5.width / 2 - (this.size * this.width * this.scale) / 2,
-            y: this.p5.height / 2 - (this.size * this.height * this.scale) / 2,
-        };
-    }
-
-    draw() {
-        this.p5.fill(255, 255, 255);
-        this.p5.stroke(0, 100);
-        this.p5.strokeWeight(1);
-        this.p5.translate(this.translate.x, this.translate.y);
-        this.p5.scale(this.scale);
-
-        this.p5.rect(0, 0, this.width * this.size, this.height * this.size);
-
-        for (let x = 1; x < this.width; x++) {
-            this.p5.line(x * this.size, 0, x * this.size, this.height * this.size);
-        }
-
-        for (let y = 1; y < this.height; y++) {
-            this.p5.line(0, y * this.size, this.width * this.size, y * this.size);
-        }
-
-        for (const rack of this.fixtures) {
-            rack.draw(this.size);
-        }
-    }
+    this.p5.pop();
+  }
 }
 
 export default Grid;

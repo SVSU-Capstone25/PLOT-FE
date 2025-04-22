@@ -1,0 +1,35 @@
+@inject StoresHttpClient StoresHttpClient
+
+<Modal id="@($"delete-store-{Store.TUID}")" class="standard">
+    <ModalHeader Title="Confirm Deletion" Variant="danger" />
+    <form @onsubmit="async () => await OnDeleteStoreSubmit(Store.TUID)">
+        @code {
+            private string? deleteTextInput;
+            private bool isDisabled => deleteTextInput != "DELETE";
+        }
+        <ModalBody>
+            <h5>Are you SURE you want to delete this Store?</h5>
+            <input type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
+                @bind-value="deleteTextInput" @bind-value:event="oninput" />
+        </ModalBody>
+
+        <ModalFooter>
+            <Button TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
+                data-bs-dismiss="modal">
+                Yes, Delete
+            </Button>
+        </ModalFooter>
+    </form>
+</Modal>
+
+@code {
+    [Parameter] public required Data.Models.Stores.Store Store { get; set; }
+    [Parameter] public required EventCallback UpdateStores { get; set; }
+
+    private async Task OnDeleteStoreSubmit(int storeId)
+    {
+        await StoresHttpClient.DeleteStore(storeId);
+        await UpdateStores.InvokeAsync();
+        StateHasChanged();
+    }
+}

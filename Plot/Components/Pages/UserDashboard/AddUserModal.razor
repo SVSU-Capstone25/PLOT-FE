@@ -1,8 +1,4 @@
 @inject AuthHttpClient AuthHttpClient
-@inject StoresHttpClient StoresHttpClient
-@inject UsersHttpClient UsersHttpClient
-@inject IJSRuntime JS
-@using Microsoft.JSInterop
 
 <Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" 
 Backdrop="static" Keyboard="false"
@@ -34,7 +30,7 @@ Backdrop="static" Keyboard="false"
     };
 </script>
 @code {
-
+    [Parameter] public required EventCallback UpdateUsers { get; set; }
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? AddUserModel { get; set; }
@@ -113,37 +109,15 @@ Backdrop="static" Keyboard="false"
             ROLE_NAME = AddUserModel!.ROLE_NAME
         };
 
-        // Register the user
-        await AuthHttpClient.Register(registration);
+            await AuthHttpClient.Register(UserRegistration);
 
-        // Get user from email
-        Data.Models.Users.UserDTO? UserFromEmail;
-
-        if(registration.EMAIL != null){
-            UserFromEmail = await UsersHttpClient.GetUserByEmail(registration.EMAIL);
-
-            // Update user access in database
-            if(UserFromEmail != null){
-                await UsersHttpClient.UpdateAccessList(
-                new Data.Models.Users.UpdateAccessListRequest
-                {
-                    USER_TUID = UserFromEmail!.TUID,
-                    STORE_TUIDS = AddUserStores.Select(store => store.TUID)
-                });
-            }
+            await UpdateUsers.InvokeAsync();
         }
 
-        // Clear Modal
-        await ClearAddUserModal();
-
-        // Hide loading modal
-        await HideLoadingModal.InvokeAsync();
-
-        // Update user dashboard
-        await UpdateUsers.InvokeAsync();
+        ClearAddUserModel();
     }
 
-    public async Task ClearAddUserModal()
+    private void ClearAddUserModel()
     {
         // Clear add user modal
 

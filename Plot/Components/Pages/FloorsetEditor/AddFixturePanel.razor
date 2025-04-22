@@ -2,36 +2,39 @@
 @inject FixturesHttpClient FixturesHttpClient
 
 @using Plot.Components.PartialComponents.SlideOut
+@using Microsoft.AspNetCore.Components.Authorization
 
 <SlideOutHeader>
-    <h3 class="header pt-3" @onclick="ToggleAddFixture">
+    <h3 class="header " @onclick="ToggleAddFixture">
         <i class="fas fa-couch"></i> Add Fixture
     </h3>
 </SlideOutHeader>
 
 <SlideOutBody>
-    <div class="p-3 mb-2 border-bottom">
-        <div class="d-flex align-items-center m-0 gap-2">
-            <div class="w-100 search-text">
-                <InputText class="form-control p-2 " id="search" type="search" placeholder="Search"
-                    @bind-Value="FixtureSearch" @oninput="FixtureSearchChanged"/>
+    <AuthorizeView Policy="Manager">
+        <div class="p-3 mb-2 border-bottom">
+            <div class="d-flex align-items-center m-0 gap-2">
+                <div class="w-100 search-text">
+                    <InputText class="form-control p-2 " id="search" type="search" placeholder="Search"
+                        @bind-Value="FixtureSearch" @oninput="FixtureSearchChanged" />
+                </div>
+                <Button Variant="primary" Icon="fa-solid fa-arrow-up-short-wide" TextAlignment="center"
+                    @onclick="OnSortAscendingClick" />
+                <Button Variant="primary" Icon="fa-solid fa-arrow-down-wide-short" TextAlignment="center"
+                    @onclick="OnSortDescendingClick" />
             </div>
-            <Button Variant="primary" Icon="fa-solid fa-arrow-up-short-wide" TextAlignment="center"
-                @onclick="OnSortAscendingClick" />
-            <Button Variant="primary" Icon="fa-solid fa-arrow-down-wide-short" TextAlignment="center"
-                @onclick="OnSortDescendingClick" />
+            <div class="align-items-center mt-3 d-flex">
+                <Button class="btn btn-large w-100" Variant="primary" data-bs-toggle="modal"
+                    data-bs-target="#add-fixture">
+                    <i class="fa-solid fa-plus" style="margin-right: .5rem;"></i>
+                    Add Fixture
+                </Button>
+            </div>
         </div>
-        <div class="align-items-center mt-3 d-flex">
-            <Button class="btn btn-large w-100" Variant="primary" data-bs-toggle="modal" data-bs-target="#add-fixture">
-                <i class="fa-solid fa-plus" style="margin-right: .5rem;"></i>
-                Add Fixture
-            </Button>
-        </div>
-    </div>
 
 
     @* Fixture Area *@
-    <div class="fixture-area p-3 mt-3 d-flex gap-4 mb-2">
+    <div class="fixture-area p-3 mt-3 d-flex gap-4 mb-2 h-100">
         @* Create fixture tile for each fixture in dictionary *@
         @foreach (Data.Models.Fixtures.FixtureModel fixtureModel in FixtureModels)
         {
@@ -43,32 +46,29 @@
             var ImageSrc = fixtureModel.ICON != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(fixtureModel.ICON)}" :
             "https://placecats.com/200/200";
 
-        <div class="fixture d-flex align-items-center gap-3 grab-cursor" 
-            data-name="@fixtureModel.NAME"
-            data-fixture-tuid="@fixtureModel.TUID"
-            data-store-tuid="@fixtureModel.STORE_TUID"
-            data-width="@fixtureModel.WIDTH"
-            data-height="@fixtureModel.LENGTH"
-            draggable="true" 
-            ondragstart="window.createDraggable(event)"
-            @ondragenter="() => FixtureDragged(fixtureModel)">
-            <img class="fixture-img disable-select grab-cursor" src="@ImageSrc" alt="" draggable="false" />
-            <p class="fixture-text m-0 disable-select text-truncate">@fixtureModel.NAME</p>
-            <Dropdown class="fixture-options ms-auto disable-select" id="@($"fixture-options{fixtureModel.NAME}")"
-                LabelText="Fixture">
-                <DropdownLink href="@($"#editFixture-{fixtureModel.NAME}")" @onclick="() => OnEditClick(fixtureModel)"
-                    Icon="fa-regular fa-pen-to-square">
-                    Edit
-                </DropdownLink>
-                <DropdownLink data-bs-target="@($"#delete-fixture-model-{fixtureModel.TUID}")" Icon="fa-regular fa-trash-can" data-bs-toggle="modal">
-                    Delete
-                </DropdownLink>
-            </Dropdown>
-        </div>
+                <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-name="@fixtureModel.NAME"
+                    data-fixture-tuid="@fixtureModel.TUID" data-store-tuid="@fixtureModel.STORE_TUID"
+                    data-width="@fixtureModel.WIDTH" data-height="@fixtureModel.LENGTH" draggable="true"
+                    ondragstart="window.createDraggable(event)" @ondragenter="() => FixtureDragged(fixtureModel)">
+                    <img class="fixture-img disable-select grab-cursor" src="@ImageSrc" alt="" draggable="false" />
+                    <p class="fixture-text m-0 disable-select text-truncate">@fixtureModel.NAME</p>
+                    <Dropdown class="fixture-options ms-auto disable-select" id="@($"fixture-options{fixtureModel.NAME}")"
+                        LabelText="Fixture">
+                        <DropdownLink href="@($"#editFixture-{fixtureModel.NAME}")"
+                            @onclick="() => OnEditClick(fixtureModel)" Icon="fa-regular fa-pen-to-square">
+                            Edit
+                        </DropdownLink>
+                        <DropdownLink data-bs-target="@($"#delete-fixture-model-{fixtureModel.TUID}")"
+                            Icon="fa-regular fa-trash-can" data-bs-toggle="modal">
+                            Delete
+                        </DropdownLink>
+                    </Dropdown>
+                </div>
 
- 
-                }
-    </div>
+
+            }
+        </div>
+    </AuthorizeView>
 </SlideOutBody>
 
 
@@ -91,7 +91,8 @@
 
     [Parameter] public EventCallback<Data.Models.Fixtures.FixtureModel> FixtureDraggedEvent { get; set; }
 
-    private void FixtureSearchChanged(ChangeEventArgs e){
+    private void FixtureSearchChanged(ChangeEventArgs e)
+    {
         FixtureSearch = e.Value as String ?? "";
     }
     private void FixtureDragged(Data.Models.Fixtures.FixtureModel currFixture)
@@ -116,7 +117,7 @@
     Sort fixture models in ascending order by comparing fixture a to fixture b *@
     private void OnSortAscendingClick()
     {
-        FixtureModels.Sort(delegate(Data.Models.Fixtures.FixtureModel a, Data.Models.Fixtures.FixtureModel b)
+        FixtureModels.Sort(delegate (Data.Models.Fixtures.FixtureModel a, Data.Models.Fixtures.FixtureModel b)
         {
             if (a.NAME == null && b.NAME == null) return 0;
             else if (a.NAME == null) return -1;
@@ -129,7 +130,7 @@
     Sort fixture models in descending order by comparing fixture b to fixture a *@
     private void OnSortDescendingClick()
     {
-        FixtureModels.Sort(delegate(Data.Models.Fixtures.FixtureModel a, Data.Models.Fixtures.FixtureModel b)
+        FixtureModels.Sort(delegate (Data.Models.Fixtures.FixtureModel a, Data.Models.Fixtures.FixtureModel b)
         {
             if (a.NAME == null && b.NAME == null) return 0;
             else if (a.NAME == null) return -1;
@@ -137,7 +138,7 @@
             else return (b.NAME.CompareTo(a.NAME));
         });
     }
-    
+
     @*
     The OnFixtureAddClick function calls a JS function to toggle the add fixture modal.
     *@
