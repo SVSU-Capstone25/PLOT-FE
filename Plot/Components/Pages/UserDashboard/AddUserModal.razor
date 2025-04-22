@@ -1,4 +1,8 @@
 @inject AuthHttpClient AuthHttpClient
+@inject StoresHttpClient StoresHttpClient
+@inject UsersHttpClient UsersHttpClient
+@inject IJSRuntime JS
+@using Microsoft.JSInterop
 
 <Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" 
 Backdrop="static" Keyboard="false"
@@ -29,8 +33,9 @@ Backdrop="static" Keyboard="false"
         return window.bootstrap.Modal.getOrCreateInstance(document.querySelector(selector));
     };
 </script>
+
 @code {
-    [Parameter] public required EventCallback UpdateUsers { get; set; }
+
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? AddUserModel { get; set; }
@@ -39,26 +44,26 @@ Backdrop="static" Keyboard="false"
 
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
+    // Show or hide Loading Message Modal
     [Parameter] public EventCallback<string> ShowLoadingModal { get; set; }
 
     [Parameter] public EventCallback<string> HideLoadingModal { get; set; }
 
-    // Constants
     private const int NEW_USER = 0; // Indicates new user when initializing stores
 
-    private bool modalBodyInit = false;
+    private bool modalBodyInit = false;  // AddUpateUserModalBody initialized flag 
 
-    private bool IsSubmitDisabled = false;
+    private bool IsSubmitDisabled = false; // Disable submit button
 
-    public AddUpdateUserModalBody? modalBodyRef;
+    public AddUpdateUserModalBody? modalBodyRef; // Ref for AddUpdateUserModalBody
 
+    // AddUserStores and NotAddUserStores
     public List<Data.Models.Stores.Store> AddUserStores = new();
 
     public List<Data.Models.Stores.Store> NotAddUserStores = new();
 
+    // Model for getting user from email
     public Data.Models.Users.UserDTO? UserFromEmail { get; set; }
-
-    public IJSObjectReference? JsModule;
 
     protected override void OnInitialized()
     {
@@ -109,15 +114,37 @@ Backdrop="static" Keyboard="false"
             ROLE_NAME = AddUserModel!.ROLE_NAME
         };
 
-            await AuthHttpClient.Register(UserRegistration);
+        // Register the user
+        await AuthHttpClient.Register(registration);
 
-            await UpdateUsers.InvokeAsync();
+        // Get user from email
+        Data.Models.Users.UserDTO? UserFromEmail;
+
+        if(registration.EMAIL != null){
+            UserFromEmail = await UsersHttpClient.GetUserByEmail(registration.EMAIL);
+
+            // Update user access in database
+            if(UserFromEmail != null){
+                await UsersHttpClient.UpdateAccessList(
+                new Data.Models.Users.UpdateAccessListRequest
+                {
+                    USER_TUID = UserFromEmail!.TUID,
+                    STORE_TUIDS = AddUserStores.Select(store => store.TUID)
+                });
+            }
         }
 
-        ClearAddUserModel();
+        // Clear Modal
+        await ClearAddUserModal();
+
+        // Hide loading modal
+        await HideLoadingModal.InvokeAsync();
+
+        // Update user dashboard
+        await UpdateUsers.InvokeAsync();
     }
 
-    private void ClearAddUserModel()
+    public async Task ClearAddUserModal()
     {
         // Clear add user modal
 

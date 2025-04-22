@@ -67,4 +67,16 @@ public class UsersHttpClient : PlotHttpClient
     {
         return await SendGetAsync<IEnumerable<Store>?>($"/stores/{userId}");
     }
+
+    public async Task<List<UserDTO>?> GetUsersByString(UsersByStringRequest usersByStringRequest)
+    {
+        JsonContent body = JsonContent.Create(usersByStringRequest);
+
+        return await SendPostAsync<List<UserDTO>>("/get-users-by-string", body);
+    }
+
+    public async Task<IEnumerable<Store>?> GetStoresNotForUser(int userId)
+    {
+        return await SendGetAsync<IEnumerable<Store>?>($"/stores-not/{userId}");
+    }
 }

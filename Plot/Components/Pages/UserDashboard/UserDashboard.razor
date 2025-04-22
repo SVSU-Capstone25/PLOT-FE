@@ -38,14 +38,14 @@ Added a loader popup when a user is added.
 @using Microsoft.AspNetCore.Components.Authorization
 @attribute [Authorize]
 
-<div class="d-flex flex-column align-content-between user-dashboard vh-95">
-    <div class="mb-4 table-set h-100">
+<div class="d-flex flex-column align-content-between user-dashboard">
+    <div class="mb-4 table-set">
         @* Users Table *@
         <table class="table w-100">
             <thead>
                 <tr>
                     @* Headers *@
-                    <th scope="col" class="border border-light border-2 w-25">
+                    <th scope="col" class="border border-light border-2">
                         Employee Name
                     </th>
                     <th scope="col" class="border border-light border-2">
@@ -78,7 +78,8 @@ Added a loader popup when a user is added.
                                 @* Role of User*@
                                 <span class="flex-grow-1 align-self-center">@user.ROLE</span>
 
-                                @* Role Options Dropdown menu with id  dynamically reflecting the id of the user Provides Edit and Delete options which open Edit User and Delete User Modals *@
+                                <AuthorizeView Policy="Manager">
+                                    @* Role Options Dropdown menu with id  dynamically reflecting the id of the user Provides Edit and Delete options which open Edit User and Delete User Modals *@
 
                                     <Dropdown id="@($"Dropdown-{user.TUID}")" LabelText="Role">
                                         <DropdownLink Icon="fa-solid fa-pen-to-square" data-bs-toggle="modal"
@@ -91,17 +92,24 @@ Added a loader popup when a user is added.
                                 </AuthorizeView>
                             </div>
                         </td>
-
-                        <UpdateUserModal id="@($"update-user-modal-{user.TUID}")" User="user" UpdateUsers="UpdateUsers" />
-                        <DeleteUserModal id="@($"delete-user-modal-{user.TUID}")" userTuid="user.TUID"
-                            UpdateUsers="UpdateUsers" />
+                        <AuthorizeView Policy="Manager">
+                            <UpdateUserModal id="@($"update-user-modal-{user.TUID}")" User="user"
+                                UpdateUsers="UpdateUsers" />
+                            <DeleteUserModal id="@($"delete-user-modal-{user.TUID}")" userTuid="user.TUID"
+                                UpdateUsers="UpdateUsers" />
+                        </AuthorizeView>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
-    <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" />
+    <LoadMessageModal id="load-message" @ref="LoadMessageModal"/>
+
+    <AuthorizeView Policy="Manager">
+        <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" AddingUser="ToggleLoader"
+        ShowLoadingModal="ShowLoadingModal" HideLoadingModal="HideLoadingModal"
+         />
 
         <div class="add-btn-container">
             <Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary"
@@ -112,14 +120,27 @@ Added a loader popup when a user is added.
     </AuthorizeView>
 </div>
 
+@* If adding a user, show the loader *@
+@* Commented out in favor of a full modal displaying a Loader within it in LoadingMessage.razor
+@if (isAddingUser)
+{
+    <div class="w-100 h-100 d-flex justify-content-center align-items-center top-0 start-0 position-fixed"
+        style="background-color: rgba(0,0,0,.5);">
+        <Loader class="p-5 rounded shadow-lg d-flex flex-column align-items-center" style="background-color: white;">
+            Adding User...
+        </Loader>
+    </div>
 
+}
+*@
 
 @code {
-
     private LoadMessageModal? LoadMessageModal;
 
     private List<Data.Models.Users.UserDTO> users = new List<Data.Models.Users.UserDTO>();
-    private bool isAddingUser = false;
+    
+    // Commented out for now in favor of Modal LoadingMessage.razor implementation
+    //private bool isAddingUser = false;
 
     private async Task UpdateUsers()
     {
@@ -132,11 +153,12 @@ Added a loader popup when a user is added.
     }
 
     @* This method sets the boolean to toggle the add user loader. *@
+    @* Commented out in favor of LoadingMessage.razor implementation
     private void ToggleLoader(bool isAdding)
     {
         isAddingUser = isAdding;
     }
-
+    *@
 
     protected override async Task OnInitializedAsync()
     {
@@ -148,12 +170,12 @@ Added a loader popup when a user is added.
         return '#' + Id.ToString().PadLeft(10,'0');
     }
 
-    public async Task ShowLoadingOnDash()
+    public async Task ShowLoadingModal()
     {
         await LoadMessageModal!.ShowModal();
     }
 
-    public async Task HideLoadingOnDash()
+    public async Task HideLoadingModal()
     {
         await LoadMessageModal!.HideModal();
     }

@@ -1,23 +1,41 @@
-<ModalBody>
+@inject UsersHttpClient UsersHttpClient
+@inject StoresHttpClient StoresHttpClient
+@inject IJSRuntime JS
+@using Data.Models.Users
+@using Microsoft.AspNetCore.Components.Authorization;
 
-    <label class="w-100 d-flex">
-        First Name:
-        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.FIRST_NAME" />
+@*
+Select-first-after-moving-task (commented out code used towards this)
+
+This code is meant to select the first item in the select boxes, to avoid having it gray-highlight
+a store in the select boxes and then not move it when the user clicks the button
+But as is right now it doens't work.
+Current solution is the paragraph says to use Ctrl-Click before pressing buttons.
+And this will need to be included in training
+
+Referenced in other comments in this file as: Select-first-after-moving-task
+
+*@
+
+<ModalBody>
+    <label class="w-100 d-flex mt-2">
+        <span class="mt-2 fw-bold">First Name</span>
+        <InputText class="w-85 form-control ms-auto" type="Text" @bind-value="AddUpdateUserModel!.FIRST_NAME" />
         <div class="text-danger">
             <ValidationMessage For=@(() => AddUpdateUserModel.FIRST_NAME) />
         </div>
     </label>
-    <label class="w-100 d-flex">
-        Last Name:
-        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.LAST_NAME" />
+    <label class="w-100 d-flex my-2">
+        <span class="mt-2 fw-bold">Last Name</span>
+        <InputText class="w-85 form-control ms-auto" type="Text" @bind-value="AddUpdateUserModel!.LAST_NAME" />
         <div class="text-danger">
             <ValidationMessage For=@(() => AddUpdateUserModel.LAST_NAME) />
         </div>
     </label>
 
-    <label class="w-100 d-flex">
-        Email:
-        <InputText class="flex-grow-1" type="Text" @bind-value="AddUpdateUserModel!.EMAIL" />
+    <label class="w-100 d-flex my-2">
+        <span class="mt-2 fw-bold">Email</span>
+        <InputText class="w-85 form-control ms-auto" type="Text" @bind-value="AddUpdateUserModel!.EMAIL" />
         <div class="text-danger">
             <ValidationMessage For=@(() => AddUpdateUserModel.EMAIL) />
         </div>
@@ -26,18 +44,16 @@
     <label class="w-100 d-flex my-2">
         <span class="mt-2 fw-bold">Role</span>
         <InputSelect class="w-85 form-select ms-auto" @bind-value="AddUpdateUserModel!.ROLE_NAME">
-            <option value="Owner">Owner</option>
+            <AuthorizeView Policy="Owner">
+                <option value="Owner">Owner</option>
+            </AuthorizeView>
             <option value="Manager">Manager</option>
             <option value="Employee">Employee</option>
         </InputSelect>
         <div class="text-danger">
-            <ValidationMessage For=@(() => AddUpdateUserModel.ROLE_NAME) />
+            <ValidationMessage For=@(() => AddUpdateUserModel.EMAIL) />
         </div>
     </label>
-
-    @* TODO: Store selection *@
-
-    @* Store Selection *@
 
     <p id="StoreSelectHeader">Store Selection</p>
 
@@ -81,7 +97,7 @@
 
 </ModalBody>
 
-@* TODO: This code is meant to select the first item in the select boxes but hasn't been working*@
+@* Select-first-after-moving-task *@
 @*
 <script>
     function selectFirstItem(selectElementId) {
@@ -167,7 +183,7 @@
         }
         selectedUnassignedTUIDs.Clear();
 
-        // TODO: For selecting first item in multi select box
+        // TODO: See: Select-first-after-moving-task
         //await JS.InvokeVoidAsync("selectFirstItem", "unassigned-stores");
         StateHasChanged();
 
@@ -199,7 +215,7 @@
 
         selectedAssignedTUIDs.Clear();
 
-        //TODO: Multiselect fix it
+        //TODO: See: Select-first-after-moving-task
         //await JS.InvokeVoidAsync("selectFirstItem", "assigned-stores");
         StateHasChanged();
 

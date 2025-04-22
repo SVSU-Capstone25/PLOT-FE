@@ -3,10 +3,15 @@
 
 @* data-bs-backdrop="static" prevents closing when the user clicks outside of it
 data-bs-keyboard="false" prevents closing when the user clicks the escape key
+
+data-bs-backdrop="static" does not work on Firefox.
 *@
 
 <Modal SizeClass="modal-sm" @attributes="Attributes" Backdrop="static" Keyboard="false">
-    <Loader>Please wait while PLOT updates user information...</Loader>
+    <Loader>
+        <p>Please wait while PLOT updates user information!</p>
+        <p>Navigating away may prevent data from updating or cause a partial update!</p>
+    </Loader>
 </Modal>
 
 <script>

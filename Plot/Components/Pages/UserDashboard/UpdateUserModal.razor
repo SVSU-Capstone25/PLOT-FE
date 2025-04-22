@@ -39,21 +39,20 @@
     // Update Users callback for rerendering UserDashboard in UserDashboard.razor file
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
-    private bool modalBodyInit = false;
+    public AddUpdateUserModalBody? modalBodyRef; // Ref for AddUpdateUserModalBody
 
-    private bool IsSubmitDisabled = false;
+    private bool modalBodyInit = false; // AddUpateUserModalBody initialized flag 
+
+    private bool IsSubmitDisabled = false; // Disable submit button
+
+    // Modal for updating First Name, Last Name, Email, Role of User
+    public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel = new();
+
+    // Stores lists for updating access
 
     public List<Data.Models.Stores.Store>? UpdateUserStores = new();
 
     public List<Data.Models.Stores.Store>? NotUpdateUserStores = new();
-
-    public AddUpdateUserModalBody? modalBodyRef;
-
-    public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel = new();
-
-    public List<Data.Models.Stores.Store> userStores = new();
-
-    public List<Data.Models.Stores.Store> notUserStores = new();
 
     public List<int> selectedNotUserStoreTUIDs = new();
 
