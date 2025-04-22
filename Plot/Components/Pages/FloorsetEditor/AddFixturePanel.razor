@@ -54,20 +54,23 @@
                     <p class="fixture-text m-0 disable-select text-truncate">@fixtureModel.NAME</p>
                     <Dropdown class="fixture-options ms-auto disable-select" id="@($"fixture-options{fixtureModel.NAME}")"
                         LabelText="Fixture">
-                        <DropdownLink href="@($"#editFixture-{fixtureModel.NAME}")"
-                            @onclick="() => OnEditClick(fixtureModel)" Icon="fa-regular fa-pen-to-square">
-                            Edit
-                        </DropdownLink>
-                        <DropdownLink data-bs-target="@($"#delete-fixture-model-{fixtureModel.TUID}")"
-                            Icon="fa-regular fa-trash-can" data-bs-toggle="modal">
-                            Delete
-                        </DropdownLink>
-                    </Dropdown>
-                </div>
-
-
-            }
+                    <DropdownLink  @onclick="async () => await OnEditClick(fixtureModel)"
+                    href="#EditFixtureModal" 
+                    Icon="fa-regular fa-pen-to-square"
+                    data-bs-target="@($"#edit-fixture-{fixtureModel.TUID}")"
+                    data-bs-toggle="modal"
+                    >
+                    Edit
+                </DropdownLink>
+                <DropdownLink data-bs-target="@($"#delete-fixture-model-{fixtureModel.TUID}")" Icon="fa-regular fa-trash-can" data-bs-toggle="modal">
+                    Delete
+                </DropdownLink>
+            </Dropdown>
         </div>
+        <EditFixtureModal id="edit-fixture-{fixtureModel.TUID}" Model="fixtureModel" UpdateFixtureModel="UpdateFixtureModels" />
+ @*  *@
+                }
+    </div>
     </AuthorizeView>
 </SlideOutBody>
 
