@@ -13,17 +13,19 @@ Author: Andrew Fulton (3/12/2025)
 *@
 
 @page "/Store-dashboard"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
+
 @inject NavigationManager Navigation
 @inject StoresHttpClient StoresHttpClient
 @inject ICookie Cookie
 @inject JwtService JwtService
 @inject ClaimParserService ClaimParserService
 @inject IAuthorizationService AuthorizationService
-@attribute [Authorize]
 
 @using System.Drawing;
 @using System.IO;
-@using Microsoft.AspNetCore.Authorization
 @using Plot.Components.PartialComponents.Card
 @using Plot.Services
 @using Plot.Data.Models.Stores
@@ -50,16 +52,16 @@ Author: Andrew Fulton (3/12/2025)
                         @Store.CITY , @Store.STATE
                     </a>
                 </CardTitle>
-    
+
                 <AuthorizeView Policy="Manager">
                     <Dropdown LabelText="Store">
-                            <DropdownLink href="@($"/floorsets/{Store.TUID}")" Icon="fa-solid fa-note-sticky">
-                        Floorsets
-                            </DropdownLink>
+                        <DropdownLink href="@($"/floorsets/{Store.TUID}")" Icon="fa-solid fa-note-sticky">
+                            Floorsets
+                        </DropdownLink>
 
-                    <DropdownLink @onclick="async () => await OnEditClick(Store)" Icon="fa-solid fa-pen-to-square"
-                        data-bs-target="@($"#edit-store-{Store.TUID}")" data-bs-toggle="modal">
-                        Edit</DropdownLink>
+                        <DropdownLink @onclick="async () => await OnEditClick(Store)" Icon="fa-solid fa-pen-to-square"
+                            data-bs-target="@($"#edit-store-{Store.TUID}")" data-bs-toggle="modal">
+                            Edit</DropdownLink>
 
                         <DropdownLink Icon="fa-solid fa-trash-can" data-bs-target="@($"#delete-store-{Store.TUID}")"
                             data-bs-toggle="modal">
@@ -71,7 +73,8 @@ Author: Andrew Fulton (3/12/2025)
         </Card>
 
         <AuthorizeView Policy="Manager">
-            <EditStoreModal id="@($"edit-store-{Store.TUID}")" Store="Store" UpdateStores="UpdateStores" StoreId="Store.TUID" />
+            <EditStoreModal id="@($"edit-store-{Store.TUID}")" Store="Store" UpdateStores="UpdateStores"
+                StoreId="Store.TUID" />
 
             <DeleteStoreModal Store="Store" UpdateStores="UpdateStores" />
         </AuthorizeView>
