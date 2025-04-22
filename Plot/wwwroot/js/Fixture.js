@@ -30,7 +30,7 @@ class Fixture {
     FLOORSET_TUID,
     X_POS,
     Y_POS,
-    COLOR = '#fff',
+    COLOR = "#fff",
     LENGTH,
     WIDTH,
     HANGER_STACK = 1,
@@ -57,16 +57,10 @@ class Fixture {
     this.NOTE = NOTE;
     this.ALLOCATED_LF = ALLOCATED_LF;
     this.COLOR = COLOR;
-    // this.isEmployee = isEmployee;
-    // if (isEmployee) {
-    //     this.color = this.p5.color(255, 0, 0, 100);
-    // }
-    // else {
-    //     this.color = this.p5.color(255, 255, 255);
-    // }
   }
 
   draw(gridSize) {
+    this.p5.push();
     this.p5.fill(this.COLOR);
     this.p5.stroke(0);
     this.p5.strokeWeight(3);
@@ -76,39 +70,27 @@ class Fixture {
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
-    this.p5.push();
-    this.p5.fill(this.COLOR);
-    this.p5.stroke(0);
-    // if (!this.isEmployee) {
-    //     this.p5.strokeWeight(3);
-    // }
-    // this.p5.rect(
-    //   this.X_POS,
-    //   this.Y_POS,
-    //   this.WIDTH * gridSize,
-    //   this.LENGTH * gridSize
-    // );
     this.p5.pop();
   }
 
   toObject() {
     return {
-        TUID: this.TUID,
-        EDITOR_ID: this.EDITOR_ID,
-        NAME: this.NAME,
-        FIXTURE_TUID: this.FIXTURE_TUID,
-        FLOORSET_TUID: this.FLOORSET_TUID,
-        X_POS: this.X_POS,
-        Y_POS: this.Y_POS,
-        LENGTH: this.LENGTH,
-        WIDTH: this.WIDTH,
-        HANGER_STACK: this.HANGER_STACK,
-        SUPERCATEGORY_TUID: this.SUPERCATEGORY_TUID,
-        SUBCATEGORY: this.SUBCATEGORY,
-        SUBCATEGORY_NAME: this.SUBCATEGORY_NAME,
-        NOTE: this.NOTE,
-        ALLOCATED_LF: this.ALLOCATED_LF,
-        COLOR: this.COLOR,
+      TUID: this.TUID,
+      EDITOR_ID: this.EDITOR_ID,
+      NAME: this.NAME,
+      FIXTURE_TUID: this.FIXTURE_TUID,
+      FLOORSET_TUID: this.FLOORSET_TUID,
+      X_POS: this.X_POS,
+      Y_POS: this.Y_POS,
+      LENGTH: this.LENGTH,
+      WIDTH: this.WIDTH,
+      HANGER_STACK: this.HANGER_STACK,
+      SUPERCATEGORY_TUID: this.SUPERCATEGORY_TUID,
+      SUBCATEGORY: this.SUBCATEGORY,
+      SUBCATEGORY_NAME: this.SUBCATEGORY_NAME,
+      NOTE: this.NOTE,
+      ALLOCATED_LF: this.ALLOCATED_LF,
+      COLOR: this.COLOR,
     };
   }
 
@@ -133,7 +115,7 @@ class Fixture {
       object.SUBCATEGORY,
       object.SUBCATEGORY_NAME,
       object.NOTE,
-      object.ALLOCATED_LF,
+      object.ALLOCATED_LF
     );
   }
 }

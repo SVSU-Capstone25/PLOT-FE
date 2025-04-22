@@ -1,11 +1,12 @@
 @inject StoresHttpClient StoresHttpClient
+@inject IJSRuntime JS
 
 @using Plot.Components.PartialComponents.NumericInput
 @using Plot.Components.PartialComponents.SlideOut
 @using Microsoft.AspNetCore.Components.Authorization
 
 <SlideOutHeader>
-    <h3 class="header pt-3" onclick="ToggleBuildingWalls">
+    <h3 class="header" @onclick="ToggleBuildingWalls">
         <i class="fas fa-edit"></i>
         Edit Building Walls
     </h3>
@@ -42,11 +43,12 @@
                     Apply
                 </Button>
 
-                <Button Class="button-green" Icon="fa-solid fa-brush" TextAlignment="center">
-                    Toggle Paint Employee Area
-                </Button>
+            <Button Class="button-green" Icon="fa-solid fa-brush" TextAlignment="center" @onclick="OnEmployeeAreaPaint">
+                Toggle Paint Employee Area
+            </Button>
 
-                <Button Class="button-green" Icon="fa-solid fa-eraser" TextAlignment="center">
+                <Button Class="button-green" Icon="fa-solid fa-eraser" TextAlignment="center"
+                @onclick="OnEmployeeAreaErase">
                     Toggle Erase Employee Area
                 </Button>
             </div>
@@ -99,5 +101,15 @@
                 await UpdateStore.InvokeAsync();
             }
         }
+    }
+
+    private async Task OnEmployeeAreaPaint()
+    {
+        await JS.InvokeVoidAsync("window.setEmployeeAreaPaint");
+    }
+
+    private async Task OnEmployeeAreaErase()
+    {
+        await JS.InvokeVoidAsync("window.setEmployeeAreaErase");
     }
 }

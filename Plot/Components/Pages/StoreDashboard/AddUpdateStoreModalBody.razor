@@ -1,69 +1,135 @@
+@inject UsersHttpClient UsersHttpClient
+@inject StoresHttpClient StoresHttpClient
+
+@using Plot.Data.Models.Users
+
 <ModalBody>
     <div class="d-flex flex-row gap-2">
-        <div class="d-flex flex-column gap-2">
-            <label class="w-100 d-flex gap-2">
-                <span class="fw-bold">Name</span>
-                <InputText class="form-control" type="text" @bind-value="AddUpdateStoreModel!.NAME" />
+        <div class="col-6 d-flex flex-column gap-2 height-custom">
+            <label class="w-100 d-flex">
+                <span class="fw-bold label-text">Name</span>
+                <InputText class="w-75 form-control ms-auto input-field" type="text"
+                    @bind-value="AddUpdateStoreModel!.NAME" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.NAME) />
                 </div>
             </label>
 
-            <label class="w-100 d-flex gap-2">
-                <span class="fw-bold">Address</span>
-                <InputText class="form-control" type="text" @bind-value="AddUpdateStoreModel!.ADDRESS" />
+            <label class="w-100 d-flex">
+                <span class="fw-bold label-text">Address</span>
+                <InputText class="w-75 form-control ms-auto input-field" type="text"
+                    @bind-value="AddUpdateStoreModel!.ADDRESS" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.ADDRESS) />
                 </div>
             </label>
 
-            <label class="w-100 d-flex gap-2">
-                <span class="fw-bold">City</span>
-                <InputText class="form-control" type="text" @bind-value="AddUpdateStoreModel!.CITY" />
+            <label class="w-100 d-flex">
+                <span class="fw-bold label-text">City</span>
+                <InputText class="w-75 form-control ms-auto input-field" type="text"
+                    @bind-value="AddUpdateStoreModel!.CITY" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.CITY) />
                 </div>
             </label>
 
-            <label class="w-100 d-flex gap-2">
-                <span class="fw-bold">State</span>
-                <InputText class="form-control" type="text" @bind-value="AddUpdateStoreModel!.STATE" />
+            <label class="w-100 d-flex">
+                <span class="fw-bold label-text">State</span>
+                <InputText class="w-75 form-control ms-auto input-field" type="text"
+                    @bind-value="AddUpdateStoreModel!.STATE" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.STATE) />
                 </div>
             </label>
 
-            <label class="w-100 d-flex gap-2">
-                <span class="fw-bold">Zip</span>
-                <InputText class="form-control" type="text" @bind-value="AddUpdateStoreModel!.ZIP" />
+            <label class="w-100 d-flex">
+                <span class="fw-bold label-text">Zip</span>
+                <InputText class="w-75 form-control ms-auto input-field" type="text"
+                    @bind-value="AddUpdateStoreModel!.ZIP" />
                 <div class="text-danger">
                     <ValidationMessage For=@(() => AddUpdateStoreModel.ZIP) />
                 </div>
             </label>
+
+            <label class="w-100 d-flex">
+                <span class="fw-bold label-text">Width</span>
+                <InputNumber class="w-75 form-control ms-auto input-field" type="Number"
+                    @bind-value="AddUpdateStoreModel!.WIDTH" min="1" />
+                <div class="text-danger">
+                    <ValidationMessage For=@(() => AddUpdateStoreModel.WIDTH) />
+                </div>
+            </label>
+
+            <label class="w-100 d-flex">
+                <span class="fw-bold label-text">Length</span>
+                <InputNumber class="w-75 form-control ms-auto " type="Number" @bind-value="AddUpdateStoreModel!.LENGTH"
+                    min="1" />
+                <div class="text-danger">
+                    <ValidationMessage For=@(() => AddUpdateStoreModel.LENGTH) />
+                </div>
+            </label>
+
+
         </div>
 
-        <div class="d-flex align-items-center">
-            <ImageInput Label="Upload Image" Id="@StoreId.ToString()" Height="300px" OnImageUpload="OnImageUpload"
+        <div class="col-6 d-flex align-items-center">
+            <ImageInput Label="Upload Image" Id="@StoreId.ToString()" Height="310px" OnImageUpload="OnImageUpload"
                 ImageSrc="ImageSrc" />
         </div>
     </div>
+
+    <section>
+        <h5 class="my-4">Employees</h5>
+        <div class="d-grid gap-2" style="grid-template-columns: repeat(6,1fr);">
+            <div class="d-flex flex-column align-items-center">
+                <button type="button" class="btn btn-secondary btn-circle" style="--bs-btn-font-size: .75rem;"
+                    data-bs-toggle="modal" data-bs-target="@AddEmployeeTarget">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+                <p class="circle-name">Add Employee</p>
+            </div>
+
+            @foreach (var User in Users)
+            {
+                <div class="d-flex flex-column align-items-center">
+                    <button type="button" class="btn btn-secondary btn-circle position-relative"
+                        style="--bs-btn-font-size: .75rem;" @onclick="async () => await OnDeleteUserClick(User.TUID)">
+                        @User.FIRST_NAME![0]@User.LAST_NAME![0]
+                        <span
+                            class="minus-badge position-absolute top-0 start-100 translate-middle bg-danger rounded-circle">
+                            <i class="fa-solid fa-minus p-1"></i>
+                        </span>
+
+                    </button>
+                    <p class="circle-name">@User.FIRST_NAME</p>
+                </div>
+            }
+        </div>
+    </section>
 </ModalBody>
 
 @code {
     [Parameter] public Data.Models.Stores.UpdatePublicInfoStore? AddUpdateStoreModel { get; set; }
     [Parameter] public string? StoreName { get; set; } = "";
     [Parameter] public required int StoreId { get; set; }
+    [Parameter] public required string AddEmployeeTarget { get; set; }
+    [Parameter] public List<Data.Models.Users.UserDTO> Users { get; set; } = new();
+    [Parameter] public required EventCallback<int> DeleteUser { get; set; }
 
     private string ImageSrc = "";
 
     protected override void OnInitialized()
     {
-        if (AddUpdateStoreModel != null)
-        {
-            ImageSrc = AddUpdateStoreModel.BLUEPRINT_IMAGE != null ?
-            $"data:image/jpeg;base64,{Convert.ToBase64String(AddUpdateStoreModel.BLUEPRINT_IMAGE)}" : "";
-        }
+        if (AddUpdateStoreModel == null) return;
 
+        ImageSrc = AddUpdateStoreModel.BLUEPRINT_IMAGE != null ?
+        $"data:image/jpeg;base64,{Convert.ToBase64String(AddUpdateStoreModel.BLUEPRINT_IMAGE)}" : "";
+    }
+
+    private async Task OnDeleteUserClick(int tuid)
+    {
+        await Task.Run(() => Console.WriteLine($"Delete User #{tuid}"));
+        await DeleteUser.InvokeAsync(tuid);
     }
 
     private async Task OnImageUpload(InputFileChangeEventArgs e)

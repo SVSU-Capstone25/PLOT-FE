@@ -6,39 +6,53 @@
 
 <div class="toolbar-buttons">
     @*Edit Fixture Button *@
-    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="editFixture"
+    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="EditFixture"
         TextAlignment="center" />
 
     <AuthorizeView Policy="Manager">
         @*Paint Category Button *@
         <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush"
-            OnClickFunction="togglePaintClicked" TextAlignment="center" />
+            OnClickFunction="TogglePaintClicked" TextAlignment="center" />
 
         @*Erase Category Button *@
-        <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-eraser" OnClickFunction="onEraseClicked"
+        <Button IsDisabled="false" Variant="@getEraseVariant()" Icon="fa-solid fa-eraser" OnClickFunction="OnEraseClicked"
             TextAlignment="center" />
     </AuthorizeView>
 </div>
 
 @code {
     [Parameter] public required EventCallback ToggleAllocationsOpen { get; set; }
-    [Parameter] public required EventCallback EraseClicked { get; set; }
 
     @* Tristan Calay 3/30/25
     The paint mode button adds the return of getPaintClass() to its class when clicked.
     Track paint mode here.*@
 
-    private bool paintModeEnabled = false;
+    private enum PaintType
+    {
+        None,
+        Paint,
+        Erase
+    };
+
+    private PaintType paintMode = PaintType.None;
     private String getPaintVariant()
     {
-        if (paintModeEnabled)
+        if (paintMode == PaintType.Paint)
+        {
+            return "secondary";
+        }
+        return "primary";
+    }
+    private String getEraseVariant()
+    {
+        if (paintMode == PaintType.Erase)
         {
             return "secondary";
         }
         return "primary";
     }
 
-    private async Task editFixture()
+    private async Task EditFixture()
     {
         Console.WriteLine("Edit Fixture Function");
         await JS.InvokeVoidAsync("window.setPlace");
@@ -48,21 +62,41 @@
 
     //The paintCategory button toggles the paint mode of the floorset editor.
     //It passes that information to the javascript.
-    private async Task togglePaintClicked()
+    private async Task TogglePaintClicked()
     {
-        paintModeEnabled = !paintModeEnabled;
-        Console.WriteLine("Toggle Paint Clicked: Now " + paintModeEnabled);
-        await JS.InvokeVoidAsync("window.setPaintMode", paintModeEnabled);
+        switch (paintMode)
+        {
+            case PaintType.Paint:
+                paintMode = PaintType.None;
+                await JS.InvokeVoidAsync("window.setPaintMode", false);
+                break;
+            default:
+                paintMode = PaintType.Paint;
+                await JS.InvokeVoidAsync("window.setPaintMode", true);
+                break;
+        }
+
+        Console.WriteLine("Toggle Paint Clicked: Now " + paintMode);
         @* paintModeEnabled = !paintModeEnabled;
         Console.WriteLine("Paint Category Function - set paint mode to " + paintModeEnabled); *@
         @* await JS.InvokeVoidAsync("setPaintEnabled", paintModeEnabled); *@
         @* StateHasChanged(); *@
     }
 
-    private async Task onEraseClicked()
+    private async Task OnEraseClicked()
     {
-        Console.WriteLine("Erase Clicked!");
-        await EraseClicked.InvokeAsync();
+        switch (paintMode)
+        {
+            case PaintType.Erase:
+                paintMode = PaintType.None;
+                await JS.InvokeVoidAsync("window.setPaintMode", false);
+                break;
+            default:
+                paintMode = PaintType.Erase;
+                await JS.InvokeVoidAsync("setErase");
+                break;
+        }
+        Console.WriteLine("Erase Clicked! Paint mode now " + paintMode);
     }
 
     private void viewFulfillment()

@@ -5,57 +5,63 @@ File Purpose:
 This is the Stores dashboard page component
 
 Program Purpose:
-The purpose of PLOT is to allow users to easily create, manage, 
+The purpose of PLOT is to allow Users to easily create, manage, 
 and allocate floorsets for Platos Closet. 
 
 Author: Andrew Fulton (3/12/2025)
 
 *@
 
-@page "/store-dashboard"
-
+@page "/Store-dashboard"
 @inject NavigationManager Navigation
 @inject StoresHttpClient StoresHttpClient
-@inject IJSRuntime JS
+@inject ICookie Cookie
+@inject JwtService JwtService
+@inject ClaimParserService ClaimParserService
+@inject IAuthorizationService AuthorizationService
+@attribute [Authorize]
 
 @using System.Drawing;
 @using System.IO;
-@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Authorization
+@using Plot.Components.PartialComponents.Card
+@using Plot.Services
+@using Plot.Data.Models.Stores
 
 <PageTitle>Store Dashboard</PageTitle>
 
-@* Div to hold the stores *@
+@* Div to hold the Stores *@
 <div class="d-flex flex-wrap gap-4">
 
-    @* loop to generate a card for each store that exists *@
-    @foreach (var store in stores)
+    @* loop to generate a card for each Store that exists *@
+    @foreach (var Store in Stores)
     {
-        var ImageSrc = store.BLUEPRINT_IMAGE != null ?
-        $"data:image/jpeg;base64,{Convert.ToBase64String(store.BLUEPRINT_IMAGE)}" :
+        var ImageSrc = Store.BLUEPRINT_IMAGE != null ?
+        $"data:image/jpeg;base64,{Convert.ToBase64String(Store.BLUEPRINT_IMAGE)}" :
         "https://placecats.com/300/200";
 
-    <Card>
-        <a href="@($"/floorsets/{store.TUID}")" class="w-100 ratio ratio-4x3">
-            <CardImage Image="@ImageSrc" />
-        </a>
-        <CardBody>
-            <CardTitle>
-                <a class="text-truncate" href="@($"/floorsets/{store.TUID}")">
-                    @store.CITY, @store.STATE
-                </a>
-            </CardTitle>
-
+        <Card>
+            <a href="@($"/floorsets/{Store.TUID}")" class="w-100 ratio ratio-4x3">
+                <CardImage Image="@ImageSrc" />
+            </a>
+            <CardBody>
+                <CardTitle class="flex-grow-1">
+                    <a class="text-truncate" href="@($"/floorsets/{Store.TUID}")">
+                        @Store.CITY , @Store.STATE
+                    </a>
+                </CardTitle>
+    
                 <AuthorizeView Policy="Manager">
-                    <Dropdown Class="Dropdown" Id="@($"{store.NAME}{store.TUID}Dropdown")" LabelText="Store">
-                        <DropdownLink href="@($"/floorsets/{store.TUID}")" Icon="fa-solid fa-note-sticky">Floorsets
-                        </DropdownLink>
+                    <Dropdown LabelText="Store">
+                            <DropdownLink href="@($"/floorsets/{Store.TUID}")" Icon="fa-solid fa-note-sticky">
+                        Floorsets
+                            </DropdownLink>
 
-                        <DropdownLink @onclick="async () => await OnEditClick(store)" href="#editStoreModal"
-                            Icon="fa-solid fa-pen-to-square" data-bs-target="@($"#edit-store-{store.TUID}")"
-                            data-bs-toggle="modal">
-                            Edit</DropdownLink>
+                    <DropdownLink @onclick="async () => await OnEditClick(Store)" Icon="fa-solid fa-pen-to-square"
+                        data-bs-target="@($"#edit-store-{Store.TUID}")" data-bs-toggle="modal">
+                        Edit</DropdownLink>
 
-                        <DropdownLink Icon="fa-solid fa-trash-can" data-bs-target="@($"#delete-store-{store.TUID}")"
+                        <DropdownLink Icon="fa-solid fa-trash-can" data-bs-target="@($"#delete-store-{Store.TUID}")"
                             data-bs-toggle="modal">
                             Delete
                         </DropdownLink>
@@ -65,36 +71,11 @@ Author: Andrew Fulton (3/12/2025)
         </Card>
 
         <AuthorizeView Policy="Manager">
-            <EditStoreModal id="@($"edit-store-{store.TUID}")" Store="store" UpdateStores="UpdateStores"
-                StoreId="store.TUID" />
+            <EditStoreModal id="@($"edit-store-{Store.TUID}")" Store="Store" UpdateStores="UpdateStores" StoreId="Store.TUID" />
 
-
-            @* Delete store modal *@
-            <Modal id="@($"delete-store-{store.TUID}")" class="standard">
-                <ModalHeader Title="Confirm Deletion" Variant="danger" />
-                <form @onsubmit="async () => {
-                        await OnDeleteStoreSubmit(store.TUID);
-                        deleteTextInput = string.Empty;}">
-                @code {
-                    private string? deleteTextInput;
-                    private bool isDisabled => deleteTextInput != "DELETE";
-                }
-                <ModalBody>
-                    <h5>Are you SURE you want to delete this Store?</h5>
-                    <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required
-                        pattern="DELETE" @bind-value="deleteTextInput" @bind-value:event="oninput" />
-                </ModalBody>
-
-                <ModalFooter>
-                    <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
-                        data-bs-dismiss="modal">
-                        Yes, Delete
-                    </Button>
-                </ModalFooter>
-            </form>
-        </Modal>
-    </AuthorizeView>
-        }
+            <DeleteStoreModal Store="Store" UpdateStores="UpdateStores" />
+        </AuthorizeView>
+    }
 
     <AuthorizeView Policy="Owner">
         <AddStoreModal id="create-store" UpdateStores="UpdateStores" />
@@ -107,37 +88,61 @@ Author: Andrew Fulton (3/12/2025)
 </div>
 
 @code {
-    private List<Data.Models.Stores.Store> stores = new List<Data.Models.Stores.Store>();
-
+    private List<Data.Models.Stores.Store> Stores = new List<Data.Models.Stores.Store>();
 
     private async Task UpdateStores()
     {
-        var response = await StoresHttpClient.GetListOfStores();
+        //Get jwt from cookie
+        var token = await Cookie.GetValue("Auth");
 
-        if (response != null)
+        //Get the users claims
+        var userPrincipal = JwtService.GetValidClaims(token);
+
+
+        if (userPrincipal != null)
         {
-            stores = response;
+            //Determine if user is an owner
+            var authResult = await AuthorizationService.AuthorizeAsync(userPrincipal, "Owner");
+
+            if (authResult.Succeeded)
+            {
+                //Get a list of all the stores for the owner
+                var response = await StoresHttpClient.GetListOfStores();
+
+                Stores = response ?? new();
+
+            }
+            else
+            {
+
+                var currentUserTUID = ClaimParserService.GetUserId(userPrincipal);
+
+                if (currentUserTUID != null)
+                {
+                    //Get list of stores based off of user TUID
+                    var response = await StoresHttpClient.GetStoreAccessByUserId(currentUserTUID.Value);
+
+                    Stores = response ?? new();
+                }
+            }
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await UpdateStores();
-    }
-
-    private async Task OnEditClick(Data.Models.Stores.Store store)
-    {
-        await Task.Run(() => Console.WriteLine("Edit store"));
-        await JS.InvokeVoidAsync("SetBackgroundImage", store.TUID + "-container",
-        "data:image/png;base64," + Convert.ToBase64String(store.BLUEPRINT_IMAGE!));
-        await UpdateStores();
+        //Get instance information for the dashboard
+        if (firstRender)
+        {
+            await UpdateStores();
+            StateHasChanged();
+        }
 
     }
 
-    private async Task OnDeleteStoreSubmit(int storeId)
+    private async Task OnEditClick(Data.Models.Stores.Store Store)
     {
-        await StoresHttpClient.DeleteStore(storeId);
         await UpdateStores();
 
+        StateHasChanged();
     }
 }

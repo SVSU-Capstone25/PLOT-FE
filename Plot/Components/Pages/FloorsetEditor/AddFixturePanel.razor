@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 
 <SlideOutHeader>
-    <h3 class="header pt-3" @onclick="ToggleAddFixture">
+    <h3 class="header " @onclick="ToggleAddFixture">
         <i class="fas fa-couch"></i> Add Fixture
     </h3>
 </SlideOutHeader>
@@ -33,21 +33,18 @@
         </div>
 
 
-        @* Fixture Area *@
-        <div class="fixture-area p-3 mt-3 d-flex gap-4 mb-2">
-            @* Create fixture tile for each fixture in dictionary *@
-            @foreach (Data.Models.Fixtures.FixtureModel fixtureModel in FixtureModels)
-            {
-                @if (FixtureSearch != "" && fixtureModel.NAME != null)
-                {
-                    @if (!fixtureModel.NAME.ToLower().Contains(FixtureSearch))
-                    {
-                        continue;
-                    }
+    @* Fixture Area *@
+    <div class="fixture-area p-3 mt-3 d-flex gap-4 mb-2 h-100">
+        @* Create fixture tile for each fixture in dictionary *@
+        @foreach (Data.Models.Fixtures.FixtureModel fixtureModel in FixtureModels)
+        {
+            @if(FixtureSearch != "" && fixtureModel.NAME != null){
+                @if(!fixtureModel.NAME.ToLower().Contains(FixtureSearch)){
+                    continue;
                 }
-                var ImageSrc = fixtureModel.ICON != null ?
-                $"data:image/jpeg;base64,{Convert.ToBase64String(fixtureModel.ICON)}" :
-                "https://placecats.com/200/200";
+            } 
+            var ImageSrc = fixtureModel.ICON != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(fixtureModel.ICON)}" :
+            "https://placecats.com/200/200";
 
                 <div class="fixture d-flex align-items-center gap-3 grab-cursor" data-name="@fixtureModel.NAME"
                     data-fixture-tuid="@fixtureModel.TUID" data-store-tuid="@fixtureModel.STORE_TUID"

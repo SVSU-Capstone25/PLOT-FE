@@ -1,0 +1,28 @@
+<select @attributes="Attributes" class="form-select" @onchange="OnSelectFunc">
+    @ChildContent
+</select>
+
+@code {
+    // Specifies method ran when selecting an option
+    // Returns e.Value as a string
+    // Only works for SINGLE-value selection
+    [Parameter] public EventCallback<string> OnSelectFunction { get; set; }
+
+    [Parameter] public required RenderFragment ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
+    //When option is selected this
+    //task is called which then calls
+    //the method invoked in the parent component
+    //passing the value of the change event argument
+    //as a string to the method
+    private async Task OnSelectFunc(ChangeEventArgs e)
+    {
+        if (OnSelectFunction.HasDelegate) // Checks if method given by OnSelectFunction exists
+        {
+            // Enables handling asynchronous methods
+            await OnSelectFunction.InvokeAsync(e.Value?.ToString());
+        }
+    }
+}
