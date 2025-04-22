@@ -3,7 +3,7 @@
 
 @* Edit Fixture Modal *@
 
-<Modal SizeClass="modal-xl">
+<Modal @attributes="Attributes" SizeClass="modal-xl">
     <ModalHeader Title="Edit Fixture" />
     <EditForm Model="EditFixtureModel" OnValidSubmit="async () => await OnEditFixtureSubmit()">
 
@@ -19,7 +19,7 @@
     [Parameter] public required Data.Models.Fixtures.FixtureModel Fixture { get; set; }
 
     [Parameter] public EventCallback UpdateFixtureModels { get; set; }
-
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
     [Parameter] public required int FixtureId { get; set; }
     [Parameter] public required int StoreId { get; set; }
     [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; } = new();

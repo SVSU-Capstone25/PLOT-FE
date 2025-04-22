@@ -55,7 +55,6 @@
                     <Dropdown class="fixture-options ms-auto disable-select" id="@($"fixture-options{fixtureModel.NAME}")"
                         LabelText="Fixture">
                     <DropdownLink  @onclick="async () => await OnEditClick(fixtureModel)"
-                    href="#EditFixtureModal" 
                     Icon="fa-regular fa-pen-to-square"
                     data-bs-target="@($"#edit-fixture-{fixtureModel.TUID}")"
                     data-bs-toggle="modal"
@@ -68,7 +67,7 @@
             </Dropdown>
         </div>
 
-        <EditFixtureModal id="edit-fixture-{fixtureModel.TUID}" Fixture="fixtureModel" UpdateFixtureModel="UpdateFixtureModels" StoreId="StoreId" FixtureId="fixtureModel.TUID"/>
+        <EditFixtureModal id="@($"edit-fixture-{fixtureModel.TUID}")" Fixture="fixtureModel" UpdateFixtureModel="UpdateFixtureModels" StoreId="StoreId" FixtureId="fixtureModel.TUID"/>
 
 
                 }
