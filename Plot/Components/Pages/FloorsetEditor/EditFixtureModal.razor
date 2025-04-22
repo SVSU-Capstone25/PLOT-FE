@@ -22,7 +22,7 @@
 
     [Parameter] public required int FixtureId { get; set; }
     [Parameter] public required int StoreId { get; set; }
-    [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; }
+    [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; } = new();
 
     protected override void OnInitialized()
     {
