@@ -3,11 +3,11 @@
 
 @* Add Fixture Modal *@
 
-<Modal @attributes="Attributes" SizeClass="modal-xl">
+<Modal SizeClass="modal-xl">
     <ModalHeader Title="Add Fixture" />
     <EditForm Model="AddFixtureModel" OnValidSubmit="async () => await OnAddFixtureSubmit()">
 
-        <AddUpdateFixtureModalBody AddUpdateFixtureModel="AddFixtureModel"/>
+        <AddUpdateFixtureModalBody AddUpdateFixtureModel="AddFixtureModel" />
 
         <ModalFooter OnCancelClick="ClearAddFixtureModel">
             <Button class="btn add-btn ms-auto" Variant="primary" type="submit" data-bs-dismiss="modal">Add</Button>
