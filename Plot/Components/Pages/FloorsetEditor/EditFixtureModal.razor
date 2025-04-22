@@ -9,10 +9,10 @@
         @*
         <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId" />
         *@
-        <AddUpdateFixtureModalBody />
-        <ModalFooter OnCancelClick="ClearEditStoreModel">
+        <AddUpdateFixtureModalBody AddUpdateFixtureModel="UpdateFixtureModel" FixtureModelId="FixtureModelID" />
+        <ModalFooter OnCancelClick="ClearEditFixtureModel">
             <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
-                Update Store
+                Update Fixture
             </Button>
         </ModalFooter>
     </EditForm>
@@ -22,56 +22,6 @@
 
 
 
-
-
-@{
-    <Modal class="modal-xl fixture-modal" id="EditFixture">
-        <ModalHeader Title="Edit Fixture" />
-        <EditForm Model="EditFixtureModel" OnValidSubmit="OnEditFixtureSubmit">
-            <ModalBody>
-                <label>
-                    Name
-                    <InputText @bind-value="EditFixtureModel!.NAME">Three Way Rack</InputText>
-                </label>
-                <div class="row">
-                    <div class="col-md-5">
-                        <label>
-                            Length
-                            <InputNumber @bind-Value="EditFixtureModel!.LENGTH" />
-                        </label>
-                    </div>
-                    <div class="col-md-auto my-auto">
-                        <i class="fa-solid fa-xmark mx-auto mt-4 ms-3"></i>
-                    </div>
-                    <div class="col-md-5">
-                        <label>
-                            Width
-                            <InputNumber @bind-Value="EditFixtureModel!.WIDTH" />
-                        </label>
-                    </div>
-                </div>
-
-                <label>
-                    Linear Feet Capacity
-                    <InputNumber @bind-Value="EditFixtureModel!.LF_CAP" />
-                </label>
-
-                <label>
-                    Total Linear Feet
-                    @EditFixtureModel!.WIDTH * @EditFixtureModel!.LENGTH
-                    @* <InputNumber @bind-Value="TotalLinearFeet" disabled /> *@
-                </label>
-
-                <div class="img-input">
-                    <ImageInput Height="400px" Width="400px" Label="Fixture Image" Id="Edit-fixtureimg" />
-                </div>
-            </ModalBody>
-            <ModalFooter>
-                <Button class="btn Edit-btn ms-auto" Variant="primary" type="submit">Edit</Button>
-            </ModalFooter>
-        </EditForm>
-    </Modal>
-}
 
 @code {
     [Parameter] public required Data.Models.Fixtures.FixtureModel Model { get; set; }
@@ -95,43 +45,30 @@
         };
     }
 
-    private async Task OnEditStoreSubmit()
+    private async Task OnEditFixtureSubmit()
     {
-        await Task.Run(() => Console.WriteLine("Update store: " + StoreId));
+        await Task.Run(() => Console.WriteLine("Update Fixture: " + FixtureModelId));
 
-        if (EditStoreModel == null) return;
+        if (EditFixtureModel == null) return;
 
 
-        if (usersToAdd.Count > 0)
-        {
-            EditStoreModel.USER_TUIDS = "";
-            foreach (var user in usersToAdd)
-            {
-                EditStoreModel.USER_TUIDS += user.TUID + ",";
-            }
-            if (EditStoreModel.USER_TUIDS != null)
-            {
-                EditStoreModel.USER_TUIDS = EditStoreModel.USER_TUIDS.TrimEnd(',');
-            }
-        }
-
-        var response = await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
+        var response = await FixturesHttpClient.UpdateFixtureModel(StoreId, EditStoreModel);
 
         Console.WriteLine(response);
 
         if (response != System.Net.HttpStatusCode.OK) return;
 
-        await UpdateStores.InvokeAsync();
+        await UpdateFixtureModel.InvokeAsync();
 
-        usersToAdd.Clear();
+        //usersToAdd.Clear();
 
         //ClearEditStoreModel();
 
         StateHasChanged();
     }
 
-    private void ClearEditStoreModel()
+    private void ClearEditFixtureModel()
     {
-        EditStoreModel = new();
+        EditFixtureModel = new();
     }
 }
