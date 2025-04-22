@@ -29,6 +29,6 @@
     visibility: visible;
 }
 
-.modal-backdrop {
-    z-index: -1;
+.z-index-override {
+    z-index: 3 !important;
 }

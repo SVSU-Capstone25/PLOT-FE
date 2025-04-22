@@ -3,7 +3,7 @@
 
 @* Edit Fixture Modal *@
 
-<Modal @attributes="Attributes" SizeClass="modal-xl">
+<Modal @attributes="Attributes" SizeClass="modal-xl" class="z-index-override">
     <ModalHeader Title="Edit Fixture" />
     <EditForm Model="EditFixtureModel" OnValidSubmit="async () => await OnEditFixtureSubmit()">
 
