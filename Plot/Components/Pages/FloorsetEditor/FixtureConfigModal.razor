@@ -1,111 +1,159 @@
 @* @inject IJSRuntime JS *@
-<!-- Author: Tristan Calay
+<!-- Author: Andrew Fulton, Andrew Kennedy
 The floorset fixture config modal allows right-click editing of a fixture on the floorset grid.
 It allows changing the category, hanging, and notes of a fixture.
 It also allows you to delete a fixture on the grid. -->
 @* Add fixture edit modal to the floorset editor. - Tristan Calay *@
 
-@* <div class="dropdown">
+@inject SalesHttpClient SalesHttpClient
+@inject FixturesHttpClient FixturesHttpClient
+@inject IJSRuntime JSRuntime
 
-    <p class="dropdown-header">Fixture Configuration</p>
-    <h6 class="dropdown-item">Two Way Rack</h6>
+@using Plot.Components.PartialComponents.OptionInput
+@using Microsoft.JSInterop;
+@using Plot.Data.Models.Fixtures
 
-    <div class="dropdown-divider"></div>
-
-    <div class="row">
-        <div class="col-auto pe-0">
-            <i class="fa-solid fa-chevron-down"></i>
-        </div>
-
-        <div class="col ps-0">
-            <div class="form-group">
-                <select style="border: none;" class="form-control" id="CategorySelectFormGroup">
-                    <option>Women's Jeans</option>
-                    <option>Men's Jeans</option>
-                    <option>Women's Tops</option>
-                    <option>Men's Tops</option>
-                    <option>Women's Shoes</option>
-                </select>
-                <label class="dropdown-header" for="exampleFormControlSelect1">Select Category</label>
+<div id="fixtureContextMenu" class="dropdown z-0 position-absolute">
+    <div class="dropdown-menu">
+        <EditForm Model="UpdateFixtureInstanceModel" OnValidSubmit="OnUpdateFixtureInstanceSubmit"
+            class="d-flex flex-column justify-content-center">
+            <div>
+                <p class="px-4 dropdown-header">Fixture Configuration</p>
+                <h5 class="px-4">@FixtureInstance?.NAME</h5>
             </div>
-        </div>
-    </div>
 
-    <br>
+            <div class="dropdown-divider"></div>
 
-    <div class="row">
-        <div class="col-auto pe-0">
-            <i class="fa-solid fa-chevron-down"></i>
-        </div>
-
-        <div class="col ps-0">
-            <div class="form-group">
-                <select style="border: none;" class="form-control" id="CategorySelectFormGroup">
-                    <option>Single Hung</option>
-                    <option>Double Hung</option>
-                    <option>Triple Hung</option>
-                    <option>Quadruple Hung</option>
-                </select>
-                <label class="dropdown-header" for="exampleFormControlSelect1">Select Category</label>
+            <div class="d-flex flex-column gap-2 px-2">
+                <OptionInput>
+                    <OptionInputHeader>Select Category</OptionInputHeader>
+                    <InputSelect class="form-select" @bind-Value="@UpdateFixtureInstanceModel!.SUBCATEGORY">
+                        <OptionInputOption selected="@(UpdateFixtureInstanceModel?.SUBCATEGORY == null)" value="">None
+                        </OptionInputOption>
+                        @foreach (var Subcategory in Subcategories.Keys.ToList())
+                        {
+                            <OptionInputOption value="@Subcategory"
+                                selected="@(UpdateFixtureInstanceModel?.SUBCATEGORY == Subcategory)">
+                                @Subcategory</OptionInputOption>
+                        }
+                    </InputSelect>
+                </OptionInput>
             </div>
-        </div>
+
+            <br />
+
+            <div class="d-flex flex-column gap-2 px-2">
+                <OptionInput>
+                    <OptionInputHeader>Select Hanging</OptionInputHeader>
+                    <InputSelect class="form-select" @bind-Value="UpdateFixtureInstanceModel!.HANGER_STACK">
+                        <OptionInputOption value="1" selected="@(FixtureInstance?.HANGER_STACK == 1)">Single Hung
+                        </OptionInputOption>
+                        <OptionInputOption value="2" selected="@(FixtureInstance?.HANGER_STACK == 2)">Double Hung
+                        </OptionInputOption>
+                        <OptionInputOption value="3" selected="@(FixtureInstance?.HANGER_STACK == 3)">Triple Hung
+                        </OptionInputOption>
+                        <OptionInputOption value="4" selected="@(FixtureInstance?.HANGER_STACK == 4)">Quadruple Hung
+                        </OptionInputOption>
+                    </InputSelect>
+                </OptionInput>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="d-flex flex-column gap-2 px-2">
+                <div class="d-flex flex-row gap-2 align-items-center px-2">
+                    <i class="fa-solid fa-pencil"></i>
+                    <p class="d-flex justify-content-center m-0">Fixture Notes</p>
+                </div>
+                <InputTextArea class=" d-flex justify-self-center" style="border: none;" placeholder="Notes"
+                    @bind-Value="UpdateFixtureInstanceModel!.NOTE"></InputTextArea>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="d-flex flex-row gap-2 align-items-center px-2 justify-content-between">
+                <Button Class="Button" TextAlignment="center" Variant="danger"
+                    @onclick="async () => await OnDeleteFixtureInstanceSubmit()">Delete</Button>
+                <Button Class="Button" TextAlignment="center" Variant="success" type="submit">Save</Button>
+            </div>
+        </EditForm>
     </div>
+</div>
 
-    <div class="dropdown-divider"></div>
+@code
+{
+    [Parameter] public required int FloorsetId { get; set; }
+    [Parameter] public FixtureInstance? FixtureInstance { get; set; }
 
+    [SupplyParameterFromForm] private UpdateFixtureInstance? UpdateFixtureInstanceModel { get; set; }
 
-    <div class="row">
-        <div class="col-auto pe-0">
-            <i class="fa-solid fa-pencil"></i>
-        </div>
+    private Dictionary<string, Data.Models.Allocations.AllocationFulfillments> Subcategories = new
+    Dictionary<string, Data.Models.Allocations.AllocationFulfillments>();
 
-        <div class="col ps-0">
-            <p class="dropdown-item">Put Seasonal Colors Here</p>
-            <textarea style="border: none;" placeholder="Notes"></textarea>
-        </div>
-    </div>
-</div> *@
+    protected override void OnInitialized()
+    {
+        UpdateFixtureInstanceModel ??= new()
+        {
+            TUID = FixtureInstance?.TUID ?? -1,
+            FLOORSET_TUID = FloorsetId,
+            EDITOR_ID = FixtureInstance?.EDITOR_ID ?? -1,
+            HANGER_STACK = FixtureInstance?.HANGER_STACK,
+            NOTE = FixtureInstance?.NOTE,
+            SUBCATEGORY = FixtureInstance?.SUBCATEGORY
+        };
+    }
 
+    protected override void OnParametersSet()
+    {
+        if (UpdateFixtureInstanceModel == null) return;
 
-@* @code {
-    private String fixtureName = "Default Fixture Title";
-private List<String> categoryInputValues = new List<String> { "Default Category" };
-        private List<String> hangingInputValues = new List<String> { "Default Hanging" };
+        UpdateFixtureInstanceModel.SUBCATEGORY = FixtureInstance?.SUBCATEGORY;
+        UpdateFixtureInstanceModel.HANGER_STACK = FixtureInstance?.HANGER_STACK;
+        UpdateFixtureInstanceModel.NOTE = FixtureInstance?.NOTE;
+        UpdateFixtureInstanceModel.EDITOR_ID = FixtureInstance?.EDITOR_ID ?? -1;
+    }
+    private async Task UpdateAllocationFulfillments()
+    {
+        var response = await SalesHttpClient.GetAllocationFulfillments(FloorsetId);
 
-                private String notesText = "";
+        if (response != null)
+        {
+            foreach (var subcategory in response)
+            {
+                Subcategories.TryAdd(subcategory.SUBCATEGORY, subcategory);
+            }
+        }
+    }
 
-                private Data.Models.Fixtures.FixtureInstance? currentFixture;
-                public void selectFixture(Data.Models.Fixtures.FixtureInstance selectedFixture)
-                {
-                currentFixture = selectedFixture;
-                if (selectedFixture == null)
-                {
-                return;
-                }
-                else
-                {
-                fixtureName = selectedFixture.;
-                //TODO: Change hanging, notes and category components here.
-                Console.WriteLine("Fixture Selected: " + fixtureName);
-                }
-                StateHasChanged();
-                }
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateAllocationFulfillments();
+    }
 
-                [Parameter] public required EventCallback<int> FixtureDeleted { get; set; }
+    private async Task OnUpdateFixtureInstanceSubmit()
+    {
+        if (UpdateFixtureInstanceModel != null)
+        {
+            var subcategory = Subcategories.GetValueOrDefault(UpdateFixtureInstanceModel.SUBCATEGORY ?? "None");
 
-                    private void deleteCurrentFixture()
-                    {
-                    if (currentFixture != null)
-                    {
-                    Console.WriteLine("Delete Current Selected Fixture...");
-                    FixtureDeleted.InvokeAsync(currentFixture.editorID);
-                    JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
-                    }
-                    }
+            UpdateFixtureInstanceModel.SUPERCATEGORY_TUID = subcategory?.SUPERCATEGORY_TUID;
 
-                    private void saveChangesToCurrentFixture()
-                    {
-                    Console.WriteLine("Save Changes Function...");
-                    JS.InvokeVoidAsync("toggleModal", "fixtureConfig", false);
-                    }
-                    } *@
+            await FixturesHttpClient.UpdateFixtureInstance(UpdateFixtureInstanceModel);
+            await JSRuntime.InvokeVoidAsync("window.gridInstance.updateFixtureByEditorTuid", UpdateFixtureInstanceModel.EDITOR_ID,
+            UpdateFixtureInstanceModel.HANGER_STACK, UpdateFixtureInstanceModel.SUBCATEGORY,
+            UpdateFixtureInstanceModel.SUPERCATEGORY_TUID, subcategory?.SUPERCATEGORY_COLOR ?? "white",
+            UpdateFixtureInstanceModel.NOTE);
+            await JSRuntime.InvokeVoidAsync("showDropdown", false);
+        }
+    }
+
+    private async Task OnDeleteFixtureInstanceSubmit()
+    {
+        if (UpdateFixtureInstanceModel != null)
+        {
+            await FixturesHttpClient.DeleteFixtureInstance(UpdateFixtureInstanceModel.TUID);
+            await JSRuntime.InvokeVoidAsync("window.gridInstance.deleteFixtureByEditorTuid", UpdateFixtureInstanceModel.EDITOR_ID);
+            await JSRuntime.InvokeVoidAsync("showDropdown", false);
+        }
+    }
+}

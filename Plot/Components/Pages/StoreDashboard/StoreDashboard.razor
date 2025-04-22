@@ -27,6 +27,7 @@ Author: Andrew Fulton (3/12/2025)
 @using Plot.Components.PartialComponents.Card
 @using Plot.Services
 @using Plot.Data.Models.Stores
+@using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Store Dashboard</PageTitle>
 
@@ -50,16 +51,16 @@ Author: Andrew Fulton (3/12/2025)
                         @Store.CITY , @Store.STATE
                     </a>
                 </CardTitle>
-    
+
                 <AuthorizeView Policy="Manager">
                     <Dropdown LabelText="Store">
-                            <DropdownLink href="@($"/floorsets/{Store.TUID}")" Icon="fa-solid fa-note-sticky">
-                        Floorsets
-                            </DropdownLink>
+                        <DropdownLink href="@($"/floorsets/{Store.TUID}")" Icon="fa-solid fa-note-sticky">
+                            Floorsets
+                        </DropdownLink>
 
-                    <DropdownLink @onclick="async () => await OnEditClick(Store)" Icon="fa-solid fa-pen-to-square"
-                        data-bs-target="@($"#edit-store-{Store.TUID}")" data-bs-toggle="modal">
-                        Edit</DropdownLink>
+                        <DropdownLink @onclick="async () => await OnEditClick(Store)" Icon="fa-solid fa-pen-to-square"
+                            data-bs-target="@($"#edit-store-{Store.TUID}")" data-bs-toggle="modal">
+                            Edit</DropdownLink>
 
                         <DropdownLink Icon="fa-solid fa-trash-can" data-bs-target="@($"#delete-store-{Store.TUID}")"
                             data-bs-toggle="modal">
@@ -71,7 +72,8 @@ Author: Andrew Fulton (3/12/2025)
         </Card>
 
         <AuthorizeView Policy="Manager">
-            <EditStoreModal id="@($"edit-store-{Store.TUID}")" Store="Store" UpdateStores="UpdateStores" StoreId="Store.TUID" />
+            <EditStoreModal id="@($"edit-store-{Store.TUID}")" Store="Store" UpdateStores="UpdateStores"
+                StoreId="Store.TUID" />
 
             <DeleteStoreModal Store="Store" UpdateStores="UpdateStores" />
         </AuthorizeView>

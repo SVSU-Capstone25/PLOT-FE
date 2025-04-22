@@ -23,7 +23,7 @@ export async function updateFixtureInstance(fixture) {
 /**
  * @argument {object} fixture
  * @author Clayton Cook <work@claytonleonardcook.com>
- * @returns {Promise<boolean>}
+ * @returns {Promise<number>} The TUID of the created fixture instance
  */
 export async function createFixtureInstance(fixture) {
   return fetch(
@@ -37,9 +37,7 @@ export async function createFixtureInstance(fixture) {
       credentials: "include",
       body: JSON.stringify(fixture),
     }
-  ).then((data) => {
-    if (!data.ok) throw new Error("Request responded with not OK!");
-  });
+  ).then((data) => data.json());
 }
 
 /**
