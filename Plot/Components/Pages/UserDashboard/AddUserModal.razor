@@ -12,12 +12,7 @@ Backdrop="static" Keyboard="false"
     <EditForm Model="AddUserModel" OnValidSubmit="() => OnAddUserSubmit()">
 
         <DataAnnotationsValidator />
-        @*
-        <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" UserStores="AddUserStores"
-            NotUserStores="NotAddUserStores" OnUserStoresChanged="HandleUserStoresChange"
-            OnNotUserStoresChanged="HandleNotUserStoresChange" OnInit="HandleBodyInit"
-            LoadMessageModalRef="LoadMessageModal" DisableSubmitInParent="DisableSubmitFromChild" @ref="modalBodyRef" />
-        *@
+
         <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" AssignedStores="AddUserStores"
             UnassignedStores="NotAddUserStores" SignalParentAssignedStoresChanged="HandleUserStoresChange"
             SignalParentUnassignedStoresChanged="HandleNotUserStoresChange" OnInit="HandleBodyInit"
@@ -66,8 +61,6 @@ Backdrop="static" Keyboard="false"
     public List<Data.Models.Stores.Store> NotAddUserStores = new();
 
     public Data.Models.Users.UserDTO? UserFromEmail { get; set; }
-
-    //private string AddUserSubmitMessage = "Please wait while PLOT adds new user information to the database...";
 
     public IJSObjectReference? JsModule;
 

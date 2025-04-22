@@ -46,29 +46,31 @@
 
     <p id="StoreSelectHeader">Store Selection</p>
 
-    <p>To select multiple stores use Ctrl-click</p>
+    <p>To select stores and move them use Ctrl-click before pressing the buttons</p>
 
     <div class="w-100 d-flex justify-content-around">
-    <label class="w-25">
-        Available Stores
-        <select class="form-select mb-4 h-50 w-100" id="unassigned-stores" size="3" multiple @onchange="UnassignedStoresSelection">
+        <label class="w-25">
+            Available Stores
+            <select class="form-select mb-4 h-50 w-100" id="unassigned-stores" size="3" multiple
+                @onchange="UnassignedStoresSelection">
 
-            @foreach (var store in UnassignedStores!)
-            {
-                <option value="@store.TUID">@store.NAME</option>
-            }
+                @foreach (var store in UnassignedStores!)
+                {
+                    <option value="@store.TUID">@store.NAME</option>
+                }
 
-        </select>
-        <Button Variant="primary" TextAlignment="center" @onclick="SelectStoresForUser"
-            disabled="@IsSelectButtonsDisabled">
-            Select Store
-        </Button>
+            </select>
+            <Button Variant="primary" TextAlignment="center" @onclick="SelectStoresForUser"
+                disabled="@IsSelectButtonsDisabled">
+                Select Store
+            </Button>
 
-    </label>
+        </label>
 
-    <label class="w-25">
+        <label class="w-25">
             Selected Stores
-            <select class="form-select mb-4 h-50 w-100" id="assigned-stores" size="3" multiple @onchange="AssignedStoresSelection">
+            <select class="form-select mb-4 h-50 w-100" id="assigned-stores" size="3" multiple
+                @onchange="AssignedStoresSelection">
 
                 @foreach (var store in AssignedStores!)
                 {
@@ -79,12 +81,13 @@
                 disabled="@IsSelectButtonsDisabled">
                 Remove Store
             </Button>
-    </label>
+        </label>
     </div>
 
 </ModalBody>
 
-@* TODO: Why won't it select it?*@
+@* TODO: This code is meant to select the first item in the select boxes but hasn't been working*@
+@*
 <script>
     function selectFirstItem(selectElementId) {
         // Select the first item
@@ -101,6 +104,7 @@
         selectElement.dispatchEvent(event);
     }
 </script>
+*@
 
 @code {
 
@@ -131,6 +135,7 @@
     private const int NEW_USER = 0; // Indicates new user when initializing stores
 
     private bool IsSelectButtonsDisabled = false; // For disabling select buttons --- Needed to ensure related data is updated
+    
     // Prevents error where clicking the button does nothing due to it not having updated
 
     // Lists of store tuids representing stores currently selected in either "Available Stores"
@@ -147,7 +152,6 @@
 
     public async Task SelectStoresForUser()
     {
-        Console.WriteLine("Select store for user");
         // Stores selected in select box from "Available Stores" moved to "Selected Stores"
         // Stores selected from UnassignedStores are moved to AssignedStores
 
@@ -168,8 +172,8 @@
         }
         selectedUnassignedTUIDs.Clear();
 
-        StateHasChanged();
-        await JS.InvokeVoidAsync("selectFirstItem", "unassigned-stores");
+        // TODO: For selecting first item in multi select box
+        //await JS.InvokeVoidAsync("selectFirstItem", "unassigned-stores");
         StateHasChanged();
 
         // Signal parent component to update stores lists
@@ -200,8 +204,8 @@
 
         selectedAssignedTUIDs.Clear();
 
-        StateHasChanged();
-        await JS.InvokeVoidAsync("selectFirstItem", "assigned-stores");
+        //TODO: Multiselect fix it
+        //await JS.InvokeVoidAsync("selectFirstItem", "assigned-stores");
         StateHasChanged();
 
         // Signal parent component to update stores lists
