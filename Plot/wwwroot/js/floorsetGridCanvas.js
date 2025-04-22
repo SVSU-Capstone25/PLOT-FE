@@ -80,6 +80,22 @@ function drawEmployeeAreaSelector(p5, v1, v2) {
   p5.pop();
 }
 
+function onKeyboardKey(p5) {
+  if (p5.keyIsDown(p5.LEFT_ARROW)) {
+    gridInstance.xOffset += 50 * gridInstance.scale;
+  } else if (p5.keyIsDown(p5.RIGHT_ARROW)) {
+    gridInstance.xOffset -= 50 * gridInstance.scale;
+  }
+
+  if (p5.keyIsDown(p5.UP_ARROW)) {
+    gridInstance.yOffset += 50 * gridInstance.scale;
+  } else if (p5.keyIsDown(p5.DOWN_ARROW)) {
+    gridInstance.yOffset -= 50 * gridInstance.scale;
+  }
+
+  gridInstance.resize();
+}
+
 function onZoomScroll(event) {
   if (!gridInstance) return;
 
@@ -193,6 +209,7 @@ function sketch(p5) {
 
   p5.draw = () => {
     p5.background(220);
+    onKeyboardKey(p5);
     p5.push();
     gridInstance.draw(mouseFixture);
     drawEmployeeAreaSelector(
