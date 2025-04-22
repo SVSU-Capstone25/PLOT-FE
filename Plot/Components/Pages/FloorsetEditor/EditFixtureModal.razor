@@ -9,7 +9,7 @@
         @*
         <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId" />
         *@
-        <AddUpdateFixtureModalBody AddUpdateFixtureModel="UpdateFixtureModel" FixtureModelId="FixtureModelID" />
+        <AddUpdateFixtureModalBody AddUpdateFixtureModel="EditFixtureModel" FixtureModelId="FixtureModelId" />
         <ModalFooter OnCancelClick="ClearEditFixtureModel">
             <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
                 Update Fixture
@@ -52,7 +52,7 @@
         if (EditFixtureModel == null) return;
 
 
-        var response = await FixturesHttpClient.UpdateFixtureModel(StoreId, EditStoreModel);
+        var response = await FixturesHttpClient.UpdateFixtureModel(FixtureModelId, EditFixtureModel);
 
         Console.WriteLine(response);
 

@@ -75,7 +75,7 @@ public class FixturesHttpClient : PlotHttpClient
     /// <param name="storeId"></param>
     /// <param name="update"></param>
     /// <returns></returns>
-    public async Task<HttpStatusCode> UpdateFixtureModel(int storeId, Select_Fixtures update)
+    public async Task<HttpStatusCode> UpdateFixtureModel(int storeId, UpdateFixtureModel update)
     {
         JsonContent body = JsonContent.Create(update);
 
