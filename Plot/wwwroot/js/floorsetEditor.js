@@ -488,26 +488,136 @@ function getCanvasImage(callback) {
 }
 
 /*
-    The downloadCanvasImage function grabs the main canvas and downloads its image 
-    to the user's device when the Print button is clicked
+    This function grabs the current canvas image from an open floorset and returns it
 */
-function downloadCanvasImage(floorsetName) {
-    getCanvasImage((image) => {
-        if (!image) {
-            console.error("No image data available.");
+async function getCanvasBase64Thumbnail()
+{
+    return await new Promise((resolve, reject) => {
+        if (!window.gridInstance || !window.p5Instance) {
+            console.error("p5Instance or gridInstance not available");
+            reject("Required instances not available");
             return;
         }
 
-        const link = document.createElement("a");
-        link.href = image;
-        const name = floorsetName.replace(/[^a-z0-9_\-]/gi, "_").toLowerCase();
-        link.download = `${name}_Layout.png`;
+        getCanvasThumbnailImage(image => {
+            if (!image){
+                reject("No image!")
+            }else{
+                console.log("nice image");
+                resolve(image);
+            }
+        });
+    });
+};
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+window.getCanvasBase64Image = async function () 
+{
+    return await new Promise((resolve, reject) => {
+        if (!window.gridInstance || !window.p5Instance) {
+            console.error("p5Instance or gridInstance not available");
+            reject("Required instances not available");
+            return;
+        }
+
+        getCanvasImage(image => {
+            if (!image){
+                reject("No image!")
+            }else{
+                resolve(image);
+            }
+        })
+    });
+};
+
+function saveAsFile(filename, base64DataUrl) {
+    const link = document.createElement('a');
+    link.href = 'data:application/octet-stream;base64,'+base64DataUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    // Wait a little before removing the link to allow the browser to start the download
+    document.body.removeChild(link);
+}
+
+function getCanvasThumbnailImage(callback) {
+    const canvas = document.querySelector('canvas');
+    if (!canvas) {
+        console.error("Canvas not found!");
+        return null;
+    }
+    //save current zoom
+    const p5 = window.p5Instance;
+    const grid = window.gridInstance;
+
+    const originalScale = grid.scale;
+    const originalWidth = p5.width;
+    const originalHeight = p5.height;
+
+
+    // Adjust scale so content fits nicely
+    const scaleX = 448 / (grid.width * grid.size);
+    const scaleY = 320 / (grid.height * grid.size);
+    const exportScale = Math.min(scaleX, scaleY);
+    p5.resizeCanvas(448, 320);
+    grid.scale = exportScale;
+    grid.resize();
+
+    //freeze drawing
+    p5.noLoop();
+    //force draw with requestAnimationFrame to get the full canvas size
+    requestAnimationFrame(() => {
+        p5.redraw();
+        const image = canvas.toDataURL("image/png");
+
+        //Restore everything
+        p5.resizeCanvas(originalWidth, originalHeight);
+        grid.scale = originalScale;
+        grid.resize();
+        p5.redraw();
+        p5.loop();
+
+        callback(image);
     });
 }
+
+function getCanvasImage(callback) {
+    const canvas = document.querySelector('canvas');
+    if (!canvas) {
+        console.error("Canvas not found!");
+        return null;
+    }
+    //save current zoom
+    const p5 = window.p5Instance;
+    const grid = window.gridInstance;
+
+    const originalScale = grid.scale;
+    const originalWidth = p5.width;
+    const originalHeight = p5.height;
+
+
+    //set scale and center the grid manually
+    grid.scale = 1;
+    const fullWidth = grid.width * grid.size;
+    const fullHeight = grid.height * grid.size;
+    p5.resizeCanvas(fullWidth, fullHeight);
+    grid.resize();
+
+    //freeze drawing
+    p5.noLoop();
+    //force draw with requestAnimationFrame to get the full canvas size
+    requestAnimationFrame(() => {
+        p5.redraw();
+        const image = canvas.toDataURL("image/png", 1.0);
+        //Restore everything
+        p5.resizeCanvas(originalWidth, originalHeight);
+        grid.scale = originalScale;
+        grid.resize();
+        p5.redraw();
+        p5.loop();
+
+        callback(image);
+    });
+};
 /*
     The addFixtureClose function adds an event listener to the add button in the Add Fixture modal.
 */
