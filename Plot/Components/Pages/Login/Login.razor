@@ -80,25 +80,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (cookie == null)
-        {
-            Console.WriteLine("Cookie service is null.");
-            return;
-        }
-        if (firstRender)
-        {
-            try
-            {
-                var token = await cookie.GetValue("Auth");
 
-                if (token != null && token != string.Empty) Navigation.NavigateTo("/store-dashboard", forceLoad: true);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error retrieving auth cookie: {ex.Message}");
-            }
-        }
+        var token = await cookie.GetValue("Auth");
 
+        if (token != null && token != string.Empty) Navigation.NavigateTo("/store-dashboard", forceLoad: true);
     }
 
     private async Task OnLoginSubmit()
