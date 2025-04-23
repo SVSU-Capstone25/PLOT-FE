@@ -88,7 +88,7 @@
                 base64ImageThumbnail = await JS.InvokeAsync<string>("getCanvasBase64Thumbnail");
                 Console.WriteLine("Got preview image!");
 
-                await Task.Delay(800);
+                await Task.Delay(1500);
                 base64Image = await JS.InvokeAsync<string>("getCanvasBase64Image");
             }
             catch (Exception ex)

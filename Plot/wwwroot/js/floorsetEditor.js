@@ -580,44 +580,7 @@ function getCanvasThumbnailImage(callback) {
     });
 }
 
-function getCanvasImage(callback) {
-    const canvas = document.querySelector('canvas');
-    if (!canvas) {
-        console.error("Canvas not found!");
-        return null;
-    }
-    //save current zoom
-    const p5 = window.p5Instance;
-    const grid = window.gridInstance;
 
-    const originalScale = grid.scale;
-    const originalWidth = p5.width;
-    const originalHeight = p5.height;
-
-
-    //set scale and center the grid manually
-    grid.scale = 1;
-    const fullWidth = grid.width * grid.size;
-    const fullHeight = grid.height * grid.size;
-    p5.resizeCanvas(fullWidth, fullHeight);
-    grid.resize();
-
-    //freeze drawing
-    p5.noLoop();
-    //force draw with requestAnimationFrame to get the full canvas size
-    requestAnimationFrame(() => {
-        p5.redraw();
-        const image = canvas.toDataURL("image/png", 1.0);
-        //Restore everything
-        p5.resizeCanvas(originalWidth, originalHeight);
-        grid.scale = originalScale;
-        grid.resize();
-        p5.redraw();
-        p5.loop();
-
-        callback(image);
-    });
-};
 /*
     The addFixtureClose function adds an event listener to the add button in the Add Fixture modal.
 */
