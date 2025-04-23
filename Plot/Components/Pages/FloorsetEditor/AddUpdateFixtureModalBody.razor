@@ -1,11 +1,12 @@
 @* Danielle Smith - 4/21/2025 *@
 @inject FixturesHttpClient FixturesHttpClient
+
 @using Plot.Data.Models.Fixtures
 
 <ModalBody>
     <label class="w-100 d-flex">
         <span class="mt-2 me-2 fw-bold">Name</span>
-        <InputText @bind-value="AddUpdateFixtureModel!.NAME" class="form-control">Three Way Rack</InputText>
+        <InputText @bind-value="AddUpdateFixtureModel!.NAME" class="w-75 form-control ms-auto input-field" type="text"/>
     </label>
     <div class="d-flex align-items-center w-100 gap-3 my-2">
         <label class="d-flex align-items-center flex-fill">

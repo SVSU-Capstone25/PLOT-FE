@@ -133,7 +133,7 @@
 
 <PrintModal FloorsetId="FloorsetId" />
 
-<AddFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
+<AddFixtureModal id="create-fixture" StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
 <HelpModal />
 
@@ -141,7 +141,7 @@
 @foreach (Data.Models.Fixtures.FixtureModel FixtureModel in FixtureModels)
 {
     <EditFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels"
-        id="@($"edit-fixture-{FixtureModel.TUID}")" FixtureModel="FixtureModel" />
+        id="@($"edit-fixture-{FixtureModel.TUID}")" Fixture="FixtureModel" />
 }
 
 
