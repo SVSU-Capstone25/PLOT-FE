@@ -13,7 +13,15 @@
         <ModalBody>
             <label class="w-100">
                 Import an Excel File
-                <FileInput OnFileSelected="OnFileUpload" />
+                @if (!isUploading)
+                {
+                    <FileInput OnFileSelected="OnFileUpload" />
+                }
+                else
+                {
+                    <p>Uploading... please wait</p>
+                }
+                
             </label>
         </ModalBody>
         <ModalFooter>
@@ -28,31 +36,57 @@
     [Parameter] public required int FloorsetId { get; set; }
     [SupplyParameterFromForm] private Data.Models.Allocations.UploadFile? ImportExcelFileModel { get; set; }
 
+    private bool shouldRender;
+
+    protected override bool ShouldRender() => shouldRender;
+
+    private bool isUploading = false;
+
     protected override void OnInitialized()
     {
         ImportExcelFileModel ??= new();
     }
 
-    private async Task OnFileUpload(IBrowserFile e)
+    private async Task OnFileUpload(IBrowserFile  e)
     {
+        Console.WriteLine(e.Name);
+
+        shouldRender=false;
+        isUploading=true;
+        
+        
         if (e != null)
         {
+            
             MemoryStream ms = new MemoryStream();
             await e.OpenReadStream().CopyToAsync(ms);
-            IFormFile formFile = new FormFile(ms, 0, ms.Length, e.Name, e.Name);
+            ms.Position=0;
+            
             if (ImportExcelFileModel != null)
             {
-                ImportExcelFileModel!.EXCEL_FILE = formFile;
+                
+                ImportExcelFileModel.Stream=ms;
+                ImportExcelFileModel.FileName=e.Name;
+                ImportExcelFileModel.ContentType=e.ContentType;
+
             }
         }
     }
 
     private async Task OnImportExcelFileSubmit()
     {
-        if (ImportExcelFileModel?.EXCEL_FILE != null)
+        
+        
+        
+        //Console.WriteLine(ImportExcelFileModel?.EXCEL_FILE==null);
+        if (ImportExcelFileModel?.Stream != null)
         {
-            var response = await SalesHttpClient.UploadSales(FloorsetId, ImportExcelFileModel!.EXCEL_FILE);
+            //Console.WriteLine(ImportExcelFileModel?.EXCEL_FILE.Size);
+            var response = await SalesHttpClient.UploadSales(FloorsetId, ImportExcelFileModel);
             Console.WriteLine(response);
+            shouldRender=true;
+            isUploading=false;
+            
         }
     }
 }
