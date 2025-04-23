@@ -3,6 +3,7 @@ using System.Net;
 using Plot.Data.Models.Stores;
 using Plot.Data.Models.Users;
 using Plot.Services;
+using System.Text.Json;
 
 //NEED TO FINISH
 public class UsersHttpClient : PlotHttpClient
@@ -18,6 +19,14 @@ public class UsersHttpClient : PlotHttpClient
     public async Task<UserDTO?> GetUserById(int userId)
     {
         return await SendGetAsync<UserDTO>($"/get-users-by-id/{userId}");
+    }
+
+    public async Task<UserDTO?> GetUserByEmail(string userEmail)
+    {
+        //Console.WriteLine("user email in client " + userEmail);
+        var response = await SendGetAsync<UserDTO?>($"/get-user-by-email/{Uri.EscapeDataString(userEmail)}");
+        //Console.WriteLine("The response in GetUserByEmail is " + response);
+        return response;
     }
 
     public async Task<HttpStatusCode> UpdateUserPublicInfo(int userId, UpdatePublicInfoUser user)
@@ -54,9 +63,9 @@ public class UsersHttpClient : PlotHttpClient
         return await SendPostAsync<HttpStatusCode>($"/update-access-list", body);
     }
 
-    public async Task<Store?> GetStoreOfUserById(int userId)
+    public async Task<IEnumerable<Store>?> GetStoreOfUserById(int userId)
     {
-        return await SendGetAsync<Store>($"/stores/{userId}");
+        return await SendGetAsync<IEnumerable<Store>?>($"/stores/{userId}");
     }
 
     public async Task<List<UserDTO>?> GetUsersByString(UsersByStringRequest usersByStringRequest)
@@ -64,5 +73,10 @@ public class UsersHttpClient : PlotHttpClient
         JsonContent body = JsonContent.Create(usersByStringRequest);
 
         return await SendPostAsync<List<UserDTO>>("/get-users-by-string", body);
+    }
+
+    public async Task<IEnumerable<Store>?> GetStoresNotForUser(int userId)
+    {
+        return await SendGetAsync<IEnumerable<Store>?>($"/stores-not/{userId}");
     }
 }

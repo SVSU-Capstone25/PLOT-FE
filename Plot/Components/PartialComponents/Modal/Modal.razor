@@ -19,10 +19,15 @@ parameter to specify a method to run when the cancel button is clicked.
 
 Author: Andrew Kennedy (4/4/2025) - Added IsStatic parameter
 when true, modal does not close when user clickes outside or presses esc
+
+Author: Andrew Miller (4/19/2025) - Added Backdrop and Keyboard parameters
+to allow customization of data-bs-backdrop and data-bs-keyboard. Needed
+to make loading modal for adding users in User Dashboard so it can't be clicked
+off or escaped. Defaults here set to true as those were the values set before.
 -->
 
-<div class="modal @Class fade" tabindex="-1" data-bs-backdrop="true" data-bs-focus="false" data-bs-keyboard="true"
-    @attributes="Attributes">
+<div class="modal @Class fade" tabindex="-1" data-bs-backdrop="@Backdrop" data-bs-focus="false"
+    data-bs-keyboard="@Keyboard" @attributes="Attributes">
     <div class="modal-dialog @SizeClass Modal">
         <div class="modal-content border-0">
             @ChildContent
@@ -37,6 +42,10 @@ when true, modal does not close when user clickes outside or presses esc
     public Dictionary<string, object> Attributes { get; set; } = new Dictionary<string, object>();
 
     [Parameter] public string? SizeClass { get; set; }
+
+    [Parameter] public string Backdrop { get; set; } = "true";
+
+    [Parameter] public string Keyboard { get; set; } = "true";
 
     private string? Class => Attributes.TryGetValue("class", out var val) ? val.ToString() : string.Empty;
 

@@ -2,7 +2,6 @@ using System.Net;
 using Plot.Data.Models.Auth.Registration;
 using Plot.Data.Models.Auth.ResetPassword;
 using Plot.Services;
-
 public class AuthHttpClient : PlotHttpClient
 {
     public AuthHttpClient(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, "/auth")
@@ -25,7 +24,12 @@ public class AuthHttpClient : PlotHttpClient
     public async Task<HttpStatusCode> Register(UserRegistration user)
     {
         JsonContent body = JsonContent.Create(user);
-
-        return await SendPostAsync<HttpStatusCode>("/register", body);
+        try{
+            return await SendPostAsync<HttpStatusCode>("/register", body);
+        }
+        catch(Exception ex){
+            Console.WriteLine("Exception: " + ex);
+            return HttpStatusCode.InternalServerError; 
+        }
     }
 }
