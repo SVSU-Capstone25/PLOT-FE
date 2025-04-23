@@ -133,7 +133,12 @@
 
 <AddFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
-<EditFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
+@foreach (Data.Models.Fixtures.FixtureModel fixtureModel in FixtureModels)
+{
+    <EditFixtureModal id="@($"edit-fixture-{fixtureModel.TUID}")" Fixture="fixtureModel"
+        UpdateFixtureModel="UpdateFixtureModels" StoreId="StoreId" FixtureId="fixtureModel.TUID" />
+}
+
 
 <HelpModal />
 
