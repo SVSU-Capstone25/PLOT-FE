@@ -46,6 +46,7 @@ builder.Services.AddScoped<SalesHttpClient>();
 builder.Services.AddScoped<ICookie, Cookie>();
 builder.Services.AddScoped<ClaimParserService>();
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddSingleton<ToastService>();
 
 // Add JWT authentication and authorization 
 builder.Services.AddAuthentication(options =>

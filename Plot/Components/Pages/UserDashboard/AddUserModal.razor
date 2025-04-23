@@ -2,11 +2,12 @@
 @inject StoresHttpClient StoresHttpClient
 @inject UsersHttpClient UsersHttpClient
 @inject IJSRuntime JS
+@inject ToastService ToastService
+
+@using Plot.Services
 @using Microsoft.JSInterop
 
-<Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" 
-Backdrop="static" Keyboard="false"
-@attributes="Attributes">
+<Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" @attributes="Attributes">
     <ModalHeader Title="Add User" />
 
     <EditForm Model="AddUserModel" OnValidSubmit="() => OnAddUserSubmit()">
@@ -51,7 +52,7 @@ Backdrop="static" Keyboard="false"
 
     private const int NEW_USER = 0; // Indicates new user when initializing stores
 
-    private bool modalBodyInit = false;  // AddUpateUserModalBody initialized flag 
+    private bool modalBodyInit = false; // AddUpateUserModalBody initialized flag
 
     private bool IsSubmitDisabled = false; // Disable submit button
 
@@ -67,7 +68,7 @@ Backdrop="static" Keyboard="false"
 
     protected override void OnInitialized()
     {
-        AddUserModel ??= new()  // Iniitalize AddUserModel with Role of "Owner"
+        AddUserModel ??= new() // Iniitalize AddUserModel with Role of "Owner"
         {
             ROLE_NAME = "Owner"
         };
@@ -92,7 +93,7 @@ Backdrop="static" Keyboard="false"
         // file calls this
         if (modalBodyRef != null)
         {
-            modalBodyRef.StateHasChangedFromParent();
+            modalBodyRef?.StateHasChangedFromParent();
         }
 
         StateHasChanged();
@@ -120,11 +121,13 @@ Backdrop="static" Keyboard="false"
         // Get user from email
         Data.Models.Users.UserDTO? UserFromEmail;
 
-        if(registration.EMAIL != null){
+        if (registration.EMAIL != null)
+        {
             UserFromEmail = await UsersHttpClient.GetUserByEmail(registration.EMAIL);
 
             // Update user access in database
-            if(UserFromEmail != null){
+            if (UserFromEmail != null)
+            {
                 await UsersHttpClient.UpdateAccessList(
                 new Data.Models.Users.UpdateAccessListRequest
                 {

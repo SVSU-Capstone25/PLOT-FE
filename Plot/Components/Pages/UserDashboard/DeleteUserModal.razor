@@ -1,4 +1,7 @@
 @inject UsersHttpClient UsersHttpClient
+@inject ToastService ToastService
+
+@using Plot.Services
 
 <Modal class="standard"
 Backdrop="static" Keyboard="false"
@@ -34,7 +37,14 @@ Backdrop="static" Keyboard="false"
 
     private async Task OnDeleteUserSubmit(int userId)
     {
-        await UsersHttpClient.DeleteUserById(userId);
+        var response = await UsersHttpClient.DeleteUserById(userId);
+
+        if(response != System.Net.HttpStatusCode.OK) {
+            ToastService.ShowError("There was an error deleting the user!");
+        } else {
+            ToastService.ShowSuccess("The user was deleted.");
+        }
+
         await UpdateUsers.InvokeAsync();
     }
 }

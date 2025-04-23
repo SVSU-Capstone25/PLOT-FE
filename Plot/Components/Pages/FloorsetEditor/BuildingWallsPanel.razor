@@ -1,6 +1,8 @@
 @inject StoresHttpClient StoresHttpClient
-@inject IJSRuntime JS
+@inject IJSRuntime JSRuntime
+@inject ToastService ToastService
 
+@using Plot.Services
 @using Plot.Components.PartialComponents.NumericInput
 @using Plot.Components.PartialComponents.SlideOut
 @using Microsoft.AspNetCore.Components.Authorization
@@ -37,18 +39,18 @@
 
             @* Tristan Calay 4/2/25 - Added new employee area controls *@
 
-            <div style="display: flex; flex-direction: column; row-gap: 16px;">
-                <Button type="submit" Class="button-green" Variant="primary" Icon="fa-solid fa-check"
-                    TextAlignment="center">
+            <div class="d-flex flex-column gap-2">
+                <Button type="submit" Variant="primary" Icon="fa-solid fa-check" TextAlignment="center">
                     Apply
                 </Button>
 
-            <Button Class="button-green" Icon="fa-solid fa-brush" TextAlignment="center" @onclick="OnEmployeeAreaPaint">
-                Toggle Paint Employee Area
-            </Button>
+                <Button Variant="primary" Icon="fa-solid fa-brush" TextAlignment="center" type="button"
+                    @onclick="async () => await OnEmployeeAreaPaint()">
+                    Toggle Paint Employee Area
+                </Button>
 
-                <Button Class="button-green" Icon="fa-solid fa-eraser" TextAlignment="center"
-                @onclick="OnEmployeeAreaErase">
+                <Button Variant="primary" Icon="fa-solid fa-eraser" TextAlignment="center" type="button"
+                    @onclick="async () => await OnEmployeeAreaErase()">
                     Toggle Erase Employee Area
                 </Button>
             </div>
@@ -87,29 +89,35 @@
 
     private async Task OnUpdateSizeStoreSubmit()
     {
-        if (UpdateSizeStoreModel != null)
+        if (UpdateSizeStoreModel == null)
         {
-
-            await Task.Run(() => Console.WriteLine(UpdateSizeStoreModel));
-
-            var response = await StoresHttpClient.UpdateStoreSize(StoreId, UpdateSizeStoreModel);
-
-            Console.WriteLine(response);
-
-            if (response == System.Net.HttpStatusCode.OK)
-            {
-                await UpdateStore.InvokeAsync();
-            }
+            ToastService.ShowError("There was an error updating the building size!");
+            return;
         }
+
+        var response = await StoresHttpClient.UpdateStoreSize(StoreId, UpdateSizeStoreModel);
+
+        if (response != System.Net.HttpStatusCode.OK)
+        {
+            ToastService.ShowError("There was an error updating the building size!");
+        }
+        else
+        {
+            await UpdateStore.InvokeAsync();
+            ToastService.ShowSuccess("The building size has been updated.");
+        }
+
     }
 
     private async Task OnEmployeeAreaPaint()
     {
-        await JS.InvokeVoidAsync("window.setEmployeeAreaPaint");
+        await Task.Run(() => ToastService.ShowInfo("Employee area painting has been toggled."));
+        await JSRuntime.InvokeVoidAsync("window.setEmployeeAreaPaint");
     }
 
     private async Task OnEmployeeAreaErase()
     {
-        await JS.InvokeVoidAsync("window.setEmployeeAreaErase");
+        await Task.Run(() => ToastService.ShowInfo("Employee area erasing has been toggled."));
+        await JSRuntime.InvokeVoidAsync("window.setEmployeeAreaErase");
     }
 }
