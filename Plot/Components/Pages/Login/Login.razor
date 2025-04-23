@@ -80,6 +80,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+
         var token = await cookie.GetValue("Auth");
 
         if (token != null && token != string.Empty) Navigation.NavigateTo("/store-dashboard", forceLoad: true);
@@ -90,7 +91,7 @@
         if (LoginModel != null)
         {
             var token = await AuthService.LoginAsync(LoginModel);
-
+            Console.WriteLine(token);
             if (token != null)
             {
                 if (token.Token == null)
@@ -101,6 +102,10 @@
                 {
                     await cookie.SetValue("Auth", token.Token);
                 }
+            }
+            else
+            {
+                HasLoginFailed = true;
             }
         }
     }
