@@ -34,21 +34,10 @@ Added code to turn off disabled icon when button is re-enabled.
         alignment = "text-center";
     }
 }
-<!--Add additional class If The button is disabled-->
-@if (IsDisabled)
-{
-    disabledClass = "disabled-btn";
-
-}
-else
-{
-    disabledClass = ""; // Remove if re-enabled
-}
 <!--Button class, adds classes based on data passed icon
     via parameters
     -->
-<button @onclick="OnClickFunc" class="btn btn-@Variant @Class @alignment @disabledClass" disabled="@IsDisabled" id="@Id"
-    type="@Type" @attributes="Attributes">
+<button @attributes="Attributes" class="btn btn-@Variant @Class @alignment @disabledClass" id="@Id" type="@Type">
     <!--Button content-->
     @if (Icon != null)
     {
@@ -81,16 +70,10 @@ else
     public string? Icon { get; set; }
 
     [Parameter]
-    public bool IsDisabled { get; set; }
-
-    [Parameter]
     public string? TextAlignment { get; set; }
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
-    //Parameter to pass in the method from the parent component dynamically
-    [Parameter]
-    public EventCallback OnClickFunction { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
@@ -99,15 +82,4 @@ else
     //string to hold the disabled class, if
     //not disabled, it adds no text to the class of the button
     public string disabledClass = "";
-
-    //When button is clicked this
-    //task is called which then calls
-    //the method invoked in the parent component
-    private async Task OnClickFunc()
-    {
-        if (OnClickFunction.HasDelegate)
-        {
-            await OnClickFunction.InvokeAsync();
-        }
-    }
 }

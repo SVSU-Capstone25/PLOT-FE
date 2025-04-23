@@ -21,11 +21,14 @@ public class FloorsetsHttpClient : PlotHttpClient
         return await SendGetAsync<Floorset>($"/get-floorset/{floorsetId}");
     }
 
+    // TODO: Update to return status code and tuid so that we can do validation
     public async Task<int> CreateFloorset(CreateFloorset newFloorset)
     {
         JsonContent body = JsonContent.Create(newFloorset);
 
-        return await SendPostAsync<int>("/create-floorset", body);
+        var (status, response) = await SendPostAsync<int>("/create-floorset", body);
+
+        return response;
     }
 
     public async Task<HttpStatusCode> UpdatePublicInfo(int floorsetId, UpdatePublicInfoFloorset floorset)

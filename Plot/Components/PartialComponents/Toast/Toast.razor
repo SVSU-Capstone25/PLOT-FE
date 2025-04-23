@@ -1,0 +1,59 @@
+@inject ToastService ToastService
+
+@using Plot.Services
+
+<div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header d-flex flex-row bg-@Type text-light">
+        <span class="d-flex flex-row gap-2 flex-grow-1 align-items-center">
+            <i class="fa-solid @Icon"></i>
+            <strong class="me-auto">@Title</strong>
+        </span>
+        <small>@DateTime.Now.ToString("h:mm tt")</small>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter] public required string Type { get; set; }
+    [Parameter] public required int Duration { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private System.Timers.Timer? Timer;
+
+    private string Title => Type switch
+    {
+        "success" => "Success",
+        "danger" => "Error",
+        "warning" => "Warning",
+        "info" => "Info",
+        _ => "Notification"
+    };
+
+    private string Icon => Type switch
+    {
+        "success" => "fa-circle-check",
+        "danger" => "fa-circle-exclamation",
+        "warning" => "fa-triangle-exclamation",
+        "info" => "fa-circle-info",
+        _ => "fa-circle-check"
+    };
+
+    protected override void OnInitialized()
+    {
+        Timer?.Dispose();
+        Timer = new System.Timers.Timer(Duration);
+        Timer.Elapsed += (s, e) => ToastService.PopToast();
+        Timer.AutoReset = false;
+        Timer.Start();
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Timer?.Dispose();
+    }
+}

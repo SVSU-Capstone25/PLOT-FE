@@ -1,6 +1,9 @@
 @inject StoresHttpClient StoresHttpClient
 @inject UsersHttpClient UsersHttpClient
 @inject IJSRuntime JS
+@inject ToastService ToastService
+
+@using Plot.Services
 
 <Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" Backdrop="static" Keyboard="false"
     @attributes="Attributes">
@@ -41,7 +44,7 @@
 
     public AddUpdateUserModalBody? modalBodyRef; // Ref for AddUpdateUserModalBody
 
-    private bool modalBodyInit = false; // AddUpateUserModalBody initialized flag 
+    private bool modalBodyInit = false; // AddUpateUserModalBody initialized flag
 
     private bool IsSubmitDisabled = false; // Disable submit button
 
@@ -50,9 +53,9 @@
 
     // Stores lists for updating access
 
-    public List<Data.Models.Stores.Store>? UpdateUserStores = new();
+    public List<Data.Models.Stores.Store> UpdateUserStores = new();
 
-    public List<Data.Models.Stores.Store>? NotUpdateUserStores = new();
+    public List<Data.Models.Stores.Store> NotUpdateUserStores = new();
 
     public List<int> selectedNotUserStoreTUIDs = new();
 
@@ -96,16 +99,32 @@
 
     public async Task OnUpdateUserSubmit()
     {
-        await UsersHttpClient.UpdateUserPublicInfo(User!.TUID, UpdateUserModel!);
-        if (UpdateUserStores != null)
+        if (UpdateUserModel == null)
         {
+            ToastService.ShowError("There was an error editing the user!");
+            return;
+        }
+
+        var response = await UsersHttpClient.UpdateUserPublicInfo(User!.TUID, UpdateUserModel);
+
+        if (response != System.Net.HttpStatusCode.OK)
+        {
+            ToastService.ShowError("There was an error editing the user!");
+        }
+        else
+        {
+            ToastService.ShowSuccess("The user was edited.");
+
             await UsersHttpClient.UpdateAccessList(new Data.Models.Users.UpdateAccessListRequest
             {
                 USER_TUID = User!.TUID,
                 STORE_TUIDS = UpdateUserStores.Select(store => store.TUID)
             });
         }
+
         await UpdateUsers.InvokeAsync();
+
+        ClearUpdateUserModel();
     }
 
     public void ClearUpdateUserModel()
@@ -119,12 +138,12 @@
 
     }
 
-    public void HandleUserStoresChange(List<Data.Models.Stores.Store>? NewUpdateUserStores)
+    public void HandleUserStoresChange(List<Data.Models.Stores.Store> NewUpdateUserStores)
     {
         UpdateUserStores = NewUpdateUserStores;
     }
 
-    public void HandleNotUserStoresChange(List<Data.Models.Stores.Store>? NewNotUpdateUserStores)
+    public void HandleNotUserStoresChange(List<Data.Models.Stores.Store> NewNotUpdateUserStores)
     {
         NotUpdateUserStores = NewNotUpdateUserStores;
     }

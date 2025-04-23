@@ -9,3 +9,12 @@
     --success: #3D9747;
     --cancel: #EF4444;
 }
+
+.btn-primary {
+    background-color: var(--platos-blue) !important;
+    border: none;
+}
+
+.bg-info {
+    background-color: var(--platos-blue) !important;
+}

@@ -1,15 +1,18 @@
 @inject StoresHttpClient StoresHttpClient
 @inject UsersHttpClient UsersHttpClient
+@inject ToastService ToastService
+
+@using Plot.Services
 
 <Modal @attributes="Attributes" SizeClass="modal-lg">
     <ModalHeader Title="Update Store Information" />
-    <EditForm Model="EditStoreModel" OnValidSubmit="async () => await OnEditStoreSubmit()">
-
+    <EditForm Model="EditStoreModel" OnValidSubmit="async () => await OnEditStoreSubmit()"
+        OnInvalidSubmit="OnInvalidEditStoreSubmit">
         <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId"
             AddEmployeeTarget="@($"#add-employee-{StoreId}")" Users="Users.Values.ToList()" DeleteUser="DeleteUser" />
 
         <ModalFooter>
-            <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
+            <Button TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
                 Update Store
             </Button>
         </ModalFooter>
@@ -99,7 +102,12 @@
 
     private async Task OnEditStoreSubmit()
     {
-        if (EditStoreModel == null) return;
+        if (EditStoreModel == null)
+        {
+            ToastService.ShowError("There was an error editing the store!");
+            return;
+        }
+
 
         string joinedEmployees = string.Join(",", Users.Keys.ToList());
 
@@ -107,11 +115,22 @@
 
         var response = await StoresHttpClient.UpdatePublicInfo(StoreId, EditStoreModel);
 
-        if (response != System.Net.HttpStatusCode.OK) return;
+        if (response != System.Net.HttpStatusCode.OK)
+        {
 
-        await UpdateStores.InvokeAsync();
+            ToastService.ShowError("There was an error editing the store!");
+        }
+        else
+        {
+            ToastService.ShowSuccess("Your edits have been saved!");
+            await UpdateStores.InvokeAsync();
+            StateHasChanged();
+        }
+    }
 
-        StateHasChanged();
+    private void OnInvalidEditStoreSubmit()
+    {
+        ToastService.ShowError("There was an error editing the store!");
     }
 
     private void ClearEditStoreModel()

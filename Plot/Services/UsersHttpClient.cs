@@ -45,14 +45,18 @@ public class UsersHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(deleteUserFromStoreRequest);
 
-        return await SendPostAsync<HttpStatusCode>($"/delete-user-from-store", body);
+        var (status, response) = await SendPostAsync<HttpStatusCode>($"/delete-user-from-store", body);
+
+        return status;
     }
 
     public async Task<HttpStatusCode> AddUserToStore(AddUserToStoreRequest addUserToStoreRequest)
     {
         JsonContent body = JsonContent.Create(addUserToStoreRequest);
 
-        return await SendPostAsync<HttpStatusCode>($"/add-user-to-store", body);
+        var (status, response) = await SendPostAsync<HttpStatusCode>($"/add-user-to-store", body);
+
+        return status;
     }
 
     // TODO: Change to be a PUT request
@@ -60,7 +64,9 @@ public class UsersHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(updateAccessListRequest);
 
-        return await SendPostAsync<HttpStatusCode>($"/update-access-list", body);
+        var (status, response) = await SendPostAsync<HttpStatusCode>($"/update-access-list", body);
+
+        return status;
     }
 
     public async Task<IEnumerable<Store>?> GetStoreOfUserById(int userId)
@@ -72,7 +78,9 @@ public class UsersHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(usersByStringRequest);
 
-        return await SendPostAsync<List<UserDTO>>("/get-users-by-string", body);
+        var (status, response) = await SendPostAsync<List<UserDTO>>("/get-users-by-string", body);
+
+        return response;
     }
 
     public async Task<IEnumerable<Store>?> GetStoresNotForUser(int userId)
