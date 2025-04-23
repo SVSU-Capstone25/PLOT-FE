@@ -1,55 +1,59 @@
 @inject StoresHttpClient StoresHttpClient
+@inject IJSRuntime JS
 
 @using Plot.Components.PartialComponents.NumericInput
 @using Plot.Components.PartialComponents.SlideOut
+@using Microsoft.AspNetCore.Components.Authorization
 
 <SlideOutHeader>
-    <h3 class="header pt-3" onclick="ToggleBuildingWalls">
+    <h3 class="header" @onclick="ToggleBuildingWalls">
         <i class="fas fa-edit"></i>
         Edit Building Walls
     </h3>
 </SlideOutHeader>
 
 <SlideOutBody>
-    <EditForm Model="UpdateSizeStoreModel" class="walls-container flex-grow-1 d-flex flex-column gap-2"
-        OnValidSubmit="OnUpdateSizeStoreSubmit">
-        <label>
-            Dimensions
-            <div class="d-flex flex-row gap-2 align-items-center">
-                <div class="input-group">
-                    <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.LENGTH" min="1" />
-                    <span class="input-group-text">ft</span>
+    <AuthorizeView Policy="Manager">
+        <EditForm Context="form_context" Model="UpdateSizeStoreModel"
+            class="walls-container flex-grow-1 d-flex flex-column gap-2" OnValidSubmit="OnUpdateSizeStoreSubmit">
+            <label>
+                Dimensions
+                <div class="d-flex flex-row gap-2 align-items-center">
+                    <div class="input-group">
+                        <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.LENGTH" min="1" />
+                        <span class="input-group-text">ft</span>
+                    </div>
+                    <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="Swap Dimensions" @onclick="OnSwapDimensionsClick">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                    <div class="input-group">
+                        <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.WIDTH" min="1" />
+                        <span class="input-group-text">ft</span>
+                    </div>
                 </div>
-                <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Swap Dimensions" @onclick="OnSwapDimensionsClick">
-                    <i class="fa fa-times" aria-hidden="true"></i>
-                </button>
-                <div class="input-group">
-                    <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.WIDTH" min="1" />
-                    <span class="input-group-text">ft</span>
-                </div>
-            </div>
-            <div class="form-text">Enter the Dimensions (length and width) in feet</div>
-        </label>
+                <div class="form-text">Enter the Dimensions (length and width) in feet</div>
+            </label>
 
-        @* Tristan Calay 4/2/25 - Added new employee area controls *@
+            @* Tristan Calay 4/2/25 - Added new employee area controls *@
 
-        <div style="display: flex; flex-direction: column; row-gap: 16px;">
-            <Button type="submit" Class="button-green" Variant="primary" Icon="fa-solid fa-check"
-                TextAlignment="center">
-                Apply
-            </Button>
+            <div style="display: flex; flex-direction: column; row-gap: 16px;">
+                <Button type="submit" Class="button-green" Variant="primary" Icon="fa-solid fa-check"
+                    TextAlignment="center">
+                    Apply
+                </Button>
 
-            <Button Class="button-green" Icon="fa-solid fa-brush" TextAlignment="center">
+            <Button Class="button-green" Icon="fa-solid fa-brush" TextAlignment="center" @onclick="OnEmployeeAreaPaint">
                 Toggle Paint Employee Area
             </Button>
 
-            <Button Class="button-green" Icon="fa-solid fa-eraser" TextAlignment="center">
-                Toggle Erase Employee Area
-            </Button>
-        </div>
-    </EditForm>
-
+                <Button Class="button-green" Icon="fa-solid fa-eraser" TextAlignment="center"
+                @onclick="OnEmployeeAreaErase">
+                    Toggle Erase Employee Area
+                </Button>
+            </div>
+        </EditForm>
+    </AuthorizeView>
 </SlideOutBody>
 
 @code {
@@ -97,5 +101,15 @@
                 await UpdateStore.InvokeAsync();
             }
         }
+    }
+
+    private async Task OnEmployeeAreaPaint()
+    {
+        await JS.InvokeVoidAsync("window.setEmployeeAreaPaint");
+    }
+
+    private async Task OnEmployeeAreaErase()
+    {
+        await JS.InvokeVoidAsync("window.setEmployeeAreaErase");
     }
 }

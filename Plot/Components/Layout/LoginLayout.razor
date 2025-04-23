@@ -1,0 +1,22 @@
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+@using Plot.Components.PartialComponents.NavBar
+
+<head>
+    <script src="https://kit.fontawesome.com/b9b256c8f6.js" crossorigin="anonymous"></script>
+    <link href="css/global.css" rel="stylesheet" />
+    <script src="js/global.js"></script>
+</head>
+
+<body>
+    <main>
+        @Body
+    </main>
+
+    <div id="blazor-error-ui" data-nosnippet>
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+</body>

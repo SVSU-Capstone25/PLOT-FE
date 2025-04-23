@@ -44,8 +44,8 @@ builder.Services.AddScoped<StoresHttpClient>();
 builder.Services.AddScoped<UsersHttpClient>();
 builder.Services.AddScoped<SalesHttpClient>();
 builder.Services.AddScoped<ICookie, Cookie>();
-
-
+builder.Services.AddScoped<ClaimParserService>();
+builder.Services.AddScoped<JwtService>();
 
 // Add JWT authentication and authorization 
 builder.Services.AddAuthentication(options =>
@@ -64,7 +64,7 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = envSettings.audience,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(envSettings.secret_key)),
+            Encoding.UTF8.GetBytes(envSettings.auth_secret_key)),
         ValidateLifetime = true,
     };
 
@@ -86,7 +86,9 @@ builder.Services.AddAuthentication(options =>
             context.HandleResponse();
 
             // Return 401 or redirect to frontend login page
-            context.Response.StatusCode = 401;
+            context.Response.StatusCode = 401; // Unauthorized
+
+            // Redirect to login
             context.Response.Redirect("/login");
             return Task.CompletedTask;
         }
@@ -132,5 +134,5 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
+app.UseStatusCodePagesWithRedirects("/status-code/{0}");
 app.Run();

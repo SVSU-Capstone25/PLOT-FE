@@ -16,111 +16,21 @@ Added Multiple and AllowEmpty parameters.
 Added error handling to prevent OnSelectFunction usage
 with Multiple parameter as true
 *@
-<div class="OptionInput @Class" id="@ID">
-    <h5 class="row">
-        @if(iconString != null)
-        {
-            <i class="col-auto fa-fw @iconString"></i>
-        }
-        <p class="col-md-11">
-            @label
-        </p>
-    </h5>
-    <div class="row">
-        @if(iconString != null)
-        {
-            @((MarkupString)_blankIcon)
-        } @* "(e) => OnSelectFunction.InvokeAsync(e.Value?.ToString())" *@
-        <select class="col-md-11" @onchange="OnSelectFunc" multiple="@Multiple">
-            @for (var i = 0; i < optionsValues.Count; i++)
-            {
-                <option value=@optionsValues[i]>@optionsText[i]</option>
-            }
-        </select>
-    </div>
+<div @attributes="Attributes" class="OptionInput @Class">
+    @ChildContent
 </div>
 
 @code
 {
     //Custom string to add to this item's HTML class
     [Parameter]
-    public String? Class {get; set;}
-
-    //Custom string to add to this item's HTML id tag
-    [Parameter]
-    public String? ID {get; set;}
-
-    //String reference to a FontAwesome icon to display next to the label.
-    [Parameter]
-    public String? iconString {get; set;}
+    public String? Class { get; set; }
 
     //Insert this string as markup to space elements correctly, when no icon is specified.
-    private String _blankIcon = """<i class="col-auto fa-solid fa-square fa-fw" style="opacity: 0%;"></i>""";
-
-    //Text to display above the text box area
-    [Parameter, EditorRequired]
-    public required String label {get; set;}
-
-    //Array of option values in the selector.
-    [Parameter, EditorRequired]
-    public required List<String> optionsValues {get; set;}
-
-    //Array of options to display as text in the selector.
-    [Parameter, EditorRequired]
-    public required List<String> optionsText {get; set;}
+    @* private String _blankIcon = """<i class="col-auto fa-solid fa-square fa-fw" style="opacity: 0%;"></i>"""; *@
 
     [Parameter]
-    // Specifies method ran when selecting an option
-    // Returns e.Value as a string
-    // Only works for SINGLE-value selection
-    public EventCallback<string> OnSelectFunction {get; set;}
+    public required RenderFragment ChildContent { get; set; }
 
-    [Parameter]
-    // Allow empty select option - False by default
-    public bool AllowEmpty {get; set;} = false;
-
-    [Parameter]
-    // Is this Multiple? False (Single) by default
-    public bool Multiple {get; set;} = false;
-
-    //Validate that the option list has valid arguments: more than 0 entries(unless AllowEmpty is true), 
-    // and matching number of display and value entries.
-    protected override async Task OnParametersSetAsync(){
-        await base.OnParametersSetAsync();
-
-        if(optionsValues == null)
-        {
-            throw new ArgumentNullException("Options values list was not initialized: Did you add entries?");
-        }
-        if(optionsText == null)
-        {
-            throw new ArgumentNullException("Options text list was not initialized: Did you add entries?");
-        }
-        if( (optionsValues.Count == 0 || optionsText.Count == 0) & !AllowEmpty)
-        {
-            throw new ArgumentException(String.Format("Cannot have zero entries in values (length {0}) or text (length {1}) lists.",optionsValues.Count, optionsText.Count));
-        }
-        if(optionsValues.Count != optionsText.Count)
-        {
-            throw new ArgumentException(String.Format("Option values count, {0}, does not match options text count, {1}.",optionsValues.Count, optionsText.Count));
-        }
-        if(Multiple & OnSelectFunction.HasDelegate){
-            throw new ArgumentException(String.Format("The OnSelectFunction parameter may not used in conjunction with the Multiple parameter set to true"));
-        }
-    }
-
-    //When option is selected this
-    //task is called which then calls
-    //the method invoked in the parent component
-    //passing the value of the change event argument
-    //as a string to the method
-    
-    private async Task OnSelectFunc(ChangeEventArgs e)
-    {
-        if (OnSelectFunction.HasDelegate) // Checks if method given by OnSelectFunction exists
-        {
-            // Enables handling asynchronous methods
-            await OnSelectFunction.InvokeAsync(e.Value?.ToString());
-        }
-    }
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 }

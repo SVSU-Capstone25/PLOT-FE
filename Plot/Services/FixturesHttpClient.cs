@@ -27,17 +27,27 @@ public class FixturesHttpClient : PlotHttpClient
     }
 
     /// <summary>
+    /// TODO:
+    /// </summary>
+    /// <param name="fixtureInstance"> TODO:
+    /// <returns>Http response</returns>
+    public async Task<HttpStatusCode> UpdateFixtureInstance(UpdateFixtureInstance fixtureInstance)
+    {
+        JsonContent body = JsonContent.Create(fixtureInstance);
+
+        return await SendPatchAsync($"/update-fixture-instance", body);
+    }
+
+    /// <summary>
     /// This sends updates to a floorsets fixture information to the back end api.
     /// BE API:[HttpPatch("update-fixture/{floorsetId:int}")]
     /// </summary>
     /// <param name="floorsetId"> Current floorset</param>
     /// <param name="fixtures">A floorsets entire fixture information</param>
     /// <returns>Http response</returns>
-    public async Task<HttpStatusCode> UpdateFixtureInformation(int floorsetId, Fixtures_State fixtures)
+    public async Task<HttpStatusCode> DeleteFixtureInstance(int fixtureInstanceId)
     {
-        JsonContent body = JsonContent.Create(fixtures);
-
-        return await SendPatchAsync($"/update-fixture/{floorsetId}", body);
+        return await SendDeleteAsync($"/delete-fixture-instance/{fixtureInstanceId}");
     }
 
 
@@ -53,7 +63,7 @@ public class FixturesHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(fixtureModel);
 
-        return await SendPostAsync<HttpStatusCode>($"/create-fixture/{storeId}", body);
+        return await SendPostAsync<HttpStatusCode>($"/create-fixture-model/{storeId}", body);
     }
 
     /// <summary>
@@ -79,6 +89,6 @@ public class FixturesHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(update);
 
-        return await SendPatchAsync($"/update-model/{storeId}", body);
+        return await SendPatchAsync($"/update-fixture-model/{storeId}", body);
     }
 }

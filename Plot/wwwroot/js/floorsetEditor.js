@@ -663,7 +663,7 @@ function SetBackgroundImage(elementId, strUrl) {
     console.log("here");
     if (element) {
         console.log(strUrl.includes("url"));
-        element.style.backgroundImage = "url("+strUrl+")";
+        element.style.backgroundImage = "url(" + strUrl + ")";
         element.style.backgroundSize = "cover";
         element.style.backgroundPosition = "center";
         element.classList.remove("dashed-border");
@@ -744,6 +744,22 @@ function displayAlert(msg) {
 function UpdateGridDimensions(passedLength, passedWidth) {
     window.gridHeight = passedLength;
     window.gridWidth = passedWidth;
+}
+
+/*  Andrew Kennedy - 4/15/2025
+    The openSaveToast method opens a bootstrap toast.
+*/
+function openSaveToast(toastID) {
+    var saveToast = bootstrap.Toast.getOrCreateInstance(document.getElementById(toastID));
+    saveToast.show();
+}
+
+/*  Andrew Kennedy - 4/15/2025
+    The openSaveToast method opens a bootstrap toast.
+*/
+function openSaveToast(toastID) {
+    var saveToast = bootstrap.Toast.getOrCreateInstance(document.getElementById(toastID));
+    saveToast.show();
 }
 
 function createDraggable(event) {

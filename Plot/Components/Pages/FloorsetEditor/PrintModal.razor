@@ -9,8 +9,8 @@
 
 @*Print Modal *@
 @*Tristan Calay *@
-<Modal id="printModal" SizeClass="modal-md">
-    <ModalHeader Title="Print Layout" Variant="standard"/>
+<Modal id="print-modal" SizeClass="modal-lg">
+    <ModalHeader Title="Print Layout" Variant="standard" />
     <ModalBody>
         <h6 style="opacity: 0.5;">Select print options for how you would like your printed document to be formatted.
         </h6>
@@ -25,18 +25,24 @@
 
         @* Danielle Smith - 3/17/2025
         changed to use bootstrap classes and added some margin *@
-        <div class="row">
-            <div class="col-md-6">
-                <OptionInput ID="printerInput" Class="optionInput my-3" label="Select a Printer"
-                    optionsText="@(new List<String> { "Printer 1", "Printer 2" })"
-                    optionsValues="@(new List<String> { "Printer 1", "Printer 2" })" />
-            </div>
+        <div class="d-flex flex-row gap-2">
+            <OptionInput id="printerInput" Class="flex-grow-1">
+                <OptionInputHeader>Select a Printer</OptionInputHeader>
+                <OptionInputOptions>
+                    <OptionInputOption value="printer-1">Printer 1
+                    </OptionInputOption>
+                    <OptionInputOption value="printer-2">Printer 2</OptionInputOption>
+                </OptionInputOptions>
+            </OptionInput>
 
-            <div class="col-md-6">
-                <OptionInput ID="pageInput" Class="optionInput my-3" label="Page Size"
-                    optionsText="@(new List<String> { "8.5x11", "A4" })"
-                    optionsValues="@(new List<String> { "standard", "a4" })" />
-            </div>
+            <OptionInput id="pageInput" Class="flex-grow-1">
+                <OptionInputHeader>Page Size</OptionInputHeader>
+                <OptionInputOptions>
+                    <OptionInputOption value="standard">8.5x11
+                    </OptionInputOption>
+                    <OptionInputOption value="a4">A4</OptionInputOption>
+                </OptionInputOptions>
+            </OptionInput>
         </div>
 
         <Checkbox id="checkWithAllocations" Text="With Allocations" />
@@ -44,7 +50,7 @@
     </ModalBody>
 
     <ModalFooter>
-        <Button Variant="primary" data-bs-dismiss="modal" isDisabled="false" OnClickFunction="printLayout" >
+        <Button Variant="primary" data-bs-dismiss="modal" isDisabled="false" OnClickFunction="printLayout">
             Print
         </Button>
     </ModalFooter>
@@ -103,6 +109,7 @@
         // Kick off rendering now so OnAfterRenderAsync runs
         await InvokeAsync(StateHasChanged);
     }
+
 
     //printLayout Task
     //Asynchronously prints the current grid layout from specified printer and options.
