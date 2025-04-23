@@ -5,396 +5,146 @@ File Purpose:
 This is the Stores dashboard page component
 
 Program Purpose:
-The purpose of PLOT is to allow users to easily create, manage, 
+The purpose of PLOT is to allow Users to easily create, manage, 
 and allocate floorsets for Platos Closet. 
 
 Author: Andrew Fulton (3/12/2025)
 
 *@
 
-@page "/store-dashboard"
-
+@page "/Store-dashboard"
 @inject NavigationManager Navigation
 @inject StoresHttpClient StoresHttpClient
-@inject UsersHttpClient UsersHttpClient
-@inject IJSRuntime JS
+@inject ICookie Cookie
+@inject JwtService JwtService
+@inject ClaimParserService ClaimParserService
+@inject IAuthorizationService AuthorizationService
+@attribute [Authorize]
 
 @using System.Drawing;
 @using System.IO;
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
+@using Plot.Components.PartialComponents.Card
+@using Plot.Services
+@using Plot.Data.Models.Stores
+@using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Store Dashboard</PageTitle>
 
-@* Div to hold the stores *@
+@* Div to hold the Stores *@
 <div class="d-flex flex-wrap gap-4">
 
-    @* loop to generate a card for each store that exists *@
-    @foreach (var store in stores)
+    @* loop to generate a card for each Store that exists *@
+    @foreach (var Store in Stores)
     {
-        var ImageSrc = store.BLUEPRINT_IMAGE != null ?
-        $"data:image/jpeg;base64,{Convert.ToBase64String(store.BLUEPRINT_IMAGE)}" :
+        var ImageSrc = Store.BLUEPRINT_IMAGE != null ?
+        $"data:image/jpeg;base64,{Convert.ToBase64String(Store.BLUEPRINT_IMAGE)}" :
         "https://placecats.com/300/200";
 
-    <Card>
-        <a href="@($"/floorsets/{store.TUID}")" class="w-100 ratio ratio-4x3">
-            <CardImage Image="@ImageSrc" />
-        </a>
-        <CardBody>
-            <CardTitle>
-                <a class="text-truncate" href="@($"/floorsets/{store.TUID}")">
-                    @store.CITY , @store.STATE
-                </a>
-            </CardTitle>
-            <Dropdown Class="Dropdown" Id="@($"{store.NAME}{store.TUID}Dropdown")" LabelText="Store">
-                <DropdownLink href="@($"/floorsets/{store.TUID}")" Icon="fa-solid fa-note-sticky">Floorsets
-                </DropdownLink>
+        <Card>
+            <a href="@($"/floorsets/{Store.TUID}")" class="w-100 ratio ratio-4x3">
+                <CardImage Image="@ImageSrc" />
+            </a>
+            <CardBody>
+                <CardTitle class="flex-grow-1">
+                    <a class="text-truncate" href="@($"/floorsets/{Store.TUID}")">
+                        @Store.CITY, @Store.STATE
+                    </a>
+                </CardTitle>
 
-                    <DropdownLink @onclick="async () => await OnEditClick(store)" href="#editStoreModal"
-                        Icon="fa-solid fa-pen-to-square" data-bs-target="@($"#edit-store-{store.TUID}")"
-                        data-bs-toggle="modal">
-                        Edit</DropdownLink>
+                <AuthorizeView Policy="Manager">
+                    <Dropdown LabelText="Store">
+                        <DropdownLink href="@($"/floorsets/{Store.TUID}")" Icon="fa-solid fa-note-sticky">
+                            Floorsets
+                        </DropdownLink>
 
-                    <DropdownLink Icon="fa-solid fa-trash-can" data-bs-target="@($"#delete-store-{store.TUID}")"
-                        data-bs-toggle="modal">
-                        Delete
-                    </DropdownLink>
-                </Dropdown>
+                        <DropdownLink @onclick="async () => await OnEditClick(Store)" Icon="fa-solid fa-pen-to-square"
+                            data-bs-target="@($"#edit-store-{Store.TUID}")" data-bs-toggle="modal">
+                            Edit</DropdownLink>
+
+                        <DropdownLink Icon="fa-solid fa-trash-can" data-bs-target="@($"#delete-store-{Store.TUID}")"
+                            data-bs-toggle="modal">
+                            Delete
+                        </DropdownLink>
+                    </Dropdown>
+                </AuthorizeView>
             </CardBody>
         </Card>
 
-        <EditStoreModal id="@($"edit-store-{store.TUID}")" Store="store" UpdateStores="UpdateStores" StoreId="store.TUID"
-            usersToAdd="@usersToAdd" />
+        <AuthorizeView Policy="Manager">
+            <EditStoreModal id="@($"edit-store-{Store.TUID}")" Store="Store" UpdateStores="UpdateStores"
+                StoreId="Store.TUID" />
 
+            <DeleteStoreModal Store="Store" UpdateStores="UpdateStores" />
+        </AuthorizeView>
+    }
 
-        @* Delete store modal *@
-        <Modal id="@($"delete-store-{store.TUID}")" class="standard">
-            <ModalHeader Title="Confirm Deletion" Variant="danger" />
-            <form @onsubmit="async () => await OnDeleteStoreSubmit(store.TUID)">
-            @code {
-                private string? deleteTextInput;
-                private bool isDisabled => deleteTextInput != "DELETE";
-            }
-            <ModalBody>
-                <h5>Are you SURE you want to delete this Store?</h5>
-                <input type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
-                    @bind-value="deleteTextInput" @bind-value:event="oninput" />
-            </ModalBody>
+    <AuthorizeView Policy="Owner">
+        <AddStoreModal id="create-store" UpdateStores="UpdateStores" />
 
-            <ModalFooter>
-                <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
-                    data-bs-dismiss="modal">
-                    Yes, Delete
-                </Button>
-            </ModalFooter>
-        </form>
-    </Modal>
-
-    @* Add Employee Modal *@
-    <Modal id="@($"add-employee-store-{store.TUID}")" class="standard">
-        <ModalHeader Title="Add Employee" Variant="standard" />
-        <ModalBody>
-            <OptionInput ID="addEmployeeOptionsInput" Class="optionInput" label="Select an employee to add"
-                optionsText="@UserOptionsText" optionsValues="@UserOptionsValues"
-                OnSelectFunction="SetUserThatWillBeAddedToAStore" />
-        </ModalBody>
-
-        <ModalFooter>
-            <Button type="button" Class="Test Button" TextAlignment="center" Variant="primary"
-                OnClickFunction="async () => await AddNewEmployee(store.TUID)">Add User</Button>
-        </ModalFooter>
-    </Modal>
-
-        }
-
-
-    <AddStoreModal id="create-store" UpdateStores="UpdateStores" usersToAdd="@usersToAdd" />
-
-    @* Add Employee Modal for a new store *@
-    <Modal id="add-employee-store--1" class="standard">
-        <ModalHeader Title="Add Employee" Variant="standard" />
-        <ModalBody>
-            <OptionInput ID="addEmployeeOptionsInput" Class="optionInput" label="Select an employee to add"
-                optionsText="@UserOptionsText" optionsValues="@UserOptionsValues" />
-        </ModalBody>
-
-        <ModalFooter>
-            <Button type="button" Class="Test Button" TextAlignment="center" Variant="primary"
-                OnClickFunction="async () => await AddNewEmployee(-1)">Add User</Button>
-        </ModalFooter>
-    </Modal>
-
-
-    <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary" Icon="fa-solid fa-plus"
-        data-bs-toggle="modal" data-bs-target="#create-store" OnClickFunction="OnCreateClick">
-        Add Store
-    </Button>
+        <Button Class="position-fixed bottom-0 end-0 m-3" TextAlignment="center" Variant="primary"
+            Icon="fa-solid fa-plus" data-bs-toggle="modal" data-bs-target="#create-store">
+            Add Store
+        </Button>
+    </AuthorizeView>
 </div>
 
-
-
-
-<script>
-
-    @* helper function to get the value from the Option input component in the 
-        addEmployee modal when trying to add an employee to a store *@
-        function GetEmployeeBeingAddedToStore(targetDiv, strUserValues, dotNet) {
-            @* const employeeOptionInput = document.getElementById(targetDropdownID);
-            const strUserValues = employeeOptionInput.value; *@
-
-                @* split the value of the option on commas (That's how I have them stored at the moment) *@
-            const arrSplitStrUserValues = strUserValues.split(",");
-            @* Get the first and last name *@
-            const strFirstName = arrSplitStrUserValues[1];
-            const strLastName = arrSplitStrUserValues[2];
-            const strName = strFirstName + " " + strLastName;
-            @* get the initials fro the names *@
-            const strInitials = strFirstName.charAt(0) + strLastName.charAt(0);
-            @* create the employee fro the name and initials *@
-                addEmployee(strUserValues[0], strName, strInitials, targetDiv, dotNet)
-        }
-
-
-    function addEmployee(Id, name, initials, targetDiv, dotNet) {
-        //Get the employees div
-        const employeesDiv = document.getElementById(targetDiv);
-
-        //Create the main container div for the user  
-        const circleContainer = document.createElement("div");
-        circleContainer.classList.add("circle-container");
-        circleContainer.classList.add("col-2");
-
-        //Create the circle div
-        const circle = document.createElement("div");
-        circle.classList.add("circle");
-
-        //Add the event for clicking the circle(removing the user)
-        circle.addEventListener("click", function () {
-            dotNet.invokeMethodAsync("OnCircleClicked", Id, targetDiv);
-        });
-
-        //Create the initials span
-        const initialsSpan = document.createElement("span");
-        initialsSpan.classList.add("initials");
-        initialsSpan.textContent = initials;
-
-        //Create the name paragraph
-        const nameParagraph = document.createElement("p");
-        nameParagraph.classList.add("circle-name");
-        nameParagraph.textContent = name;
-
-        //Append initials span to the circle
-        circle.appendChild(initialsSpan);
-        //Append circle and name to the main container
-        circleContainer.appendChild(circle);
-        circleContainer.appendChild(nameParagraph);
-
-        //Append the circle container to the employees div
-        employeesDiv.appendChild(circleContainer);
-    }
-
-    function clearDivExceptById(divId, exceptionId) {
-        const div = document.getElementById(divId);
-
-        @* Lopp through the div children and remove all but the element specified *@
-        for (let i = div.children.length - 1; i >= 0; i--) {
-            if (div.children[i].id !== exceptionId) {
-                div.children[i].remove();
-            }
-        }
-    }
-
-</script>
-
 @code {
-
-    DotNetObjectReference<StoreDashboard>? dotNet;
-    private List<Data.Models.Stores.Store> stores = new List<Data.Models.Stores.Store>();
-    private List<Data.Models.Users.UserDTO> users = new List<Data.Models.Users.UserDTO>();
-
-    private List<string> UserOptionsText { get; set; } = new List<string> { "init" };
-    private List<string> UserOptionsValues { get; set; } = new List<string> { "init" };
-
-    //list to hold the user that might be added to a store
-    private List<Data.Models.Users.UserDTO> usersToAdd = new List<Data.Models.Users.UserDTO>();
-
-    private string strUserValueToAdd = "-1,FNAME,LNAME,EMAIL,ROLE";
-
-
+    private List<Data.Models.Stores.Store> Stores = new List<Data.Models.Stores.Store>();
 
     private async Task UpdateStores()
     {
-        var response = await StoresHttpClient.GetListOfStores();
+        //Get jwt from cookie
+        var token = await Cookie.GetValue("Auth");
 
-        if (response != null)
+        //Get the users claims
+        var userPrincipal = JwtService.GetValidClaims(token);
+
+
+        if (userPrincipal != null)
         {
-            stores = response;
-        }
-    }
+            //Determine if user is an owner
+            var authResult = await AuthorizationService.AuthorizeAsync(userPrincipal, "Owner");
 
-    private async Task UpdateUsers()
-    {
-        var response = await UsersHttpClient.GetAllUsers();
-
-        Console.WriteLine(response);
-
-        if (response != null)
-        {
-            users = response;
-        }
-    }
-
-    private async Task UpdateUsersInCurrentStore(int storeId)
-    {
-        var response = await StoresHttpClient.GetUsersAtStore(storeId);
-
-        if (response != null)
-        {
-            usersToAdd = response;
-
-            foreach (var user in usersToAdd)
+            if (authResult.Succeeded)
             {
-                Console.WriteLine($"Users in store: {user.TUID},{user.FIRST_NAME},{user.LAST_NAME}");
+                //Get a list of all the stores for the owner
+                var response = await StoresHttpClient.GetListOfStores();
+
+                Stores = response ?? new();
+
+            }
+            else
+            {
+
+                var currentUserTUID = ClaimParserService.GetUserId(userPrincipal);
+
+                if (currentUserTUID != null)
+                {
+                    //Get list of stores based off of user TUID
+                    var response = await StoresHttpClient.GetStoreAccessByUserId(currentUserTUID.Value);
+
+                    Stores = response ?? new();
+                }
             }
         }
-        StateHasChanged();
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        dotNet = DotNetObjectReference.Create(this);
-        await UpdateStores();
-        await UpdateUsers();
-    }
-
-    private async Task OnEditClick(Data.Models.Stores.Store store)
-    {
-        await Task.Run(() => Console.WriteLine("Edit store"));
-        await UpdateStores();
-
-        usersToAdd.Clear();
-
-        await UpdateUsersInCurrentStore(store.TUID);
-
-        await JS.InvokeVoidAsync("clearDivExceptById", $"add-employee-div-store-{store.TUID}", "storeEmployeesDiv");
-
-        foreach (var user in usersToAdd)
+        //Get instance information for the dashboard
+        if (firstRender)
         {
-            string userValues = $"{user.TUID},{user.FIRST_NAME},{user.LAST_NAME},{user.EMAIL},{user.ROLE}";
-            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", $"add-employee-div-store-{store.TUID}", userValues, dotNet);
-        }
-
-        UpdateUserOptions();
-        StateHasChanged();
-
-    }
-
-    private void OnCreateClick()
-    {
-        usersToAdd.Clear();
-        UpdateUserOptions();
-        StateHasChanged();
-    }
-
-    private async Task OnDeleteStoreSubmit(int storeId)
-    {
-        await StoresHttpClient.DeleteStore(storeId);
-        await UpdateStores();
-        StateHasChanged();
-    }
-
-
-
-    private void UpdateUserOptions()
-    {
-        UserOptionsText.Clear();
-        UserOptionsValues.Clear();
-
-        foreach (var user in users)
-        {
-            bool isInUsersToAdd = usersToAdd.Any(u => u.TUID == user.TUID);
-
-            //if user is not associated with the store, add them to the dropdown text and values
-            if (!isInUsersToAdd)
-            {
-                UserOptionsText.Add(user.FIRST_NAME + " " + user.LAST_NAME);
-                UserOptionsValues.Add($"{user.TUID},{user.FIRST_NAME},{user.LAST_NAME},{user.EMAIL},{user.ROLE}");
-            }
-        }
-
-        if (UserOptionsValues.Count > 0)
-        {
-            SetUserThatWillBeAddedToAStore(UserOptionsValues[0]);
-        }
-        else
-        {
-            UserOptionsText.Add("No Available Users");
-            UserOptionsValues.Add("-1,NoUserToAdd");
-            SetUserThatWillBeAddedToAStore(UserOptionsValues[0]);
-        }
-        StateHasChanged();
-    }
-
-    //function that sets the user (strUserValueToAdd variable) that will be added to the store
-    private void SetUserThatWillBeAddedToAStore(string selectedOption)
-    {
-        strUserValueToAdd = selectedOption;
-    }
-
-
-    //function for adding a new employee when editing a store
-    private async Task AddNewEmployee(int StoreId)
-    {
-        //get the user being added to the store values
-        string[] arrSplitUserValues = strUserValueToAdd.Split(",");
-
-        //only add the user if they aren't the placeholder
-        if (!arrSplitUserValues[0].Equals("-1"))
-        {
-            //add the user to the employee section of the modal
-            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", $"add-employee-div-store-{StoreId}", strUserValueToAdd,
-            dotNet);
-            //add the user to list of users that will potentially be added
-            usersToAdd.RemoveAll(u => u.TUID == int.Parse(arrSplitUserValues[0]));
-            usersToAdd.Add(new Data.Models.Users.UserDTO
-            {
-                TUID = int.Parse(arrSplitUserValues[0]),
-                FIRST_NAME = arrSplitUserValues[1],
-                LAST_NAME = arrSplitUserValues[2],
-                EMAIL = arrSplitUserValues[3],
-                ROLE = arrSplitUserValues[4]
-            });
-
+            await UpdateStores();
             StateHasChanged();
         }
-        //update the user dropdown list to only show users that aren't associated with the store
-        UpdateUserOptions();
+
     }
 
-
-    [JSInvokable]
-    public async Task OnCircleClicked(string Id, string targetDiv)
+    private async Task OnEditClick(Data.Models.Stores.Store Store)
     {
-        //user ID of the user to be removed
-        int ID = int.Parse(Id);
+        await UpdateStores();
 
-        //find the user to remove from the usersToAddlist
-        var userToRemove = usersToAdd.Find(user => user.TUID == ID);
-        if (userToRemove != null)
-        {
-            usersToAdd.Remove(userToRemove);
-        }
-
-        await JS.InvokeVoidAsync("clearDivExceptById", targetDiv, "storeEmployeesDiv");
-        foreach (var user in usersToAdd)
-        {
-            string userValues = $"{user.TUID},{user.FIRST_NAME},{user.LAST_NAME},{user.EMAIL},{user.ROLE}";
-            await JS.InvokeVoidAsync("GetEmployeeBeingAddedToStore", targetDiv, $"{userValues}", dotNet);
-        }
-
-        UpdateUserOptions();
         StateHasChanged();
-
     }
-
 }
