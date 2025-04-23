@@ -18,7 +18,6 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace Plot.Data.Models.Users;
-
 public record UpdateAccessListRequest
 {
     [Required]

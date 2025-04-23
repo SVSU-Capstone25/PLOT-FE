@@ -1,4 +1,7 @@
 @inject StoresHttpClient StoresHttpClient
+@inject ToastService ToastService
+
+@using Plot.Services
 
 <Modal id="@($"delete-store-{Store.TUID}")" class="standard">
     <ModalHeader Title="Confirm Deletion" Variant="danger" />
@@ -10,7 +13,7 @@
         <ModalBody>
             <h5>Are you SURE you want to delete this Store?</h5>
             <input type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
-                @bind-value="deleteTextInput" @bind-value:event="oninput" />
+                @bind-value="deleteTextInput" @bind-value:event="oninput" class="form-control w-100" />
         </ModalBody>
 
         <ModalFooter>
@@ -28,7 +31,13 @@
 
     private async Task OnDeleteStoreSubmit(int storeId)
     {
-        await StoresHttpClient.DeleteStore(storeId);
+        var response = await StoresHttpClient.DeleteStore(storeId);
+
+        if (response == System.Net.HttpStatusCode.OK)
+        {
+            ToastService.ShowSuccess("The store has been deleted!");
+        }
+
         await UpdateStores.InvokeAsync();
         StateHasChanged();
     }

@@ -1,8 +1,11 @@
 @inject StoresHttpClient StoresHttpClient
-@inject IJSRuntime JS
+@inject IJSRuntime JSRuntime
+@inject ToastService ToastService
 
+@using Plot.Services
 @using Plot.Components.PartialComponents.NumericInput
 @using Plot.Components.PartialComponents.SlideOut
+@using Microsoft.AspNetCore.Components.Authorization
 
 <SlideOutHeader>
     <h3 class="header" @onclick="ToggleBuildingWalls">
@@ -12,46 +15,47 @@
 </SlideOutHeader>
 
 <SlideOutBody>
-    <EditForm Model="UpdateSizeStoreModel" class="walls-container flex-grow-1 d-flex flex-column gap-2"
-        OnValidSubmit="OnUpdateSizeStoreSubmit">
-        <label>
-            Dimensions
-            <div class="d-flex flex-row gap-2 align-items-center">
-                <div class="input-group">
-                    <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.LENGTH" min="1" />
-                    <span class="input-group-text">ft</span>
+    <AuthorizeView Policy="Manager">
+        <EditForm Context="form_context" Model="UpdateSizeStoreModel"
+            class="walls-container flex-grow-1 d-flex flex-column gap-2" OnValidSubmit="OnUpdateSizeStoreSubmit">
+            <label>
+                Dimensions
+                <div class="d-flex flex-row gap-2 align-items-center">
+                    <div class="input-group">
+                        <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.LENGTH" min="1" />
+                        <span class="input-group-text">ft</span>
+                    </div>
+                    <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="Swap Dimensions" @onclick="OnSwapDimensionsClick">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                    <div class="input-group">
+                        <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.WIDTH" min="1" />
+                        <span class="input-group-text">ft</span>
+                    </div>
                 </div>
-                <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Swap Dimensions" @onclick="OnSwapDimensionsClick">
-                    <i class="fa fa-times" aria-hidden="true"></i>
-                </button>
-                <div class="input-group">
-                    <InputNumber class="form-control" @bind-value="UpdateSizeStoreModel!.WIDTH" min="1" />
-                    <span class="input-group-text">ft</span>
-                </div>
+                <div class="form-text">Enter the Dimensions (length and width) in feet</div>
+            </label>
+
+            @* Tristan Calay 4/2/25 - Added new employee area controls *@
+
+            <div class="d-flex flex-column gap-2">
+                <Button type="submit" Variant="primary" Icon="fa-solid fa-check" TextAlignment="center">
+                    Apply
+                </Button>
+
+                <Button Variant="primary" Icon="fa-solid fa-brush" TextAlignment="center" type="button"
+                    @onclick="async () => await OnEmployeeAreaPaint()">
+                    Toggle Paint Employee Area
+                </Button>
+
+                <Button Variant="primary" Icon="fa-solid fa-eraser" TextAlignment="center" type="button"
+                    @onclick="async () => await OnEmployeeAreaErase()">
+                    Toggle Erase Employee Area
+                </Button>
             </div>
-            <div class="form-text">Enter the Dimensions (length and width) in feet</div>
-        </label>
-
-        @* Tristan Calay 4/2/25 - Added new employee area controls *@
-
-        <div style="display: flex; flex-direction: column; row-gap: 16px;">
-            <Button type="submit" Class="button-green" Variant="primary" Icon="fa-solid fa-check"
-                TextAlignment="center">
-                Apply
-            </Button>
-
-            <Button Class="button-green" Icon="fa-solid fa-brush" TextAlignment="center" @onclick="OnEmployeeAreaPaint">
-                Toggle Paint Employee Area
-            </Button>
-
-            <Button Class="button-green" Icon="fa-solid fa-eraser" TextAlignment="center"
-                @onclick="OnEmployeeAreaErase">
-                Toggle Erase Employee Area
-            </Button>
-        </div>
-    </EditForm>
-
+        </EditForm>
+    </AuthorizeView>
 </SlideOutBody>
 
 @code {
@@ -85,29 +89,35 @@
 
     private async Task OnUpdateSizeStoreSubmit()
     {
-        if (UpdateSizeStoreModel != null)
+        if (UpdateSizeStoreModel == null)
         {
-
-            await Task.Run(() => Console.WriteLine(UpdateSizeStoreModel));
-
-            var response = await StoresHttpClient.UpdateStoreSize(StoreId, UpdateSizeStoreModel);
-
-            Console.WriteLine(response);
-
-            if (response == System.Net.HttpStatusCode.OK)
-            {
-                await UpdateStore.InvokeAsync();
-            }
+            ToastService.ShowError("There was an error updating the building size!");
+            return;
         }
+
+        var response = await StoresHttpClient.UpdateStoreSize(StoreId, UpdateSizeStoreModel);
+
+        if (response != System.Net.HttpStatusCode.OK)
+        {
+            ToastService.ShowError("There was an error updating the building size!");
+        }
+        else
+        {
+            await UpdateStore.InvokeAsync();
+            ToastService.ShowSuccess("The building size has been updated.");
+        }
+
     }
 
     private async Task OnEmployeeAreaPaint()
     {
-        await JS.InvokeVoidAsync("window.setEmployeeAreaPaint");
+        await Task.Run(() => ToastService.ShowInfo("Employee area painting has been toggled."));
+        await JSRuntime.InvokeVoidAsync("window.setEmployeeAreaPaint");
     }
 
     private async Task OnEmployeeAreaErase()
     {
-        await JS.InvokeVoidAsync("window.setEmployeeAreaErase");
+        await Task.Run(() => ToastService.ShowInfo("Employee area erasing has been toggled."));
+        await JSRuntime.InvokeVoidAsync("window.setEmployeeAreaErase");
     }
 }

@@ -1,9 +1,14 @@
 @inject IJSRuntime JS
 @inject FixturesHttpClient FixturesHttpClient
+@inject ToastService ToastService
+
+@using Plot.Services
 
 @* Add Fixture Modal *@
 
-<Modal class="modal-xl fixture-modal" id="add-fixture" OnCancelClick="">
+@* TODO: Generalize this and make a body to share between both the add and edit fixture modals *@
+
+<Modal class="modal-xl" id="add-fixture" OnCancelClick="">
     <ModalHeader Title="Add Fixture" />
     <EditForm Model="AddFixtureModel" OnValidSubmit="OnAddFixtureSubmit">
         <ModalBody>
@@ -68,13 +73,22 @@
 
     public async Task OnAddFixtureSubmit()
     {
-        await Task.Run(() => Console.WriteLine("Add Fixture"));
-
-        if (AddFixtureModel != null)
+        if (AddFixtureModel == null)
         {
-            var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
+            ToastService.ShowError("There was an error adding the fixture!");
+            return;
+        }
 
+        var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
+
+        if (response != System.Net.HttpStatusCode.OK)
+        {
+            ToastService.ShowError("There was an error adding the fixture!");
+        }
+        else
+        {
             await UpdateFixtureModels.InvokeAsync();
+            ToastService.ShowSuccess("The fixture was created.");
         }
 
         ClearAddFixtureModel();

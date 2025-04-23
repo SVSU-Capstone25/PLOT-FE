@@ -11,11 +11,6 @@ and allocate floorsets for Platos Closet.
 Author: Josh Rodack (2/10/2025) */
 
 /* For the original button <button></button> component*/
-.btn-primary {
-    background-color: var(--platos-blue) !important;
-    border: none;
-
-}
 
 /* Andrew  Miller - (3/22/2025) */
 

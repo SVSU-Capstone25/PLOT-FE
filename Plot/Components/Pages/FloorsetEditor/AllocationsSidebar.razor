@@ -68,7 +68,7 @@ Author: Tristan Calay (3/15/2025)-->
                             allocationFulfillment.SUBCATEGORY.ToLower().Contains(CategorySearch)))
                 {
                     <li class="list-group-item"
-                        @onclick="() => OnCategoryClick(allocationFulfillment.SUPERCATEGORY_COLOR, allocationFulfillment.SUPERCATEGORY_TUID)">
+                        @onclick="() => OnCategoryClick(allocationFulfillment.SUPERCATEGORY_COLOR, allocationFulfillment.SUPERCATEGORY_TUID, allocationFulfillment.SUBCATEGORY)">
                         <ProgressBar>
                             <ProgressBarHeader class="fs-6">@allocationFulfillment.SUBCATEGORY
                             </ProgressBarHeader>
@@ -128,11 +128,11 @@ allocationFulfillment
         CategorySearch = e.Value as String ?? "";
     }
 
-    private async void OnCategoryClick(string color, int superCategoryTuid)
+    private async void OnCategoryClick(string color, int superCategoryTuid, string subcategory)
     {
         Console.WriteLine("Category Onclick " + color);
 
-        await JS.InvokeVoidAsync("window.setPaint", color, superCategoryTuid);
+        await JS.InvokeVoidAsync("window.setPaint", color, superCategoryTuid, subcategory);
     }
 
     private void OnSortAscendingClick()

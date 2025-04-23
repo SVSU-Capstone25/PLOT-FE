@@ -1,15 +1,26 @@
 @inject AuthHttpClient AuthHttpClient
+@inject StoresHttpClient StoresHttpClient
+@inject UsersHttpClient UsersHttpClient
+@inject IJSRuntime JS
+@inject ToastService ToastService
 
+@using Plot.Services
+@using Microsoft.JSInterop
 
 <Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" @attributes="Attributes">
     <ModalHeader Title="Add User" />
-    <EditForm Model="AddUserModel" OnValidSubmit="OnAddUserSubmit">
+
+    <EditForm Model="AddUserModel" OnValidSubmit="() => OnAddUserSubmit()">
+
         <DataAnnotationsValidator />
 
-        <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" />
-
-        <ModalFooter OnCancelClick="ClearAddUserModel">
-            <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
+        <AddUpdateUserModalBody AddUpdateUserModel="AddUserModel" AssignedStores="AddUserStores"
+            UnassignedStores="NotAddUserStores" SignalParentAssignedStoresChanged="HandleUserStoresChange"
+            SignalParentUnassignedStoresChanged="HandleNotUserStoresChange" OnInit="HandleBodyInit"
+            DisableSubmitInParent="DisableSubmitFromChild" @ref="modalBodyRef" />
+        <ModalFooter OnCancelClick="ClearAddUserModal">
+            <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal"
+                disabled="@IsSubmitDisabled">
                 Submit
             </Button>
         </ModalFooter>
@@ -17,49 +28,154 @@
 
 </Modal>
 
+<script>
+
+    window.getModalInstance = function (selector) {
+        return window.bootstrap.Modal.getOrCreateInstance(document.querySelector(selector));
+    };
+</script>
+
 @code {
-    [Parameter] public required EventCallback UpdateUsers { get; set; }
-    [Parameter] public required EventCallback<bool> AddingUser { get; set; }
+
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+
     [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? AddUserModel { get; set; }
+
+    [Parameter] public required Data.Models.Users.UserDTO? User { get; set; }
+
+    [Parameter] public required EventCallback UpdateUsers { get; set; }
+
+    // Show or hide Loading Message Modal
+    [Parameter] public EventCallback<string> ShowLoadingModal { get; set; }
+
+    [Parameter] public EventCallback<string> HideLoadingModal { get; set; }
+
+    private const int NEW_USER = 0; // Indicates new user when initializing stores
+
+    private bool modalBodyInit = false; // AddUpateUserModalBody initialized flag
+
+    private bool IsSubmitDisabled = false; // Disable submit button
+
+    public AddUpdateUserModalBody? modalBodyRef; // Ref for AddUpdateUserModalBody
+
+    // AddUserStores and NotAddUserStores
+    public List<Data.Models.Stores.Store> AddUserStores = new();
+
+    public List<Data.Models.Stores.Store> NotAddUserStores = new();
+
+    // Model for getting user from email
+    public Data.Models.Users.UserDTO? UserFromEmail { get; set; }
 
     protected override void OnInitialized()
     {
-        AddUserModel ??= new()
+        AddUserModel ??= new() // Iniitalize AddUserModel with Role of "Owner"
         {
             ROLE_NAME = "Owner"
         };
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!modalBodyInit)
+        {
+            if (modalBodyRef != null)
+            {
+                await modalBodyRef!.InitUserStores(NEW_USER);
+                modalBodyInit = true;
+            }
+        }
+    }
+
+    public void HandleBodyInit()
+    {
+        // When modal body is initiated, the AddUpdateUserModalBody.razor
+        // file calls this
+        if (modalBodyRef != null)
+        {
+            modalBodyRef?.StateHasChangedFromParent();
+        }
+
+        StateHasChanged();
     }
 
     private async Task OnAddUserSubmit()
     {
-        if (AddUserModel != null)
+        // When Submit is clicked in this modal:
+
+        // Put up Loading modal
+        await ShowLoadingModal.InvokeAsync();
+
+        // Create user registration model
+        Data.Models.Auth.Registration.UserRegistration registration = new Data.Models.Auth.Registration.UserRegistration
         {
-            Data.Models.Auth.Registration.UserRegistration UserRegistration = new Data.Models.Auth.Registration.UserRegistration
+            EMAIL = AddUserModel!.EMAIL,
+            FIRST_NAME = AddUserModel!.FIRST_NAME,
+            LAST_NAME = AddUserModel!.LAST_NAME,
+            ROLE_NAME = AddUserModel!.ROLE_NAME
+        };
+
+        // Register the user
+        await AuthHttpClient.Register(registration);
+
+        // Get user from email
+        Data.Models.Users.UserDTO? UserFromEmail;
+
+        if (registration.EMAIL != null)
+        {
+            UserFromEmail = await UsersHttpClient.GetUserByEmail(registration.EMAIL);
+
+            // Update user access in database
+            if (UserFromEmail != null)
             {
-                EMAIL = AddUserModel.EMAIL,
-                FIRST_NAME = AddUserModel.FIRST_NAME,
-                LAST_NAME = AddUserModel.LAST_NAME,
-                ROLE_NAME = AddUserModel.ROLE_NAME
-            };
-
-            @* Set a loader to run while a user is added *@
-            await AddingUser.InvokeAsync(true);
-            await AuthHttpClient.Register(UserRegistration);
-            await AddingUser.InvokeAsync(false);
-
-
-            await UpdateUsers.InvokeAsync();
+                await UsersHttpClient.UpdateAccessList(
+                new Data.Models.Users.UpdateAccessListRequest
+                {
+                    USER_TUID = UserFromEmail!.TUID,
+                    STORE_TUIDS = AddUserStores.Select(store => store.TUID)
+                });
+            }
         }
 
-        ClearAddUserModel();
+        // Clear Modal
+        await ClearAddUserModal();
+
+        // Hide loading modal
+        await HideLoadingModal.InvokeAsync();
+
+        // Update user dashboard
+        await UpdateUsers.InvokeAsync();
     }
 
-    private void ClearAddUserModel()
+    public async Task ClearAddUserModal()
     {
+        // Clear add user modal
+
+        // New Add User model
         AddUserModel = new()
         {
             ROLE_NAME = "Owner"
         };
+
+        // Reinitialize user stores
+        await modalBodyRef!.InitUserStores(NEW_USER);
+    }
+
+    public void HandleUserStoresChange(List<Data.Models.Stores.Store> NewAddUserStores)
+    {
+        AddUserStores = NewAddUserStores;
+    }
+
+    public void HandleNotUserStoresChange(List<Data.Models.Stores.Store> NewNotAddUserStores)
+    {
+        NotAddUserStores = NewNotAddUserStores;
+    }
+
+    public void DisableSubmitFromChild(bool isDisabled)
+    {
+        // Disable submit button from child
+        // This disables the submit button temporarily
+        // while stores are moved between select boxes
+        IsSubmitDisabled = isDisabled;
     }
 }

@@ -21,6 +21,8 @@ No author was given.
 Andrew Kenendy (4/17/2025)
 Added a loader popup when a user is added.
 
+Andrew Miller (4/22/2025) - Store access - Loader placed into modal
+
 */
 
 *@
@@ -35,6 +37,7 @@ Added a loader popup when a user is added.
 @using System.Collections.Generic;
 @using System.Net.Mail;
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @attribute [Authorize]
 
 <div class="d-flex flex-column align-content-between user-dashboard">
@@ -57,7 +60,7 @@ Added a loader popup when a user is added.
             </thead>
             <tbody>
                 @* A row for each user in the list of users *@
-                @foreach (var user in users)
+                @foreach (var user in users.Skip(1).ToList())
                 {
                     <tr>
                         @* Name *@
@@ -67,8 +70,9 @@ Added a loader popup when a user is added.
 
                         @* User Id *@
                         <td class="border border-light border-2">
-                            @user.TUID
+                            @DisplayTUID(user.TUID)
                         </td>
+
 
                         @* Role and Dropdown menu for editing or deleting the user *@
                         <td class="border border-light border-2">
@@ -76,54 +80,53 @@ Added a loader popup when a user is added.
                                 @* Role of User*@
                                 <span class="flex-grow-1 align-self-center">@user.ROLE</span>
 
-                                @* Role Options Dropdown menu with id  dynamically reflecting the id of the user Provides Edit and Delete options which open Edit User and Delete User Modals *@
+                                <AuthorizeView Policy="Manager">
+                                    @* Role Options Dropdown menu with id  dynamically reflecting the id of the user Provides Edit and Delete options which open Edit User and Delete User Modals *@
 
-                                <Dropdown id="@($"Dropdown-{user.TUID}")" LabelText="Role">
-                                    <DropdownLink Icon="fa-solid fa-pen-to-square" data-bs-toggle="modal"
-                                        data-bs-target="@($"#update-user-modal-{user.TUID}")">Edit</DropdownLink>
-                                    <DropdownLink Icon="fa-regular fa-trash-can" data-bs-toggle="modal"
-                                        data-bs-target="@($"#delete-user-modal-{user.TUID}")">
-                                        Delete
-                                    </DropdownLink>
-                                </Dropdown>
+                                    <Dropdown id="@($"Dropdown-{user.TUID}")" LabelText="Role">
+                                        <DropdownLink Icon="fa-solid fa-pen-to-square" data-bs-toggle="modal"
+                                            data-bs-target="@($"#update-user-modal-{user.TUID}")">Edit</DropdownLink>
+                                        <DropdownLink Icon="fa-regular fa-trash-can" data-bs-toggle="modal"
+                                            data-bs-target="@($"#delete-user-modal-{user.TUID}")">
+                                            Delete
+                                        </DropdownLink>
+                                    </Dropdown>
+                                </AuthorizeView>
                             </div>
                         </td>
-
-                        <UpdateUserModal id="@($"update-user-modal-{user.TUID}")" User="user" UpdateUsers="UpdateUsers" />
-                        <DeleteUserModal id="@($"delete-user-modal-{user.TUID}")" userTuid="user.TUID"
-                            UpdateUsers="UpdateUsers" />
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
-    <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" AddingUser="ToggleLoader" />
+    @foreach (var user in users.Skip(1).ToList())
+    {
+        <AuthorizeView Policy="Manager">
+            <UpdateUserModal id="@($"update-user-modal-{user.TUID}")" User="user" UpdateUsers="UpdateUsers" />
+            <DeleteUserModal id="@($"delete-user-modal-{user.TUID}")" userTuid="user.TUID" UpdateUsers="UpdateUsers" />
+        </AuthorizeView>
+    }
 
-    <div class="add-btn-container">
-        <Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary"
-            data-bs-toggle="modal" data-bs-target="@($"#add-user-modal")" TextAlignment="center">
-            Add User
-        </Button>
-    </div>
+    <LoadMessageModal id="load-message" @ref="LoadMessageModal" />
+
+    <AuthorizeView Policy="Manager">
+        <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" AddingUser="ToggleLoader"
+            ShowLoadingModal="ShowLoadingModal" HideLoadingModal="HideLoadingModal" />
+
+        <div class="add-btn-container">
+            <Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary"
+                data-bs-toggle="modal" data-bs-target="@($"#add-user-modal")" TextAlignment="center">
+                Add User
+            </Button>
+        </div>
+    </AuthorizeView>
 </div>
 
-@* If adding a user, show the loader *@
-@if (isAddingUser)
-{
-    <div class="w-100 h-100 d-flex justify-content-center align-items-center top-0 start-0 position-fixed"
-        style="background-color: rgba(0,0,0,.5);">
-        <Loader class="p-5 rounded shadow-lg d-flex flex-column align-items-center" style="background-color: white;">
-            Adding User...
-        </Loader>
-    </div>
-
-}
-
-
 @code {
+    private LoadMessageModal? LoadMessageModal;
+
     private List<Data.Models.Users.UserDTO> users = new List<Data.Models.Users.UserDTO>();
-    private bool isAddingUser = false;
 
     private async Task UpdateUsers()
     {
@@ -135,15 +138,24 @@ Added a loader popup when a user is added.
         }
     }
 
-    @* This method sets the boolean to toggle the add user loader. *@
-    private void ToggleLoader(bool isAdding)
-    {
-        isAddingUser = isAdding;
-    }
-
-
     protected override async Task OnInitializedAsync()
     {
         await UpdateUsers();
     }
+
+    public string DisplayTUID(int Id)
+    {
+        return '#' + Id.ToString().PadLeft(10, '0');
+    }
+
+    public async Task ShowLoadingModal()
+    {
+        await LoadMessageModal!.ShowModal();
+    }
+
+    public async Task HideLoadingModal()
+    {
+        await LoadMessageModal!.HideModal();
+    }
+
 }
