@@ -196,16 +196,22 @@ Author: Andrew Fulton (3/13/2025)  *@
         // Create new floorset and return tuid
         int NewFloorsetTUID = await FloorsetsHttpClient.CreateFloorset(createFloorset);
 
-        Data.Models.Fixtures.Fixtures_State FixtureOnFloorsetState = new();
+        //Data.Models.Fixtures.Fixtures_State FixtureOnFloorsetState = new();
 
         // Get Fixtures on old Floorset
         List<Data.Models.Fixtures.FixtureInstance>? FixturesOnFloorset = await FixturesHttpClient.GetFloorsetFixtureInformation(Floorset!.TUID);
 
         // Put list of fixtures in state
-        FixtureOnFloorsetState.CurrentFixtures = FixturesOnFloorset!;
+        //FixtureOnFloorsetState.CurrentFixtures = FixturesOnFloorset!;
 
         // Update information
         await FixturesHttpClient.UpdateFixtureInformation(NewFloorsetTUID, FixtureOnFloorsetState);
+
+        foreach(var FixtureInstance in FixturesOnFloorset)
+        {
+            FixtureInstance.TUID = NewFloorsetTUID;
+            await FixturesHttpClient.UpdateFixtureInstance(FixtureInstance);
+        }
 
         await UpdateFloorsets();
     }
