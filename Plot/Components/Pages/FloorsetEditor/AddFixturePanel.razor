@@ -3,6 +3,7 @@
 
 @using Plot.Components.PartialComponents.SlideOut
 @using Microsoft.AspNetCore.Components.Authorization
+@using Plot.Data.Models.Fixtures
 
 <SlideOutHeader>
     <h3 class="header " @onclick="ToggleAddFixture">
@@ -25,7 +26,7 @@
             </div>
             <div class="align-items-center mt-3 d-flex">
                 <Button class="btn btn-large w-100" Variant="primary" data-bs-toggle="modal"
-                    data-bs-target="#add-fixture">
+                    data-bs-target="#create-fixture">
                     <i class="fa-solid fa-plus" style="margin-right: .5rem;"></i>
                     Add Fixture
                 </Button>
@@ -36,7 +37,7 @@
         @* Fixture Area *@
         <div class="p-3 mt-3 d-flex flex-column gap-4 mb-2 h-100">
             @* Create fixture tile for each fixture in dictionary *@
-            @foreach (Data.Models.Fixtures.FixtureModel fixtureModel in FixtureModels)
+            @foreach (var fixtureModel in FixtureModels)
             {
                 @if (FixtureSearch != "" && fixtureModel.NAME != null)
                 {
@@ -147,7 +148,7 @@
     @*
     The OnEditClick function is called when the user clicks the edit button on a fixture.
     *@
-    private async Task OnEditClick(Data.Models.Fixtures.FixtureModel currFixture)
+    private async Task OnEditClick(FixtureModel currFixture)
     {
 
         await Task.Run(() => Console.WriteLine(currFixture.NAME));

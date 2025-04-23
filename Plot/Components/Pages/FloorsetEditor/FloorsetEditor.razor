@@ -38,6 +38,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Plot.Data.Models.Users
 @using Plot.Data.Models.Floorsets
+@using Plot.Data.Models.Fixtures
 @using Microsoft.AspNetCore.Components.Authorization
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -135,15 +136,15 @@
     <PrintModal @ref="printModal" FloorsetId="FloorsetId"/>
 }
 
-<AddFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
+<AddFixtureModal id="create-fixture" StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
 <HelpModal />
 
 @* TODO: Add delete fixture modal *@
-@foreach (Data.Models.Fixtures.FixtureModel FixtureModel in FixtureModels)
+@foreach (var FixtureModel in FixtureModels)
 {
-    <EditFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels"
-        id="@($"edit-fixture-{FixtureModel.TUID}")" FixtureModel="FixtureModel" />
+    <EditFixtureModal id="@($"edit-fixture-{FixtureModel.TUID}")" StoreId="StoreId"
+        UpdateFixtureModels="UpdateFixtureModels" Fixture="FixtureModel" FixtureId="FixtureModel.TUID" />
 }
 
 
