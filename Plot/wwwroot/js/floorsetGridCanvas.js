@@ -190,7 +190,7 @@ function sketch(p5) {
   p5.setup = () => {
     const canvas = p5.createCanvas(p5.windowWidth, p5.windowHeight);
 
-    p5.frameRate(30);
+    p5.frameRate(15);
 
     canvas.elt.addEventListener("wheel", onZoomScroll);
 
@@ -469,6 +469,7 @@ window.setPlace = () => {
 };
 
 window.setEmployeeAreaPaint = () => {
+  console.log("hello");
   window.grid.state = "employee_area_paint";
 };
 

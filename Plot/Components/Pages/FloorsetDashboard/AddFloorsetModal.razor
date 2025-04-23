@@ -1,4 +1,7 @@
 @inject FloorsetsHttpClient FloorsetsHttpClient
+@inject ToastService ToastService
+
+@using Plot.Services
 
 @* + Siona Beaudoin, 4/3/2025, edit the title of floorsets*@
 <Modal id="create-floorset" class="standard">
@@ -33,26 +36,33 @@
     //Siona Beaudoin - 4/3/2025
     private async Task OnCreateFloorsetSubmit()
     {
-        if (CreateFloorsetModel != null)
+        if (CreateFloorsetModel == null)
         {
-            var Floorset = new Data.Models.Floorsets.CreateFloorset()
-            {
-                NAME = CreateFloorsetModel.NAME,
-                CREATED_BY = -1,
-                DATE_CREATED = DateTime.Now,
-                DATE_MODIFIED = DateTime.Now,
-                MODIFIED_BY = -1,
-                STORE_TUID = StoreId,
-                FLOORSET_IMAGE = new byte[] { 0x0 }
-            };
-
-            await FloorsetsHttpClient.CreateFloorset(Floorset);
-
-            await UpdateFloorsets.InvokeAsync();
-
-            ClearCreateFloorsetModel();
+            ToastService.ShowError("There was an error adding a floorset!");
+            return;
         }
+
+        var Floorset = new Data.Models.Floorsets.CreateFloorset()
+        {
+            NAME = CreateFloorsetModel.NAME,
+            CREATED_BY = -1,
+            DATE_CREATED = DateTime.Now,
+            DATE_MODIFIED = DateTime.Now,
+            MODIFIED_BY = -1,
+            STORE_TUID = StoreId,
+            FLOORSET_IMAGE = new byte[] { 0x0 }
+        };
+
+        @* TODO: Check response when reworking and show error toast *@
+        await FloorsetsHttpClient.CreateFloorset(Floorset);
+
+        ToastService.ShowSuccess("The floorset was created.");
+
+        await UpdateFloorsets.InvokeAsync();
+
+        ClearCreateFloorsetModel();
     }
+
 
     private void ClearCreateFloorsetModel()
     {

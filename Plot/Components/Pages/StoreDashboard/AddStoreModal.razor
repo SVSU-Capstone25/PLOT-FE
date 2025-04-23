@@ -1,5 +1,8 @@
 @inject StoresHttpClient StoresHttpClient
 @inject UsersHttpClient UsersHttpClient
+@inject ToastService ToastService
+
+@using Plot.Services
 
 <Modal @attributes="Attributes" SizeClass="modal-lg">
     <ModalHeader Title="Create Store" />
@@ -77,26 +80,37 @@
 
     private async Task OnAddStoreSubmit()
     {
-        if (AddStoreModel != null)
+        if (AddStoreModel == null)
         {
-
-            var Store = new Data.Models.Stores.CreateStore()
-            {
-                NAME = AddStoreModel.NAME!,
-                ADDRESS = AddStoreModel.ADDRESS!,
-                BLUEPRINT_IMAGE = AddStoreModel.BLUEPRINT_IMAGE,
-                CITY = AddStoreModel.CITY!,
-                LENGTH = AddStoreModel.LENGTH,
-                WIDTH = AddStoreModel.WIDTH,
-                STATE = AddStoreModel.STATE!,
-                ZIP = AddStoreModel.ZIP!,
-                USER_TUIDS = AddStoreModel.USER_TUIDS!
-            };
-
-            var response = await StoresHttpClient.CreateStore(Store);
-
-            await UpdateStores.InvokeAsync();
+            ToastService.ShowError("There was an error adding a store!");
+            return;
         }
+
+        var Store = new Data.Models.Stores.CreateStore()
+        {
+            NAME = AddStoreModel.NAME!,
+            ADDRESS = AddStoreModel.ADDRESS!,
+            BLUEPRINT_IMAGE = AddStoreModel.BLUEPRINT_IMAGE,
+            CITY = AddStoreModel.CITY!,
+            LENGTH = AddStoreModel.LENGTH,
+            WIDTH = AddStoreModel.WIDTH,
+            STATE = AddStoreModel.STATE!,
+            ZIP = AddStoreModel.ZIP!,
+            USER_TUIDS = AddStoreModel.USER_TUIDS ?? ""
+        };
+
+        var response = await StoresHttpClient.CreateStore(Store);
+
+        if (response != System.Net.HttpStatusCode.OK)
+        {
+            ToastService.ShowError("There was an error adding a store!");
+        }
+        else
+        {
+            await UpdateStores.InvokeAsync();
+            ToastService.ShowSuccess("The store was created.");
+        }
+
     }
 
     private void ClearAddStoreModel()

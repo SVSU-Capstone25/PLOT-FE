@@ -1,4 +1,7 @@
 @inject FloorsetsHttpClient FloorsetsHttpClient
+@inject ToastService ToastService
+
+@using Plot.Services
 
 @* + Siona Beaudoin, 4/3/2025, edit the title of floorsets*@
 <Modal id="@($"edit-floorset-{Floorset.TUID}")" class="standard">
@@ -43,17 +46,26 @@
     //Siona Beaudoin - 4/3/2025
     private async Task OnEditFloorsetSubmit()
     {
-        if (EditFloorsetModel != null)
+        if (EditFloorsetModel == null)
         {
-            var response = await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId, EditFloorsetModel);
-
-            if (response == System.Net.HttpStatusCode.OK)
-            {
-                await UpdateFloorsets.InvokeAsync();
-            }
-
-            ClearEditFloorsetModel();
+            ToastService.ShowError("There was an error editing the floorset!");
+            return;
         }
+
+        var response = await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId, EditFloorsetModel);
+
+        if (response != System.Net.HttpStatusCode.OK)
+        {
+            ToastService.ShowError("There was an error editing the floorset!");
+        }
+        else
+        {
+            await UpdateFloorsets.InvokeAsync();
+            ToastService.ShowSuccess("Your edits have been saved!");
+        }
+
+        ClearEditFloorsetModel();
+
     }
 
     private void ClearEditFloorsetModel()

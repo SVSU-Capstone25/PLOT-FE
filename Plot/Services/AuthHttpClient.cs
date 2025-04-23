@@ -12,26 +12,27 @@ public class AuthHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(email);
 
-        return await SendPostAsync<HttpStatusCode>("/reset-password-request", body);
+        var (status, response) = await SendPostAsync<HttpStatusCode>("/reset-password-request", body);
+
+        return status;
     }
 
     public async Task<HttpStatusCode> ResetPassword(ResetPassword receivedResetPassword)
     {
         JsonContent body = JsonContent.Create(receivedResetPassword);
 
-        return await SendPostAsync<HttpStatusCode>("/reset-password", body);
+        var (status, response) = await SendPostAsync<HttpStatusCode>("/reset-password", body);
+
+        return status;
     }
 
     public async Task<HttpStatusCode> Register(UserRegistration user)
     {
         JsonContent body = JsonContent.Create(user);
-        try{
-            return await SendPostAsync<HttpStatusCode>("/register", body);
-        }
-        catch(Exception ex){
-            Console.WriteLine("Exception: " + ex);
-            return HttpStatusCode.InternalServerError; 
-        }
+
+        var (status, response) = await SendPostAsync<HttpStatusCode>("/register", body);
+
+        return status;
     }
 
     public async Task<UserDTO?> GetCurrentUser()

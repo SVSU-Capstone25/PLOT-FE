@@ -60,7 +60,7 @@ Andrew Miller (4/22/2025) - Store access - Loader placed into modal
             </thead>
             <tbody>
                 @* A row for each user in the list of users *@
-                @foreach (var user in users)
+                @foreach (var user in users.Skip(1).ToList())
                 {
                     <tr>
                         @* Name *@
@@ -94,24 +94,25 @@ Andrew Miller (4/22/2025) - Store access - Loader placed into modal
                                 </AuthorizeView>
                             </div>
                         </td>
-                        <AuthorizeView Policy="Manager">
-                            <UpdateUserModal id="@($"update-user-modal-{user.TUID}")" User="user"
-                                UpdateUsers="UpdateUsers" />
-                            <DeleteUserModal id="@($"delete-user-modal-{user.TUID}")" userTuid="user.TUID"
-                                UpdateUsers="UpdateUsers" />
-                        </AuthorizeView>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
-    <LoadMessageModal id="load-message" @ref="LoadMessageModal"/>
+    @foreach (var user in users.Skip(1).ToList())
+    {
+        <AuthorizeView Policy="Manager">
+            <UpdateUserModal id="@($"update-user-modal-{user.TUID}")" User="user" UpdateUsers="UpdateUsers" />
+            <DeleteUserModal id="@($"delete-user-modal-{user.TUID}")" userTuid="user.TUID" UpdateUsers="UpdateUsers" />
+        </AuthorizeView>
+    }
+
+    <LoadMessageModal id="load-message" @ref="LoadMessageModal" />
 
     <AuthorizeView Policy="Manager">
         <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" AddingUser="ToggleLoader"
-        ShowLoadingModal="ShowLoadingModal" HideLoadingModal="HideLoadingModal"
-         />
+            ShowLoadingModal="ShowLoadingModal" HideLoadingModal="HideLoadingModal" />
 
         <div class="add-btn-container">
             <Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary"
@@ -126,7 +127,7 @@ Andrew Miller (4/22/2025) - Store access - Loader placed into modal
     private LoadMessageModal? LoadMessageModal;
 
     private List<Data.Models.Users.UserDTO> users = new List<Data.Models.Users.UserDTO>();
-    
+
     private async Task UpdateUsers()
     {
         var response = await UsersHttpClient.GetAllUsers();
@@ -144,7 +145,7 @@ Andrew Miller (4/22/2025) - Store access - Loader placed into modal
 
     public string DisplayTUID(int Id)
     {
-        return '#' + Id.ToString().PadLeft(10,'0');
+        return '#' + Id.ToString().PadLeft(10, '0');
     }
 
     public async Task ShowLoadingModal()

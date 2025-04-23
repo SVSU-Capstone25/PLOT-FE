@@ -40,7 +40,9 @@ public class AuthService : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(loginRequest);
 
-        return await SendPostAsync<LoginToken>("/login", body);
+        var (status, response) = await SendPostAsync<LoginToken>("/login", body);
+
+        return response;
     }
 
     /// <summary>
@@ -51,6 +53,8 @@ public class AuthService : PlotHttpClient
     {
         JsonContent body = JsonContent.Create("");
 
-        return await SendPostAsync<bool>("/logout", body);
+        var (status, response) = await SendPostAsync<bool>("/logout", body);
+
+        return response;
     }
 }

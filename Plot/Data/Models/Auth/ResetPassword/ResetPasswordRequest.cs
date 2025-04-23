@@ -24,5 +24,6 @@ public record ResetPasswordRequest
 
     // Email address of the user requesting a password reset.
     [Required]
+    [EmailAddress]
     public string? EMAIL { get; set; }
 }
