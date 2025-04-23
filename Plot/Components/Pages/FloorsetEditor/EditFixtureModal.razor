@@ -24,20 +24,22 @@
     [Parameter] public required int StoreId { get; set; }
     [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; } = new();
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        if (Fixture != null)
+        //if (Fixture != null)
+        //{
+        Console.WriteLine("Reached");
+        EditFixtureModel = new Data.Models.Fixtures.CreateFixtureModel
         {
-            EditFixtureModel ??= new Data.Models.Fixtures.CreateFixtureModel
-            {
-                NAME = Fixture.NAME!,
-                WIDTH = Fixture.WIDTH!,
-                LENGTH = Fixture.LENGTH!,
-                LF_CAP = Fixture.LF_CAP!,
-                STORE_TUID = Fixture.STORE_TUID!,
-                ICON = Fixture.ICON,
-            };
-        }
+
+            NAME = Fixture.NAME!,
+            WIDTH = Fixture.WIDTH!,
+            LENGTH = Fixture.LENGTH!,
+            LF_CAP = Fixture.LF_CAP!,
+            STORE_TUID = Fixture.STORE_TUID!,
+            ICON = Fixture.ICON,
+        };
+        //}
     }
 
     public async Task OnEditFixtureSubmit()
