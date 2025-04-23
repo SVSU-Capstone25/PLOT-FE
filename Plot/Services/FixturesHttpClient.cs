@@ -18,7 +18,7 @@ public class FixturesHttpClient : PlotHttpClient
     /// <returns>A floorsets fixture information or null if bad http response</returns>
     public async Task<List<FixtureInstance>?> GetFloorsetFixtureInformation(int floorsetId)
     {
-        return await SendGetAsync<List<FixtureInstance>>($"/get-fixtures/{floorsetId}");
+        return await SendGetAsync<List<FixtureInstance>>($"/get-fixtures-instances/{floorsetId}");
     }
 
     public async Task<List<FixtureModel>?> GetFixtureModelsByStore(int storeId)
@@ -91,4 +91,33 @@ public class FixturesHttpClient : PlotHttpClient
 
         return await SendPatchAsync($"/update-fixture-model/{storeId}", body);
     }
+
+    /// <summary>
+    /// This method sends a CreateFixtureInstance request to create a new instance of a fixture
+    public async Task<HttpStatusCode> CreateFixtureInstance(CreateFixtureInstance createFixtureInstance)
+    {
+        JsonContent body = JsonContent.Create(createFixtureInstance);
+        return await SendPostAsync<HttpStatusCode>($"/create-fixture-instance", body);
+    }
+
+    /// <summary>
+    /// This method sends a request to get all employee areas for a floorset
+    /// <param name="floorsetId"></param>
+    public async Task<List<EmployeeAreaModel>?> GetEmployeeAreas(int floorsetId)
+    {
+        var response = await SendGetAsync<List<EmployeeAreaModel>?>($"get-employee-areas/{floorsetId}");
+        Console.WriteLine("In the client when requesting all employee areas for floorset of " + floorsetId + " we get:");
+        Console.WriteLine(response);
+        Console.WriteLine("In client for floorset id " + floorsetId);
+        return response;
+    }
+
+    /// <summary>
+    /// This method sends a request to insert employee areas
+    public async Task<HttpStatusCode> AddEmployeeAreas(IEnumerable<AddEmployeeAreaModel> NewEmployeeAreas)
+    {
+        JsonContent body = JsonContent.Create(NewEmployeeAreas);
+        return await SendPostAsync<HttpStatusCode>($"add-employee-areas",body);
+    }
+
 }

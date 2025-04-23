@@ -63,16 +63,16 @@ Author: Andrew Fulton (3/13/2025)  *@
             ImageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(fimage)}";
         }
 
-        <Card>
-            <a href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")" class="w-100 ratio ratio-4x3">
-                <CardImage Image="@ImageSrc" />
-            </a>
-            <CardBody>
-                <CardTitle class="over-hidden" style="width: 100%;">
-                    <a class="text-truncate" href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")">
-                        <span class="d-inline-block text-truncate" style="max-width: 100%;">@Floorset.NAME</span>
-                    </a>
-                </CardTitle>
+    <Card>
+        <a href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")" class="w-100 ratio ratio-4x3">
+            <CardImage Image="@ImageSrc" />
+        </a>
+        <CardBody>
+            <CardTitle class="over-hidden" style="width: 100%;">
+                <a class="text-truncate" href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")">
+                    <span class="d-inline-block text-truncate" style="max-width: 100%;">@Floorset.NAME</span>
+                </a>
+            </CardTitle>
 
                 <AuthorizeView Policy="Manager">
                     <Dropdown Class="Dropdown" Id="@Floorset.TUID.ToString()" LabelText="Floorset">
@@ -100,28 +100,28 @@ Author: Andrew Fulton (3/13/2025)  *@
             <Modal id="@($"delete-floorset-{Floorset.TUID}")" class="standard">
                 <ModalHeader Title="Confirm Deletion" Variant="danger" />
                 <form @onsubmit="async () => {
-                    await OnDeleteFloorsetSubmit(Floorset.TUID);
-                    deleteTextInput = string.Empty;}">
-                    @code {
-                        private string? deleteTextInput;
-                        private bool isDisabled => deleteTextInput != "DELETE";
-                    }
-                    <ModalBody>
-                        <h5>Are you SURE you want to delete this Floorset?</h5>
-                        <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required pattern="DELETE"
-                            @bind-value="deleteTextInput" @bind-value:event="oninput" />
-                    </ModalBody>
+                        await OnDeleteFloorsetSubmit(Floorset.TUID);
+                        deleteTextInput = string.Empty;}">
+                @code {
+                    private string? deleteTextInput;
+                    private bool isDisabled => deleteTextInput != "DELETE";
+                }
+                <ModalBody>
+                    <h5>Are you SURE you want to delete this Floorset?</h5>
+                    <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required
+                        pattern="DELETE" @bind-value="deleteTextInput" @bind-value:event="oninput" />
+                </ModalBody>
 
-                    <ModalFooter>
-                        <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
-                            data-bs-dismiss="modal">
-                            Yes, Delete
-                        </Button>
-                    </ModalFooter>
-                </form>
-            </Modal>
-        </AuthorizeView>
-    }
+                <ModalFooter>
+                    <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" disabled="@isDisabled"
+                        data-bs-dismiss="modal">
+                        Yes, Delete
+                    </Button>
+                </ModalFooter>
+            </form>
+        </Modal>
+    </AuthorizeView>
+        }
 </div>
 <AuthorizeView Policy="Manager">
     <AddFloorsetModal id="create-floorset" UpdateFloorsets="UpdateFloorsets" StoreId="StoreId" />
@@ -196,23 +196,92 @@ Author: Andrew Fulton (3/13/2025)  *@
         // Create new floorset and return tuid
         int NewFloorsetTUID = await FloorsetsHttpClient.CreateFloorset(createFloorset);
 
-        //Data.Models.Fixtures.Fixtures_State FixtureOnFloorsetState = new();
-
         // Get Fixtures on old Floorset
         List<Data.Models.Fixtures.FixtureInstance>? FixturesOnFloorset = await FixturesHttpClient.GetFloorsetFixtureInformation(Floorset!.TUID);
 
-        // Put list of fixtures in state
-        //FixtureOnFloorsetState.CurrentFixtures = FixturesOnFloorset!;
+        Console.WriteLine("Floorset TUID of old floorset is " + Floorset!.TUID);
 
-        // Update information
-        await FixturesHttpClient.UpdateFixtureInformation(NewFloorsetTUID, FixtureOnFloorsetState);
+        // Get Employee area on old Floorset
+        List<Data.Models.Fixtures.EmployeeAreaModel>? EmployeeAreasOnFloorset = await FixturesHttpClient.GetEmployeeAreas(Floorset!.TUID);
 
-        foreach(var FixtureInstance in FixturesOnFloorset)
+        Console.WriteLine("Employee Areas List");
+        if(EmployeeAreasOnFloorset != null){
+        foreach(var area in EmployeeAreasOnFloorset){
+            Console.WriteLine(area.FLOORSET_TUID);
+            Console.WriteLine(area.X_POS);
+            Console.WriteLine(area.Y_POS);
+        }
+        }
+        else{
+            Console.WriteLine("Why is EmployeeAreasOnFloorset null?");
+        }
+
+        Console.WriteLine("End Employee Areas");
+
+        if(EmployeeAreasOnFloorset == null)
         {
-            FixtureInstance.TUID = NewFloorsetTUID;
-            await FixturesHttpClient.UpdateFixtureInstance(FixtureInstance);
+            Console.WriteLine("Employee Areas on Floorset are null");
+        }
+
+        // Convert Fixture Instances to CreateFixtureInstances, and give them the Floorset Id of the newly copied floorset
+        await CreateCopiedFloorsetFixtureInstances(FixturesOnFloorset!, NewFloorsetTUID);
+
+        if(EmployeeAreasOnFloorset != null){
+        // Convert EmployeeAreaModel objects into AddEmployeeAreaModal objects and give them the Floorset Id of the newly copied floorset
+        await CreateCopiedFloorsetEmployeeArea(EmployeeAreasOnFloorset!, NewFloorsetTUID);
         }
 
         await UpdateFloorsets();
+
+        StateHasChanged();
+        Console.WriteLine("End of copying floorset");
+    }
+
+    private async Task CreateCopiedFloorsetFixtureInstances(List<Data.Models.Fixtures.FixtureInstance> FixtureInstances, int
+    NewFloorsetTUID)
+    {
+        // Converts FixtureInstance models to CreateFixtureInstance models and assigns them the floorset TUID
+
+        foreach (var FixtureInstance in FixtureInstances)
+        {
+            // Await call to create fixture instance using CreateFixtureInstance Model
+            await FixturesHttpClient.CreateFixtureInstance(
+            new Data.Models.Fixtures.CreateFixtureInstance
+            {
+                FLOORSET_TUID = NewFloorsetTUID,
+                FIXTURE_TUID = FixtureInstance.FIXTURE_TUID,
+                X_POS = FixtureInstance.X_POS,
+                Y_POS = FixtureInstance.Y_POS,
+                HANGER_STACK = FixtureInstance.HANGER_STACK,
+                ALLOCATED_LF = FixtureInstance.ALLOCATED_LF,
+                EDITOR_ID = FixtureInstance.EDITOR_ID,
+                SUPERCATEGORY_TUID = FixtureInstance.SUPERCATEGORY_TUID,
+                SUBCATEGORY = FixtureInstance.SUBCATEGORY,
+                NOTE = FixtureInstance.NOTE
+            }
+            );
+        }
+    }
+
+    private async Task CreateCopiedFloorsetEmployeeArea(List<Data.Models.Fixtures.EmployeeAreaModel> EmployeeAreas, int
+    NewFloorsetTUID)
+    {
+        List<Data.Models.Fixtures.AddEmployeeAreaModel> CopiedEmployeeAreas = new();
+
+        foreach (var EmployeeArea in EmployeeAreas)
+        {
+            CopiedEmployeeAreas.Add
+            ( 
+                new Data.Models.Fixtures.AddEmployeeAreaModel {
+                    FLOORSET_TUID = NewFloorsetTUID,
+                    X_POS = EmployeeArea.X_POS,
+                    Y_POS = EmployeeArea.Y_POS
+                }
+            );
+        }
+
+        // Call AddEmployeeAreas on list of AddEmployeeAreaModel objects
+        await FixturesHttpClient.AddEmployeeAreas(CopiedEmployeeAreas);
+
     }
 }
