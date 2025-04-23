@@ -1,55 +1,137 @@
+@inject StoresHttpClient StoresHttpClient
 @inject UsersHttpClient UsersHttpClient
+@inject IJSRuntime JS
 
-<Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" @attributes="Attributes">
+<Modal class="modal-dialog modal-xl user-modal user-info-modal" SizeClass="modal-xl" Backdrop="static" Keyboard="false"
+    @attributes="Attributes">
     <ModalHeader Title="Update User" />
-    <EditForm Model="UpdateUserModel" OnValidSubmit="OnUpdateUserSubmit">
+
+    <EditForm Model="UpdateUserModel" OnValidSubmit="() => OnUpdateUserSubmit()">
         <DataAnnotationsValidator />
 
-        <AddUpdateUserModalBody AddUpdateUserModel="UpdateUserModel" />
+        <AddUpdateUserModalBody AddUpdateUserModel="UpdateUserModel" AssignedStores="UpdateUserStores"
+            UnassignedStores="NotUpdateUserStores" SignalParentAssignedStoresChanged="HandleUserStoresChange"
+            SignalParentUnassignedStoresChanged="HandleNotUserStoresChange" OnInit="HandleBodyInit"
+            DisableSubmitInParent="DisableSubmitFromChild" @ref="modalBodyRef" />
 
         <ModalFooter OnCancelClick="ClearUpdateUserModel">
-            <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal">
+            <Button Variant="primary" TextAlignment="center" type="submit" data-bs-dismiss="modal"
+                disabled="@IsSubmitDisabled">
                 Submit
             </Button>
         </ModalFooter>
+
     </EditForm>
 
 </Modal>
 
 @code {
-    [Parameter] public required Data.Models.Users.UserDTO User { get; set; }
 
-    [Parameter] public required EventCallback UpdateUsers { get; set; }
-
+    // Parameters
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
+    // Model used for updating information on user first name, last name, email, and role in the database
     [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? UpdateUserModel { get; set; }
+
+    // Model representing the user
+    [Parameter] public required Data.Models.Users.UserDTO? User { get; set; }
+
+    // Update Users callback for rerendering UserDashboard in UserDashboard.razor file
+    [Parameter] public required EventCallback UpdateUsers { get; set; }
+
+    public AddUpdateUserModalBody? modalBodyRef; // Ref for AddUpdateUserModalBody
+
+    private bool modalBodyInit = false; // AddUpateUserModalBody initialized flag 
+
+    private bool IsSubmitDisabled = false; // Disable submit button
+
+    // Modal for updating First Name, Last Name, Email, Role of User
+    public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel = new();
+
+    // Stores lists for updating access
+
+    public List<Data.Models.Stores.Store>? UpdateUserStores = new();
+
+    public List<Data.Models.Stores.Store>? NotUpdateUserStores = new();
+
+    public List<int> selectedNotUserStoreTUIDs = new();
+
+    public List<int> selectedUserStoreTUIDs = new();
 
     protected override void OnInitialized()
     {
+
         UpdateUserModel ??= new Data.Models.Users.UpdatePublicInfoUser
         {
-            FIRST_NAME = User.FIRST_NAME,
-            LAST_NAME = User.LAST_NAME,
-            EMAIL = User.EMAIL,
-            ROLE_NAME = User.ROLE
+            FIRST_NAME = User!.FIRST_NAME,
+            LAST_NAME = User!.LAST_NAME,
+            EMAIL = User!.EMAIL,
+            ROLE_NAME = User!.ROLE
         };
+
     }
 
-    private async Task OnUpdateUserSubmit()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (UpdateUserModel != null)
+        if (!modalBodyInit)
         {
-            await UsersHttpClient.UpdateUserPublicInfo(User.TUID, UpdateUserModel);
+            if (modalBodyRef != null)
+            {
+                await modalBodyRef!.InitUserStores(User!.TUID);
+                modalBodyInit = true;
+            }
+        }
+    }
 
-            await UpdateUsers.InvokeAsync();
+    public void HandleBodyInit()
+    {
+
+        if (modalBodyRef != null)
+        {
+            modalBodyRef.StateHasChangedFromParent();
         }
 
-        ClearUpdateUserModel();
+        StateHasChanged();
     }
 
-    private void ClearUpdateUserModel()
+    public async Task OnUpdateUserSubmit()
     {
-        UpdateUserModel = new();
+        await UsersHttpClient.UpdateUserPublicInfo(User!.TUID, UpdateUserModel!);
+        if (UpdateUserStores != null)
+        {
+            await UsersHttpClient.UpdateAccessList(new Data.Models.Users.UpdateAccessListRequest
+            {
+                USER_TUID = User!.TUID,
+                STORE_TUIDS = UpdateUserStores.Select(store => store.TUID)
+            });
+        }
+        await UpdateUsers.InvokeAsync();
     }
+
+    public void ClearUpdateUserModel()
+    {
+        if (modalBodyRef != null)
+        {
+            modalBodyRef.StateHasChangedFromParent();
+        }
+
+        StateHasChanged();
+
+    }
+
+    public void HandleUserStoresChange(List<Data.Models.Stores.Store>? NewUpdateUserStores)
+    {
+        UpdateUserStores = NewUpdateUserStores;
+    }
+
+    public void HandleNotUserStoresChange(List<Data.Models.Stores.Store>? NewNotUpdateUserStores)
+    {
+        NotUpdateUserStores = NewNotUpdateUserStores;
+    }
+
+    public void DisableSubmitFromChild(bool isDisabled)
+    {
+        IsSubmitDisabled = isDisabled;
+    }
+
 }
