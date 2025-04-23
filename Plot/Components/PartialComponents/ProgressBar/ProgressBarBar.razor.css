@@ -26,8 +26,12 @@ meter::-webkit-meter-optimum-value {
   background: var(--progress-bar-background-color);
 }
 
-.progress-unfulfilled {
+meter[value="0"], .progress-unfulfilled {
   border: 2px solid #ef4444;
+}
+
+meter[value="0"]::-moz-meter-bar {
+  background: unset;
 }
 
 .progress-overfilled {

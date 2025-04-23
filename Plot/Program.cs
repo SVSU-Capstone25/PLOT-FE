@@ -5,6 +5,7 @@ using Plot.Components;
 using Microsoft.IdentityModel.Tokens;
 using Plot.Services;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.JSInterop;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,7 @@ builder.Services.AddScoped<ICookie, Cookie>();
 builder.Services.AddScoped<ClaimParserService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddSingleton<ToastService>();
+builder.Services.AddSingleton<FloorsetEditorService>();
 
 // Add JWT authentication and authorization 
 builder.Services.AddAuthentication(options =>
@@ -157,7 +159,6 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseCors(MyAllowSpecificOrigins);
-
 
 app.UseAntiforgery();
 app.MapStaticAssets();

@@ -53,7 +53,8 @@
                     data-fixture-tuid="@fixtureModel.TUID" data-store-tuid="@fixtureModel.STORE_TUID"
                     data-width="@fixtureModel.WIDTH" data-height="@fixtureModel.LENGTH" draggable="true"
                     ondragstart="window.createDraggable(event)" @ondragenter="() => FixtureDragged(fixtureModel)">
-                    <img class="fixture-img disable-select grab-cursor" src="@ImageSrc" alt="" draggable="false" />
+                    <img class="disable-select grab-cursor" src="@ImageSrc" alt="" draggable="false" width="100px"
+                        height="100px" />
                     <p class="fixture-text m-0 disable-select text-truncate">@fixtureModel.NAME</p>
                     <Dropdown class="fixture-options ms-auto disable-select" id="@($"fixture-options{fixtureModel.NAME}")"
                         LabelText="Fixture">

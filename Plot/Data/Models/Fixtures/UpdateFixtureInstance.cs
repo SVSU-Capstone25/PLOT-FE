@@ -28,6 +28,5 @@ public record UpdateFixtureInstance
     public string? NOTE { get; set; }
     public int? SUPERCATEGORY_TUID { get; set; }
     public required int EDITOR_ID { get; set; }
-
-
+    public string? FIXTURE_IDENTIFIER { get; set; }
 }

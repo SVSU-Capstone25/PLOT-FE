@@ -13,11 +13,7 @@ public class SalesHttpClient : PlotHttpClient
 
     public async Task<HttpStatusCode> UploadSales(int floorsetId, UploadFile excelFile)
     {
-
-
-
-
-        return await SendPostContentAsync<HttpStatusCode>($"/upload-sales/{floorsetId}", excelFile);
+        return await SendPostContentAsync($"/upload-sales/{floorsetId}", excelFile);
     }
 
     public async Task<List<AllocationFulfillments>?> GetAllocationFulfillments(int floorsetId)

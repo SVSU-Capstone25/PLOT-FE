@@ -20,7 +20,7 @@ Author: Tristan Calay (3/15/2025)-->
             Added UL / LI with onclick to set the painting color. *@
 
 @rendermode InteractiveServer
-@inject IJSRuntime JS
+@inject IJSRuntime JSRuntime
 @inject SalesHttpClient SalesHttpClient
 
 @using Plot.Components.PartialComponents.SlideOut
@@ -51,15 +51,18 @@ Author: Tristan Calay (3/15/2025)-->
             @foreach (var allocationFulfillmentList in allocationFulfillmentLists)
             {
                 var SuperCategoryColor = allocationFulfillmentList.Value.First().SUPERCATEGORY_COLOR;
-                var SuperCategoryTotalSales = allocationFulfillmentList.Value.Sum((allocationFulfillment) =>
-                allocationFulfillment.TOTAL_SALES);
+                var SuperCategoryCurrent = allocationFulfillmentList.Value.Sum((allocationFulfillment) =>
+                allocationFulfillment.CURRENT_LF);
+                var SuperCategoryNeeded = allocationFulfillmentList.Value.Sum((allocationFulfillment) =>
+                allocationFulfillment.NEEDED_LF);
 
                 <li class="list-group-item">
                     <ProgressBar>
                         <ProgressBarHeader class="fs-5" Icon="fa-solid fa-chevron-down">@allocationFulfillmentList.Key
                         </ProgressBarHeader>
-                        <ProgressBarBar Color="@SuperCategoryColor" max="100" value="100" min="0">
-                            @SuperCategoryTotalSales
+                        <ProgressBarBar Color="@SuperCategoryColor" max="@SuperCategoryNeeded" value="@SuperCategoryCurrent"
+                            min="0">
+                            @SuperCategoryCurrent
                         </ProgressBarBar>
                     </ProgressBar>
                 </li>
@@ -68,13 +71,15 @@ Author: Tristan Calay (3/15/2025)-->
                             allocationFulfillment.SUBCATEGORY.ToLower().Contains(CategorySearch)))
                 {
                     <li class="list-group-item"
-                        @onclick="() => OnCategoryClick(allocationFulfillment.SUPERCATEGORY_COLOR, allocationFulfillment.SUPERCATEGORY_TUID, allocationFulfillment.SUBCATEGORY)">
+                        @onclick="() => OnCategoryClick(allocationFulfillment.SUPERCATEGORY_COLOR, allocationFulfillment.TUID, allocationFulfillment.SUBCATEGORY)">
                         <ProgressBar>
-                            <ProgressBarHeader class="fs-6">@allocationFulfillment.SUBCATEGORY
+                            <ProgressBarHeader>
+                                <span class="badge text-white fs-6"
+                                    style="background-color: @allocationFulfillment.SUPERCATEGORY_COLOR;">@allocationFulfillment.SUBCATEGORY</span>
                             </ProgressBarHeader>
-                            <ProgressBarBar Color="@allocationFulfillment.SUPERCATEGORY_COLOR" max="100"
-                                value="@allocationFulfillment.TOTAL_SALES" min="0">
-                                @allocationFulfillment.TOTAL_SALES
+                            <ProgressBarBar Color="@allocationFulfillment.SUPERCATEGORY_COLOR"
+                                max="@allocationFulfillment.NEEDED_LF" value="@allocationFulfillment.CURRENT_LF" min="0">
+                                @allocationFulfillment.CURRENT_LF
                             </ProgressBarBar>
                         </ProgressBar>
                     </li>
@@ -99,8 +104,11 @@ Author: Tristan Calay (3/15/2025)-->
 
         if (response != null)
         {
+            allocationFulfillmentLists = new
+            Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>>();
             response.ForEach((allocationFulfillment) =>
             {
+                Console.WriteLine(allocationFulfillment.SUPERCATEGORY_NAME);
                 if (allocationFulfillmentLists.TryGetValue(allocationFulfillment.SUPERCATEGORY_NAME, out
     List<Data.Models.Allocations.AllocationFulfillments>? list))
                 {
@@ -115,6 +123,20 @@ allocationFulfillment
                 }
             });
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        FloorsetEditorService.OnUpdate += async () =>
+        {
+            await UpdateAllocationFulfillments();
+            this.StateHasChanged();
+        };
+    }
+
+    public void Dispose()
+    {
+        FloorsetEditorService.OnUpdate -= async () => { await InvokeAsync(StateHasChanged); };
     }
 
     protected override async Task OnInitializedAsync()
@@ -132,7 +154,7 @@ allocationFulfillment
     {
         Console.WriteLine("Category Onclick " + color);
 
-        await JS.InvokeVoidAsync("window.setPaint", color, superCategoryTuid, subcategory);
+        await JSRuntime.InvokeVoidAsync("window.setPaint", color, superCategoryTuid, subcategory);
     }
 
     private void OnSortAscendingClick()
@@ -164,5 +186,4 @@ allocationFulfillment
             });
         }
     }
-
 }

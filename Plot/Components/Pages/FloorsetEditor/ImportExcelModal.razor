@@ -33,19 +33,19 @@
         ImportExcelFileModel ??= new();
     }
 
-    private async Task OnFileUpload(IBrowserFile  e)
+    private async Task OnFileUpload(IBrowserFile e)
     {
         if (e != null)
         {
             MemoryStream ms = new MemoryStream();
             await e.OpenReadStream().CopyToAsync(ms);
-            ms.Position=0;
-            
+            ms.Position = 0;
+
             if (ImportExcelFileModel != null)
             {
-                ImportExcelFileModel.Stream=ms;
-                ImportExcelFileModel.FileName=e.Name;
-                ImportExcelFileModel.ContentType=e.ContentType;
+                ImportExcelFileModel.Stream = ms;
+                ImportExcelFileModel.FileName = e.Name;
+                ImportExcelFileModel.ContentType = e.ContentType;
             }
         }
     }
@@ -55,6 +55,7 @@
         if (ImportExcelFileModel?.Stream != null)
         {
             var response = await SalesHttpClient.UploadSales(FloorsetId, ImportExcelFileModel);
+            Console.WriteLine(response);
         }
     }
 }

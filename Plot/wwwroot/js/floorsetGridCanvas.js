@@ -139,6 +139,8 @@ function sketch(p5) {
     fixtures.forEach((fixture) => {
       updateFixtureInstance(fixture).then(console.log).catch(console.error);
     });
+
+    DotNet?.invokeMethodAsync("Plot", "UpdateAllocations");
   });
 
   p5.preload = () => {
@@ -270,8 +272,10 @@ function sketch(p5) {
 
       window.showDropdown(true, p5.mouseX, p5.mouseY);
 
-      window.dotNetReference?.invokeMethodAsync(
+      DotNet?.invokeMethodAsync(
+        "Plot",
         "GetFixture",
+        floorsetId,
         rack.TUID,
         rack.EDITOR_ID,
         rack.NAME,
@@ -491,10 +495,6 @@ window.createDraggable = (event) => {
     STORE_TUID = Number(event.target.getAttribute("data-store-tuid"));
 
   window.draggedFixture = { WIDTH, LENGTH, NAME, FIXTURE_TUID, STORE_TUID };
-};
-
-window.setDotnetReference = (dotNetReference) => {
-  window.dotNetReference = dotNetReference;
 };
 
 window.showDropdown = (isShowing, x = 0, y = 0) => {
