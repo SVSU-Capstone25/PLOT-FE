@@ -1,0 +1,29 @@
+<!-- Toast.razor -->
+@inject Plot.Services.ToastService ToastService
+
+<div class="toast-container position-fixed bottom-0 start-0 p-3">
+    @foreach (var Toast in Toasts)
+    {
+        <Toast Type="@Toast.Type" Duration="@Toast.Duration">@Toast.Message</Toast>
+    }
+</div>
+
+@code {
+    private List<Plot.Services.ToastMessage> Toasts = new();
+
+    protected override void OnInitialized()
+    {
+        ToastService.OnToastsUpdated += UpdateToasts;
+    }
+
+    private void UpdateToasts()
+    {
+        Toasts = ToastService.Toasts.ToList();
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ToastService.OnToastsUpdated -= UpdateToasts;
+    }
+}

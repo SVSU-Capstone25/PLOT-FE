@@ -1,77 +1,63 @@
 @inject IJSRuntime JS
+@inject FixturesHttpClient FixturesHttpClient
 
 @* Edit Fixture Modal *@
-@{
-    <Modal class="modal-xl fixture-modal" id="EditFixture">
-        <ModalHeader Title="Edit Fixture" />
-        <EditForm Model="EditFixtureModel" OnValidSubmit="OnEditFixtureSubmit">
-            <ModalBody>
-                <label>
-                    Name
-                    <InputText @bind-value="EditFixtureModel!.NAME">Three Way Rack</InputText>
-                </label>
-                <div class="row">
-                    <div class="col-md-5">
-                        <label>
-                            Length
-                            <InputNumber @bind-Value="EditFixtureModel!.LENGTH" />
-                        </label>
-                    </div>
-                    <div class="col-md-auto my-auto">
-                        <i class="fa-solid fa-xmark mx-auto mt-4 ms-3"></i>
-                    </div>
-                    <div class="col-md-5">
-                        <label>
-                            Width
-                            <InputNumber @bind-Value="EditFixtureModel!.WIDTH" />
-                        </label>
-                    </div>
-                </div>
 
-                <label>
-                    Linear Feet Capacity
-                    <InputNumber @bind-Value="EditFixtureModel!.LF_CAP" />
-                </label>
+<Modal @attributes="Attributes" SizeClass="modal-xl" class="z-index-override">
+    <ModalHeader Title="Edit Fixture" />
+    <EditForm Model="EditFixtureModel" OnValidSubmit="async () => await OnEditFixtureSubmit()">
 
-                <label>
-                    Total Linear Feet
-                    @EditFixtureModel!.WIDTH * @EditFixtureModel!.LENGTH
-                    @* <InputNumber @bind-Value="TotalLinearFeet" disabled /> *@
-                </label>
+        <AddUpdateFixtureModalBody AddUpdateFixtureModel="EditFixtureModel" />
 
-                <div class="img-input">
-                    <ImageInput Height="400px" Width="400px" Label="Fixture Image" Id="Edit-fixtureimg" />
-                </div>
-            </ModalBody>
-            <ModalFooter>
-                <Button class="btn Edit-btn ms-auto" Variant="primary" type="submit">Edit</Button>
-            </ModalFooter>
-        </EditForm>
-    </Modal>
-}
+        <ModalFooter OnCancelClick="ClearEditFixtureModel">
+            <Button class="btn add-btn ms-auto" Variant="primary" type="submit" data-bs-dismiss="modal">Save</Button>
+        </ModalFooter>
+    </EditForm>
+</Modal>
 
 @code {
+    [Parameter] public required Data.Models.Fixtures.FixtureModel Fixture { get; set; }
 
-    @* [Parameter] public EventCallback UpdateFixtures { get; set; } *@
+    [Parameter] public EventCallback UpdateFixtureModels { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+    [Parameter] public required int FixtureId { get; set; }
+    [Parameter] public required int StoreId { get; set; }
+    [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; } = new();
 
-    // private int TotalLinearFeet = 0;
-
-    [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; }
-
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        EditFixtureModel ??= new();
+        //if (Fixture != null)
+        //{
+        Console.WriteLine("Reached");
+        EditFixtureModel = new Data.Models.Fixtures.CreateFixtureModel
+        {
+
+            NAME = Fixture.NAME!,
+            WIDTH = Fixture.WIDTH!,
+            LENGTH = Fixture.LENGTH!,
+            LF_CAP = Fixture.LF_CAP!,
+            STORE_TUID = Fixture.STORE_TUID!,
+            ICON = Fixture.ICON,
+        };
+        //}
     }
 
     public async Task OnEditFixtureSubmit()
     {
         await Task.Run(() => Console.WriteLine("Edit Fixture"));
 
-        // TODO: Change User.TUID to store ID
-        /* if (EditFixtureModel != null)
+        if (EditFixtureModel != null)
         {
-        var response = await FixturesHttpClient.UpdateFixtureModel(User.TUID, EditFixtureModel);
-        await UpdateFixtures.InvokeAsync();
-        } */
+            var response = await FixturesHttpClient.UpdateFixtureModel(FixtureId, EditFixtureModel);
+
+            await UpdateFixtureModels.InvokeAsync();
+        }
+
+        ClearEditFixtureModel();
+    }
+
+    private void ClearEditFixtureModel()
+    {
+        EditFixtureModel = new();
     }
 }

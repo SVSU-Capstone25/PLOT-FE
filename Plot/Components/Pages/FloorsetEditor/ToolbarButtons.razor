@@ -6,16 +6,16 @@
 
 <div class="toolbar-buttons">
     @*Edit Fixture Button *@
-    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" OnClickFunction="EditFixture"
+    <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" @onclick="EditFixture"
         TextAlignment="center" />
 
     <AuthorizeView Policy="Manager">
         @*Paint Category Button *@
-        <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush"
-            OnClickFunction="TogglePaintClicked" TextAlignment="center" />
+        <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush" @onclick="TogglePaintClicked"
+            TextAlignment="center" />
 
         @*Erase Category Button *@
-        <Button IsDisabled="false" Variant="@getEraseVariant()" Icon="fa-solid fa-eraser" OnClickFunction="OnEraseClicked"
+        <Button IsDisabled="false" Variant="@getEraseVariant()" Icon="fa-solid fa-eraser" @onclick="OnEraseClicked"
             TextAlignment="center" />
     </AuthorizeView>
 </div>

@@ -13,13 +13,13 @@ Author: Andrew Fulton (3/13/2025)  *@
 @* /floorsets/Flint, MI/3192 S Linden Rd, Flint, MI 48507 *@
 
 @page "/floorsets/{StoreId:int}"
-@using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
-
 @inject NavigationManager Navigation
 @inject FloorsetsHttpClient FloorsetsHttpClient
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
+
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 
 @* Top portion of the page (Showing store, location, and image for the current floorset) *@
@@ -170,15 +170,6 @@ Author: Andrew Fulton (3/13/2025)  *@
         await FloorsetsHttpClient.DeleteFloorset(floorsetId);
         await UpdateFloorsets();
     }
-
-    @* private async Task OnCreateFloorsetSubmit()
-    {
-        if (CreateFloorsetModel != null)
-        {
-            await FloorsetsHttpClient.CreateFloorset(CreateFloorsetModel);
-            await UpdateFloorsets();
-        }
-    } *@
 
     private async Task OnCopyFloorsetClick(Data.Models.Floorsets.Floorset Floorset)
     {

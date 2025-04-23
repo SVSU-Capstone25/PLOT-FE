@@ -19,6 +19,7 @@ Author: Andrew Fulton (3/12/2025)
 @inject JwtService JwtService
 @inject ClaimParserService ClaimParserService
 @inject IAuthorizationService AuthorizationService
+@inject ToastService ToastService
 @attribute [Authorize]
 
 @using System.Drawing;
@@ -100,7 +101,6 @@ Author: Andrew Fulton (3/12/2025)
         //Get the users claims
         var userPrincipal = JwtService.GetValidClaims(token);
 
-
         if (userPrincipal != null)
         {
             //Determine if user is an owner
@@ -111,12 +111,18 @@ Author: Andrew Fulton (3/12/2025)
                 //Get a list of all the stores for the owner
                 var response = await StoresHttpClient.GetListOfStores();
 
-                Stores = response ?? new();
+                if (response != null)
+                {
 
+                    Stores = response;
+                }
+                else
+                {
+                    ToastService.ShowError("Couldn't get stores!");
+                }
             }
             else
             {
-
                 var currentUserTUID = ClaimParserService.GetUserId(userPrincipal);
 
                 if (currentUserTUID != null)
@@ -124,7 +130,14 @@ Author: Andrew Fulton (3/12/2025)
                     //Get list of stores based off of user TUID
                     var response = await StoresHttpClient.GetStoreAccessByUserId(currentUserTUID.Value);
 
-                    Stores = response ?? new();
+                    if (response != null)
+                    {
+                        Stores = response;
+                    }
+                    else
+                    {
+                        ToastService.ShowError("Couldn't get stores!");
+                    }
                 }
             }
         }

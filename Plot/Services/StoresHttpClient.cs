@@ -31,7 +31,9 @@ public class StoresHttpClient : PlotHttpClient
     {
         JsonContent body = JsonContent.Create(store);
 
-        return await SendPostAsync<HttpStatusCode>($"/create-store", body);
+        var (status, response) = await SendPostAsync<HttpStatusCode>($"/create-store", body);
+
+        return status;
     }
 
 
@@ -53,5 +55,5 @@ public class StoresHttpClient : PlotHttpClient
     {
         return await SendDeleteAsync($"/{storeId}");
     }
-    
+
 }

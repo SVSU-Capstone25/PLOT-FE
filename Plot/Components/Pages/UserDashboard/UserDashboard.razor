@@ -21,6 +21,8 @@ No author was given.
 Andrew Kenendy (4/17/2025)
 Added a loader popup when a user is added.
 
+Andrew Miller (4/22/2025) - Store access - Loader placed into modal
+
 */
 
 *@
@@ -58,7 +60,7 @@ Added a loader popup when a user is added.
             </thead>
             <tbody>
                 @* A row for each user in the list of users *@
-                @foreach (var user in users)
+                @foreach (var user in users.Skip(1).ToList())
                 {
                     <tr>
                         @* Name *@
@@ -68,7 +70,7 @@ Added a loader popup when a user is added.
 
                         @* User Id *@
                         <td class="border border-light border-2">
-                            @user.TUID
+                            @DisplayTUID(user.TUID)
                         </td>
 
 
@@ -92,20 +94,25 @@ Added a loader popup when a user is added.
                                 </AuthorizeView>
                             </div>
                         </td>
-                        <AuthorizeView Policy="Manager">
-                            <UpdateUserModal id="@($"update-user-modal-{user.TUID}")" User="user"
-                                UpdateUsers="UpdateUsers" />
-                            <DeleteUserModal id="@($"delete-user-modal-{user.TUID}")" userTuid="user.TUID"
-                                UpdateUsers="UpdateUsers" />
-                        </AuthorizeView>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
+    @foreach (var user in users.Skip(1).ToList())
+    {
+        <AuthorizeView Policy="Manager">
+            <UpdateUserModal id="@($"update-user-modal-{user.TUID}")" User="user" UpdateUsers="UpdateUsers" />
+            <DeleteUserModal id="@($"delete-user-modal-{user.TUID}")" userTuid="user.TUID" UpdateUsers="UpdateUsers" />
+        </AuthorizeView>
+    }
+
+    <LoadMessageModal id="load-message" @ref="LoadMessageModal" />
+
     <AuthorizeView Policy="Manager">
-        <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" AddingUser="ToggleLoader" />
+        <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" AddingUser="ToggleLoader"
+            ShowLoadingModal="ShowLoadingModal" HideLoadingModal="HideLoadingModal" />
 
         <div class="add-btn-container">
             <Button Class="Button add-btn" Icon="fa-solid fa-plus" Id="buttonAddUserDashboard" Variant="primary"
@@ -116,22 +123,10 @@ Added a loader popup when a user is added.
     </AuthorizeView>
 </div>
 
-@* If adding a user, show the loader *@
-@if (isAddingUser)
-{
-    <div class="w-100 h-100 d-flex justify-content-center align-items-center top-0 start-0 position-fixed"
-        style="background-color: rgba(0,0,0,.5);">
-        <Loader class="p-5 rounded shadow-lg d-flex flex-column align-items-center" style="background-color: white;">
-            Adding User...
-        </Loader>
-    </div>
-
-}
-
-
 @code {
+    private LoadMessageModal? LoadMessageModal;
+
     private List<Data.Models.Users.UserDTO> users = new List<Data.Models.Users.UserDTO>();
-    private bool isAddingUser = false;
 
     private async Task UpdateUsers()
     {
@@ -143,15 +138,24 @@ Added a loader popup when a user is added.
         }
     }
 
-    @* This method sets the boolean to toggle the add user loader. *@
-    private void ToggleLoader(bool isAdding)
-    {
-        isAddingUser = isAdding;
-    }
-
-
     protected override async Task OnInitializedAsync()
     {
         await UpdateUsers();
     }
+
+    public string DisplayTUID(int Id)
+    {
+        return '#' + Id.ToString().PadLeft(10, '0');
+    }
+
+    public async Task ShowLoadingModal()
+    {
+        await LoadMessageModal!.ShowModal();
+    }
+
+    public async Task HideLoadingModal()
+    {
+        await LoadMessageModal!.HideModal();
+    }
+
 }

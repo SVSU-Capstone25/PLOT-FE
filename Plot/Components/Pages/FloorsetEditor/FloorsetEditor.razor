@@ -25,7 +25,10 @@
 @inject StoresHttpClient StoresHttpClient
 @inject FloorsetsHttpClient FloorsetsHttpClient
 @inject AuthHttpClient AuthHttpClient
+@attribute [Authorize]
+@inject ToastService ToastService
 
+@using Plot.Services
 @using Plot.Components.PartialComponents.SlideOut
 @using Plot.Components.PartialComponents.NumericInput
 @using Plot.Components.PartialComponents.OptionInput
@@ -33,9 +36,9 @@
 @using Plot.Components.PartialComponents.Modal
 @using Plot.Components.PartialComponents.FileInput
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
 @using Plot.Data.Models.Users
 @using Plot.Data.Models.Floorsets
+@using Plot.Data.Models.Fixtures
 @using Microsoft.AspNetCore.Components.Authorization
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -72,7 +75,7 @@
             {
                 <AuthorizeView Policy="Manager">
                     <Button Class="Button button-with-spacing" Id="buttonAddFixture" Variant="primary"
-                        OnClickFunction="ToggleAddFixture" Icon="fas fa-edit" TextAlignment="center">
+                        @onclick="ToggleAddFixture" Icon="fas fa-edit" TextAlignment="center">
                         Add Fixture
                     </Button>
                 </AuthorizeView>
@@ -82,13 +85,13 @@
             {
                 <AuthorizeView Policy="Manager">
                     <Button Class="Edit Building Walls Button button-with-spacing" Id="buttonEditWalls" Variant="primary"
-                        OnClickFunction="ToggleBuildingWalls" Icon="fas fa-edit" TextAlignment="center">
+                        @onclick="ToggleBuildingWalls" Icon="fas fa-edit" TextAlignment="center">
                         Edit Building Walls
                     </Button>
                 </AuthorizeView>
             }
 
-            <Button Class="Button" Id="buttonViewAllocations" Variant="primary" OnClickFunction="ToggleAllocations"
+            <Button Class="Button" Id="buttonViewAllocations" Variant="primary" @onclick="ToggleAllocations"
                 Icon="fa-solid fa-eye" TextAlignment="center">
                 View Allocations
             </Button>
@@ -105,7 +108,7 @@
                 Print Layout
             </Button>
 
-            <Button Icon="fa-solid fa-floppy-disk" Variant="success" OnClickFunction="saveCanvas" TextAlignment="center">
+            <Button Icon="fa-solid fa-floppy-disk" Variant="success" @onclick="SaveCanvas" TextAlignment="center">
                 Save
             </Button>
 
@@ -131,11 +134,16 @@
 
 <PrintModal FloorsetId="FloorsetId" />
 
-<AddFixtureModal StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
-
-<EditFixtureModal />
+<AddFixtureModal id="create-fixture" StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
 <HelpModal />
+
+@* TODO: Add delete fixture modal *@
+@foreach (var FixtureModel in FixtureModels)
+{
+    <EditFixtureModal id="@($"edit-fixture-{FixtureModel.TUID}")" StoreId="StoreId"
+        UpdateFixtureModels="UpdateFixtureModels" Fixture="FixtureModel" FixtureId="FixtureModel.TUID" />
+}
 
 
 
@@ -144,12 +152,16 @@
     [Parameter] public required int FloorsetId { get; set; }
 
     private List<Data.Models.Fixtures.FixtureModel> FixtureModels = new List<Data.Models.Fixtures.FixtureModel>();
+    private bool buildingWallsExpanded = false;
+    private bool printLayoutOpen = false;
+    private bool allocationsOpen = false;
+    private bool addFixtureExpanded = true;
 
 
 
     // Used when the save button is pressed. Calls js to take a picture of the floorset
     // and update the database with the new image- Michael Polhill
-    private async Task saveCanvas()
+    private async Task SaveCanvas()
     {
         // Get the image as a base64 string from the browser
         string base64Image = await JS.InvokeAsync<string>("captureFloorsetThumbnail");
@@ -181,9 +193,13 @@
                 var saveResponse = await FloorsetsHttpClient.UpdatePublicInfo(FloorsetId, updatePublicInfoFloorset);
 
                 // If the floorset successfully saved, show a success message as a bootstrap toast.
-                if (saveResponse == System.Net.HttpStatusCode.OK)
+                if (saveResponse != System.Net.HttpStatusCode.OK)
                 {
-                    await JS.InvokeVoidAsync("openSaveToast", "saveToast");
+                    ToastService.ShowError("There was an error saving the floorset!");
+                }
+                else
+                {
+                    ToastService.ShowSuccess("The floorset was saved.");
                 }
             }
         }
@@ -231,113 +247,13 @@
         }
 
         await UpdateFixtureModels();
-        @* addFixtureInstanceToGrid *@
 
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Console.WriteLine("render");
-        await UpdateStore();
-        @* if (firstRender)
-        {
-
-            var response = await FixturesHttpClient.GetFloorsetFixtureInformation(FloorsetId);
-
-            if (response != null)
-            {
-                response.ForEach(async (fixtureInstance) =>
-                {
-                    Console.WriteLine(fixtureInstance.EDITOR_ID);
-                    await JS.InvokeVoidAsync("window.addFixture", fixtureInstance.EDITOR_ID, fixtureInstance.X_POS,
-    fixtureInstance.Y_POS, 1, 1);
-                });
-            }
-        } *@
+        if (firstRender) await UpdateStore();
     }
-
-    @* private int? selectedFixtureID; *@
-    @* private FixtureConfigModal? configModal; *@
-
-    @* Tristan Calay 4/7/25
-    Hold a reference to the fixture model that gets dragged onto the grid, so that when the JS 
-    calls for a new ID, an instance is ready to be created.*@
-
-    private Data.Models.Fixtures.FixtureModel? currentDraggedFixture { get; set; }
-
-    @*
-    Tristan Calay 4/7/25
-    To be called by the AddFixturePanel : FixtureDraggedEvent callback. 
-    Caches a fixture model to be used as a FixtureInstance and sent to the grid.*@
-    public void OnFixtureDragged(Data.Models.Fixtures.FixtureModel model)
-    {
-        currentDraggedFixture = model;
-    }
-
-
-    /* Tristan Calay 3/28/25
-    The allocations sidebar reference allows methods to be called from here to the sidebar.
-    It should be set by @ref in the page layout above.
-    */
-    //private AllocationsSidebar? allocationsSidebar;
-
-    /*Tristan Calay 4/7/25
-    Compute the totals for each category in the allocation sidebar, based on the fixtures dict*/
-    private void ComputeAllocationTotals()
-    {
-        //Break if the allocations sidebar reference is null.
-        @* if (allocationsSidebar == null)
-        {
-            return;
-        } *@
-
-        Console.WriteLine("Compute Allocation Totals");
-
-        //List<Category> categories = allocationsSidebar.getAllCategories();
-        //Set all start values to zero. They are computed by adding the fixture LF to the categories.
-
-        @* foreach (Category category in categories)
-        {
-            category.currentValue = 0;
-        } *@
-        @* foreach (Data.Models.Fixtures.FixtureInstance fixture in fixturesDict.Values)
-        {
-            //Find the progress bar representing the category, and add the current hanging capacity to it.
-            foreach (Category category in categories)
-            {
-                if (category.isHeader)
-                {
-                    if (category.headerCategory == fixture.CATEGORY)
-                    {
-                        category.currentValue += fixture.TOT_LF;
-                    }
-                }
-                else if (category.headerCategory == fixture.CATEGORY && category.text == fixture.CATEGORY)
-                {
-                    category.currentValue += fixture.TOT_LF;
-                }
-
-
-            }
-        } *@
-
-        //allocationsSidebar.notifyCategoryUpdates();
-    }
-
-
-    /*
-    The UpdateImage function updates the image data in a fixture.
-    */
-    [JSInvokable]
-    public void UpdateImage(string value)
-    {
-        Console.WriteLine(value);
-    }
-
-    private bool buildingWallsExpanded = false;
-    private bool printLayoutOpen = false;
-    private bool allocationsOpen = false;
-    private bool addFixtureExpanded = false;
 
     private void ToggleBuildingWalls()
     {
