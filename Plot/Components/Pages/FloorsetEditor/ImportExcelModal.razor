@@ -13,15 +13,7 @@
         <ModalBody>
             <label class="w-100">
                 Import an Excel File
-                @if (!isUploading)
-                {
-                    <FileInput OnFileSelected="OnFileUpload" />
-                }
-                else
-                {
-                    <p>Uploading... please wait</p>
-                }
-                
+                <FileInput OnFileSelected="OnFileUpload" />
             </label>
         </ModalBody>
         <ModalFooter>
@@ -34,13 +26,7 @@
 
 @code {
     [Parameter] public required int FloorsetId { get; set; }
-    [SupplyParameterFromForm] private Data.Models.Allocations.UploadFile? ImportExcelFileModel { get; set; }
-
-    private bool shouldRender;
-
-    protected override bool ShouldRender() => shouldRender;
-
-    private bool isUploading = false;
+    private Data.Models.Allocations.UploadFile? ImportExcelFileModel { get; set; }
 
     protected override void OnInitialized()
     {
@@ -49,44 +35,26 @@
 
     private async Task OnFileUpload(IBrowserFile  e)
     {
-        Console.WriteLine(e.Name);
-
-        shouldRender=false;
-        isUploading=true;
-        
-        
         if (e != null)
         {
-            
             MemoryStream ms = new MemoryStream();
             await e.OpenReadStream().CopyToAsync(ms);
             ms.Position=0;
             
             if (ImportExcelFileModel != null)
             {
-                
                 ImportExcelFileModel.Stream=ms;
                 ImportExcelFileModel.FileName=e.Name;
                 ImportExcelFileModel.ContentType=e.ContentType;
-
             }
         }
     }
 
     private async Task OnImportExcelFileSubmit()
     {
-        
-        
-        
-        //Console.WriteLine(ImportExcelFileModel?.EXCEL_FILE==null);
         if (ImportExcelFileModel?.Stream != null)
         {
-            //Console.WriteLine(ImportExcelFileModel?.EXCEL_FILE.Size);
             var response = await SalesHttpClient.UploadSales(FloorsetId, ImportExcelFileModel);
-            Console.WriteLine(response);
-            shouldRender=true;
-            isUploading=false;
-            
         }
     }
 }

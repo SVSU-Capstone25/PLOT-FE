@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Plot.Data.Models.Allocations;
 using Plot.Data.Models.Env;
 
@@ -73,8 +74,6 @@ public class PlotHttpClient : HttpClient
         var token = _httpContextAccessor.HttpContext?.Request.Cookies["Auth"];
         httpRequestMessage.Headers.Add("Authorization", $"Bearer {token}");
 
-        
-
         return await base.SendAsync(httpRequestMessage);
     }
 
@@ -112,32 +111,25 @@ public class PlotHttpClient : HttpClient
         return (response.StatusCode, default);
     }
 
-    public async Task<T?> SendPostContentAsync<T>(string endpoint, UploadFile excelFile)
+    public async Task<HttpStatusCode> SendPostContentAsync(string endpoint, UploadFile file)
     {
-        if(excelFile!=null)
+        
+        if(file!=null)
         {
             var content = new MultipartFormDataContent();
-
-        
-            if (excelFile.Stream == null)
-            {
-                throw new ArgumentNullException(nameof(excelFile.Stream), "The stream cannot be null.");
-            }
-
-            var fileContent = new StreamContent(excelFile.Stream);
+            var fileContent = new StreamContent(file.Stream);
             
-            fileContent.Headers.ContentType = new MediaTypeHeaderValue(excelFile.ContentType ?? "application/octet-stream");
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
 
-            content.Add(fileContent, "excelFile", excelFile.FileName ?? "defaultFileName.xlsx");
+            content.Add(fileContent, "file", file.FileName);
             
             var response = await SendAsync(endpoint, HttpMethod.Post,content);
 
-            //Console.WriteLine(response);
+            if(response!=null)
+            {
+                return response.StatusCode;
+            }            
         }
-
-        
-        
-
         return default;
     }
 
