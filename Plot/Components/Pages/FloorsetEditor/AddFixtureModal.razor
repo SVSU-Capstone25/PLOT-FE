@@ -18,7 +18,6 @@
 @code {
     [Parameter] public EventCallback UpdateFixtureModels { get; set; }
 
-    [Parameter] public required int FixtureId { get; set; }
     [Parameter] public required int StoreId { get; set; }
 
     [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? AddFixtureModel { get; set; }
@@ -36,7 +35,7 @@
 
         if (AddFixtureModel != null)
         {
-            var response = await FixturesHttpClient.CreateFixtureModel(FixtureId, AddFixtureModel);
+            var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
 
             await UpdateFixtureModels.InvokeAsync();
         }
