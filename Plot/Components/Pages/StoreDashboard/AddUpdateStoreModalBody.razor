@@ -91,18 +91,22 @@
 
             @foreach (var User in Users)
             {
-                <div class="d-flex flex-column align-items-center">
-                    <button type="button" class="btn btn-secondary btn-circle position-relative"
-                        style="--bs-btn-font-size: .75rem;" @onclick="async () => await OnDeleteUserClick(User.TUID)">
-                        @User.FIRST_NAME![0]@User.LAST_NAME![0]
-                        <span
-                            class="minus-badge position-absolute top-0 start-100 translate-middle bg-danger rounded-circle">
-                            <i class="fa-solid fa-minus p-1"></i>
-                        </span>
-
-                    </button>
-                    <p class="circle-name">@User.FIRST_NAME</p>
-                </div>
+                if(User!= null && User.FIRST_NAME != null && User.LAST_NAME != null 
+                && !User.FIRST_NAME.Equals("Root") && !User.LAST_NAME.Equals("User")){
+                    <div class="d-flex flex-column align-items-center">
+                        <button type="button" class="btn btn-secondary btn-circle position-relative"
+                            style="--bs-btn-font-size: .75rem;" @onclick="async () => await OnDeleteUserClick(User.TUID)">
+                            @User.FIRST_NAME![0]@User.LAST_NAME![0]
+                            <span
+                                class="minus-badge position-absolute top-0 start-100 translate-middle bg-danger rounded-circle">
+                                <i class="fa-solid fa-minus p-1"></i>
+                            </span>
+    
+                        </button>
+                        <p class="circle-name">@User.FIRST_NAME</p>
+                    </div>
+                }
+                
             }
         </div>
     </section>
