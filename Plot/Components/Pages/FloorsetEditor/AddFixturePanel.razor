@@ -39,13 +39,11 @@
             @* Create fixture tile for each fixture in dictionary *@
             @foreach (var fixtureModel in FixtureModels)
             {
-                @if (FixtureSearch != "" && fixtureModel.NAME != null)
+                @if (fixtureModel.NAME != null && !fixtureModel.NAME.ToLower().Contains(FixtureSearch.ToLower()))
                 {
-                    @if (!fixtureModel.NAME.ToLower().Contains(FixtureSearch))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
+
                 var ImageSrc = fixtureModel.ICON != null ?
                 $"data:image/jpeg;base64,{Convert.ToBase64String(fixtureModel.ICON)}" :
                 "https://placecats.com/200/200";
