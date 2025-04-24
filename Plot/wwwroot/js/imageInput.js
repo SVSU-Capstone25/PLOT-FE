@@ -47,7 +47,6 @@ window.initializeImageInput = (id) => {
 // if a valid image file was selected, change the background 
 // of the drag/drop area to serve as a preview
 function onImageSelected(id) {
-    console.log("id is " + id);
     const fileInput = document.getElementById(`${id}-fileInput`);
     const file = fileInput.files[0];
 

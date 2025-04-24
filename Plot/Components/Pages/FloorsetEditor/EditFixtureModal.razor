@@ -6,11 +6,11 @@
 
 @* Edit Fixture Modal *@
 
-<Modal @attributes="Attributes" SizeClass="modal-xl" class="z-index-override">
+<Modal @attributes="Attributes" SizeClass="modal-lg">
     <ModalHeader Title="Edit Fixture" />
     <EditForm Model="EditFixtureModel" OnValidSubmit="async () => await OnEditFixtureSubmit()">
 
-        <AddUpdateFixtureModalBody AddUpdateFixtureModel="EditFixtureModel" />
+        <AddUpdateFixtureModalBody AddUpdateFixtureModel="EditFixtureModel" FixtureId="FixtureId" />
 
         <ModalFooter OnCancelClick="ClearEditFixtureModel">
             <Button class="btn add-btn ms-auto" Variant="primary" type="submit" data-bs-dismiss="modal">Save</Button>

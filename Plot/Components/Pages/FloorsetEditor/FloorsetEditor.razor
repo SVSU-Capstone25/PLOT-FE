@@ -138,16 +138,14 @@
 
 <HelpModal />
 
-@* TODO: Add delete fixture modal *@
+@* Josh Rodack 4/23/25 Added delete fixture modal *@
 @foreach (var FixtureModel in FixtureModels)
 {
     <EditFixtureModal id="@($"edit-fixture-{FixtureModel.TUID}")" StoreId="StoreId"
-        UpdateFixtureModels="UpdateFixtureModels" Fixture="FixtureModel" FixtureId="FixtureModel.TUID" />
+        UpdateFixtureModels="UpdateFixtureModels" Fixture="FixtureModel" FixtureId="@FixtureModel.TUID" />
 
     <DeleteFixtureModal Fixture="FixtureModel" UpdateFixtureModels="UpdateFixtureModels" />
 }
-
-
 
 @code {
     [Parameter] public required int StoreId { get; set; }
