@@ -70,7 +70,7 @@ Author: Tristan Calay (3/15/2025)-->
                 </li>
 
                 @foreach (var AllocationFulfillment in allocationFulfillmentList.Value.Where((AllocationFulfillmentList) =>
-                            AllocationFulfillmentList.SUBCATEGORY.ToLower().Contains(CategorySearch)))
+                            AllocationFulfillmentList.SUBCATEGORY.ToLower().Contains(CategorySearch.ToLower())))
                 {
                     string activeClass = AllocationFulfillment == SelectedFufillment ? "active" : "";
                     var NeededLF = (int)Math.Floor(((float)AllocationFulfillment.TOTAL_SALES / totalSales) *
