@@ -18,10 +18,13 @@ Author: Andrew Fulton (3/13/2025)  *@
 @inject FloorsetsHttpClient FloorsetsHttpClient
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
+@inject ToastService ToastService
 @inject SalesHttpClient SalesHttpClient
 
+@using Plot.Services
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+
 
 @* Top portion of the page (Showing store, location, and image for the current floorset) *@
 <div class="row mb-4 align-items-center">
@@ -74,6 +77,16 @@ Author: Andrew Fulton (3/13/2025)  *@
                     <span class="d-inline-block text-truncate" style="max-width: 100%;">@Floorset.NAME</span>
                 </a>
             </CardTitle>
+    <Card>
+        <a href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")" class="w-100 ratio ratio-4x3">
+            <CardImage Image="@ImageSrc" />
+        </a>
+        <CardBody>
+            <CardTitle class="over-hidden" style="width: 100%;">
+                <a class="text-truncate" href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")">
+                    <span class="d-inline-block text-truncate" style="max-width: 100%;">@Floorset.NAME</span>
+                </a>
+            </CardTitle>
 
                 <AuthorizeView Policy="Manager">
                     <Dropdown Class="Dropdown" Id="@Floorset.TUID.ToString()" LabelText="Floorset">
@@ -101,8 +114,8 @@ Author: Andrew Fulton (3/13/2025)  *@
             <Modal id="@($"delete-floorset-{Floorset.TUID}")" class="standard">
                 <ModalHeader Title="Confirm Deletion" Variant="danger" />
                 <form @onsubmit="async () => {
-                            await OnDeleteFloorsetSubmit(Floorset.TUID);
-                            deleteTextInput = string.Empty;}">
+                                await OnDeleteFloorsetSubmit(Floorset.TUID);
+                                deleteTextInput = string.Empty;}">
                 @code {
                     private string? deleteTextInput;
                     private bool isDisabled => deleteTextInput != "DELETE";
@@ -168,7 +181,11 @@ Author: Andrew Fulton (3/13/2025)  *@
 
     private async Task OnDeleteFloorsetSubmit(int floorsetId)
     {
-        await FloorsetsHttpClient.DeleteFloorset(floorsetId);
+        var response = await FloorsetsHttpClient.DeleteFloorset(floorsetId);
+        if (response == System.Net.HttpStatusCode.OK)
+        {
+            ToastService.ShowSuccess("The fixture has been deleted!");
+        }
         await UpdateFloorsets();
     }
 

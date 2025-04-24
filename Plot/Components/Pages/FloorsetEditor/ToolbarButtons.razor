@@ -4,7 +4,7 @@
 @using Plot.Components.PartialComponents.Button
 @using Microsoft.AspNetCore.Components.Authorization
 
-<div class="toolbar-buttons">
+<div class="d-flex flex-row gap-2 justify-content-center p-2">
     @*Edit Fixture Button *@
     <Button IsDisabled="false" Variant="primary" Icon="fa-solid fa-pen-to-square" @onclick="EditFixture"
         TextAlignment="center" />

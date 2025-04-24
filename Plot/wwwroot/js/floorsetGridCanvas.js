@@ -50,7 +50,7 @@ async function getCookie(key) {
 /**
  * @template T
  * @param {number} wait Wait time
- * @param {(item: T) => void} onFlush
+ * @param {(item: T) => Promise<void>} onFlush
  * @returns
  */
 function createDebouncedAggregator(wait, onFlush) {
@@ -136,9 +136,14 @@ function sketch(p5) {
   let mouseFixture, floorsetId, employeeAreaSelection;
 
   const paintAggregator = createDebouncedAggregator(500, (fixtures) => {
-    fixtures.forEach((fixture) => {
-      updateFixtureInstance(fixture).then(console.log).catch(console.error);
-    });
+    console.log(fixtures);
+    Promise.allSettled(
+      fixtures.map((fixture) => updateFixtureInstance(fixture))
+    )
+      .then(() => {
+        DotNet?.invokeMethodAsync("Plot", "UpdateAllocations");
+      })
+      .catch(console.error);
   });
 
   p5.preload = () => {
@@ -181,6 +186,7 @@ function sketch(p5) {
     getFixtureInstances(floorsetId)
       .then((fixtureInstances) => {
         fixtureInstances.forEach((fixtureInstance) => {
+          console.log(fixtureInstance, Fixture.from(p5, fixtureInstance));
           gridInstance.fixtures.push(Fixture.from(p5, fixtureInstance));
         });
       })
@@ -229,7 +235,24 @@ function sketch(p5) {
     const mouse = p5.createVector(p5.mouseX, p5.mouseY);
 
     if (p5.mouseButton === "left") {
-      if (window.grid.state === "place") {
+      if (window.grid.state === "paint" || window.grid.state === "erase") {
+        const { x, y } = gridInstance.toGridCoordinates(mouse);
+        const rack = gridInstance.getFixtureAt(x, y);
+
+        if (!rack) return;
+
+        if (window.grid.state === "erase") {
+          rack.COLOR = "#fff";
+          rack.SUPERCATEGORY_TUID = 0;
+          rack.SUBCATEGORY = "";
+        } else {
+          rack.COLOR = window.grid.paint.COLOR;
+          rack.SUPERCATEGORY_TUID = window.grid.paint.SUPERCATEGORY_TUID;
+          rack.SUBCATEGORY = window.grid.paint.SUBCATEGORY;
+        }
+
+        paintAggregator(rack.toObject());
+      } else if (window.grid.state === "place") {
         const { x, y } = gridInstance.toGridCoordinates(mouse);
         const rack = gridInstance.getFixtureAt(x, y);
 
@@ -246,15 +269,6 @@ function sketch(p5) {
       ) {
         employeeAreaSelection.v1 = mouse;
         employeeAreaSelection.v2 = mouse;
-      } else if (window.grid.state === "erase") {
-        const { x, y } = gridInstance.toGridCoordinates(mouse);
-        const rack = gridInstance.getFixtureAt(x, y);
-        if (!rack) return;
-
-        const index = gridInstance.fixtures.indexOf(rack);
-        if (index > -1) {
-          gridInstance.fixtures.splice(index, 1);
-        }
       } else {
         const gridCoords = gridInstance.toGridCoordinates(mouse);
         const rack = gridInstance.getFixtureAt(gridCoords.x, gridCoords.y);
@@ -270,10 +284,11 @@ function sketch(p5) {
 
       window.showDropdown(true, p5.mouseX, p5.mouseY);
 
-      window.dotNetReference?.invokeMethodAsync(
+      DotNet?.invokeMethodAsync(
+        "Plot",
         "GetFixture",
+        floorsetId,
         rack.TUID,
-        rack.EDITOR_ID,
         rack.NAME,
         rack.HANGER_STACK,
         rack.SUBCATEGORY,
@@ -285,27 +300,23 @@ function sketch(p5) {
   p5.mouseDragged = async () => {
     const mouse = p5.createVector(p5.mouseX, p5.mouseY);
 
-    if (window.grid.state === "paint") {
+    if (window.grid.state === "paint" || window.grid.state === "erase") {
       const { x, y } = gridInstance.toGridCoordinates(mouse);
       const rack = gridInstance.getFixtureAt(x, y);
 
       if (!rack) return;
 
-      rack.COLOR = window.grid.paint.COLOR;
-      rack.SUPERCATEGORY_TUID = window.grid.paint.SUPERCATEGORY_TUID;
-      rack.SUBCATEGORY = window.grid.paint.SUBCATEGORY;
+      if (window.grid.state === "erase") {
+        rack.COLOR = "#fff";
+        rack.SUPERCATEGORY_TUID = 0;
+        rack.SUBCATEGORY = "";
+      } else {
+        rack.COLOR = window.grid.paint.COLOR;
+        rack.SUPERCATEGORY_TUID = window.grid.paint.SUPERCATEGORY_TUID;
+        rack.SUBCATEGORY = window.grid.paint.SUBCATEGORY;
+      }
 
       paintAggregator(rack.toObject());
-    } else if (window.grid.state === "erase") {
-      const { x, y } = gridInstance.toGridCoordinates(mouse);
-      const rack = gridInstance.getFixtureAt(x, y);
-
-      if (!rack) return;
-
-      const index = gridInstance.fixtures.indexOf(rack);
-      if (index > -1) {
-        gridInstance.fixtures.splice(index, 1);
-      }
     } else if (
       window.grid.state === "employee_area_paint" ||
       window.grid.state === "employee_area_erase"
@@ -399,11 +410,20 @@ function sketch(p5) {
           FLOORSET_TUID: floorsetId,
           X_POS: x,
           Y_POS: y,
-          ALLOCATED_LF: 1,
-          EDITOR_ID: gridInstance.fixtures.length + 1,
         }).toObject()
       )
         .then((data) => {
+          console.log(
+            window.draggedFixture,
+            Fixture.from(p5, {
+              ...window.draggedFixture,
+              TUID: data,
+              COLOR: "#fff",
+              FLOORSET_TUID: floorsetId,
+              X_POS: x,
+              Y_POS: y,
+            })
+          );
           gridInstance.fixtures.push(
             Fixture.from(p5, {
               ...window.draggedFixture,
@@ -412,8 +432,6 @@ function sketch(p5) {
               FLOORSET_TUID: floorsetId,
               X_POS: x,
               Y_POS: y,
-              ALLOCATED_LF: 1,
-              EDITOR_ID: gridInstance.fixtures.length + 1,
             })
           );
           mouseFixture = undefined;
@@ -458,10 +476,14 @@ window.setPaintMode = (enabled) => {
   window.grid.state = enabled ? "paint" : "place";
 };
 
+window.setPaint = (paint, supercategory_tuid, subcategory) => {
+  window.grid.paint.COLOR = paint;
+  window.grid.paint.SUPERCATEGORY_TUID = supercategory_tuid;
+  window.grid.paint.SUBCATEGORY = subcategory;
+};
+
 window.setErase = () => {
-  window.grid.paint.COLOR = "#fff";
-  window.grid.paint.SUPERCATEGORY_TUID = 0;
-  window.grid.state = "paint";
+  window.grid.state = "erase";
 };
 
 window.setPlace = () => {
@@ -469,18 +491,11 @@ window.setPlace = () => {
 };
 
 window.setEmployeeAreaPaint = () => {
-  console.log("hello");
   window.grid.state = "employee_area_paint";
 };
 
 window.setEmployeeAreaErase = () => {
   window.grid.state = "employee_area_erase";
-};
-
-window.setPaint = (paint, supercategory_tuid, subcategory) => {
-  window.grid.paint.COLOR = paint;
-  window.grid.paint.SUPERCATEGORY_TUID = supercategory_tuid;
-  window.grid.paint.SUBCATEGORY = subcategory;
 };
 
 window.createDraggable = (event) => {
@@ -491,10 +506,6 @@ window.createDraggable = (event) => {
     STORE_TUID = Number(event.target.getAttribute("data-store-tuid"));
 
   window.draggedFixture = { WIDTH, LENGTH, NAME, FIXTURE_TUID, STORE_TUID };
-};
-
-window.setDotnetReference = (dotNetReference) => {
-  window.dotNetReference = dotNetReference;
 };
 
 window.showDropdown = (isShowing, x = 0, y = 0) => {

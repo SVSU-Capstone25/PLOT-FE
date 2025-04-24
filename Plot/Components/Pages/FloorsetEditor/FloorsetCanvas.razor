@@ -1,6 +1,7 @@
 @inject IJSRuntime JSRuntime
 
 @using Plot.Data.Models.Fixtures
+@using Plot.Services
 
 <div id="@_containerId" class="position-absolute top-0 start-0">
 </div>
@@ -17,28 +18,16 @@
     {
         if (firstRender)
         {
-            var DotNetReference = DotNetObjectReference.Create(this);
-
             await JSRuntime.InvokeVoidAsync("window.initP5", _containerId);
-            await JSRuntime.InvokeVoidAsync("window.setDotnetReference", DotNetReference);
         }
     }
 
-    [JSInvokable("GetFixture")]
-    public void GetFixture(int Tuid, int EditorTuid, string? Name, int? HangerStack, string? Subcategory, string? Note)
+    protected override void OnInitialized()
     {
-
-        FixtureInstance = new FixtureInstance
+        FloorsetEditorService.OnFixtureReceived = instance =>
         {
-            TUID = Tuid,
-            NAME = Name,
-            FLOORSET_TUID = FloorsetId,
-            EDITOR_ID = EditorTuid,
-            HANGER_STACK = HangerStack,
-            NOTE = Note,
-            SUBCATEGORY = Subcategory
+            FixtureInstance = instance;
+            InvokeAsync(StateHasChanged);
         };
-
-        StateHasChanged();
     }
 }
