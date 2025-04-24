@@ -101,6 +101,12 @@ It also allows you to delete a fixture on the grid. -->
             NOTE = FixtureInstance?.NOTE,
             SUBCATEGORY = FixtureInstance?.SUBCATEGORY
         };
+
+        FloorsetEditorService.OnExcelUpdate += async () =>
+        {
+            await UpdateAllocationFulfillments();
+            await InvokeAsync(StateHasChanged);
+        };
     }
 
     protected override void OnParametersSet()

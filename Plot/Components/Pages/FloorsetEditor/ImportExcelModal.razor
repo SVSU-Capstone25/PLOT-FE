@@ -55,7 +55,8 @@
         if (ImportExcelFileModel?.Stream != null)
         {
             var response = await SalesHttpClient.UploadSales(FloorsetId, ImportExcelFileModel);
-            Console.WriteLine(response);
+
+            await FloorsetEditorService.TriggerExcelUpdateAsync();
         }
     }
 }

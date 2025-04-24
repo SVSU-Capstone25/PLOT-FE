@@ -4,6 +4,7 @@ using Plot.Data.Models.Fixtures;
 public class FloorsetEditorService
 {
     public static event Func<Task>? OnUpdate;
+    public static event Func<Task>? OnExcelUpdate;
     public static Action<FixtureInstance>? OnFixtureReceived;
 
     public static async Task TriggerUpdateAsync()
@@ -11,6 +12,14 @@ public class FloorsetEditorService
         if (OnUpdate != null)
         {
             await OnUpdate.Invoke();
+        }
+    }
+
+    public static async Task TriggerExcelUpdateAsync()
+    {
+        if (OnExcelUpdate != null)
+        {
+            await OnExcelUpdate.Invoke();
         }
     }
 
