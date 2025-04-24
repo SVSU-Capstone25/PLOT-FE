@@ -61,18 +61,30 @@
     // AddUserStores and NotAddUserStores
     public List<Data.Models.Stores.Store> AddUserStores = new();
 
-    public List<Data.Models.Stores.Store> NotAddUserStores = new();
+    public List<Data.Models.Stores.Store> NotAddUserStores = new List<Data.Models.Stores.Store>();
 
     // Model for getting user from email
     public Data.Models.Users.UserDTO? UserFromEmail { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        AddUserModel ??= new() // Iniitalize AddUserModel with Role of "Owner"
+        AddUserModel ??= new() // Iniitalize AddUserModel with Role of "Employee"
         {
-            ROLE_NAME = "Owner"
+            ROLE_NAME = "Employee"
         };
 
+        //Get a list of all the stores
+        var response = await StoresHttpClient.GetListOfStores();
+
+        if (response != null)
+        {
+
+            NotAddUserStores = response;
+        }
+        else
+        {
+            ToastService.ShowError("Couldn't get stores!");
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -135,6 +147,14 @@
                     STORE_TUIDS = AddUserStores.Select(store => store.TUID)
                 });
             }
+            else
+            {
+                ToastService.ShowError("There was an error adding the user!");
+            }
+        }
+        else
+        {
+            ToastService.ShowError("There was an error adding the user!");
         }
 
         // Clear Modal
@@ -145,6 +165,7 @@
 
         // Update user dashboard
         await UpdateUsers.InvokeAsync();
+        ToastService.ShowSuccess("The user was created.");
     }
 
     public async Task ClearAddUserModal()

@@ -97,10 +97,15 @@ It also allows you to delete a fixture on the grid. -->
         {
             TUID = FixtureInstance?.TUID ?? -1,
             FLOORSET_TUID = FloorsetId,
-            EDITOR_ID = FixtureInstance?.EDITOR_ID ?? -1,
             HANGER_STACK = FixtureInstance?.HANGER_STACK,
             NOTE = FixtureInstance?.NOTE,
             SUBCATEGORY = FixtureInstance?.SUBCATEGORY
+        };
+
+        FloorsetEditorService.OnExcelUpdate += async () =>
+        {
+            await UpdateAllocationFulfillments();
+            await InvokeAsync(StateHasChanged);
         };
     }
 
@@ -108,10 +113,10 @@ It also allows you to delete a fixture on the grid. -->
     {
         if (UpdateFixtureInstanceModel == null) return;
 
+        UpdateFixtureInstanceModel.TUID = FixtureInstance?.TUID ?? -1;
         UpdateFixtureInstanceModel.SUBCATEGORY = FixtureInstance?.SUBCATEGORY;
         UpdateFixtureInstanceModel.HANGER_STACK = FixtureInstance?.HANGER_STACK;
         UpdateFixtureInstanceModel.NOTE = FixtureInstance?.NOTE;
-        UpdateFixtureInstanceModel.EDITOR_ID = FixtureInstance?.EDITOR_ID ?? -1;
     }
     private async Task UpdateAllocationFulfillments()
     {
@@ -135,16 +140,22 @@ It also allows you to delete a fixture on the grid. -->
     {
         if (UpdateFixtureInstanceModel != null)
         {
+            Console.WriteLine(UpdateFixtureInstanceModel);
+
             var subcategory = Subcategories.GetValueOrDefault(UpdateFixtureInstanceModel.SUBCATEGORY ?? "None");
 
-            UpdateFixtureInstanceModel.SUPERCATEGORY_TUID = subcategory?.SUPERCATEGORY_TUID;
+            UpdateFixtureInstanceModel.SUPERCATEGORY_TUID = subcategory?.TUID;
 
-            await FixturesHttpClient.UpdateFixtureInstance(UpdateFixtureInstanceModel);
-            await JSRuntime.InvokeVoidAsync("window.gridInstance.updateFixtureByEditorTuid", UpdateFixtureInstanceModel.EDITOR_ID,
+            var response = await FixturesHttpClient.UpdateFixtureInstance(UpdateFixtureInstanceModel);
+
+            await JSRuntime.InvokeVoidAsync("window.gridInstance.updateFixtureByTuid",
+            UpdateFixtureInstanceModel.TUID,
             UpdateFixtureInstanceModel.HANGER_STACK, UpdateFixtureInstanceModel.SUBCATEGORY,
             UpdateFixtureInstanceModel.SUPERCATEGORY_TUID, subcategory?.SUPERCATEGORY_COLOR ?? "white",
             UpdateFixtureInstanceModel.NOTE);
+
             await JSRuntime.InvokeVoidAsync("showDropdown", false);
+            await FloorsetEditorService.TriggerUpdateAsync();
         }
     }
 
@@ -152,9 +163,12 @@ It also allows you to delete a fixture on the grid. -->
     {
         if (UpdateFixtureInstanceModel != null)
         {
-            await FixturesHttpClient.DeleteFixtureInstance(UpdateFixtureInstanceModel.TUID);
-            await JSRuntime.InvokeVoidAsync("window.gridInstance.deleteFixtureByEditorTuid", UpdateFixtureInstanceModel.EDITOR_ID);
+            var response = await FixturesHttpClient.DeleteFixtureInstance(UpdateFixtureInstanceModel.TUID);
+
+            await JSRuntime.InvokeVoidAsync("window.gridInstance.deleteFixtureByTuid", UpdateFixtureInstanceModel.TUID);
+
             await JSRuntime.InvokeVoidAsync("showDropdown", false);
+            await FloorsetEditorService.TriggerUpdateAsync();
         }
     }
 }

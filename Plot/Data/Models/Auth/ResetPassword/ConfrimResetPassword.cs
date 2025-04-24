@@ -18,14 +18,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Plot.Data.Models.Auth.ResetPassword;
 
-public record ResetPassword
+public record ConfirmResetPassword
 {
     // VARIABLES -- VARIABLES -- VARIABLES -- VARIABLES -- VARIABLES ------
 
     // New password for the user.
-    
+    [Required(ErrorMessage = "Password is required.")]
     public string? NewPassword { get; set; }
 
     // Token used when the link was generated to validate the password reset.
-    public string? Token { get; set; }
+    [Required(ErrorMessage = "Password is required.")]
+    public string? ConfirmPassword { get; set; }
 }

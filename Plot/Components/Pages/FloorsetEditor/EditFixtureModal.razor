@@ -1,13 +1,16 @@
 @inject IJSRuntime JS
 @inject FixturesHttpClient FixturesHttpClient
+@inject ToastService ToastService
+
+@using Plot.Services
 
 @* Edit Fixture Modal *@
 
-<Modal @attributes="Attributes" SizeClass="modal-xl" class="z-index-override">
+<Modal @attributes="Attributes" SizeClass="modal-lg">
     <ModalHeader Title="Edit Fixture" />
     <EditForm Model="EditFixtureModel" OnValidSubmit="async () => await OnEditFixtureSubmit()">
 
-        <AddUpdateFixtureModalBody AddUpdateFixtureModel="EditFixtureModel" />
+        <AddUpdateFixtureModalBody AddUpdateFixtureModel="EditFixtureModel" FixtureId="FixtureId" />
 
         <ModalFooter OnCancelClick="ClearEditFixtureModel">
             <Button class="btn add-btn ms-auto" Variant="primary" type="submit" data-bs-dismiss="modal">Save</Button>
@@ -44,14 +47,28 @@
 
     public async Task OnEditFixtureSubmit()
     {
+        if (EditFixtureModel == null)
+        {
+            ToastService.ShowError("There was an error editing the fixture!");
+            return;
+        }
         await Task.Run(() => Console.WriteLine("Edit Fixture"));
 
         if (EditFixtureModel != null)
         {
             var response = await FixturesHttpClient.UpdateFixtureModel(FixtureId, EditFixtureModel);
 
-            await UpdateFixtureModels.InvokeAsync();
+            if (response != System.Net.HttpStatusCode.OK)
+            {
+                ToastService.ShowError("There was an error editing the fixture!");
+            }
+            else
+            {
+                await UpdateFixtureModels.InvokeAsync();
+                ToastService.ShowSuccess("Your edits have been saved!");
+            }
         }
+
 
         ClearEditFixtureModel();
     }

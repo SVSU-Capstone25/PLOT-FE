@@ -5,6 +5,7 @@ using Plot.Components;
 using Microsoft.IdentityModel.Tokens;
 using Plot.Services;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.JSInterop;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,7 @@ builder.Services.AddScoped<ICookie, Cookie>();
 builder.Services.AddScoped<ClaimParserService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddSingleton<ToastService>();
+builder.Services.AddSingleton<FloorsetEditorService>();
 
 // Add JWT authentication and authorization 
 builder.Services.AddAuthentication(options =>
@@ -89,6 +91,12 @@ builder.Services.AddAuthentication(options =>
 
             // Return 401 or redirect to frontend login page
             context.Response.StatusCode = 401; // Unauthorized
+
+            // Set auth cookies exp to the day before to delete it.
+            context.Response.Cookies.Append("Auth", "", new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddDays(-1),
+            });
 
             // Redirect to login
             context.Response.Redirect("/login");
@@ -157,7 +165,6 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseCors(MyAllowSpecificOrigins);
-
 
 app.UseAntiforgery();
 app.MapStaticAssets();

@@ -1,9 +1,11 @@
 @inject IJSRuntime JS
 @inject FixturesHttpClient FixturesHttpClient
+@inject ToastService ToastService
+@using Plot.Services
 
 @* Add Fixture Modal *@
 
-<Modal @attributes="Attributes" SizeClass="modal-xl">
+<Modal @attributes="Attributes" SizeClass="modal-lg">
     <ModalHeader Title="Add Fixture" />
     <EditForm Model="AddFixtureModel" OnValidSubmit="async () => await OnAddFixtureSubmit()">
 
@@ -39,6 +41,11 @@
             var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
 
             await UpdateFixtureModels.InvokeAsync();
+            ToastService.ShowSuccess("The fixture was created.");
+        }
+        else
+        {
+            ToastService.ShowError("There was an error adding a fixture!");
         }
 
         ClearAddFixtureModel();
