@@ -4,6 +4,7 @@ Michael Polhill *@
 @page "/status-code/{statusCode:int}"
 @using Microsoft.AspNetCore.Authorization
 @attribute [AllowAnonymous]
+@layout Plot.Components.Layout.LoginLayout
 
 <h3>Error @statusCode</h3>
 
