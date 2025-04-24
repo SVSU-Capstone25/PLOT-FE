@@ -90,6 +90,12 @@ builder.Services.AddAuthentication(options =>
             // Return 401 or redirect to frontend login page
             context.Response.StatusCode = 401; // Unauthorized
 
+            // Set auth cookies exp to the day before to delete it.
+            context.Response.Cookies.Append("Auth", "", new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddDays(-1),
+            });
+
             // Redirect to login
             context.Response.Redirect("/login");
             return Task.CompletedTask;
