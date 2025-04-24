@@ -68,13 +68,11 @@
                     <ValidationMessage For=@(() => AddUpdateStoreModel.LENGTH) />
                 </div>
             </label>
-
-
         </div>
 
         <div class="col-6 d-flex align-items-center">
             <ImageInput Label="Upload Image" Id="@StoreId.ToString()" Height="310px" OnImageUpload="OnImageUpload"
-                ImageSrc="@ImageSrc" />
+                ImageSrc="ImageSrc" />
         </div>
     </div>
 
@@ -89,10 +87,9 @@
                 <p class="circle-name">Add Employee</p>
             </div>
 
-            @foreach (var User in Users)
+            @foreach (var User in Users.Skip(1).ToList())
             {
-                /* Danielle Smith - 4/23/25 DO NOT SHOW ROOT USER */
-                @if (@User.FIRST_NAME! != "Root" && @User.LAST_NAME! != "User")
+                if (User != null && User.FIRST_NAME != null && User.LAST_NAME != null)
                 {
                     <div class="d-flex flex-column align-items-center">
                         <button type="button" class="btn btn-secondary btn-circle position-relative"
@@ -107,6 +104,7 @@
                         <p class="circle-name">@User.FIRST_NAME</p>
                     </div>
                 }
+
             }
         </div>
     </section>
