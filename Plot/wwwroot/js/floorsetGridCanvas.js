@@ -492,6 +492,13 @@ function sketch(p5) {
         const { x, y } = gridInstance.toGridCoordinates(mouse);
 
         if (!gridInstance.isOnGrid(x, y)) return;
+        if (
+          !gridInstance.isOnGrid(
+            x + mouseFixture.WIDTH - 1,
+            y + mouseFixture.LENGTH - 1
+          )
+        )
+          return;
 
         mouseFixture.X_POS = x;
         mouseFixture.Y_POS = y;
@@ -569,6 +576,13 @@ function sketch(p5) {
       const { x, y } = gridInstance.toGridCoordinates(mouse);
 
       if (!gridInstance.isOnGrid(x, y)) return;
+      if (
+        !gridInstance.isOnGrid(
+          x + window.draggedFixture.WIDTH - 1,
+          y + window.draggedFixture.LENGTH - 1
+        )
+      )
+        return;
 
       createFixtureInstance(
         Fixture.from({
