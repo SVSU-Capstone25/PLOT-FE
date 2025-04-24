@@ -22,7 +22,7 @@ class Grid {
    * @param {p5.Color | string} color
    */
   constructor() {
-    this.size = 30;
+    this.size = 32;
     this.scale = 1;
     this.xOffset = 0;
     this.yOffset = 0;
@@ -221,7 +221,7 @@ class Grid {
     this.draw();
     setTimeout(() => {
       Grid.p5.saveCanvas(`${floorsetName}-${new Date().toDateString()}`, "jpg");
-      Grid.p5.pixelDensity();
+      Grid.p5.pixelDensity(1);
     }, 100);
   }
 }

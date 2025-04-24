@@ -67,13 +67,13 @@ class Fixture {
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
-    Fixture.p5.strokeWeight(1);
+    Fixture.p5.strokeWeight(0.5);
     Fixture.p5.fill("black");
-    Fixture.p5.textSize(24);
+    Fixture.p5.textSize(8);
     Fixture.p5.text(
       this.HANGER_STACK,
-      this.X_POS * gridSize + this.WIDTH * gridSize - 24,
-      this.Y_POS * gridSize + 8,
+      this.X_POS * gridSize + this.WIDTH * gridSize - 8,
+      this.Y_POS * gridSize + 4,
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
@@ -89,12 +89,12 @@ class Fixture {
     );
     Fixture.p5.strokeWeight(0.1);
     Fixture.p5.textSize(4);
-    Fixture.p5.textAlign(Fixture.p5.CENTER, Fixture.p5.BOTTOM);
+    Fixture.p5.textAlign(Fixture.p5.LEFT, Fixture.p5.BOTTOM);
     Fixture.p5.text(
-      this.NOTE ?? "",
-      this.X_POS * gridSize,
+      `${(this.NOTE ?? "").substring(0, 12 * this.WIDTH)}...`,
+      this.X_POS * gridSize + 4,
       this.Y_POS * gridSize - 4,
-      this.WIDTH * gridSize,
+      this.WIDTH * gridSize - 4,
       this.LENGTH * gridSize
     );
     Fixture.p5.pop();
