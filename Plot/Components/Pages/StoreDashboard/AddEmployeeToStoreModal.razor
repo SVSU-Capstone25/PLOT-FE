@@ -11,14 +11,14 @@
             <OptionInput id="addEmployeeOptionsInput">
                 <OptionInputHeader>Select employees to add (hold Ctrl to select multiple)</OptionInputHeader>
                 <InputSelect class="form-select" multiple @bind-Value="AddEmployeesModel!.USERS">
-                    @foreach (var User in Users)
+                    @foreach (var User in Users.Skip(1).ToList())
                     {
-                        if(User!= null && User.FIRST_NAME != null && User.LAST_NAME != null 
-                        && !User.FIRST_NAME.Equals("Root") && !User.LAST_NAME.Equals("User")){
+                        if (User != null && User.FIRST_NAME != null && User.LAST_NAME != null)
+                        {
                             <OptionInputOption value="@User.TUID">
                                 @User.FIRST_NAME @User.LAST_NAME
                             </OptionInputOption>
-                        } 
+                        }
                     }
                 </InputSelect>
             </OptionInput>
