@@ -50,7 +50,7 @@ async function getCookie(key) {
 /**
  * @template T
  * @param {number} wait Wait time
- * @param {(item: T) => void} onFlush
+ * @param {(item: T) => Promise<void>} onFlush
  * @returns
  */
 function createDebouncedAggregator(wait, onFlush) {
@@ -136,11 +136,11 @@ function sketch(p5) {
   let mouseFixture, floorsetId, employeeAreaSelection;
 
   const paintAggregator = createDebouncedAggregator(500, (fixtures) => {
-    fixtures.forEach((fixture) => {
-      updateFixtureInstance(fixture).then(console.log).catch(console.error);
-    });
-
-    DotNet?.invokeMethodAsync("Plot", "UpdateAllocations");
+    Promise.all(fixtures.map((fixture) => updateFixtureInstance(fixture)))
+      .then(() => {
+        DotNet?.invokeMethodAsync("Plot", "UpdateAllocations");
+      })
+      .catch(console.error);
   });
 
   p5.preload = () => {
@@ -231,7 +231,24 @@ function sketch(p5) {
     const mouse = p5.createVector(p5.mouseX, p5.mouseY);
 
     if (p5.mouseButton === "left") {
-      if (window.grid.state === "place") {
+      if (window.grid.state === "paint" || window.grid.state === "erase") {
+        const { x, y } = gridInstance.toGridCoordinates(mouse);
+        const rack = gridInstance.getFixtureAt(x, y);
+
+        if (!rack) return;
+
+        if (window.grid.state === "erase") {
+          rack.COLOR = "#fff";
+          rack.SUPERCATEGORY_TUID = 0;
+          rack.SUBCATEGORY = "";
+        } else {
+          rack.COLOR = window.grid.paint.COLOR;
+          rack.SUPERCATEGORY_TUID = window.grid.paint.SUPERCATEGORY_TUID;
+          rack.SUBCATEGORY = window.grid.paint.SUBCATEGORY;
+        }
+
+        paintAggregator(rack.toObject());
+      } else if (window.grid.state === "place") {
         const { x, y } = gridInstance.toGridCoordinates(mouse);
         const rack = gridInstance.getFixtureAt(x, y);
 
