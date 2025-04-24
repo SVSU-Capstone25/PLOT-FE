@@ -77,17 +77,6 @@ Author: Andrew Fulton (3/13/2025)  *@
                     <span class="d-inline-block text-truncate" style="max-width: 100%;">@Floorset.NAME</span>
                 </a>
             </CardTitle>
-    <Card>
-        <a href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")" class="w-100 ratio ratio-4x3">
-            <CardImage Image="@ImageSrc" />
-        </a>
-        <CardBody>
-            <CardTitle class="over-hidden" style="width: 100%;">
-                <a class="text-truncate" href="@($"/floorset-editor/{StoreId}/{Floorset.TUID}")">
-                    <span class="d-inline-block text-truncate" style="max-width: 100%;">@Floorset.NAME</span>
-                </a>
-            </CardTitle>
-
                 <AuthorizeView Policy="Manager">
                     <Dropdown Class="Dropdown" Id="@Floorset.TUID.ToString()" LabelText="Floorset">
                         <DropdownLink data-bs-toggle="modal" data-bs-target="@($"#edit-floorset-{Floorset.TUID}")"
