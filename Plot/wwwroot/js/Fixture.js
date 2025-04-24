@@ -3,6 +3,8 @@
  * @author Clayton Cook <work@claytonleonardcook.com>
  */
 class Fixture {
+  static p5;
+
   /**
    * @property {number} TUID
    * @property {string} NAME
@@ -21,7 +23,6 @@ class Fixture {
    * @property {number} FIXTURE_IDENTIFIER
    */
   constructor(
-    p5,
     TUID,
     NAME,
     FIXTURE_TUID,
@@ -38,7 +39,6 @@ class Fixture {
     NOTE,
     FIXTURE_IDENTIFIER
   ) {
-    this.p5 = p5;
     this.TUID = TUID;
     this.NAME = NAME;
     this.FIXTURE_TUID = FIXTURE_TUID;
@@ -57,47 +57,47 @@ class Fixture {
   }
 
   draw(gridSize) {
-    this.p5.push();
-    this.p5.fill(this.COLOR);
-    this.p5.stroke(0);
-    this.p5.strokeWeight(3);
-    this.p5.rect(
+    Fixture.p5.push();
+    Fixture.p5.fill(this.COLOR);
+    Fixture.p5.stroke(0);
+    Fixture.p5.strokeWeight(3);
+    Fixture.p5.rect(
       this.X_POS * gridSize,
       this.Y_POS * gridSize,
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
-    this.p5.strokeWeight(1);
-    this.p5.fill("black");
-    this.p5.textSize(24);
-    this.p5.text(
+    Fixture.p5.strokeWeight(1);
+    Fixture.p5.fill("black");
+    Fixture.p5.textSize(24);
+    Fixture.p5.text(
       this.HANGER_STACK,
       this.X_POS * gridSize + this.WIDTH * gridSize - 24,
       this.Y_POS * gridSize + 8,
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
-    this.p5.strokeWeight(0.75);
-    this.p5.textSize(8);
-    this.p5.textAlign(this.p5.CENTER, this.p5.CENTER);
-    this.p5.text(
+    Fixture.p5.strokeWeight(0.75);
+    Fixture.p5.textSize(8);
+    Fixture.p5.textAlign(Fixture.p5.CENTER, Fixture.p5.CENTER);
+    Fixture.p5.text(
       this.SUBCATEGORY ?? "",
       this.X_POS * gridSize,
       this.Y_POS * gridSize,
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
-    this.p5.strokeWeight(0.1);
-    this.p5.textSize(4);
-    this.p5.textAlign(this.p5.CENTER, this.p5.BOTTOM);
-    this.p5.text(
+    Fixture.p5.strokeWeight(0.1);
+    Fixture.p5.textSize(4);
+    Fixture.p5.textAlign(Fixture.p5.CENTER, Fixture.p5.BOTTOM);
+    Fixture.p5.text(
       this.NOTE ?? "",
       this.X_POS * gridSize,
       this.Y_POS * gridSize - 4,
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
-    this.p5.pop();
+    Fixture.p5.pop();
   }
 
   toObject() {
@@ -123,9 +123,8 @@ class Fixture {
   /**
    * @param {Object} object
    */
-  static from(p5, object) {
+  static from(object) {
     return new Fixture(
-      p5,
       object.TUID,
       object.NAME,
       object.FIXTURE_TUID,

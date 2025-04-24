@@ -6,6 +6,8 @@ import EmployeeArea from "./EmployeeArea.js";
  * @author Clayton Cook <work@claytonleonardcook.com>
  */
 class Grid {
+  static p5;
+
   /** @type {Fixture[]} */
   fixtures;
 
@@ -19,8 +21,7 @@ class Grid {
    * @param {number} height
    * @param {p5.Color | string} color
    */
-  constructor(p5) {
-    this.p5 = p5;
+  constructor() {
     this.size = 30;
     this.scale = 1;
     this.xOffset = 0;
@@ -33,7 +34,7 @@ class Grid {
   }
 
   addFixtureInstanceToGrid(...args) {
-    this.fixtures.push(new Fixture(this.p5, ...args));
+    this.fixtures.push(new Fixture(...args));
   }
 
   /**
@@ -44,7 +45,7 @@ class Grid {
     employeeAreas.forEach((employeeArea) =>
       this.employeeAreas.set(
         [employeeArea.X_POS, employeeArea.Y_POS].join("-"),
-        EmployeeArea.from(this.p5, employeeArea)
+        EmployeeArea.from(employeeArea)
       )
     );
   }
@@ -62,7 +63,7 @@ class Grid {
       for (let x = x1; x < x2; x++) {
         this.employeeAreas.set(
           [x, y].join("-"),
-          new EmployeeArea(this.p5, floorsetTuid, x, y)
+          new EmployeeArea(floorsetTuid, x, y)
         );
       }
     }
@@ -100,7 +101,7 @@ class Grid {
     const scaleSize = this.size * this.scale;
     const x = Math.floor((v.x - this.translate.x) / scaleSize);
     const y = Math.floor((v.y - this.translate.y) / scaleSize);
-    return this.p5.createVector(x, y);
+    return Grid.p5.createVector(x, y);
   }
 
   screenToGridSpace(x, y) {
@@ -161,32 +162,32 @@ class Grid {
   resize() {
     this.translate = {
       x:
-        this.p5.width / 2 -
+        Grid.p5.width / 2 -
         (this.size * this.width * this.scale) / 2 +
         this.xOffset,
       y:
-        this.p5.height / 2 -
+        Grid.p5.height / 2 -
         (this.size * this.height * this.scale) / 2 +
         this.yOffset,
     };
   }
 
   draw(mouseFixture) {
-    this.p5.push();
-    this.p5.fill(255, 255, 255);
-    this.p5.stroke(0, 100);
-    this.p5.strokeWeight(1);
-    this.p5.translate(this.translate.x, this.translate.y);
-    this.p5.scale(this.scale);
+    Grid.p5.push();
+    Grid.p5.fill(255, 255, 255);
+    Grid.p5.stroke(0, 100);
+    Grid.p5.strokeWeight(1);
+    Grid.p5.translate(this.translate.x, this.translate.y);
+    Grid.p5.scale(this.scale);
 
-    this.p5.rect(0, 0, this.width * this.size, this.height * this.size);
+    Grid.p5.rect(0, 0, this.width * this.size, this.height * this.size);
 
     for (let x = 1; x < this.width; x++) {
-      this.p5.line(x * this.size, 0, x * this.size, this.height * this.size);
+      Grid.p5.line(x * this.size, 0, x * this.size, this.height * this.size);
     }
 
     for (let y = 1; y < this.height; y++) {
-      this.p5.line(0, y * this.size, this.width * this.size, y * this.size);
+      Grid.p5.line(0, y * this.size, this.width * this.size, y * this.size);
     }
 
     const employeeAreas = this.employeeAreas.values();
@@ -199,7 +200,7 @@ class Grid {
 
     mouseFixture?.draw(this.size);
 
-    this.p5.pop();
+    Grid.p5.pop();
   }
 }
 

@@ -1,6 +1,6 @@
 @* Josh Rodack 4/23/25 *@
 
-@inject IJSRuntime JS
+@inject IJSRuntime JSRuntime
 @inject FixturesHttpClient FixturesHttpClient
 @inject ToastService ToastService
 
@@ -29,6 +29,7 @@
 </Modal>
 
 @code {
+    [Parameter] public required int FloorsetId { get; set; }
     [Parameter] public required Data.Models.Fixtures.FixtureModel Fixture { get; set; }
     [Parameter] public required EventCallback UpdateFixtureModels { get; set; }
 
@@ -39,6 +40,7 @@
         if (response == System.Net.HttpStatusCode.OK)
         {
             ToastService.ShowSuccess("The fixture has been deleted!");
+            await JSRuntime.InvokeVoidAsync("window.reload", FloorsetId);
         }
 
         await UpdateFixtureModels.InvokeAsync();
