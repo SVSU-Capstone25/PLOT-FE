@@ -1,55 +1,14 @@
 @inject IJSRuntime JS
 @inject FixturesHttpClient FixturesHttpClient
-@inject ToastService ToastService
-
-@using Plot.Services
 
 @* Add Fixture Modal *@
 
-@* TODO: Generalize this and make a body to share between both the add and edit fixture modals *@
-
-<Modal class="modal-xl" id="add-fixture" OnCancelClick="">
+<Modal @attributes="Attributes" SizeClass="modal-xl">
     <ModalHeader Title="Add Fixture" />
-    <EditForm Model="AddFixtureModel" OnValidSubmit="OnAddFixtureSubmit">
-        <ModalBody>
-            <label class="w-100 d-flex">
-                <span class="mt-2 me-2 fw-bold">Name</span>
-                <InputText @bind-value="AddFixtureModel!.NAME" class="form-control">Three Way Rack</InputText>
-            </label>
-            <div class="d-flex align-items-center w-100 gap-3 my-2">
-                <label class="d-flex align-items-center flex-fill">
-                    <span class="fw-bold me-2">Length</span>
-                    <div class="flex-grow-1">
-                        <InputNumber @bind-Value="AddFixtureModel!.LENGTH" @oninput="HandleLengthChange"
-                            class="form-control" />
-                    </div>
-                </label>
+    <EditForm Model="AddFixtureModel" OnValidSubmit="async () => await OnAddFixtureSubmit()">
 
-                <div class="d-flex justify-content-center align-items-center">
-                    <i class="fa-solid fa-xmark fs-4"></i>
-                </div>
+        <AddUpdateFixtureModalBody AddUpdateFixtureModel="AddFixtureModel" />
 
-                <label class="d-flex align-items-center flex-fill my-2">
-                    <span class="fw-bold me-2">Width</span>
-                    <div class="flex-grow-1">
-                        <InputNumber @bind-Value="AddFixtureModel!.WIDTH" @oninput="HandleWidthChange"
-                            class="form-control" />
-                    </div>
-                </label>
-            </div>
-
-            <label class="w-100 d-flex my-2">
-                <span class="fw-bold">Linear Feet Capacity</span>
-                <InputNumber class="form-control" @bind-Value="AddFixtureModel!.LF_CAP" />
-            </label>
-
-            <label class="w-100 d-flex">
-                <span class="fw-bold">Linear Feet: @LinearFeet </span>
-            </label>
-
-            <ImageInput Label="Upload Image" Id="@($"ImageUpload-{StoreId}")" Height="300px"
-                OnImageUpload="OnImageUpload" ImageSrc="ImageSrc" />
-        </ModalBody>
         <ModalFooter OnCancelClick="ClearAddFixtureModel">
             <Button class="btn add-btn ms-auto" Variant="primary" type="submit" data-bs-dismiss="modal">Add</Button>
         </ModalFooter>
@@ -57,8 +16,8 @@
 </Modal>
 
 @code {
-
     [Parameter] public EventCallback UpdateFixtureModels { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
     [Parameter] public required int StoreId { get; set; }
 
@@ -73,22 +32,13 @@
 
     public async Task OnAddFixtureSubmit()
     {
-        if (AddFixtureModel == null)
-        {
-            ToastService.ShowError("There was an error adding the fixture!");
-            return;
-        }
+        await Task.Run(() => Console.WriteLine("Add Fixture"));
 
-        var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
+        if (AddFixtureModel != null)
+        {
+            var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
 
-        if (response != System.Net.HttpStatusCode.OK)
-        {
-            ToastService.ShowError("There was an error adding the fixture!");
-        }
-        else
-        {
             await UpdateFixtureModels.InvokeAsync();
-            ToastService.ShowSuccess("The fixture was created.");
         }
 
         ClearAddFixtureModel();
@@ -123,15 +73,6 @@
             LinearFeet = "";
         }
         StateHasChanged();
-    }
-
-    private async Task OnImageUpload(InputFileChangeEventArgs e)
-    {
-        MemoryStream ms = new MemoryStream();
-        await e.File.OpenReadStream().CopyToAsync(ms);
-        var bytes = ms.ToArray();
-
-        AddFixtureModel!.ICON = bytes;
     }
 
     private void ClearAddFixtureModel()

@@ -87,10 +87,10 @@ public class FixturesHttpClient : PlotHttpClient
     /// <param name="storeId"></param>
     /// <param name="update"></param>
     /// <returns></returns>
-    public async Task<HttpStatusCode> UpdateFixtureModel(FixtureModel update)
+    public async Task<HttpStatusCode> UpdateFixtureModel(int fixtureId, CreateFixtureModel update)
     {
         JsonContent body = JsonContent.Create(update);
 
-        return await SendPatchAsync($"/update-fixture-model", body);
+        return await SendPatchAsync($"/update-fixture-model/{fixtureId}", body);
     }
 }

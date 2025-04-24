@@ -9,7 +9,7 @@
         OnValidSubmit="async () => await OnAddEmployeesSubmit.InvokeAsync(AddEmployeesModel!.USERS)">
         <ModalBody>
             <OptionInput id="addEmployeeOptionsInput">
-                <OptionInputHeader>Select an Employee to Add</OptionInputHeader>
+                <OptionInputHeader>Select employees to add (hold Ctrl to select multiple)</OptionInputHeader>
                 <InputSelect class="form-select" multiple @bind-Value="AddEmployeesModel!.USERS">
                     @foreach (var User in Users)
                     {
