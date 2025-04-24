@@ -136,7 +136,10 @@ function sketch(p5) {
   let mouseFixture, floorsetId, employeeAreaSelection;
 
   const paintAggregator = createDebouncedAggregator(500, (fixtures) => {
-    Promise.all(fixtures.map((fixture) => updateFixtureInstance(fixture)))
+    console.log(fixtures);
+    Promise.allSettled(
+      fixtures.map((fixture) => updateFixtureInstance(fixture))
+    )
       .then(() => {
         DotNet?.invokeMethodAsync("Plot", "UpdateAllocations");
       })
@@ -183,6 +186,7 @@ function sketch(p5) {
     getFixtureInstances(floorsetId)
       .then((fixtureInstances) => {
         fixtureInstances.forEach((fixtureInstance) => {
+          console.log(fixtureInstance, Fixture.from(p5, fixtureInstance));
           gridInstance.fixtures.push(Fixture.from(p5, fixtureInstance));
         });
       })
@@ -285,7 +289,6 @@ function sketch(p5) {
         "GetFixture",
         floorsetId,
         rack.TUID,
-        rack.EDITOR_ID,
         rack.NAME,
         rack.HANGER_STACK,
         rack.SUBCATEGORY,
@@ -407,11 +410,20 @@ function sketch(p5) {
           FLOORSET_TUID: floorsetId,
           X_POS: x,
           Y_POS: y,
-          ALLOCATED_LF: 1,
-          EDITOR_ID: gridInstance.fixtures.length + 1,
         }).toObject()
       )
         .then((data) => {
+          console.log(
+            window.draggedFixture,
+            Fixture.from(p5, {
+              ...window.draggedFixture,
+              TUID: data,
+              COLOR: "#fff",
+              FLOORSET_TUID: floorsetId,
+              X_POS: x,
+              Y_POS: y,
+            })
+          );
           gridInstance.fixtures.push(
             Fixture.from(p5, {
               ...window.draggedFixture,
@@ -420,8 +432,6 @@ function sketch(p5) {
               FLOORSET_TUID: floorsetId,
               X_POS: x,
               Y_POS: y,
-              ALLOCATED_LF: 1,
-              EDITOR_ID: gridInstance.fixtures.length + 1,
             })
           );
           mouseFixture = undefined;

@@ -53,8 +53,10 @@ Author: Tristan Calay (3/15/2025)-->
                 var SuperCategoryColor = allocationFulfillmentList.Value.First().SUPERCATEGORY_COLOR;
                 var SuperCategoryCurrent = allocationFulfillmentList.Value.Sum((allocationFulfillment) =>
                 allocationFulfillment.CURRENT_LF);
-                var SuperCategoryNeeded = allocationFulfillmentList.Value.Sum((allocationFulfillment) =>
-                allocationFulfillment.NEEDED_LF);
+                var SuperCategoryTotalSales = (float)allocationFulfillmentList.Value.Sum((allocationFulfillment) =>
+                allocationFulfillment.TOTAL_SALES);
+                var SuperCategoryNeeded = (int)Math.Floor((SuperCategoryTotalSales / totalSales) *
+                (float)allocationFulfillmentList.Value.First().TOTAL_FLOORSET_LF);
 
                 <li class="list-group-item">
                     <ProgressBar>
@@ -71,6 +73,10 @@ Author: Tristan Calay (3/15/2025)-->
                             AllocationFulfillmentList.SUBCATEGORY.ToLower().Contains(CategorySearch)))
                 {
                     string activeClass = AllocationFulfillment == SelectedFufillment ? "active" : "";
+                    @* Console.WriteLine(totalSales); *@
+                    Console.WriteLine((float)AllocationFulfillment.TOTAL_SALES / totalSales);
+                    var NeededLF = (int)Math.Floor(((float)AllocationFulfillment.TOTAL_SALES / totalSales) *
+                    (float)AllocationFulfillment.TOTAL_FLOORSET_LF);
 
                     <li class="@($"list-group-item d-flex {activeClass}")">
                         <button type="button" class="btn d-flex p-0 flex-grow-1"
@@ -81,8 +87,8 @@ Author: Tristan Calay (3/15/2025)-->
                                         style="background-color: @AllocationFulfillment.SUPERCATEGORY_COLOR;">@AllocationFulfillment.SUBCATEGORY</span>
                                 </ProgressBarHeader>
                                 <ProgressBarBar Color="@AllocationFulfillment.SUPERCATEGORY_COLOR"
-                                    max="@AllocationFulfillment.NEEDED_LF" value="@AllocationFulfillment.CURRENT_LF" min="0">
-                                    @AllocationFulfillment.CURRENT_LF / @AllocationFulfillment.NEEDED_LF
+                                    max="@NeededLF" value="@AllocationFulfillment.CURRENT_LF" min="0">
+                                    @AllocationFulfillment.CURRENT_LF / @NeededLF
                                 </ProgressBarBar>
                             </ProgressBar>
                         </button>
@@ -101,6 +107,7 @@ Author: Tristan Calay (3/15/2025)-->
     private String CategorySearch { get; set; } = "";
     private Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>> allocationFulfillmentLists = new
     Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>>();
+    private float totalSales = 0;
 
     private async Task UpdateAllocationFulfillments()
     {
@@ -110,8 +117,11 @@ Author: Tristan Calay (3/15/2025)-->
         {
             allocationFulfillmentLists = new
             Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>>();
+            totalSales = 0;
+
             response.ForEach((allocationFulfillment) =>
             {
+                totalSales += allocationFulfillment.TOTAL_SALES;
                 if (allocationFulfillmentLists.TryGetValue(allocationFulfillment.SUPERCATEGORY_NAME, out
     List<Data.Models.Allocations.AllocationFulfillments>? list))
                 {
@@ -133,13 +143,8 @@ allocationFulfillment
         FloorsetEditorService.OnUpdate += async () =>
         {
             await UpdateAllocationFulfillments();
-            this.StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         };
-    }
-
-    public void Dispose()
-    {
-        FloorsetEditorService.OnUpdate -= async () => { await InvokeAsync(StateHasChanged); };
     }
 
     protected override async Task OnInitializedAsync()

@@ -21,15 +21,16 @@ public class FloorsetEditorService
     }
 
     [JSInvokable("GetFixture")]
-    public static void GetFixture(int floorsetId, int Tuid, int EditorTuid, string? Name, int? HangerStack, string? Subcategory, string?
+    public static void GetFixture(int floorsetId, int Tuid, string? Name, int? HangerStack, string? Subcategory, string?
     Note)
     {
+
+        Console.WriteLine(Subcategory);
         var fixtureInstance = new FixtureInstance
         {
             TUID = Tuid,
             NAME = Name,
             FLOORSET_TUID = floorsetId,
-            EDITOR_ID = EditorTuid,
             HANGER_STACK = HangerStack,
             NOTE = Note,
             SUBCATEGORY = Subcategory
