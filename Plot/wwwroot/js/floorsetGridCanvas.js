@@ -568,6 +568,8 @@ function sketch(p5) {
       const mouse = p5.createVector(p5.mouseX, p5.mouseY);
       const { x, y } = gridInstance.toGridCoordinates(mouse);
 
+      if (!gridInstance.isOnGrid(x, y)) return;
+
       createFixtureInstance(
         Fixture.from({
           ...window.draggedFixture,

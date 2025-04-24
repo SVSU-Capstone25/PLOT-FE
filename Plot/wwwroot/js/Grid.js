@@ -59,8 +59,8 @@ class Grid {
    * @param {number} y2
    */
   bulkAddEmployeeAreas(floorsetTuid, x1, y1, x2, y2) {
-    for (let y = y1; y < y2; y++) {
-      for (let x = x1; x < x2; x++) {
+    for (let y = Math.max(0, y1); y < Math.min(this.height, y2); y++) {
+      for (let x = Math.max(0, x1); x < Math.min(this.height, x2); x++) {
         this.employeeAreas.set(
           [x, y].join("-"),
           new EmployeeArea(floorsetTuid, x, y)
@@ -90,8 +90,8 @@ class Grid {
    * @param {number} y2
    */
   bulkDeleteEmployeeAreas(x1, y1, x2, y2) {
-    for (let y = y1; y < y2; y++) {
-      for (let x = x1; x < x2; x++) {
+    for (let y = Math.min(0, y1); y < Math.min(this.height, y2); y++) {
+      for (let x = Math.min(0, x1); x < Math.min(this.height, x2); x++) {
         this.employeeAreas.delete([x, y].join("-"));
       }
     }
