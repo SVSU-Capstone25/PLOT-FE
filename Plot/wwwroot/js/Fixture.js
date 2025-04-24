@@ -3,9 +3,10 @@
  * @author Clayton Cook <work@claytonleonardcook.com>
  */
 class Fixture {
+  static p5;
+
   /**
    * @property {number} TUID
-   * @property {number} EDITOR_ID
    * @property {string} NAME
    * @property {number} FIXTURE_TUID
    * @property {number} FLOORSET_TUID
@@ -16,15 +17,13 @@ class Fixture {
    * @property {number} WIDTH
    * @property {number} HANGER_STACK
    * @property {number} SUPERCATEGORY_TUID
+   * @property {string} SUPERCATEGORY_NAME
    * @property {string} SUBCATEGORY
-   * @property {number} SUBCATEGORY_NAME
    * @property {string} NOTE
-   * @property {number} ALLOCATED_LF
+   * @property {number} FIXTURE_IDENTIFIER
    */
   constructor(
-    p5,
     TUID,
-    EDITOR_ID,
     NAME,
     FIXTURE_TUID,
     FLOORSET_TUID,
@@ -35,14 +34,12 @@ class Fixture {
     WIDTH,
     HANGER_STACK = 1,
     SUPERCATEGORY_TUID = 0,
+    SUPERCATEGORY_NAME,
     SUBCATEGORY,
-    SUBCATEGORY_NAME,
     NOTE,
-    ALLOCATED_LF = 0
+    FIXTURE_IDENTIFIER
   ) {
-    this.p5 = p5;
     this.TUID = TUID;
-    this.EDITOR_ID = EDITOR_ID;
     this.NAME = NAME;
     this.FIXTURE_TUID = FIXTURE_TUID;
     this.FLOORSET_TUID = FLOORSET_TUID;
@@ -52,61 +49,60 @@ class Fixture {
     this.WIDTH = WIDTH;
     this.HANGER_STACK = HANGER_STACK;
     this.SUPERCATEGORY_TUID = SUPERCATEGORY_TUID;
+    this.SUPERCATEGORY_NAME = SUPERCATEGORY_NAME;
     this.SUBCATEGORY = SUBCATEGORY;
-    this.SUBCATEGORY_NAME = SUBCATEGORY_NAME;
     this.NOTE = NOTE;
-    this.ALLOCATED_LF = ALLOCATED_LF;
     this.COLOR = COLOR;
+    this.FIXTURE_IDENTIFIER = FIXTURE_IDENTIFIER;
   }
 
   draw(gridSize) {
-    this.p5.push();
-    this.p5.fill(this.COLOR);
-    this.p5.stroke(0);
-    this.p5.strokeWeight(3);
-    this.p5.rect(
+    Fixture.p5.push();
+    Fixture.p5.fill(this.COLOR);
+    Fixture.p5.stroke(0);
+    Fixture.p5.strokeWeight(3);
+    Fixture.p5.rect(
       this.X_POS * gridSize,
       this.Y_POS * gridSize,
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
-    this.p5.strokeWeight(1);
-    this.p5.fill("black");
-    this.p5.textSize(24);
-    this.p5.text(
+    Fixture.p5.strokeWeight(0.5);
+    Fixture.p5.fill("black");
+    Fixture.p5.textSize(8);
+    Fixture.p5.text(
       this.HANGER_STACK,
-      this.X_POS * gridSize + this.WIDTH * gridSize - 24,
-      this.Y_POS * gridSize + 8,
+      this.X_POS * gridSize + this.WIDTH * gridSize - 8,
+      this.Y_POS * gridSize + 4,
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
-    this.p5.strokeWeight(0.75);
-    this.p5.textSize(8);
-    this.p5.textAlign(this.p5.CENTER, this.p5.CENTER);
-    this.p5.text(
+    Fixture.p5.strokeWeight(0.75);
+    Fixture.p5.textSize(8);
+    Fixture.p5.textAlign(Fixture.p5.CENTER, Fixture.p5.CENTER);
+    Fixture.p5.text(
       this.SUBCATEGORY ?? "",
       this.X_POS * gridSize,
       this.Y_POS * gridSize,
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
     );
-    this.p5.strokeWeight(0.1);
-    this.p5.textSize(4);
-    this.p5.textAlign(this.p5.CENTER, this.p5.BOTTOM);
-    this.p5.text(
-      this.NOTE ?? "",
-      this.X_POS * gridSize,
+    Fixture.p5.strokeWeight(0.1);
+    Fixture.p5.textSize(4);
+    Fixture.p5.textAlign(Fixture.p5.LEFT, Fixture.p5.BOTTOM);
+    Fixture.p5.text(
+      `${(this.NOTE ?? "").substring(0, 12 * this.WIDTH)}...`,
+      this.X_POS * gridSize + 4,
       this.Y_POS * gridSize - 4,
-      this.WIDTH * gridSize,
+      this.WIDTH * gridSize - 4,
       this.LENGTH * gridSize
     );
-    this.p5.pop();
+    Fixture.p5.pop();
   }
 
   toObject() {
     return {
       TUID: this.TUID,
-      EDITOR_ID: this.EDITOR_ID,
       NAME: this.NAME,
       FIXTURE_TUID: this.FIXTURE_TUID,
       FLOORSET_TUID: this.FLOORSET_TUID,
@@ -116,22 +112,20 @@ class Fixture {
       WIDTH: this.WIDTH,
       HANGER_STACK: this.HANGER_STACK,
       SUPERCATEGORY_TUID: this.SUPERCATEGORY_TUID,
+      SUPERCATEGORY_NAME: this.SUPERCATEGORY_NAME,
       SUBCATEGORY: this.SUBCATEGORY,
-      SUBCATEGORY_NAME: this.SUBCATEGORY_NAME,
       NOTE: this.NOTE,
-      ALLOCATED_LF: this.ALLOCATED_LF,
       COLOR: this.COLOR,
+      FIXTURE_IDENTIFIER: this.FIXTURE_IDENTIFIER,
     };
   }
 
   /**
    * @param {Object} object
    */
-  static from(p5, object) {
+  static from(object) {
     return new Fixture(
-      p5,
       object.TUID,
-      object.EDITOR_ID,
       object.NAME,
       object.FIXTURE_TUID,
       object.FLOORSET_TUID,
@@ -142,10 +136,10 @@ class Fixture {
       object.WIDTH,
       object.HANGER_STACK,
       object.SUPERCATEGORY_TUID,
+      object.SUPERCATEGORY_NAME,
       object.SUBCATEGORY,
-      object.SUBCATEGORY_NAME,
       object.NOTE,
-      object.ALLOCATED_LF
+      object.FIXTURE_IDENTIFIER
     );
   }
 }

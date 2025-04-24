@@ -20,7 +20,7 @@
 @layout Plot.Components.Layout.FloorsetEditorLayout
 @rendermode InteractiveServer
 
-@inject IJSRuntime JS
+@inject IJSRuntime JSRuntime
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
 @inject FloorsetsHttpClient FloorsetsHttpClient
@@ -138,14 +138,14 @@
 
 <HelpModal />
 
-@* TODO: Add delete fixture modal *@
+@* Josh Rodack 4/23/25 Added delete fixture modal *@
 @foreach (var FixtureModel in FixtureModels)
 {
     <EditFixtureModal id="@($"edit-fixture-{FixtureModel.TUID}")" StoreId="StoreId"
-        UpdateFixtureModels="UpdateFixtureModels" Fixture="FixtureModel" FixtureId="FixtureModel.TUID" />
+        UpdateFixtureModels="UpdateFixtureModels" Fixture="FixtureModel" FixtureId="@FixtureModel.TUID" />
+
+    <DeleteFixtureModal Fixture="FixtureModel" UpdateFixtureModels="UpdateFixtureModels" FloorsetId="FloorsetId" />
 }
-
-
 
 @code {
     [Parameter] public required int StoreId { get; set; }
@@ -164,7 +164,7 @@
     private async Task SaveCanvas()
     {
         // Get the image as a base64 string from the browser
-        string base64Image = await JS.InvokeAsync<string>("captureFloorsetThumbnail");
+        string base64Image = await JSRuntime.InvokeAsync<string>("captureFloorsetThumbnail");
 
 
         if (!string.IsNullOrEmpty(base64Image))
@@ -205,7 +205,7 @@
         }
         else
         {
-            Console.WriteLine("JS returned null image.");
+            Console.WriteLine("JSRuntime returned null image.");
         }
     }
 
@@ -232,7 +232,7 @@
 
             Console.WriteLine(response.LENGTH);
 
-            await JS.InvokeVoidAsync("window.updateStoreSize", response.LENGTH, response.WIDTH);
+            await JSRuntime.InvokeVoidAsync("window.updateStoreSize", response.LENGTH, response.WIDTH);
         }
 
     }
@@ -266,13 +266,15 @@
 
     /* Danielle Smith - 3/24/2025
     added back add fixture stuff & also made it so expansions work properly with it */
-    private void ToggleAddFixture()
+    private async Task ToggleAddFixture()
     {
         addFixtureExpanded = !addFixtureExpanded;
         if (addFixtureExpanded == true)
         {
             buildingWallsExpanded = false;
         }
+        await JSRuntime.InvokeVoidAsync("window.setPaintMode", false);
+        ToastService.ShowInfo("You can now move and place fixtures.");
     }
 
     private void ToggleAllocations()

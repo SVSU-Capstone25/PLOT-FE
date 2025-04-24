@@ -10,7 +10,6 @@ public class Select_Floorset_Fixtures
     public int? Y_POS { get; set; }
     public required int HANGER_STACK { get; set; }
     public required int TOT_LF { get; set; }
-    public required int ALLOCATED_LF { get; set; }
     public string? CATEGORY { get; set; }
     public string? NOTE { get; set; }
 }

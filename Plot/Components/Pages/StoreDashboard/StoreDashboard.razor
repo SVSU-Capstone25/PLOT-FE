@@ -99,7 +99,7 @@ Author: Andrew Fulton (3/12/2025)
         var token = await Cookie.GetValue("Auth");
 
         //Get the users claims
-        var userPrincipal = JwtService.GetValidClaims(token);
+        var userPrincipal = JwtService.ValidateAuthToken(token);
 
         if (userPrincipal != null)
         {

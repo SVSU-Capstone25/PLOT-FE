@@ -1,9 +1,10 @@
+@inject SalesHttpClient SalesHttpClient
+@inject ToastService ToastService
+
+@using Plot.Services
 @using Microsoft.Net.Http.Headers
 @using Plot.Components.PartialComponents.Modal
 @using Plot.Components.PartialComponents.FileInput
-
-@inject SalesHttpClient SalesHttpClient
-
 
 @*Import Excel File Modal Andrew Miller *@
 <Modal id="import-excel-modal" class="modal-dialog">
@@ -26,7 +27,7 @@
 
 @code {
     [Parameter] public required int FloorsetId { get; set; }
-    [SupplyParameterFromForm] private Data.Models.Allocations.UploadFile? ImportExcelFileModel { get; set; }
+    private Data.Models.Allocations.UploadFile? ImportExcelFileModel { get; set; }
 
     protected override void OnInitialized()
     {
@@ -39,20 +40,33 @@
         {
             MemoryStream ms = new MemoryStream();
             await e.OpenReadStream().CopyToAsync(ms);
-            IFormFile formFile = new FormFile(ms, 0, ms.Length, e.Name, e.Name);
+            ms.Position = 0;
+
             if (ImportExcelFileModel != null)
             {
-                ImportExcelFileModel!.EXCEL_FILE = formFile;
+                ImportExcelFileModel.Stream = ms;
+                ImportExcelFileModel.FileName = e.Name;
+                ImportExcelFileModel.ContentType = e.ContentType;
             }
         }
     }
 
     private async Task OnImportExcelFileSubmit()
     {
-        if (ImportExcelFileModel?.EXCEL_FILE != null)
+        if (ImportExcelFileModel?.Stream != null)
         {
-            var response = await SalesHttpClient.UploadSales(FloorsetId, ImportExcelFileModel!.EXCEL_FILE);
-            Console.WriteLine(response);
+            var response = await SalesHttpClient.UploadSales(FloorsetId, ImportExcelFileModel);
+
+            if (response != System.Net.HttpStatusCode.OK)
+            {
+                ToastService.ShowError("There was an error uploading the excel file!");
+            }
+            else
+            {
+                await FloorsetEditorService.TriggerExcelUpdateAsync();
+                ToastService.ShowSuccess("The excel file was uploaded successfully.");
+                ToastService.ShowInfo("Navigate to the allocations panel in the sidebar to start allocatiing.", 5000);
+            }
         }
     }
 }
