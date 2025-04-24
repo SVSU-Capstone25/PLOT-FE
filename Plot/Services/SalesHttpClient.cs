@@ -24,4 +24,17 @@ public class SalesHttpClient : PlotHttpClient
 
         return response;
     }
+
+    public async Task<HttpStatusCode> InsertSales(CreateExcelFileModel ExcelFileModel){
+        JsonContent body = JsonContent.Create(ExcelFileModel);
+        var (status, response) = await SendPostAsync<HttpStatusCode>($"/insert-sales", body);
+
+        return status;
+    }
+
+    public async Task<List<CreateExcelFileModel>?> GetSalesByFloorset(int floorsetId)
+    {
+        return await SendGetAsync<List<CreateExcelFileModel>?>($"/get-sales-by-floorset/{floorsetId}");
+    }
+
 }

@@ -18,6 +18,7 @@ Author: Andrew Fulton (3/13/2025)  *@
 @inject FloorsetsHttpClient FloorsetsHttpClient
 @inject FixturesHttpClient FixturesHttpClient
 @inject StoresHttpClient StoresHttpClient
+@inject SalesHttpClient SalesHttpClient
 
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
@@ -100,8 +101,8 @@ Author: Andrew Fulton (3/13/2025)  *@
             <Modal id="@($"delete-floorset-{Floorset.TUID}")" class="standard">
                 <ModalHeader Title="Confirm Deletion" Variant="danger" />
                 <form @onsubmit="async () => {
-                        await OnDeleteFloorsetSubmit(Floorset.TUID);
-                        deleteTextInput = string.Empty;}">
+                            await OnDeleteFloorsetSubmit(Floorset.TUID);
+                            deleteTextInput = string.Empty;}">
                 @code {
                     private string? deleteTextInput;
                     private bool isDisabled => deleteTextInput != "DELETE";
@@ -190,42 +191,53 @@ Author: Andrew Fulton (3/13/2025)  *@
         // Get Fixtures on old Floorset
         List<Data.Models.Fixtures.FixtureInstance>? FixturesOnFloorset = await FixturesHttpClient.GetFloorsetFixtureInformation(Floorset!.TUID);
 
-        Console.WriteLine("Floorset TUID of old floorset is " + Floorset!.TUID);
-
         // Get Employee area on old Floorset
         List<Data.Models.Fixtures.EmployeeAreaModel>? EmployeeAreasOnFloorset = await FixturesHttpClient.GetEmployeeAreas(Floorset!.TUID);
 
-        Console.WriteLine("Employee Areas List");
-        if(EmployeeAreasOnFloorset != null){
-        foreach(var area in EmployeeAreasOnFloorset){
-            Console.WriteLine(area.FLOORSET_TUID);
-            Console.WriteLine(area.X_POS);
-            Console.WriteLine(area.Y_POS);
-        }
-        }
-        else{
-            Console.WriteLine("Why is EmployeeAreasOnFloorset null?");
-        }
-
-        Console.WriteLine("End Employee Areas");
-
-        if(EmployeeAreasOnFloorset == null)
-        {
-            Console.WriteLine("Employee Areas on Floorset are null");
-        }
+        // Get Sales data from old Floorset
+        List<Data.Models.Allocations.CreateExcelFileModel>? FloorSalesData = await SalesHttpClient.GetSalesByFloorset(Floorset!.TUID);
 
         // Convert Fixture Instances to CreateFixtureInstances, and give them the Floorset Id of the newly copied floorset
         await CreateCopiedFloorsetFixtureInstances(FixturesOnFloorset!, NewFloorsetTUID);
 
-        if(EmployeeAreasOnFloorset != null){
-        // Convert EmployeeAreaModel objects into AddEmployeeAreaModal objects and give them the Floorset Id of the newly copied floorset
-        await CreateCopiedFloorsetEmployeeArea(EmployeeAreasOnFloorset!, NewFloorsetTUID);
+        if (EmployeeAreasOnFloorset != null)
+        {
+            // Convert EmployeeAreaModel objects into AddEmployeeAreaModal objects and give them the Floorset Id of the newly copied floorset
+            await CreateCopiedFloorsetEmployeeArea(EmployeeAreasOnFloorset!, NewFloorsetTUID);
+        }
+
+        if (FloorSalesData != null)
+        {
+            foreach (var salesDatum in FloorSalesData)
+            {
+                // Give floorset tuid as New Floorset TUID
+                salesDatum.FLOORSET_TUID = NewFloorsetTUID;
+                // Insert sales datum into table
+                await SalesHttpClient.InsertSales(salesDatum);
+            }
+        }
+
+        // Check to see if transferring sales data worked:
+        List<Data.Models.Allocations.CreateExcelFileModel>? NewFloorSalesData = await SalesHttpClient.GetSalesByFloorset(NewFloorsetTUID);
+
+        if(NewFloorSalesData != null && NewFloorSalesData.Any()){
+            foreach(var SalesDatum in NewFloorSalesData)
+            {
+                Console.WriteLine("Copied Filename: " + SalesDatum.FILE_NAME);
+                Console.WriteLine("Copied File data:" + SalesDatum.FILE_DATA);
+                Console.WriteLine("Copied Date Uploaded: " + SalesDatum.DATE_UPLOADED);
+                Console.WriteLine("CopiedFloorset TUID: " + SalesDatum.FLOORSET_TUID);
+            }
+        }
+        else{
+            Console.WriteLine("New Floor sales data is null or empty");
         }
 
         await UpdateFloorsets();
 
         StateHasChanged();
-        Console.WriteLine("End of copying floorset");
+        Console.WriteLine("End of the method");
+
     }
 
     private async Task CreateCopiedFloorsetFixtureInstances(List<Data.Models.Fixtures.FixtureInstance> FixtureInstances, int
@@ -262,12 +274,13 @@ Author: Andrew Fulton (3/13/2025)  *@
         foreach (var EmployeeArea in EmployeeAreas)
         {
             CopiedEmployeeAreas.Add
-            ( 
-                new Data.Models.Fixtures.AddEmployeeAreaModel {
-                    FLOORSET_TUID = NewFloorsetTUID,
-                    X_POS = EmployeeArea.X_POS,
-                    Y_POS = EmployeeArea.Y_POS
-                }
+            (
+            new Data.Models.Fixtures.AddEmployeeAreaModel
+            {
+                FLOORSET_TUID = NewFloorsetTUID,
+                X_POS = EmployeeArea.X_POS,
+                Y_POS = EmployeeArea.Y_POS
+            }
             );
         }
 
