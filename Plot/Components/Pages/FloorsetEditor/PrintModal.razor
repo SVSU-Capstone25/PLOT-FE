@@ -17,7 +17,7 @@
 
         @* Danielle Smith - 3/17/2025
         changed to use bootstrap classes and added some margin *@
-        <div class="d-flex flex-row gap-2">
+        @* <div class="d-flex flex-row gap-2">
             <OptionInput id="printerInput" Class="flex-grow-1">
                 <OptionInputHeader>Select a Printer</OptionInputHeader>
                 <OptionInputOptions>
@@ -35,14 +35,14 @@
                     <OptionInputOption value="a4">A4</OptionInputOption>
                 </OptionInputOptions>
             </OptionInput>
-        </div>
+        </div> *@
 
         <Checkbox id="checkWithAllocations" Text="With Allocations" />
         <Checkbox id="checkWithNotes" Text="With Notes" />
     </ModalBody>
 
     <ModalFooter>
-        <Button Variant="primary" data-bs-dismiss="modal" isDisabled="false" OnClickFunction="printLayout">
+        <Button Variant="primary" data-bs-dismiss="modal" isDisabled="false" @onclick="OnPrintClick">
             Print
         </Button>
     </ModalFooter>
@@ -64,11 +64,10 @@
     //printLayout Task
     //Asynchronously prints the current grid layout from specified printer and options.
     //Called by the "Print" button in the print modal.
-    private async Task printLayout()
+    private async Task OnPrintClick()
     {
-        //download a temporary .png file for now
-        await JS.InvokeVoidAsync("downloadCanvasImage", Floorset?.NAME ?? "empty");
         Console.WriteLine("Printed floorset layout");
-
+        //download a temporary .png file for now
+        await JS.InvokeVoidAsync("window.gridInstance.print", FloorsetId);
     }
 }

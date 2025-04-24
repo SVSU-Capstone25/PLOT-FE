@@ -202,6 +202,28 @@ class Grid {
 
     Grid.p5.pop();
   }
+
+  print(floorsetName) {
+    // Calculate the scale to fit the entire grid
+    const gridPixelWidth = this.width * this.size;
+    const gridPixelHeight = this.height * this.size;
+
+    const scaleX = Grid.p5.width / gridPixelWidth;
+    const scaleY = Grid.p5.height / gridPixelHeight;
+
+    this.scale = Math.min(scaleX, scaleY);
+
+    this.xOffset = 0;
+    this.yOffset = 0;
+    this.resize();
+
+    Grid.p5.pixelDensity(8);
+    this.draw();
+    setTimeout(() => {
+      Grid.p5.saveCanvas(`${floorsetName}-${new Date().toDateString()}`, "jpg");
+      Grid.p5.pixelDensity();
+    }, 100);
+  }
 }
 
 export default Grid;

@@ -73,8 +73,6 @@ Author: Tristan Calay (3/15/2025)-->
                             AllocationFulfillmentList.SUBCATEGORY.ToLower().Contains(CategorySearch)))
                 {
                     string activeClass = AllocationFulfillment == SelectedFufillment ? "active" : "";
-                    @* Console.WriteLine(totalSales); *@
-                    Console.WriteLine((float)AllocationFulfillment.TOTAL_SALES / totalSales);
                     var NeededLF = (int)Math.Floor(((float)AllocationFulfillment.TOTAL_SALES / totalSales) *
                     (float)AllocationFulfillment.TOTAL_FLOORSET_LF);
 
