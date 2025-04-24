@@ -1,6 +1,8 @@
 @* Toolbar Buttons.razor *@
-@inject IJSRuntime JS
+@inject IJSRuntime JSRuntime
+@inject ToastService ToastService
 
+@using Plot.Services
 @using Plot.Components.PartialComponents.Button
 @using Microsoft.AspNetCore.Components.Authorization
 
@@ -11,11 +13,11 @@
 
     <AuthorizeView Policy="Manager">
         @*Paint Category Button *@
-        <Button IsDisabled="false" Variant="@getPaintVariant()" Icon="fa-solid fa-brush" @onclick="TogglePaintClicked"
+        <Button IsDisabled="false" Variant="@getPaintVariant" Icon="fa-solid fa-brush" @onclick="TogglePaintClicked"
             TextAlignment="center" />
 
         @*Erase Category Button *@
-        <Button IsDisabled="false" Variant="@getEraseVariant()" Icon="fa-solid fa-eraser" @onclick="OnEraseClicked"
+        <Button IsDisabled="false" Variant="@getEraseVariant" Icon="fa-solid fa-eraser" @onclick="OnEraseClicked"
             TextAlignment="center" />
     </AuthorizeView>
 </div>
@@ -35,28 +37,14 @@
     };
 
     private PaintType paintMode = PaintType.None;
-    private String getPaintVariant()
-    {
-        if (paintMode == PaintType.Paint)
-        {
-            return "secondary";
-        }
-        return "primary";
-    }
-    private String getEraseVariant()
-    {
-        if (paintMode == PaintType.Erase)
-        {
-            return "secondary";
-        }
-        return "primary";
-    }
+    private string getPaintVariant => paintMode == PaintType.Paint ? "secondary" : "primary";
+    private string getEraseVariant => paintMode == PaintType.Erase ? "secondary" : "primary";
 
     private async Task EditFixture()
     {
-        Console.WriteLine("Edit Fixture Function");
-        await JS.InvokeVoidAsync("window.setPlace");
+        await JSRuntime.InvokeVoidAsync("window.setPlace");
         await ToggleAllocationsOpen.InvokeAsync();
+        ToastService.ShowInfo("You can now move and place fixtures.");
         @* allocationsOpen = false; *@
     }
 
@@ -68,19 +56,15 @@
         {
             case PaintType.Paint:
                 paintMode = PaintType.None;
-                await JS.InvokeVoidAsync("window.setPaintMode", false);
+                await JSRuntime.InvokeVoidAsync("window.setPaintMode", false);
+                ToastService.ShowInfo("You can now move and place fixtures.");
                 break;
             default:
                 paintMode = PaintType.Paint;
-                await JS.InvokeVoidAsync("window.setPaintMode", true);
+                await JSRuntime.InvokeVoidAsync("window.setPaintMode", true);
+                ToastService.ShowInfo("You can now paint fixtures with allocations.");
                 break;
         }
-
-        Console.WriteLine("Toggle Paint Clicked: Now " + paintMode);
-        @* paintModeEnabled = !paintModeEnabled;
-        Console.WriteLine("Paint Category Function - set paint mode to " + paintModeEnabled); *@
-        @* await JS.InvokeVoidAsync("setPaintEnabled", paintModeEnabled); *@
-        @* StateHasChanged(); *@
     }
 
     private async Task OnEraseClicked()
@@ -89,23 +73,14 @@
         {
             case PaintType.Erase:
                 paintMode = PaintType.None;
-                await JS.InvokeVoidAsync("window.setPaintMode", false);
+                await JSRuntime.InvokeVoidAsync("window.setPaintMode", false);
+                ToastService.ShowInfo("You can now move and place fixtures.");
                 break;
             default:
                 paintMode = PaintType.Erase;
-                await JS.InvokeVoidAsync("setErase");
+                await JSRuntime.InvokeVoidAsync("setErase");
+                ToastService.ShowInfo("You can now erase allocations from fixtures.");
                 break;
         }
-        Console.WriteLine("Erase Clicked! Paint mode now " + paintMode);
-    }
-
-    private void viewFulfillment()
-    {
-        Console.WriteLine("View Fulfillment Function");
-    }
-
-    private void editLayout()
-    {
-        Console.WriteLine("Edit Layout Function");
     }
 }

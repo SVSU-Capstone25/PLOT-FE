@@ -110,13 +110,13 @@
 
     private async Task OnEmployeeAreaPaint()
     {
-        await Task.Run(() => ToastService.ShowInfo("Employee area painting has been toggled."));
         await JSRuntime.InvokeVoidAsync("window.setEmployeeAreaPaint");
+        ToastService.ShowInfo("Employee area painting has been toggled.");
     }
 
     private async Task OnEmployeeAreaErase()
     {
-        await Task.Run(() => ToastService.ShowInfo("Employee area erasing has been toggled."));
         await JSRuntime.InvokeVoidAsync("window.setEmployeeAreaErase");
+        ToastService.ShowInfo("Employee area erasing has been toggled.");
     }
 }
