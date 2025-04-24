@@ -7,13 +7,11 @@ data-bs-keyboard="false" prevents closing when the user clicks the escape key
 data-bs-backdrop="static" does not work on Firefox.
 *@
 
-<Modal SizeClass="modal-sm modal-dialog-centered" Backdrop="static" Keyboard="false"
-@attributes="Attributes">
-    <Loader Class="d-flex justify-content-center w-100"/>
+<Modal SizeClass="modal-sm modal-dialog-centered" Backdrop="static" Keyboard="false" @attributes="Attributes">
+    <Loader Class="d-flex justify-content-center w-100" />
 
-    <p class="p-4 text-danger">Please wait while PLOT updates user information!</p>
-    <p class="p-4 text-danger">Navigating away may prevent data from updating or cause a partial update!</p>
-
+    <p class="px-4 text-danger">Please wait while PLOT updates user information!</p>
+    <p class="px-4 text-danger">Navigating away may prevent data from updating or cause a partial update!</p>
 </Modal>
 
 <script>
