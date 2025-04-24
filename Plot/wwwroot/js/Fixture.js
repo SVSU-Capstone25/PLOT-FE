@@ -5,7 +5,6 @@
 class Fixture {
   /**
    * @property {number} TUID
-   * @property {number} EDITOR_ID
    * @property {string} NAME
    * @property {number} FIXTURE_TUID
    * @property {number} FLOORSET_TUID
@@ -16,15 +15,14 @@ class Fixture {
    * @property {number} WIDTH
    * @property {number} HANGER_STACK
    * @property {number} SUPERCATEGORY_TUID
+   * @property {string} SUPERCATEGORY_NAME
    * @property {string} SUBCATEGORY
-   * @property {number} SUBCATEGORY_NAME
    * @property {string} NOTE
-   * @property {number} ALLOCATED_LF
+   * @property {number} FIXTURE_IDENTIFIER
    */
   constructor(
     p5,
     TUID,
-    EDITOR_ID,
     NAME,
     FIXTURE_TUID,
     FLOORSET_TUID,
@@ -35,14 +33,13 @@ class Fixture {
     WIDTH,
     HANGER_STACK = 1,
     SUPERCATEGORY_TUID = 0,
+    SUPERCATEGORY_NAME,
     SUBCATEGORY,
-    SUBCATEGORY_NAME,
     NOTE,
-    ALLOCATED_LF = 0
+    FIXTURE_IDENTIFIER
   ) {
     this.p5 = p5;
     this.TUID = TUID;
-    this.EDITOR_ID = EDITOR_ID;
     this.NAME = NAME;
     this.FIXTURE_TUID = FIXTURE_TUID;
     this.FLOORSET_TUID = FLOORSET_TUID;
@@ -52,11 +49,11 @@ class Fixture {
     this.WIDTH = WIDTH;
     this.HANGER_STACK = HANGER_STACK;
     this.SUPERCATEGORY_TUID = SUPERCATEGORY_TUID;
+    this.SUPERCATEGORY_NAME = SUPERCATEGORY_NAME;
     this.SUBCATEGORY = SUBCATEGORY;
-    this.SUBCATEGORY_NAME = SUBCATEGORY_NAME;
     this.NOTE = NOTE;
-    this.ALLOCATED_LF = ALLOCATED_LF;
     this.COLOR = COLOR;
+    this.FIXTURE_IDENTIFIER = FIXTURE_IDENTIFIER;
   }
 
   draw(gridSize) {
@@ -106,7 +103,6 @@ class Fixture {
   toObject() {
     return {
       TUID: this.TUID,
-      EDITOR_ID: this.EDITOR_ID,
       NAME: this.NAME,
       FIXTURE_TUID: this.FIXTURE_TUID,
       FLOORSET_TUID: this.FLOORSET_TUID,
@@ -116,11 +112,11 @@ class Fixture {
       WIDTH: this.WIDTH,
       HANGER_STACK: this.HANGER_STACK,
       SUPERCATEGORY_TUID: this.SUPERCATEGORY_TUID,
+      SUPERCATEGORY_NAME: this.SUPERCATEGORY_NAME,
       SUBCATEGORY: this.SUBCATEGORY,
-      SUBCATEGORY_NAME: this.SUBCATEGORY_NAME,
       NOTE: this.NOTE,
-      ALLOCATED_LF: this.ALLOCATED_LF,
       COLOR: this.COLOR,
+      FIXTURE_IDENTIFIER: this.FIXTURE_IDENTIFIER,
     };
   }
 
@@ -131,7 +127,6 @@ class Fixture {
     return new Fixture(
       p5,
       object.TUID,
-      object.EDITOR_ID,
       object.NAME,
       object.FIXTURE_TUID,
       object.FLOORSET_TUID,
@@ -142,10 +137,10 @@ class Fixture {
       object.WIDTH,
       object.HANGER_STACK,
       object.SUPERCATEGORY_TUID,
+      object.SUPERCATEGORY_NAME,
       object.SUBCATEGORY,
-      object.SUBCATEGORY_NAME,
       object.NOTE,
-      object.ALLOCATED_LF
+      object.FIXTURE_IDENTIFIER
     );
   }
 }

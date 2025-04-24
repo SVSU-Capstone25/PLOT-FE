@@ -117,14 +117,12 @@ class Grid {
     return false;
   }
 
-  deleteFixtureByEditorTuid(editorTuid) {
-    this.fixtures = this.fixtures.filter(
-      (fixture) => fixture.EDITOR_ID != editorTuid
-    );
+  deleteFixtureByTuid(tuid) {
+    this.fixtures = this.fixtures.filter((fixture) => fixture.TUID != tuid);
   }
 
-  updateFixtureByEditorTuid(
-    editorTuid,
+  updateFixtureByTuid(
+    tuid,
     hangerStack,
     subcategory,
     supercategoryTuid,
@@ -132,7 +130,7 @@ class Grid {
     note
   ) {
     this.fixtures = this.fixtures.map((fixture) => {
-      if (fixture.EDITOR_ID == editorTuid) {
+      if (fixture.TUID == tuid) {
         fixture.HANGER_STACK = hangerStack;
         fixture.SUBCATEGORY = subcategory;
         fixture.SUPERCATEGORY_TUID = supercategoryTuid;

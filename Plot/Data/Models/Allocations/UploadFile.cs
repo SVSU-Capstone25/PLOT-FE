@@ -9,9 +9,13 @@
     Written by: Jordan Houlihan
 */
 
+using Microsoft.AspNetCore.Components.Forms;
+
 namespace Plot.Data.Models.Allocations;
 
-public record UploadFile
+public class UploadFile
 {
-    public IFormFile? EXCEL_FILE { get; set; }
+    public Stream Stream { get; set; } = default!;
+    public string FileName { get; set; } = string.Empty;
+    public string ContentType { get; set; } = "application/octet-stream";
 }

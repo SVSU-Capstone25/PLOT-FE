@@ -1,4 +1,6 @@
 using System.Net;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Components.Forms;
 using Plot.Data.Models.Allocations;
 using Plot.Services;
 
@@ -9,13 +11,9 @@ public class SalesHttpClient : PlotHttpClient
     { }
 
 
-    public async Task<HttpStatusCode> UploadSales(int floorsetId, IFormFile excelFile)
+    public async Task<HttpStatusCode> UploadSales(int floorsetId, UploadFile excelFile)
     {
-        JsonContent body = JsonContent.Create(excelFile);
-
-        var (status, response) = await SendPostAsync<HttpStatusCode>("", body);
-
-        return status;
+        return await SendPostContentAsync($"/upload-sales/{floorsetId}", excelFile);
     }
 
     public async Task<List<AllocationFulfillments>?> GetAllocationFulfillments(int floorsetId)
