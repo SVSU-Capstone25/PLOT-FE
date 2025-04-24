@@ -62,26 +62,30 @@ Author: Tristan Calay (3/15/2025)-->
                         </ProgressBarHeader>
                         <ProgressBarBar Color="@SuperCategoryColor" max="@SuperCategoryNeeded" value="@SuperCategoryCurrent"
                             min="0">
-                            @SuperCategoryCurrent
+                            @SuperCategoryCurrent / @SuperCategoryNeeded
                         </ProgressBarBar>
                     </ProgressBar>
                 </li>
 
-                @foreach (var allocationFulfillment in allocationFulfillmentList.Value.Where((allocationFulfillment) =>
-                            allocationFulfillment.SUBCATEGORY.ToLower().Contains(CategorySearch)))
+                @foreach (var AllocationFulfillment in allocationFulfillmentList.Value.Where((AllocationFulfillmentList) =>
+                            AllocationFulfillmentList.SUBCATEGORY.ToLower().Contains(CategorySearch)))
                 {
-                    <li class="list-group-item"
-                        @onclick="() => OnCategoryClick(allocationFulfillment.SUPERCATEGORY_COLOR, allocationFulfillment.TUID, allocationFulfillment.SUBCATEGORY)">
-                        <ProgressBar>
-                            <ProgressBarHeader>
-                                <span class="badge text-white fs-6"
-                                    style="background-color: @allocationFulfillment.SUPERCATEGORY_COLOR;">@allocationFulfillment.SUBCATEGORY</span>
-                            </ProgressBarHeader>
-                            <ProgressBarBar Color="@allocationFulfillment.SUPERCATEGORY_COLOR"
-                                max="@allocationFulfillment.NEEDED_LF" value="@allocationFulfillment.CURRENT_LF" min="0">
-                                @allocationFulfillment.CURRENT_LF
-                            </ProgressBarBar>
-                        </ProgressBar>
+                    string activeClass = AllocationFulfillment == SelectedFufillment ? "active" : "";
+
+                    <li class="@($"list-group-item d-flex {activeClass}")">
+                        <button type="button" class="btn d-flex p-0 flex-grow-1"
+                            @onclick="() => OnCategoryClick(AllocationFulfillment)">
+                            <ProgressBar class="flex-grow-1">
+                                <ProgressBarHeader class="d-flex">
+                                    <span class="badge text-white fs-6"
+                                        style="background-color: @AllocationFulfillment.SUPERCATEGORY_COLOR;">@AllocationFulfillment.SUBCATEGORY</span>
+                                </ProgressBarHeader>
+                                <ProgressBarBar Color="@AllocationFulfillment.SUPERCATEGORY_COLOR"
+                                    max="@AllocationFulfillment.NEEDED_LF" value="@AllocationFulfillment.CURRENT_LF" min="0">
+                                    @AllocationFulfillment.CURRENT_LF / @AllocationFulfillment.NEEDED_LF
+                                </ProgressBarBar>
+                            </ProgressBar>
+                        </button>
                     </li>
                 }
             }
@@ -93,8 +97,8 @@ Author: Tristan Calay (3/15/2025)-->
 {
     [Parameter] public required int FloorsetId { get; set; }
 
+    private Data.Models.Allocations.AllocationFulfillments? SelectedFufillment;
     private String CategorySearch { get; set; } = "";
-
     private Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>> allocationFulfillmentLists = new
     Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>>();
 
@@ -108,7 +112,6 @@ Author: Tristan Calay (3/15/2025)-->
             Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>>();
             response.ForEach((allocationFulfillment) =>
             {
-                Console.WriteLine(allocationFulfillment.SUPERCATEGORY_NAME);
                 if (allocationFulfillmentLists.TryGetValue(allocationFulfillment.SUPERCATEGORY_NAME, out
     List<Data.Models.Allocations.AllocationFulfillments>? list))
                 {
@@ -150,11 +153,11 @@ allocationFulfillment
         CategorySearch = e.Value as String ?? "";
     }
 
-    private async void OnCategoryClick(string color, int superCategoryTuid, string subcategory)
+    private async void OnCategoryClick(Data.Models.Allocations.AllocationFulfillments AllocationFulfillment)
     {
-        Console.WriteLine("Category Onclick " + color);
-
-        await JSRuntime.InvokeVoidAsync("window.setPaint", color, superCategoryTuid, subcategory);
+        SelectedFufillment = AllocationFulfillment;
+        await JSRuntime.InvokeVoidAsync("window.setPaint", AllocationFulfillment.SUPERCATEGORY_COLOR,
+        AllocationFulfillment.TUID, AllocationFulfillment.SUBCATEGORY);
     }
 
     private void OnSortAscendingClick()

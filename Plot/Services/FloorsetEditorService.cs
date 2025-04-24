@@ -17,7 +17,6 @@ public class FloorsetEditorService
     [JSInvokable("UpdateAllocations")]
     public static async Task UpdateAllocations()
     {
-        Console.WriteLine("Update allocations");
         await TriggerUpdateAsync();
     }
 
@@ -25,9 +24,6 @@ public class FloorsetEditorService
     public static void GetFixture(int floorsetId, int Tuid, int EditorTuid, string? Name, int? HangerStack, string? Subcategory, string?
     Note)
     {
-
-        Console.WriteLine("Triggered get fixture");
-
         var fixtureInstance = new FixtureInstance
         {
             TUID = Tuid,
