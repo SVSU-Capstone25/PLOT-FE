@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Plot.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +52,8 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddSingleton<ToastService>();
 builder.Services.AddSingleton<FloorsetEditorService>();
 
+builder.Services.AddScoped<IAuthorizationHandler, RoleHandler>();
+
 // Add JWT authentication and authorization 
 builder.Services.AddAuthentication(options =>
 {
@@ -81,6 +84,7 @@ builder.Services.AddAuthentication(options =>
         {
             var token = context.Request.Cookies["Auth"];
             context.Token = token;
+            //var usersClient = context.HttpContext.RequestServices.GetService<UsersHttpClient>();
             return Task.CompletedTask;
         },
         // Handle authentication failure and redirect to login page
@@ -106,10 +110,20 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Add authorization policies
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("Employee", policy => policy.RequireClaim("Role", "Owner", "Manager", "Employee"))
-    .AddPolicy("Manager", policy => policy.RequireClaim("Role", "Owner", "Manager"))
-    .AddPolicy("Owner", policy => policy.RequireClaim("Role", "Owner"));
+// builder.Services.AddAuthorizationBuilder()
+//     .AddPolicy("Employee", policy => policy.RequireClaim("Role", "Owner", "Manager", "Employee"))
+//     .AddPolicy("Manager", policy => policy.RequireClaim("Role", "Owner", "Manager"))
+//     .AddPolicy("Owner", policy => policy.RequireClaim("Role", "Owner"));
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Employee", policy =>
+        policy.Requirements.Add(new RoleRequirement("Owner", "Manager", "Employee")));
+    options.AddPolicy("Manager", policy =>
+        policy.Requirements.Add(new RoleRequirement("Owner", "Manager")));
+    options.AddPolicy("Owner", policy =>
+        policy.Requirements.Add(new RoleRequirement("Owner")));
+});
 
 builder.Services.AddCascadingAuthenticationState();
 
