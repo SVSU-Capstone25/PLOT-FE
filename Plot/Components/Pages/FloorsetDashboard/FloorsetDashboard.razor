@@ -179,17 +179,16 @@ Author: Andrew Fulton (3/13/2025)  *@
 
     private async Task OnCopyFloorsetClick(Data.Models.Floorsets.Floorset Floorset)
     {
-        Data.Models.Floorsets.CreateFloorset createFloorset = new Data.Models.Floorsets.CreateFloorset
-        {
-            NAME = Floorset.NAME,
-            CREATED_BY = -1,
-            DATE_CREATED = DateTime.Now,
-            DATE_MODIFIED = DateTime.Now,
-            MODIFIED_BY = -1,
-            STORE_TUID = StoreId
-        };
+        // Handles Copy click
 
-        await FloorsetsHttpClient.CreateFloorset(createFloorset);
+        // Create new FloorsetRef to just pass on TUID
+        Data.Models.Floorsets.FloorsetRef FloorsetRef = new();
+        FloorsetRef.TUID = Floorset.TUID;
+
+        // Call Client to send copy floorset request
+        await FloorsetsHttpClient.CopyFloorset(FloorsetRef);
         await UpdateFloorsets();
+
+        StateHasChanged();
     }
 }

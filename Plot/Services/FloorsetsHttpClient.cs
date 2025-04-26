@@ -42,4 +42,13 @@ public class FloorsetsHttpClient : PlotHttpClient
     {
         return await SendDeleteAsync($"/{floorsetId}");
     }
+
+    public async Task<HttpStatusCode> CopyFloorset(FloorsetRef FloorsetRef)
+    {   
+        JsonContent body = JsonContent.Create(FloorsetRef);
+
+        var (status, response) = await SendPostAsync<HttpStatusCode>($"/copy-floorset", body);
+
+        return response;
+    }
 }
