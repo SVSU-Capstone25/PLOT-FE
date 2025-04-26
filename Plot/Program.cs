@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Plot.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.JSInterop;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +21,6 @@ builder.WebHost.UseUrls("http://0.0.0.0:8080");
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
 
 // Add HttpClient for server-side Blazor
 // builder.Services.AddScoped(sp =>

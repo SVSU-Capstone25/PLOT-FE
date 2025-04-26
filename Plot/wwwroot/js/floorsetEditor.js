@@ -440,7 +440,6 @@ function flipOrder() {
     // Flip the isAsc value to indicate a reversed column
     isAsc = !isAsc;
 }
-
 /*
     This function grabs the current canvas image from an open floorset and returns it
 */
@@ -467,6 +466,99 @@ function getCanvasImage(callback) {
     const fullWidth = grid.width * grid.size;
     const fullHeight = grid.height * grid.size;
     p5.resizeCanvas(fullWidth, fullHeight);
+    grid.resize();
+
+    //freeze drawing
+    p5.noLoop();
+    //force draw with requestAnimationFrame to get the full canvas size
+    requestAnimationFrame(() => {
+        p5.redraw();
+        const image = canvas.toDataURL("image/png");
+
+        //Restore everything
+        p5.resizeCanvas(originalWidth, originalHeight);
+        grid.scale = originalScale;
+        grid.resize();
+        p5.redraw();
+        p5.loop();
+
+        callback(image);
+    });
+}
+
+/*
+    This function grabs the current canvas image from an open floorset and returns it
+*/
+async function getCanvasBase64Thumbnail()
+{
+    return await new Promise((resolve, reject) => {
+        if (!window.gridInstance || !window.p5Instance) {
+            console.error("p5Instance or gridInstance not available");
+            reject("Required instances not available");
+            return;
+        }
+
+        getCanvasThumbnailImage(image => {
+            if (!image){
+                reject("No image!")
+            }else{
+                console.log("nice image");
+                resolve(image);
+            }
+        });
+    });
+};
+
+window.getCanvasBase64Image = async function () 
+{
+    return await new Promise((resolve, reject) => {
+        if (!window.gridInstance || !window.p5Instance) {
+            console.error("p5Instance or gridInstance not available");
+            reject("Required instances not available");
+            return;
+        }
+
+        getCanvasImage(image => {
+            if (!image){
+                reject("No image!")
+            }else{
+                resolve(image);
+            }
+        })
+    });
+};
+
+function saveAsFile(filename, base64DataUrl) {
+    const link = document.createElement('a');
+    link.href = 'data:application/octet-stream;base64,'+base64DataUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    // Wait a little before removing the link to allow the browser to start the download
+    document.body.removeChild(link);
+}
+
+function getCanvasThumbnailImage(callback) {
+    const canvas = document.querySelector('canvas');
+    if (!canvas) {
+        console.error("Canvas not found!");
+        return null;
+    }
+    //save current zoom
+    const p5 = window.p5Instance;
+    const grid = window.gridInstance;
+
+    const originalScale = grid.scale;
+    const originalWidth = p5.width;
+    const originalHeight = p5.height;
+
+
+    // Adjust scale so content fits nicely
+    const scaleX = 448 / (grid.width * grid.size);
+    const scaleY = 320 / (grid.height * grid.size);
+    const exportScale = Math.min(scaleX, scaleY);
+    p5.resizeCanvas(448, 320);
+    grid.scale = exportScale;
     grid.resize();
 
     //freeze drawing

@@ -103,8 +103,8 @@
                 </Button>
             </AuthorizeView>
 
-            <Button Icon="fa-solid fa-print" Id="printLayout" Variant="primary" TextAlignment="center"
-                data-bs-toggle="modal" data-bs-target="#print-modal">
+            <Button Icon="fa-solid fa-print" Id="printLayout" Variant="primary" isDisabled="false" TextAlignment="center"
+                data-bs-toggle="modal" data-bs-target="#printModal" OnClickFunction="OpenPrintModal">
                 Print Layout
             </Button>
 
@@ -132,7 +132,9 @@
 
 <ImportExcelModal FloorsetId="FloorsetId" />
 
-<PrintModal FloorsetId="FloorsetId" />
+@if(printLayoutOpen){
+    <PrintModal @ref="printModal" FloorsetId="FloorsetId"/>
+}
 
 <AddFixtureModal id="create-fixture" StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
@@ -262,6 +264,20 @@
         {
             addFixtureExpanded = false;
         }
+    }
+
+    private PrintModal? printModal;
+    private async Task OpenPrintModal()
+    {
+        printLayoutOpen = true;
+        await InvokeAsync(StateHasChanged);
+
+        await Task.Delay(500);
+
+        if(printModal != null){
+            await printModal.OnModalOpenedAsync();
+        }
+        
     }
 
     /* Danielle Smith - 3/24/2025
