@@ -111,15 +111,46 @@
 </ModalBody>
 
 @code {
+    /// <summary>
+    /// Used to grab/set values of stores from the Add/Edit Modal form
+    /// </summary>
     [Parameter] public Data.Models.Stores.UpdatePublicInfoStore? AddUpdateStoreModel { get; set; }
+    
     [Parameter] public string? StoreName { get; set; } = "";
+    
+    /// <summary>
+    /// The ID of the store currently being edited (-1 when creating a store)
+    /// </summary>
     [Parameter] public required int StoreId { get; set; }
+    
+    /// <summary>
+    /// ID of the Add Employee Modal for this store. Used to switch to the store's
+    /// respected AddEmployeeToStoreModal
+    /// </summary>
     [Parameter] public required string AddEmployeeTarget { get; set; }
-    [Parameter] public List<Data.Models.Users.UserDTO> Users { get; set; } = new();
-    [Parameter] public required EventCallback<int> DeleteUser { get; set; }
 
+    /// <summary>
+    /// List of users that have/will have access to the store 
+    /// </summary>
+    [Parameter] public List<Data.Models.Users.UserDTO> Users { get; set; } = new();
+
+    /// <summary>
+    /// Method passed in from the parent to remove a user from the store
+    /// </summary>
+    [Parameter] public required EventCallback<int> DeleteUser { get; set; }
+    
+    /// <summary>
+    /// Holds the base64 of an image for the store BP.
+    /// The ImageInput component in the modal is set to this string (This displays the image in the modal)
+    /// </summary>
     private string ImageSrc = "";
 
+    /// <summary>
+    /// When the modal is initialized, set the imageinput component to show the
+    /// image of the selected store (return nothing when creating a store for a blank input)
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     protected override void OnInitialized()
     {
         if (AddUpdateStoreModel == null) return;
@@ -128,12 +159,23 @@
         $"data:image/jpeg;base64,{Convert.ToBase64String(AddUpdateStoreModel.BLUEPRINT_IMAGE)}" : "";
     }
 
+    /// <summary>
+    /// Delete a user from the list of users in a store when their circle is clicked on
+    /// </summary>
+    /// <param name="tuid">The TUID of the user to remove from the store </param>
+    /// <returns> void </returns>
     private async Task OnDeleteUserClick(int tuid)
     {
         await Task.Run(() => Console.WriteLine($"Delete User #{tuid}"));
         await DeleteUser.InvokeAsync(tuid);
     }
 
+    /// <summary>
+    /// Sets the store model's image to the file selected as the store's blueprint
+    /// </summary>
+    /// <param name="e"> used to pass in the file change event so the BP image can be 
+    /// converted to a byte array </param>
+    /// <returns> void </returns>
     private async Task OnImageUpload(InputFileChangeEventArgs e)
     {
         await Task.Run(() => Console.WriteLine("Upload Image"));

@@ -23,15 +23,42 @@
     OnAddEmployeesSubmit="OnAddEmployeesSubmit" />
 
 @code {
+    /// <summary>
+    /// Store object passed in from parent (Store Dashboard)
+    /// </summary
     [Parameter] public required Data.Models.Stores.Store Store { get; set; }
+
+    /// <summary>
+    /// method passed in from parent (Store Dashboard) to update the current stores available.
+    /// </summary>
     [Parameter] public required EventCallback UpdateStores { get; set; }
+
+    /// <summary>
+    /// The ID of the store currently being edited
+    /// </summary>
     [Parameter] public required int StoreId { get; set; }
+
+    /// <summary>
+    /// Captures and stores any additional attributes that are not explicitly defined on the component
+    /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
+    /// <summary>
+    /// Model used to grab/set values of stores from the Edit Modal form
+    /// </summary>
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? EditStoreModel { get; set; }
 
+    /// <summary>
+    /// Holds all of the users that are/will be associated with a store
+    /// </summary>
     private Dictionary<int, Data.Models.Users.UserDTO> Users = new Dictionary<int, Data.Models.Users.UserDTO>();
 
+    /// <summary>
+    /// Updates the Users Dictionary to include all of the employees that should 
+    /// be associated with the store
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private async Task UpdateUsers()
     {
         var currentUsers = await StoresHttpClient.GetUsersAtStore(StoreId);
@@ -64,10 +91,22 @@
         }
     }
 
+    /// <summary>
+    /// Remove a user from the dictionary Users. This will remove their association to the store
+    /// </summary>
+    /// <param name="tuid">The TUID of the user to remove from the store </param>
+    /// <returns> void </returns>
     private async Task DeleteUser(int tuid)
     {
         await Task.Run(() => Users.Remove(tuid));
     }
+
+    /// <summary>
+    /// Creates a new EditStoreModel when the modal is created.
+    /// The values are filled in from the component's Store parameter
+    /// </summary>
+    /// <param name=""> No parameters taken </param>
+    /// <returns> void </returns>
     protected override void OnInitialized()
     {
         EditStoreModel ??= new Data.Models.Stores.UpdatePublicInfoStore
@@ -84,11 +123,23 @@
         };
     }
 
+    /// <summary>
+    /// populates the Users dictionary with the current employees of the store
+    ///  when the modal is initially created
+    /// </summary>
+    /// <param name=""> No parameters taken </param>
+    /// <returns> void </returns>
     protected override async Task OnInitializedAsync()
     {
         await UpdateUsers();
     }
 
+    /// <summary>
+    /// Takes the employee(s) being added from the AddEmployeeToStoreModal and
+    /// marks them to be associated with the store
+    /// </summary>
+    /// <param name="employees"> list of employees from the the AddEmployeeToStoreModal </param>
+    /// <returns> void </returns>
     private async Task OnAddEmployeesSubmit(string[] employees)
     {
         List<string> employeesList = new List<string>(employees);
@@ -100,6 +151,11 @@
         await UpdateUsers();
     }
 
+    /// <summary>
+    /// Attempts to update the store if the values in EditStoreModel are valid
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private async Task OnEditStoreSubmit()
     {
         if (EditStoreModel == null)
@@ -128,11 +184,21 @@
         }
     }
 
+    /// <summary>
+    /// Called when the store has invalid values while trying to update. This is called from the EditForm
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private void OnInvalidEditStoreSubmit()
     {
         ToastService.ShowError("There was an error editing the store!");
     }
 
+    /// <summary>
+    /// removes all of the values from the Model
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private void ClearEditStoreModel()
     {
         EditStoreModel = new();

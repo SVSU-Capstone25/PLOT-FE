@@ -23,14 +23,38 @@
     OnAddEmployeesSubmit="OnAddEmployeesSubmit" />
 
 @code {
+    /// <summary>
+    /// method passed in from parent (Store Dashboard) to update the current stores available.
+    /// </summary>
     [Parameter] public required EventCallback UpdateStores { get; set; }
+
+    /// <summary>
+    /// Captures and stores any additional attributes that are not explicitly defined on the component
+    /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
+    /// <summary>
+    /// Model used to grab/set values of stores from the Add Modal form
+    /// </summary>
     [SupplyParameterFromForm] private Data.Models.Stores.UpdatePublicInfoStore? AddStoreModel { get; set; }
 
+    /// <summary>
+    /// Holds all of the users that are/will be associated with a store
+    /// </summary>
     private Dictionary<int, Data.Models.Users.UserDTO> Users = new Dictionary<int, Data.Models.Users.UserDTO>();
+
+    /// <summary>
+    /// The ID of the store currently being edited 
+    /// (-1 when creating a store becasue it doesn't have a TUID yet)
+    /// </summary>
     public int StoreId = -1;
 
+    /// <summary>
+    /// Updates the Users Dictionary to include all of the employees that should 
+    /// be associated with the store
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private async Task UpdateUsers()
     {
         if (AddStoreModel != null)
@@ -53,11 +77,22 @@
         }
     }
 
+    /// <summary>   
+    /// Remove a user from the dictionary Users. This will remove their association to the store
+    /// </summary>
+    /// <param name="tuid">The TUID of the user to remove from the store </param>
+    /// <returns> void </returns>
     private async Task DeleteUser(int tuid)
     {
         await Task.Run(() => Users.Remove(tuid));
     }
 
+    /// <summary>
+    /// Creates a new AddStoreModel when the modal is created.
+    /// The values are empty other than providing a valid default Length and Width
+    /// </summary>
+    /// <param name=""> No parameters taken </param>
+    /// <returns> void </returns>
     protected override void OnInitialized()
     {
         AddStoreModel ??= new()
@@ -67,6 +102,12 @@
         };
     }
 
+    /// <summary>
+    /// Takes the employee(s) being added from the AddEmployeeToStoreModal and
+    /// marks them to be associated with the store
+    /// </summary>
+    /// <param name="employees"> list of employees from the the AddEmployeeToStoreModal </param>
+    /// <returns> void </returns>
     private async Task OnAddEmployeesSubmit(string[] employees)
     {
         List<string> employeesList = new List<string>(employees);
@@ -78,6 +119,11 @@
         await UpdateUsers();
     }
 
+    /// <summary>
+    /// Attempts to create the store if the values in AddStoreModel are valid
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private async Task OnAddStoreSubmit()
     {
         if (AddStoreModel == null)
@@ -113,6 +159,12 @@
 
     }
 
+    /// <summary>
+    /// removes all of the values from the AddStoreModel
+    /// (Clears the form for the next store)
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private void ClearAddStoreModel()
     {
         AddStoreModel = new();

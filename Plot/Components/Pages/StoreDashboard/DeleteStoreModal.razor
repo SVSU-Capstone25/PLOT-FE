@@ -26,9 +26,22 @@
 </Modal>
 
 @code {
+    /// <summary>
+    /// Store object passed in from parent (Store Dashboard)
+    /// </summary>
     [Parameter] public required Data.Models.Stores.Store Store { get; set; }
+    
+    /// <summary>
+    /// method passed in from parent (Store Dashboard) to update the current stores available.
+    /// </summary>
     [Parameter] public required EventCallback UpdateStores { get; set; }
 
+
+    /// <summary>
+    /// Delete a store from the DB based off of the store ID passed in
+    /// </summary>
+    /// <param name="storeId"> used to identify which store should be deleted </param>
+    /// <returns> void </returns>
     private async Task OnDeleteStoreSubmit(int storeId)
     {
         var response = await StoresHttpClient.DeleteStore(storeId);
