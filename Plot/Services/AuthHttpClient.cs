@@ -37,6 +37,6 @@ public class AuthHttpClient : PlotHttpClient
 
     public async Task<UserDTO?> GetCurrentUser()
     {
-        return await SendGetAsync<UserDTO>("/get-current-user");
+        return await SendGetAsync<UserDTO?>("/get-current-user");
     }
 }

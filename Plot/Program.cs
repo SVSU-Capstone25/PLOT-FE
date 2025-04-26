@@ -7,6 +7,7 @@ using Plot.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +37,7 @@ builder.Services.AddRazorComponents()
 //         BaseAddress = new Uri(builder.Configuration["BACKEND_URL"] ?? "http://backend:8085/api")
 //     };
 // });
-
+builder.Services.AddHttpContextAccessor();
 // Add services for authentication and authorization
 builder.Services.AddScoped<AuthService>();
 // builder.Services.AddScoped<AuthHeaderHttpClient>();

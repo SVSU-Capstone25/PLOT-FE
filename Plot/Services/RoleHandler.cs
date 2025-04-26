@@ -6,65 +6,44 @@ public class RoleHandler : AuthorizationHandler<RoleRequirement>, IAuthorization
 {
     private readonly AuthHttpClient _authHttpClient;
 
-    //private readonly Cookie _cookie;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    //private readonly JwtService _jwtService;
 
-    //private readonly ClaimParserService _claimParserService;
-
-    public RoleHandler(AuthHttpClient authHttpClient)
+    public RoleHandler(AuthHttpClient authHttpClient, ICookie cookie, IHttpContextAccessor httpContextAccessor)
     {
         _authHttpClient = authHttpClient;
-        //_cookie=cookie;
-        //_jwtService=jwtService;
-        //_claimParserService=claimParserService;
+        _httpContextAccessor = httpContextAccessor;
     }
+
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, RoleRequirement requirement)
     {
 
-        UserDTO? currentUser = await _authHttpClient.GetCurrentUser();
+        var currentUser = await _authHttpClient.GetCurrentUser();
 
-        if(currentUser!=null && requirement.AllowedRoles.Contains(currentUser.ROLE))
+        if(currentUser!=null)
         {
-            Console.WriteLine("ROLE GOOD");
-            context.Succeed(requirement);
-        }else
-        {
-            Console.WriteLine("ROLE BAD");
-            context.Fail();
+            if(requirement.AllowedRoles.Contains(currentUser.ROLE))
+            {
+                context.Succeed(requirement);
+                return;
+            }
         }
+        else
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
 
+            if(httpContext!=null)
+            {
+                httpContext.Response.Cookies.Append("Auth", "", new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(-1),
+                });
 
-        //var token = await _cookie.GetValue("Auth");
-
-        // if(String.IsNullOrEmpty(token))
-        // {
-        //     var userPrincipal = _jwtService.ValidateAuthToken(token);
-
-        //     if(userPrincipal!=null)
-        //     {
-        //         var currentUserTUID = _claimParserService.GetUserId(userPrincipal);
-
-        //         var userInDb = _usersHttpClient.GetUserById(currentUserTUID.Value);
-
-        //         if(userInDb!=null && requirement.AllowedRoles.Contains(userInDb.ROLE))
-
-
-        //     }
-
-        // }
-
-        // var email = context.User.Identity?.Name; // or ClaimTypes.Email
-
-        // if (string.IsNullOrEmpty(email))
-        //     return;
-
-        // var user = await _usersHttpClient.GetUserByEmail(email); // Call DB every time
-
-        // if (user != null && requirement.AllowedRoles.Contains(user.ROLE))
-        // {
-        //     context.Succeed(requirement);
-        // }
+                httpContext.Response.Redirect("/login");
+            }
+        }
+        context.Fail();
+        return;
     }
 }
