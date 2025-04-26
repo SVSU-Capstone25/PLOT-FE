@@ -220,7 +220,7 @@ class Grid {
     Grid.p5.pixelDensity(8);
     this.draw();
     setTimeout(() => {
-      Grid.p5.saveCanvas(`${floorsetName}-${new Date().toDateString()}`, "jpg");
+      Grid.p5.saveCanvas(`${floorsetName} - Floorset Image`, "jpg");
       Grid.p5.pixelDensity(1);
     }, 100);
   }

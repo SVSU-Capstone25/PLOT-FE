@@ -48,8 +48,8 @@
             </OptionInput>
         </div> *@
 
-        <Checkbox id="checkWithAllocations" Text="With Allocations" />
-        <Checkbox id="checkWithNotes" Text="With Notes" />
+        <Checkbox @bind-Checked="withAllocation" Text="With Allocations" />
+        <Checkbox @bind-Checked="withNotes" Text="With Notes" />
     </ModalBody>
 
     <ModalFooter>
@@ -62,11 +62,12 @@
 @code {
     [Parameter] public required int FloorsetId {get;set;}
     public required Data.Models.Floorsets.Floorset? Floorset {get;set;}
-    private string? base64Image;
     private string? base64ImageThumbnail;
     private bool isInitialized = false;
+    private bool withNotes = false;
+    private bool withAllocation = false;
 
-    protected override async Task OnInitializedAsync()
+    @* protected override async Task OnInitializedAsync()
     {
         var response = await FloorsetsHttpClient.GetFloorsetById(FloorsetId);
         if (response != null)
@@ -75,13 +76,18 @@
             Console.WriteLine("got floorset!");
         }
 
-    }
+    } *@
 
     public async void TriggerPrintModal() {
         base64ImageThumbnail = await JS.InvokeAsync<string>("getCanvasBase64Thumbnail");
-        base64Image = await JS.InvokeAsync<string>("getCanvasBase64Image");
+
+        var response = await FloorsetsHttpClient.GetFloorsetById(FloorsetId);
+        if (response != null)
+        {
+            Floorset = response;
+        }
+        
         StateHasChanged();
-        Console.WriteLine("Got preview image!");
     }
 
     //printLayout Task
@@ -89,25 +95,16 @@
     //Called by the "Print" button in the print modal.
     private async void OnPrintClick()
     {
-        
-        Console.WriteLine(base64Image);
         try
         {
-            if (string.IsNullOrEmpty(base64Image))
-            {
-                Console.WriteLine("PNG data is null or empty.");
-                return;
-            }
-            
-            //Strip data URL prefix and encode into bytes
-            var base64Data = base64Image.Substring(base64Image.IndexOf(",") + 1);  
-            byte[] pngBytes = Convert.FromBase64String(base64Data);
+            //download a full image of the floorset into a png
+            await JS.InvokeVoidAsync("window.gridInstance.print", $"{Floorset?.NAME ?? "layout"}");
 
             //Create PDF
-            byte[] pdfBytes = CanvasPdfExporter.GeneratePdfFromImage(pngBytes);
+            byte[] pdfBytes = CanvasPdfExporter.GenerateFloorsetPdf($"{Floorset?.NAME ?? "layout"}",withNotes,withAllocation);
 
             // Trigger download
-            await JS.InvokeVoidAsync("saveAsFile", $"{Floorset?.NAME ?? "layout"}.pdf", Convert.ToBase64String(pdfBytes));
+            await JS.InvokeVoidAsync("saveAsFile", $"{Floorset?.NAME + " - Text Export" ?? "layout"}.pdf", Convert.ToBase64String(pdfBytes));
 
             Console.WriteLine("Printed floorset layout as PDF.");
         }
