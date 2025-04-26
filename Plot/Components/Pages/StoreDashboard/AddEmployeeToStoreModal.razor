@@ -11,7 +11,8 @@
             <OptionInput id="addEmployeeOptionsInput">
                 <OptionInputHeader>Select employees to add (hold Ctrl to select multiple)</OptionInputHeader>
                 <InputSelect class="form-select" multiple @bind-Value="AddEmployeesModel!.USERS">
-                    @foreach (var User in Users.Skip(1).ToList())
+                    @* Skips first user to prevent the root user from showing up in the employee list*@
+                    @foreach (var User in Users.Skip(1).ToList()) 
                     {
                         if (User != null && User.FIRST_NAME != null && User.LAST_NAME != null)
                         {
@@ -41,15 +42,44 @@
         public required string[] USERS { get; set; }
     }
 
+    /// <summary>
+    /// ID of the modal that opened this modal. This is used to switch back to 
+    /// that modal once the user is done adding emplyees
+    /// </summary>
     [Parameter] public required string AddEmployeeTarget { get; set; }
+    
+    /// <summary>
+    /// Method passed in from the add/edit store modal. This takes the list of
+    /// users that should be added to the store and actually adds them
+    /// </summary>
     [Parameter] public required EventCallback<string[]> OnAddEmployeesSubmit { get; set; }
+
+    /// <summary>
+    /// Captures and stores any additional attributes that are not explicitly defined on the component
+    /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
+    /// <summary>
+    /// Used to grab/set valaues of employees from the AddEmployee Modal form
+    /// </summary>
     [SupplyParameterFromForm] private AddEmployees? AddEmployeesModel { get; set; }
 
+    /// <summary>
+    ///list of users to hold every employee that's in the DB. This is used to assign employees to a store.
+    ///It's used to populate the AddEmployeeOption Input so people can select which employee's should be added.
+    /// </summary>
     private List<Data.Models.Users.UserDTO> Users = new List<Data.Models.Users.UserDTO>();
+
+    /// <summary>
+    /// List of users used to filter out the users that are already in the selected store
+    /// </summary>
     private List<Data.Models.Users.UserDTO> UsersInCurrentStore = new List<Data.Models.Users.UserDTO>();
 
+    /// <summary>
+    /// Grabs all users from the DB and stores them in the "Users" list
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private async Task UpdateUsers()
     {
         var response = await UsersHttpClient.GetAllUsers();
@@ -60,11 +90,22 @@
         }
     }
 
+    /// <summary>
+    /// Grabs every user from the DB when the Modal is created 
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     protected override async Task OnInitializedAsync()
     {
         await UpdateUsers();
     }
 
+
+    /// <summary>
+    /// Creates a new AddEmployeeModel with empty users when Modal is created
+    /// </summary>
+    /// <param name=""> No parameters taken </param>
+    /// <returns> void </returns>
     protected override void OnInitialized()
     {
         AddEmployeesModel ??= new()

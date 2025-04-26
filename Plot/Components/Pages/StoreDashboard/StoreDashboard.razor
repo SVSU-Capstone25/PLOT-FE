@@ -91,8 +91,16 @@ Author: Andrew Fulton (3/12/2025)
 </div>
 
 @code {
+    /// <summary>
+    /// List used to hold the available stores
+    /// </summary>
     private List<Data.Models.Stores.Store> Stores = new List<Data.Models.Stores.Store>();
 
+    /// <summary>
+    /// Updates the Stores list to include the stores available to the user
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private async Task UpdateStores()
     {
         //Get jwt from cookie
@@ -143,6 +151,13 @@ Author: Andrew Fulton (3/12/2025)
         }
     }
 
+    /// <summary>
+    /// Updates stores after the component has finished rendering.
+    /// Used to perform operations that should occur only after the initial render
+    /// </summary>
+    /// <param name="firstRender">
+    /// True if this is the first time the component has rendered. False otherwise
+    /// </param>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         //Get instance information for the dashboard
@@ -154,6 +169,11 @@ Author: Andrew Fulton (3/12/2025)
 
     }
 
+    /// <summary>
+    /// Fired when "Edit" is clidked on a store. This updates the list of stores.
+    /// </summary>
+    /// <param name="Store"> The store being edited </param>
+    /// <returns> void </returns>
     private async Task OnEditClick(Data.Models.Stores.Store Store)
     {
         await UpdateStores();
