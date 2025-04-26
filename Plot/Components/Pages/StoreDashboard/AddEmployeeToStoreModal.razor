@@ -1,4 +1,5 @@
 @inject UsersHttpClient UsersHttpClient
+@inject StoresHttpClient StoresHttpClient
 
 @using Plot.Data.Models.Stores
 
@@ -8,13 +9,16 @@
         OnValidSubmit="async () => await OnAddEmployeesSubmit.InvokeAsync(AddEmployeesModel!.USERS)">
         <ModalBody>
             <OptionInput id="addEmployeeOptionsInput">
-                <OptionInputHeader>Select an Employee to Add</OptionInputHeader>
+                <OptionInputHeader>Select employees to add (hold Ctrl to select multiple)</OptionInputHeader>
                 <InputSelect class="form-select" multiple @bind-Value="AddEmployeesModel!.USERS">
-                    @foreach (var User in Users)
+                    @foreach (var User in Users.Skip(1).ToList())
                     {
-                        <OptionInputOption value="@User.TUID">
-                            @User.FIRST_NAME @User.LAST_NAME
-                        </OptionInputOption>
+                        if (User != null && User.FIRST_NAME != null && User.LAST_NAME != null)
+                        {
+                            <OptionInputOption value="@User.TUID">
+                                @User.FIRST_NAME @User.LAST_NAME
+                            </OptionInputOption>
+                        }
                     }
                 </InputSelect>
             </OptionInput>
@@ -44,6 +48,7 @@
     [SupplyParameterFromForm] private AddEmployees? AddEmployeesModel { get; set; }
 
     private List<Data.Models.Users.UserDTO> Users = new List<Data.Models.Users.UserDTO>();
+    private List<Data.Models.Users.UserDTO> UsersInCurrentStore = new List<Data.Models.Users.UserDTO>();
 
     private async Task UpdateUsers()
     {
