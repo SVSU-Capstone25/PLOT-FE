@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Plot.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.JSInterop;
+using PdfSharp.Fonts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,17 @@ builder.Services.AddScoped<ClaimParserService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddSingleton<ToastService>();
 builder.Services.AddSingleton<FloorsetEditorService>();
+
+var fontPath = Path.Combine(builder.Environment.WebRootPath, "fonts", "segoeui.ttf");
+if (!File.Exists(fontPath))
+{
+    throw new FileNotFoundException($"Font file not found: {fontPath}");
+}
+
+var fontBytes = File.ReadAllBytes(fontPath);
+var customFontResolver = new CustomFontResolver(fontBytes);
+GlobalFontSettings.FontResolver = customFontResolver;
+builder.Services.AddSingleton<IFontResolver>(customFontResolver);
 
 // Add JWT authentication and authorization 
 builder.Services.AddAuthentication(options =>
