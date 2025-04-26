@@ -143,13 +143,11 @@
             using var stream = file.OpenReadStream(file.Size);
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream);
-
             var originalImageBytes = memoryStream.ToArray();
-
             await Task.Run(() => Console.WriteLine("Original image bytes:" + originalImageBytes.Length));
             var compressedImageBytes = await Runtime.InvokeAsync<byte[]>("compressImage", originalImageBytes, 480, 360, 1);
-
             await Task.Run(() => Console.WriteLine("Compressed image bytes:" + compressedImageBytes.Length));
+            
             if (AddUpdateStoreModel != null)
             {
                 AddUpdateStoreModel.BLUEPRINT_IMAGE = compressedImageBytes;

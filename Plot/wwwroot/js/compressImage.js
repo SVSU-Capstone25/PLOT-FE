@@ -1,3 +1,18 @@
+/*
+    Filename: compressImage.js
+    Part of Project: PLOT/PLOT-FE/Plot/wwwroot/js
+
+    File Purpose:
+    This file contains an image compression implementation for
+    the image uploading functionality. This will take the user's
+    image as a byte array, print it onto a js canvas with a 
+    specified quality, then crop the image down to a specified
+    target width/height. Found this to be the easiest way to
+    have the image inputs be around the same size and manageable.
+
+    Written by: Jordan Houlihan
+*/
+
 window.compressImage = async function (
   byteArray,
   targetWidth,
