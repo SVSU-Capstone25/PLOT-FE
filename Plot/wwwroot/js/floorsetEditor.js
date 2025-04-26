@@ -440,51 +440,6 @@ function flipOrder() {
     // Flip the isAsc value to indicate a reversed column
     isAsc = !isAsc;
 }
-/*
-    This function grabs the current canvas image from an open floorset and returns it
-*/
-
-function getCanvasImage(callback) {
-    const canvas = document.querySelector('canvas');
-    if (!canvas) {
-        console.error("Canvas not found!");
-        return null;
-    }
-
-    //save current zoom
-    const p5 = window.p5Instance;
-    const grid = window.gridInstance;
-
-    const originalScale = grid.scale;
-    const originalWidth = p5.width;
-    const originalHeight = p5.height;
-
-
-
-    //set scale and center the grid manually
-    grid.scale = 1;
-    const fullWidth = grid.width * grid.size;
-    const fullHeight = grid.height * grid.size;
-    p5.resizeCanvas(fullWidth, fullHeight);
-    grid.resize();
-
-    //freeze drawing
-    p5.noLoop();
-    //force draw with requestAnimationFrame to get the full canvas size
-    requestAnimationFrame(() => {
-        p5.redraw();
-        const image = canvas.toDataURL("image/png");
-
-        //Restore everything
-        p5.resizeCanvas(originalWidth, originalHeight);
-        grid.scale = originalScale;
-        grid.resize();
-        p5.redraw();
-        p5.loop();
-
-        callback(image);
-    });
-}
 
 /*
     This function grabs the current canvas image from an open floorset and returns it
@@ -509,7 +464,7 @@ async function getCanvasBase64Thumbnail()
     });
 };
 
-window.getCanvasBase64Image = async function () 
+async function getCanvasBase64Image() 
 {
     return await new Promise((resolve, reject) => {
         if (!window.gridInstance || !window.p5Instance) {
@@ -522,6 +477,7 @@ window.getCanvasBase64Image = async function ()
             if (!image){
                 reject("No image!")
             }else{
+                console.log("better image");
                 resolve(image);
             }
         })
@@ -536,6 +492,50 @@ function saveAsFile(filename, base64DataUrl) {
     link.click();
     // Wait a little before removing the link to allow the browser to start the download
     document.body.removeChild(link);
+}
+/*
+    This function grabs the current canvas image from an open floorset and returns it
+*/
+
+function getCanvasImage(callback) {
+    const canvas = document.querySelector('canvas');
+    if (!canvas) {
+        console.error("Canvas not found!");
+        return null;
+    }
+    //save current zoom
+    const p5 = window.p5Instance;
+    const grid = window.gridInstance;
+
+    const originalScale = grid.scale;
+    const originalWidth = p5.width;
+    const originalHeight = p5.height;
+
+
+    // Adjust scale so content fits nicely
+    const scaleX = 448 / (grid.width * grid.size);
+    const scaleY = 320 / (grid.height * grid.size);
+    const exportScale = Math.min(scaleX, scaleY);
+    p5.resizeCanvas(448, 320);
+    grid.scale = exportScale;
+    grid.resize();
+
+    //freeze drawing
+    p5.noLoop();
+    //force draw with requestAnimationFrame to get the full canvas size
+    requestAnimationFrame(() => {
+        p5.redraw();
+        const image = canvas.toDataURL("image/png");
+
+        //Restore everything
+        p5.resizeCanvas(originalWidth, originalHeight);
+        grid.scale = originalScale;
+        grid.resize();
+        p5.redraw();
+        p5.loop();
+
+        callback(image);
+    });
 }
 
 function getCanvasThumbnailImage(callback) {

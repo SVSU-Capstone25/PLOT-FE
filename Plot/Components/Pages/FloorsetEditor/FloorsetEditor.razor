@@ -104,7 +104,7 @@
             </AuthorizeView>
 
             <Button Icon="fa-solid fa-print" Id="printLayout" Variant="primary" isDisabled="false" TextAlignment="center"
-                data-bs-toggle="modal" data-bs-target="#printModal" OnClickFunction="OpenPrintModal">
+                data-bs-toggle="modal" data-bs-target="#print-modal" @onclick="() => PrintModalRef?.TriggerPrintModal()" >
                 Print Layout
             </Button>
 
@@ -132,9 +132,7 @@
 
 <ImportExcelModal FloorsetId="FloorsetId" />
 
-@if(printLayoutOpen){
-    <PrintModal @ref="printModal" FloorsetId="FloorsetId"/>
-}
+<PrintModal @ref="PrintModalRef" FloorsetId="FloorsetId"/>
 
 <AddFixtureModal id="create-fixture" StoreId="StoreId" UpdateFixtureModels="UpdateFixtureModels" />
 
@@ -159,7 +157,7 @@
     private bool allocationsOpen = false;
     private bool addFixtureExpanded = true;
 
-
+    private PrintModal? PrintModalRef;
 
     // Used when the save button is pressed. Calls js to take a picture of the floorset
     // and update the database with the new image- Michael Polhill
@@ -264,20 +262,6 @@
         {
             addFixtureExpanded = false;
         }
-    }
-
-    private PrintModal? printModal;
-    private async Task OpenPrintModal()
-    {
-        printLayoutOpen = true;
-        await InvokeAsync(StateHasChanged);
-
-        await Task.Delay(500);
-
-        if(printModal != null){
-            await printModal.OnModalOpenedAsync();
-        }
-        
     }
 
     /* Danielle Smith - 3/24/2025

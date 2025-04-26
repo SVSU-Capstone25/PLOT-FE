@@ -9,6 +9,9 @@
 
 @*Print Modal *@
 @*Krzysztof Hejno *@
+@if(isInitialized){
+
+}
 <Modal id="print-modal" SizeClass="modal-lg">
     <ModalHeader Title="Print Layout" Variant="standard" />
     <ModalBody>
@@ -69,53 +72,25 @@
         if (response != null)
         {
             Floorset = response;
-            Console.WriteLine("got floorset!!!");
+            Console.WriteLine("got floorset!");
         }
 
     }
 
-    //Asynchronously get the image preview of the canvas when opening the modal
-    //this ensures we always get the current canvas image 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (isInitialized)
-        {
-            isInitialized = false;
-
-            try
-            {
-                // These canvas functions should now succeed because the modal is rendered
-                base64ImageThumbnail = await JS.InvokeAsync<string>("getCanvasBase64Thumbnail");
-                Console.WriteLine("Got preview image!");
-
-                await Task.Delay(1500);
-                base64Image = await JS.InvokeAsync<string>("getCanvasBase64Image");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error loading image: {ex.Message}");
-            }
-
-            StateHasChanged(); // Ensure the new image is shown
-        }
+    public async void TriggerPrintModal() {
+        base64ImageThumbnail = await JS.InvokeAsync<string>("getCanvasBase64Thumbnail");
+        base64Image = await JS.InvokeAsync<string>("getCanvasBase64Image");
+        StateHasChanged();
+        Console.WriteLine("Got preview image!");
     }
-
-    //helper method for the rendering on the preview image on open
-    public async Task OnModalOpenedAsync()
-    {
-        // This flag defers the image load until after the modal is rendered
-        isInitialized = true;
-
-        // Kick off rendering now so OnAfterRenderAsync runs
-        await InvokeAsync(StateHasChanged);
-    }
-
 
     //printLayout Task
     //Asynchronously prints the current grid layout from specified printer and options.
     //Called by the "Print" button in the print modal.
-    private async Task OnPrintClick()
+    private async void OnPrintClick()
     {
+        
+        Console.WriteLine(base64Image);
         try
         {
             if (string.IsNullOrEmpty(base64Image))
@@ -123,7 +98,7 @@
                 Console.WriteLine("PNG data is null or empty.");
                 return;
             }
-
+            
             //Strip data URL prefix and encode into bytes
             var base64Data = base64Image.Substring(base64Image.IndexOf(",") + 1);  
             byte[] pngBytes = Convert.FromBase64String(base64Data);
