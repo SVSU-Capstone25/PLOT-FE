@@ -113,13 +113,16 @@ builder.Services.AddAuthorizationBuilder()
 
 builder.Services.AddCascadingAuthenticationState();
 
-
 builder.Services.AddAuthorizationCore();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
 {
     options.DetailedErrors = true;
-});
+})
+.AddHubOptions(options =>
+{
+    options.MaximumReceiveMessageSize = 1 * 1024 * 1024;
+});;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
