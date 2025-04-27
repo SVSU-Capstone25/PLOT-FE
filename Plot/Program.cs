@@ -37,7 +37,7 @@ builder.Services.AddRazorComponents()
 //         BaseAddress = new Uri(builder.Configuration["BACKEND_URL"] ?? "http://backend:8085/api")
 //     };
 // });
-builder.Services.AddHttpContextAccessor();
+//builder.Services.AddHttpContextAccessor();
 // Add services for authentication and authorization
 builder.Services.AddScoped<AuthService>();
 // builder.Services.AddScoped<AuthHeaderHttpClient>();
@@ -110,7 +110,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Add authorization policies
+//Add authorization policies
 // builder.Services.AddAuthorizationBuilder()
 //     .AddPolicy("Employee", policy => policy.RequireClaim("Role", "Owner", "Manager", "Employee"))
 //     .AddPolicy("Manager", policy => policy.RequireClaim("Role", "Owner", "Manager"))
@@ -144,7 +144,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("http://backend:8085", "http://localhost:8085") // Add your actual frontend URL(s)
+                          policy.WithOrigins("http://backend:8085", "http://localhost:8085") 
                                 .AllowAnyHeader()
                                 .AllowAnyMethod()
                                 .AllowCredentials();
@@ -153,6 +153,7 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
