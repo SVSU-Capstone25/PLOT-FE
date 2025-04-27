@@ -1,6 +1,7 @@
 @inject StoresHttpClient StoresHttpClient
 @inject UsersHttpClient UsersHttpClient
 @inject ToastService ToastService
+@inject IJSRuntime JS
 
 @using Plot.Services
 
@@ -21,6 +22,18 @@
 
 <AddEmployeeToStoreModal id="@($"add-employee-{Store.TUID}")" AddEmployeeTarget="@($"#edit-store-{Store.TUID}")"
     OnAddEmployeesSubmit="OnAddEmployeesSubmit" ImageSrc="ImageSrc"/>
+
+<script>
+    function setBackgroundImage(StoreId, ImageSrc) {
+        console.log("set background image");
+        let image_input = document.getElementById(StoreId + "-container");
+        image_input.style.backgroundImage = `url(${ImageSrc})`;
+        image_input.style.backgroundSize = "cover";
+        image_input.style.backgroundPosition = "center";
+
+    }
+</script>
+
 
 @code {
     /// <summary>
@@ -60,6 +73,24 @@
     private string? EmployeesAtStart;
 
     private string? ImageSrc;
+
+    /// <TODO>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {   
+        if(firstRender){
+            ImageSrc = EditStoreModel!.BLUEPRINT_IMAGE != null
+            ? $"data:image/jpeg;base64,{Convert.ToBase64String(EditStoreModel!.BLUEPRINT_IMAGE)}" : "";
+
+            if (!string.IsNullOrEmpty(ImageSrc))
+            {
+                // Ensure that storeId is correctly passed in
+                await JS.InvokeVoidAsync("setBackgroundImage", StoreId, ImageSrc);
+                Console.WriteLine("Exiting the asynchronous invocation of the setBackgroundImage method");
+            }
+
+            Console.WriteLine(EditStoreModel.BLUEPRINT_IMAGE);
+        }
+    }
 
     /// <summary>
     /// Updates the Users Dictionary to include all of the employees that should 
@@ -132,10 +163,6 @@
             USER_TUIDS = string.Empty
         };
 
-        ImageSrc = EditStoreModel!.BLUEPRINT_IMAGE != null ?
-        $"data:image/jpeg;base64,{Convert.ToBase64String(EditStoreModel!.BLUEPRINT_IMAGE)}" : "";
-
-        Console.WriteLine(EditStoreModel.BLUEPRINT_IMAGE);
 
     }
 
