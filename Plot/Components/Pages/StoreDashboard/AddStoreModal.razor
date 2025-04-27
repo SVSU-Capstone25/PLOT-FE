@@ -49,6 +49,9 @@
     /// </summary>
     public int StoreId = -1;
 
+    /// <summary>
+    /// Empty ImageSrc, passed to ImageInput within AddUpdateStoreModalBody as parameter
+    /// </summary>
     private string ImageSrc = "";
 
     /// <summary>
@@ -73,7 +76,7 @@
                     foreach (var addedUser in addedUsers)
                     {
                         var success = Users.TryAdd(addedUser.TUID, addedUser);
-                        await InvokeAsync(StateHasChanged);
+                        await InvokeAsync(StateHasChanged); // Needed to add employees
                     }
                 }
             }
@@ -164,11 +167,14 @@
             ToastService.ShowSuccess("The store was created.");
         }
 
+        // Clear Add Store Model
         await ClearAddStoreModel();
     }
 
     /// <summary>
     /// removes all of the values from the AddStoreModel
+    /// resets length and width to 1, clears Users
+    /// and invokes StateHasChanged
     /// (Clears the form for the next store)
     /// </summary>
     /// <param name=""> no parameters taken </param>

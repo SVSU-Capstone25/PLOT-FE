@@ -21,16 +21,18 @@
 </Modal>
 
 <AddEmployeeToStoreModal id="@($"add-employee-{Store.TUID}")" AddEmployeeTarget="@($"#edit-store-{Store.TUID}")"
-    OnAddEmployeesSubmit="OnAddEmployeesSubmit" ImageSrc="ImageSrc"/>
+    OnAddEmployeesSubmit="OnAddEmployeesSubmit" ImageSrc="ImageSrc" />
 
 <script>
+    // Sets background image - For initialization
+    // OnImageUpload (in AddUpdateStoreModalBody.razor) doesn't set image on initialization
+    // only when the user uploads the image
     function setBackgroundImage(StoreId, ImageSrc) {
         console.log("set background image");
         let image_input = document.getElementById(StoreId + "-container");
         image_input.style.backgroundImage = `url(${ImageSrc})`;
         image_input.style.backgroundSize = "cover";
         image_input.style.backgroundPosition = "center";
-
     }
 </script>
 
@@ -72,12 +74,19 @@
     /// </summary>
     private string? EmployeesAtStart;
 
+    /// <summary>
+    /// Holds string used for the image source, ImageSrc for the ImageInput component in AddUpdateStoreModalBody
+    /// </summary>
     private string? ImageSrc;
 
-    /// <TODO>
+    /// <summary>
+    /// OnAfterRenderAsync, asynchronous call after rendering. If this is the first render,
+    /// sets ImageSrc as the EditStoreModel's BLUEPRINT_IMAGE
+    /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
-    {   
-        if(firstRender){
+    {
+        if (firstRender)
+        {
             ImageSrc = EditStoreModel!.BLUEPRINT_IMAGE != null
             ? $"data:image/jpeg;base64,{Convert.ToBase64String(EditStoreModel!.BLUEPRINT_IMAGE)}" : "";
 
@@ -87,13 +96,11 @@
                 await JS.InvokeVoidAsync("setBackgroundImage", StoreId, ImageSrc);
                 Console.WriteLine("Exiting the asynchronous invocation of the setBackgroundImage method");
             }
-
-            Console.WriteLine(EditStoreModel.BLUEPRINT_IMAGE);
         }
     }
 
     /// <summary>
-    /// Updates the Users Dictionary to include all of the employees that should 
+    /// Updates the Users Dictionary to include all of the employees that should
     /// be associated with the store
     /// </summary>
     /// <param name=""> no parameters taken </param>
@@ -124,8 +131,7 @@
                     foreach (var addedUser in addedUsers)
                     {
                         var success = Users.TryAdd(addedUser.TUID, addedUser);
-                        Console.WriteLine(addedUser.TUID);
-                        await InvokeAsync(StateHasChanged);
+                        await InvokeAsync(StateHasChanged); // Needed to add employees
                     }
                 }
             }
@@ -145,30 +151,39 @@
     /// <summary>
     /// Creates a new EditStoreModel when the modal is created.
     /// The values are filled in from the component's Store parameter
+    /// in the call to ResetEditStoreModel
     /// </summary>
     /// <param name=""> No parameters taken </param>
     /// <returns> void </returns>
     protected override void OnInitialized()
     {
-        EditStoreModel ??= new Data.Models.Stores.UpdatePublicInfoStore
-        {
-            NAME = Store.NAME!,
-            ADDRESS = Store.ADDRESS!,
-            CITY = Store.CITY!,
-            STATE = Store.STATE!,
-            ZIP = Store.ZIP!,
-            WIDTH = Store.WIDTH,
-            LENGTH = Store.LENGTH,
-            BLUEPRINT_IMAGE = Store.BLUEPRINT_IMAGE,
-            USER_TUIDS = string.Empty
-        };
+        EditStoreModel = new();
+        ResetEditStoreModel();
+    }
 
+    /// <summary>
+    /// Fills in the values of EditStoreModel from the Store
+    /// parameter. Used at initialization and also when resetting
+    /// the store
+    public void ResetEditStoreModel()
+    {
+        Console.WriteLine("Resetting edit store model");
 
+        EditStoreModel!.NAME = Store!.NAME;
+        EditStoreModel!.ADDRESS = Store!.ADDRESS;
+        EditStoreModel!.CITY = Store!.CITY;
+        EditStoreModel!.STATE = Store!.STATE;
+        EditStoreModel!.ZIP = Store!.ZIP;
+        EditStoreModel!.WIDTH = Store!.WIDTH;
+        EditStoreModel!.LENGTH = Store!.LENGTH;
+        EditStoreModel!.BLUEPRINT_IMAGE = Store!.BLUEPRINT_IMAGE;
+        EditStoreModel!.USER_TUIDS = string.Empty;
+        InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
     /// populates the Users dictionary with the current employees of the store
-    ///  when the modal is initially created
+    /// when the modal is initially created
     /// </summary>
     /// <param name=""> No parameters taken </param>
     /// <returns> void </returns>
@@ -192,7 +207,6 @@
 
         EditStoreModel!.USER_TUIDS = joinedEmployees;
 
-        //await UpdateUsers();
         if (EditStoreModel != null)
         {
             if (EditStoreModel.USER_TUIDS != null && EditStoreModel.USER_TUIDS != string.Empty)
@@ -207,8 +221,7 @@
                     foreach (var addedUser in addedUsers)
                     {
                         var success = Users.TryAdd(addedUser.TUID, addedUser);
-                        Console.WriteLine(addedUser.TUID);
-                        await InvokeAsync(StateHasChanged);
+                        await InvokeAsync(StateHasChanged); // Needed to add employees
                     }
                 }
             }
@@ -239,6 +252,7 @@
         {
 
             ToastService.ShowError("There was an error editing the store!");
+            await InvokeAsync(ResetEditStoreModel);
         }
         else
         {
@@ -246,6 +260,8 @@
             await UpdateStores.InvokeAsync();
             StateHasChanged();
         }
+        await ClearEditStoreModel();
+
     }
 
     /// <summary>
@@ -259,13 +275,16 @@
     }
 
     /// <summary>
-    /// removes all of the values from the Model
+    /// removes all of the values from the Users, resets EditStoreModel,
+    /// resets background image, resets employees, and calls to UpdateUsers
     /// </summary>
     /// <param name=""> no parameters taken </param>
     /// <returns> void </returns>
     private async Task ClearEditStoreModel()
     {
         Users.Clear();
+        await InvokeAsync(ResetEditStoreModel);
+        await JS.InvokeVoidAsync("setBackgroundImage", StoreId, ImageSrc);
         EditStoreModel!.USER_TUIDS = EmployeesAtStart;
         await UpdateUsers();
 
