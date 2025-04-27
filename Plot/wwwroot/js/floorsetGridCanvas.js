@@ -73,25 +73,35 @@ window.createDraggable = (event) => {
   window.draggedFixture = { WIDTH, LENGTH, NAME, FIXTURE_TUID, STORE_TUID };
 };
 
+// Andrew K, Andrew F
+// This function toggles a menu on right click
+// positioned at the given coordinates.
 window.showDropdown = (isShowing, x = 0, y = 0) => {
+  // Create bootstrap dropdown element 
   const dropdown = new bootstrap.Dropdown(
     document.querySelector("#fixtureContextMenu")
   );
-
   const menuWidth = 350;
 
+  // If the click happens on the outer right 20% of the screen,
+  // display the menu to the left of the cursor.
+  // Otherwise, display it on the right side of the cursor.
   if (x < window.innerWidth - window.innerWidth * 0.2) {
     dropdown._element.style.left = x + 40 + "px";
   } else {
     dropdown._element.style.left = x - menuWidth - 40 + "px";
   }
 
+  // If the click happens in the lower 50% of the screen,
+  // display the menu above the cursor.
+  // Otherwise, display the menu below the cursor.
   if (y < window.innerHeight - window.innerHeight * 0.5) {
     dropdown._element.style.top = y + "px";
   } else {
     dropdown._element.style.top = y - window.innerHeight * 0.4 + "px";
   }
 
+  // Make the dropdown visible depending on the given boolean
   if (isShowing) {
     dropdown.show();
   } else {
