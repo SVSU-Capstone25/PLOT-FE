@@ -1,5 +1,6 @@
 @inject IJSRuntime JS
 @inject FloorsetsHttpClient FloorsetsHttpClient
+@inject FixturesHttpClient FixturesHttpClient
 @using Plot.Components.PartialComponents.OptionInput
 @using Plot.Components.PartialComponents.Checkbox
 @using Plot.Components.PartialComponents.Modal
@@ -62,6 +63,7 @@
 @code {
     [Parameter] public required int FloorsetId {get;set;}
     public required Data.Models.Floorsets.Floorset? Floorset {get;set;}
+    public required List<Data.Models.Fixtures.FixtureInstance> fixtureInstances {get;set;}
     private string? base64ImageThumbnail;
     private bool isInitialized = false;
     private bool withNotes = false;
@@ -86,6 +88,11 @@
         {
             Floorset = response;
         }
+         var response1 = await FixturesHttpClient.GetFloorsetFixtureInformation(FloorsetId);
+        if (response1 != null)
+        {
+            fixtureInstances = response1;
+        }
         
         StateHasChanged();
     }
@@ -101,7 +108,7 @@
             await JS.InvokeVoidAsync("window.gridInstance.print", $"{Floorset?.NAME ?? "layout"}");
 
             //Create PDF
-            byte[] pdfBytes = CanvasPdfExporter.GenerateFloorsetPdf($"{Floorset?.NAME ?? "layout"}",withNotes,withAllocation);
+            byte[] pdfBytes = CanvasPdfExporter.GenerateFloorsetPdf($"{Floorset?.NAME ?? "layout"}",withNotes,withAllocation,fixtureInstances);
 
             // Trigger download
             await JS.InvokeVoidAsync("saveAsFile", $"{Floorset?.NAME + " - Text Export" ?? "layout"}.pdf", Convert.ToBase64String(pdfBytes));

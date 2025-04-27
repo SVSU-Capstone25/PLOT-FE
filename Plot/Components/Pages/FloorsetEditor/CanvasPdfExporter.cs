@@ -5,17 +5,27 @@ using PdfSharp.Drawing;
 using PdfSharp.Fonts;
 using PdfSharp.Snippets.Font;
 using PdfSharp.Pdf.IO;
+using Plot.Data.Models.Fixtures;
+using Plot.Data.Models.Allocations;
+using Plot.Data.Models.Floorsets;
+using System.Threading.Tasks;
+using Plot.Services;
+
 
 public static class CanvasPdfExporter
 {
-    public static byte[] GenerateFloorsetPdf(string floorsetName, bool notes, bool allocations)
+
+    private static FixtureInstance? fixtureInstance;
+    public static async Task<byte[]> GenerateFloorsetPdf(string floorsetName, bool notes, bool allocations,List<FixtureInstance> fixtureInstance)
     {
         using var stream = new MemoryStream();
         using var doc = new PdfDocument();
         var page = doc.AddPage();
         using var gfx = XGraphics.FromPdfPage(page);
 
-        // Set up fonts (using your custom Segoe UI)
+        
+
+        //fonts 
         var titleFont = new XFont("Segoe UI", 24, XFontStyleEx.Bold);
         var subtitleFont = new XFont("Segoe UI", 16, XFontStyleEx.Regular);
         var bodyFont = new XFont("Segoe UI", 12, XFontStyleEx.Regular);
@@ -40,6 +50,7 @@ public static class CanvasPdfExporter
         // Notes (optional)
         if (notes)
         {
+
             top += 20;
             gfx.DrawString("Notes:", subtitleFont, XBrushes.Black, new XPoint(margin, top));
             top += 25;
@@ -50,7 +61,7 @@ public static class CanvasPdfExporter
             {
                 Alignment = PdfSharp.Drawing.Layout.XParagraphAlignment.Left
             };
-            tf.DrawString("notes", bodyFont, XBrushes.Black, layoutRectangle);
+            tf.DrawString("notes go here", bodyFont, XBrushes.Black, layoutRectangle);
         }
 
         if(allocations){
