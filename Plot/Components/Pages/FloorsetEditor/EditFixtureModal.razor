@@ -47,7 +47,7 @@
 
     public async Task OnEditFixtureSubmit()
     {
-        if (EditFixtureModel == null)
+        if (EditFixtureModel == null || !IsModelValid())
         {
             ToastService.ShowError("There was an error editing the fixture!");
             return;
@@ -76,5 +76,18 @@
     private void ClearEditFixtureModel()
     {
         EditFixtureModel = new();
+    }
+
+    private bool IsModelValid()
+    {
+        return
+        (
+        EditFixtureModel!.NAME != null &&
+        !EditFixtureModel.NAME.Equals("") &&
+        EditFixtureModel.WIDTH != null &&
+        EditFixtureModel.LENGTH != null &&
+        EditFixtureModel.LF_CAP != null &&
+        EditFixtureModel.ICON != null
+        );
     }
 }

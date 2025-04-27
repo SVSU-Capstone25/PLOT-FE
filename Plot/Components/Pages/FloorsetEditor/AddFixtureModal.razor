@@ -27,6 +27,7 @@
 
     private string LinearFeet = "";
 
+    
     protected override void OnInitialized()
     {
         AddFixtureModel ??= new();
@@ -36,17 +37,25 @@
     {
         await Task.Run(() => Console.WriteLine("Add Fixture"));
 
-        if (AddFixtureModel != null)
+        if (AddFixtureModel == null || !IsModelValid())
         {
-            var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
+            ToastService.ShowError("There was an error adding a fixture!");
+            return;
+        }
+        
+        var response = await FixturesHttpClient.CreateFixtureModel(StoreId, AddFixtureModel);
+        if (response == System.Net.HttpStatusCode.OK)
+        {
 
             await UpdateFixtureModels.InvokeAsync();
             ToastService.ShowSuccess("The fixture was created.");
+
         }
         else
         {
             ToastService.ShowError("There was an error adding a fixture!");
         }
+
 
         ClearAddFixtureModel();
     }
@@ -85,5 +94,18 @@
     private void ClearAddFixtureModel()
     {
         AddFixtureModel = new();
+    }
+
+    private bool IsModelValid()
+    {
+        return
+        (
+        AddFixtureModel!.NAME != null &&
+        !AddFixtureModel.NAME.Equals("") &&
+        AddFixtureModel.WIDTH != null &&
+        AddFixtureModel.LENGTH != null &&
+        AddFixtureModel.LF_CAP != null &&
+        AddFixtureModel.ICON != null
+        );
     }
 }
