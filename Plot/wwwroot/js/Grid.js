@@ -224,6 +224,44 @@ class Grid {
       Grid.p5.pixelDensity(1);
     }, 100);
   }
+
+  async getImageThumbnail() {
+    //fit the whole grid
+    const gridPixelWidth = this.width * this.size;
+    const gridPixelHeight = this.height * this.size;
+
+    const scaleX = 448 / gridPixelWidth;
+    const scaleY = 320 / gridPixelHeight;
+
+    this.scale = Math.min(scaleX, scaleY);
+
+    this.xOffset = 0;
+    this.yOffset = 0;
+    this.resize();
+
+    const originalWidth = Grid.p5.width;
+    const originalHeight = Grid.p5.height;
+    const originalPixelDensity = Grid.p5._pixelDensity;
+    //make image smaller for thumbnail
+    Grid.p5.resizeCanvas(448, 320);
+    Grid.p5.pixelDensity(1);
+    this.draw();
+
+    
+    return new Promise((resolve) => {
+      requestAnimationFrame(() => {
+        const imageBase64 = Grid.p5.canvas.toDataURL("image/png");
+  
+        // Restore everything AFTER capturing
+        Grid.p5.resizeCanvas(originalWidth, originalHeight);
+        Grid.p5.pixelDensity(originalPixelDensity);
+        this.resize();
+        this.draw();
+  
+        resolve(imageBase64);
+      });
+    });
+  }
 }
 
 export default Grid;

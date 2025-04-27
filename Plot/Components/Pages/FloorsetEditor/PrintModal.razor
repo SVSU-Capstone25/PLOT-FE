@@ -63,7 +63,7 @@
 @code {
     [Parameter] public required int FloorsetId {get;set;}
     public required Data.Models.Floorsets.Floorset? Floorset {get;set;}
-    public required List<Data.Models.Fixtures.FixtureInstance> fixtureInstances {get;set;}
+    public required List<Data.Models.Fixtures.FixtureInstance>? fixtureInstances {get;set;}
     private string? base64ImageThumbnail;
     private bool isInitialized = false;
     private bool withNotes = false;
@@ -81,14 +81,15 @@
     } *@
 
     public async void TriggerPrintModal() {
-        base64ImageThumbnail = await JS.InvokeAsync<string>("getCanvasBase64Thumbnail");
+        base64ImageThumbnail = await JS.InvokeAsync<string>("window.gridInstance.getImageThumbnail");
 
         var response = await FloorsetsHttpClient.GetFloorsetById(FloorsetId);
         if (response != null)
         {
             Floorset = response;
         }
-         var response1 = await FixturesHttpClient.GetFloorsetFixtureInformation(FloorsetId);
+
+        var response1 = await FixturesHttpClient.GetFloorsetFixtureInformation(FloorsetId);
         if (response1 != null)
         {
             fixtureInstances = response1;
