@@ -18,20 +18,47 @@
 </Modal>
 
 @code {
+    /// <summary>
+    /// Method passed in from parent (Floorset Editor) to update the current fixture modals.
+    /// </summary>
     [Parameter] public EventCallback UpdateFixtureModels { get; set; }
+
+    /// <summary>
+    /// Captures and stores any additional attributes that are not explicitly defined on the component.
+    /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
+    /// <summary>
+    /// Stores the current store ID.
+    /// </summary>
     [Parameter] public required int StoreId { get; set; }
 
+    /// <summary>
+    /// Model used to set/get values of fixtures from the Add Modal form.
+    /// </summary>
     [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? AddFixtureModel { get; set; }
 
+    /// <summary>
+    /// The linear feet of the fixture, stored locally for calculations.
+    /// </summary>
     private string LinearFeet = "";
 
+    /// <summary>
+    /// Creates a new AddFixtureModel when the modal is created.
+    /// </summary>
+    /// <param name=""> No parameters taken </param>
+    /// <returns> void </returns>
     protected override void OnInitialized()
     {
         AddFixtureModel ??= new();
     }
 
+    /// <summary>
+    /// Sends the current data from the AddFixtureModel to the FixturesHttpClient
+    /// to create a new fixture in the database.
+    /// </summary>
+    /// <param name=""> No parameters taken </param>
+    /// <returns> void </returns>
     public async Task OnAddFixtureSubmit()
     {
         await Task.Run(() => Console.WriteLine("Add Fixture"));
@@ -51,6 +78,12 @@
         ClearAddFixtureModel();
     }
 
+    /// <summary>
+    /// Updates the current linear feet of the fixture
+    /// when the length field changes
+    /// </summary>
+    /// <param name="e"> ChangeEventArgs object that holds the event properties </param>
+    /// <returns> void </returns>
     public void HandleLengthChange(ChangeEventArgs e)
     {
         // Parse Length - Send value if there is one, else send null
@@ -58,6 +91,12 @@
         CalcLinearFeet(Length, AddFixtureModel!.WIDTH);
     }
 
+    /// <summary>
+    /// Updates the current linear feet of the fixture
+    /// when the width field changes
+    /// </summary>
+    /// <param name="e"> ChangeEventArgs object that holds the event properties </param>
+    /// <returns> void </returns>
     public void HandleWidthChange(ChangeEventArgs e)
     {
         // Parse Width - Send value if there is one, else send null
@@ -65,6 +104,12 @@
         CalcLinearFeet(AddFixtureModel!.LENGTH, Width);
     }
 
+    /// <summary>
+    /// Calculates the current linear feet of the fixture.
+    /// </summary>
+    /// <param name="length"> the length of the fixture</param>
+    /// <param name="width"> the width of the fixture</param>
+    /// <returns> void </returns>
     public void CalcLinearFeet(int? length, int? width)
     {
         // Calculates linear feet (length * width) and sets text of bound
@@ -82,6 +127,11 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Clears the current AddFixtureModel.
+    /// </summary>
+    /// <param name=""> No parameters taken </param>
+    /// <returns> void </returns>
     private void ClearAddFixtureModel()
     {
         AddFixtureModel = new();

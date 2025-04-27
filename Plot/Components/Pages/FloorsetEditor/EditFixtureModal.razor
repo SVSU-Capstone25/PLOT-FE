@@ -19,14 +19,42 @@
 </Modal>
 
 @code {
+    /// <summary>
+    /// Holds the current fixture that is being edited.
+    /// </summary>
     [Parameter] public required Data.Models.Fixtures.FixtureModel Fixture { get; set; }
 
+    /// <summary>
+    /// Method passed in from parent (Floorset Editor) to update the current fixture modals.
+    /// </summary>
     [Parameter] public EventCallback UpdateFixtureModels { get; set; }
+    
+    /// <summary>
+    /// Captures and stores any additional attributes that are not explicitly defined on the component.
+    /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
+    
+    /// <summary>
+    /// Stores the fixture ID of the current fixture.
+    /// </summary>
     [Parameter] public required int FixtureId { get; set; }
+    
+    /// <summary>
+    /// Stores the current store ID.
+    /// </summary>
     [Parameter] public required int StoreId { get; set; }
+
+    /// <summary>
+    /// Model used to set/get values of fixtures from the Edit Modal form.
+    /// </summary>
     [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; } = new();
 
+    /// <summary>
+    /// Creates a new EditFixtureModel with the data from 
+    /// the current fixture.
+    /// </summary>
+    /// <param name=""> No parameters taken </param>
+    /// <returns> void </returns>
     protected override void OnParametersSet()
     {
         //if (Fixture != null)
@@ -45,6 +73,12 @@
         //}
     }
 
+    /// <summary>
+    /// Sends the current data from the EditFixtureModel to the FixturesHttpClient
+    /// to update the fixture in the database.
+    /// </summary>
+    /// <param name=""> No parameters taken </param>
+    /// <returns> void </returns>
     public async Task OnEditFixtureSubmit()
     {
         if (EditFixtureModel == null)
@@ -73,6 +107,11 @@
         ClearEditFixtureModel();
     }
 
+    /// <summary>
+    /// Clears the current EditFixtureModel.
+    /// </summary>
+    /// <param name=""> No parameters taken </param>
+    /// <returns> void </returns>
     private void ClearEditFixtureModel()
     {
         EditFixtureModel = new();
