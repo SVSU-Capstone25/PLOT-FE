@@ -11,7 +11,7 @@
         <AddUpdateStoreModalBody AddUpdateStoreModel="AddStoreModel" StoreId="StoreId"
             AddEmployeeTarget="#create-store-add-employee" Users="Users.Values.ToList()" DeleteUser="DeleteUser" />
 
-        <ModalFooter OnCancelClick="ClearAddStoreModel">
+        <ModalFooter OnCancelClick="async () => await ClearAddStoreModel()">
             <Button Class="Button" TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
                 Create Store
             </Button>
@@ -20,7 +20,7 @@
 </Modal>
 
 <AddEmployeeToStoreModal id="create-store-add-employee" AddEmployeeTarget="#create-store"
-    OnAddEmployeesSubmit="OnAddEmployeesSubmit" />
+    OnAddEmployeesSubmit="OnAddEmployeesSubmit" ImageSrc="ImageSrc"/>
 
 @code {
     /// <summary>
@@ -41,13 +41,15 @@
     /// <summary>
     /// Holds all of the users that are/will be associated with a store
     /// </summary>
-    private Dictionary<int, Data.Models.Users.UserDTO> Users = new Dictionary<int, Data.Models.Users.UserDTO>();
+    public Dictionary<int, Data.Models.Users.UserDTO> Users = new Dictionary<int, Data.Models.Users.UserDTO>();
 
     /// <summary>
     /// The ID of the store currently being edited 
     /// (-1 when creating a store becasue it doesn't have a TUID yet)
     /// </summary>
     public int StoreId = -1;
+
+    private string ImageSrc = "";
 
     /// <summary>
     /// Updates the Users Dictionary to include all of the employees that should 
@@ -68,10 +70,11 @@
 
                 if (addedUsers != null)
                 {
-                    addedUsers.ForEach((addedUser) =>
+                    foreach (var addedUser in addedUsers)
                     {
-                        Users.TryAdd(addedUser.TUID, addedUser);
-                    });
+                        var success = Users.TryAdd(addedUser.TUID, addedUser);
+                        await InvokeAsync(StateHasChanged);
+                    }
                 }
             }
         }
@@ -100,6 +103,8 @@
             LENGTH = 1,
             WIDTH = 1,
         };
+
+        _ = ImageSrc; // To prevent a not used error (it is used in child components but that doesn't satisfy the compiler)
     }
 
     /// <summary>
@@ -117,6 +122,8 @@
         AddStoreModel!.USER_TUIDS = joinedEmployees;
 
         await UpdateUsers();
+
+        StateHasChanged();
     }
 
     /// <summary>
@@ -157,7 +164,7 @@
             ToastService.ShowSuccess("The store was created.");
         }
 
-        ClearAddStoreModel();
+        await ClearAddStoreModel();
     }
 
     /// <summary>
@@ -166,8 +173,16 @@
     /// </summary>
     /// <param name=""> no parameters taken </param>
     /// <returns> void </returns>
-    private void ClearAddStoreModel()
+    private async Task ClearAddStoreModel()
     {
-        AddStoreModel = new();
+        AddStoreModel = new()
+        {
+            LENGTH = 1,
+            WIDTH = 1,
+        };
+
+        Users.Clear();
+
+        await InvokeAsync(StateHasChanged);
     }
 }

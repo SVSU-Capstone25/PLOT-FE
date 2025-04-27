@@ -11,7 +11,7 @@
         <AddUpdateStoreModalBody AddUpdateStoreModel="EditStoreModel" StoreId="StoreId"
             AddEmployeeTarget="@($"#add-employee-{StoreId}")" Users="Users.Values.ToList()" DeleteUser="DeleteUser" />
 
-        <ModalFooter>
+        <ModalFooter OnCancelClick="async () => await ClearEditStoreModel()">
             <Button TextAlignment="center" Variant="primary" type="submit" data-bs-dismiss="modal">
                 Update Store
             </Button>
@@ -20,7 +20,7 @@
 </Modal>
 
 <AddEmployeeToStoreModal id="@($"add-employee-{Store.TUID}")" AddEmployeeTarget="@($"#edit-store-{Store.TUID}")"
-    OnAddEmployeesSubmit="OnAddEmployeesSubmit" />
+    OnAddEmployeesSubmit="OnAddEmployeesSubmit" ImageSrc="ImageSrc"/>
 
 @code {
     /// <summary>
@@ -54,6 +54,14 @@
     private Dictionary<int, Data.Models.Users.UserDTO> Users = new Dictionary<int, Data.Models.Users.UserDTO>();
 
     /// <summary>
+    /// Holds comma-delimited string of ids for users that are part of the store at initialization
+    /// Used to revert changes when clicking cancel
+    /// </summary>
+    private string? EmployeesAtStart;
+
+    private string? ImageSrc;
+
+    /// <summary>
     /// Updates the Users Dictionary to include all of the employees that should 
     /// be associated with the store
     /// </summary>
@@ -82,10 +90,12 @@
 
                 if (addedUsers != null)
                 {
-                    addedUsers.ForEach((addedUser) =>
+                    foreach (var addedUser in addedUsers)
                     {
-                        Users.TryAdd(addedUser.TUID, addedUser);
-                    });
+                        var success = Users.TryAdd(addedUser.TUID, addedUser);
+                        Console.WriteLine(addedUser.TUID);
+                        await InvokeAsync(StateHasChanged);
+                    }
                 }
             }
         }
@@ -121,6 +131,12 @@
             BLUEPRINT_IMAGE = Store.BLUEPRINT_IMAGE,
             USER_TUIDS = string.Empty
         };
+
+        ImageSrc = EditStoreModel!.BLUEPRINT_IMAGE != null ?
+        $"data:image/jpeg;base64,{Convert.ToBase64String(EditStoreModel!.BLUEPRINT_IMAGE)}" : "";
+
+        Console.WriteLine(EditStoreModel.BLUEPRINT_IMAGE);
+
     }
 
     /// <summary>
@@ -132,6 +148,7 @@
     protected override async Task OnInitializedAsync()
     {
         await UpdateUsers();
+        EmployeesAtStart = EditStoreModel!.USER_TUIDS;
     }
 
     /// <summary>
@@ -148,7 +165,27 @@
 
         EditStoreModel!.USER_TUIDS = joinedEmployees;
 
-        await UpdateUsers();
+        //await UpdateUsers();
+        if (EditStoreModel != null)
+        {
+            if (EditStoreModel.USER_TUIDS != null && EditStoreModel.USER_TUIDS != string.Empty)
+            {
+                var addedUsers = await UsersHttpClient.GetUsersByString(new Data.Models.Users.UsersByStringRequest()
+                {
+                    TUIDS = EditStoreModel.USER_TUIDS
+                });
+
+                if (addedUsers != null)
+                {
+                    foreach (var addedUser in addedUsers)
+                    {
+                        var success = Users.TryAdd(addedUser.TUID, addedUser);
+                        Console.WriteLine(addedUser.TUID);
+                        await InvokeAsync(StateHasChanged);
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -199,8 +236,12 @@
     /// </summary>
     /// <param name=""> no parameters taken </param>
     /// <returns> void </returns>
-    private void ClearEditStoreModel()
+    private async Task ClearEditStoreModel()
     {
-        EditStoreModel = new();
+        Users.Clear();
+        EditStoreModel!.USER_TUIDS = EmployeesAtStart;
+        await UpdateUsers();
+
+        await InvokeAsync(StateHasChanged);
     }
 }
