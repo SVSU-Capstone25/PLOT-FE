@@ -164,6 +164,8 @@ window.captureFloorsetThumbnail = async () => {
           return fixture;
         });
 
+        console.log("Grid and fixtures initialized");
+        //console.log(grid.fixtures);
         // Render the new floorset
         p5.push();
         grid.draw();
@@ -172,9 +174,10 @@ window.captureFloorsetThumbnail = async () => {
         // Wait for render, then capture image
         setTimeout(() => {
           const dataUrl = p5.canvas.toDataURL("image/png");
+          console.log("Captured image", dataUrl);
           resolve(dataUrl);
           p5.remove(); //Clean up the grid
-        }, 100);
+        }, 500);
       };
     };
 

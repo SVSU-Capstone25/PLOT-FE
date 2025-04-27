@@ -165,7 +165,7 @@
     {
         // Get the image as a base64 string from the browser
         string base64Image = await JSRuntime.InvokeAsync<string>("captureFloorsetThumbnail");
-
+        Console.WriteLine(base64Image);
 
         if (!string.IsNullOrEmpty(base64Image))
         {
