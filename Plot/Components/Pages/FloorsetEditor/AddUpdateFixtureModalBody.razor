@@ -1,6 +1,6 @@
 @* Danielle Smith - 4/21/2025 *@
 @inject FixturesHttpClient FixturesHttpClient
-
+@inject IJSRuntime Runtime
 @using Plot.Data.Models.Fixtures
 
 <ModalBody>
@@ -61,11 +61,26 @@
 
     private async Task OnImageUpload(InputFileChangeEventArgs e)
     {
-        MemoryStream ms = new MemoryStream();
-        await e.File.OpenReadStream().CopyToAsync(ms);
-        var bytes = ms.ToArray();
+        try {
+            await Task.Run(() => Console.WriteLine("Upload Image"));
+            var file = e.File;
+            using var stream = file.OpenReadStream(file.Size);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            var originalImageBytes = memoryStream.ToArray();
+            await Task.Run(() => Console.WriteLine("Original image bytes:" + originalImageBytes.Length));
+            var compressedImageBytes = await Runtime.InvokeAsync<byte[]>("compressImage", originalImageBytes, 300, 300, 1);
+            await Task.Run(() => Console.WriteLine("Compressed image bytes:" + compressedImageBytes.Length));
 
-        AddUpdateFixtureModel!.ICON = bytes;
+            if (AddUpdateFixtureModel != null)
+            {
+                AddUpdateFixtureModel.ICON = compressedImageBytes;
+            }
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine("Image uploading/compressing error: " + exception);
+        }
     }
 
     public void HandleLengthChange(ChangeEventArgs e)

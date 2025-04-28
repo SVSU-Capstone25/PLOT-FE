@@ -1,5 +1,6 @@
 @inject UsersHttpClient UsersHttpClient
 @inject StoresHttpClient StoresHttpClient
+@inject IJSRuntime Runtime
 
 @using Plot.Data.Models.Users
 
@@ -178,14 +179,25 @@
     /// <returns> void </returns>
     private async Task OnImageUpload(InputFileChangeEventArgs e)
     {
-        await Task.Run(() => Console.WriteLine("Upload Image"));
-        MemoryStream ms = new MemoryStream();
-        await e.File.OpenReadStream().CopyToAsync(ms);
-        var bytes = ms.ToArray();
-
-        if (AddUpdateStoreModel != null)
+        try {
+            await Task.Run(() => Console.WriteLine("Upload Image"));
+            var file = e.File;
+            using var stream = file.OpenReadStream(file.Size);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            var originalImageBytes = memoryStream.ToArray();
+            await Task.Run(() => Console.WriteLine("Original image bytes:" + originalImageBytes.Length));
+            var compressedImageBytes = await Runtime.InvokeAsync<byte[]>("compressImage", originalImageBytes, 480, 360, 1);
+            await Task.Run(() => Console.WriteLine("Compressed image bytes:" + compressedImageBytes.Length));
+            
+            if (AddUpdateStoreModel != null)
+            {
+                AddUpdateStoreModel.BLUEPRINT_IMAGE = compressedImageBytes;
+            }
+        }
+        catch (Exception exception)
         {
-            AddUpdateStoreModel!.BLUEPRINT_IMAGE = bytes;
+            Console.WriteLine("Image uploading/compressing error: " + exception);
         }
     }
 }
