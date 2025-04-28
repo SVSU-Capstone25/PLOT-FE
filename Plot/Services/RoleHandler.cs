@@ -50,7 +50,8 @@ public class RoleHandler : AuthorizationHandler<RoleRequirement>, IAuthorization
 
                     if(userRole != userInDatabase.ROLE)
                     {
-                       _navigationManager.NavigateTo("/login?roleChange=true",true);
+                        
+                       //_navigationManager.NavigateTo("/login?roleChange=true",true);
                             
                         //httpContext.Response.Redirect("/login?roleChange=true");
                     }

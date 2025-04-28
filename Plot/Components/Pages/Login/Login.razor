@@ -14,7 +14,7 @@
 @inject NavigationManager Navigation
 @inject AuthHttpClient AuthHttpClient
 @inject ICookie cookie
-
+@inject ToastService ToastService
 
 
 <PageTitle>Login</PageTitle>
@@ -91,7 +91,9 @@
     {
         if(roleChange == true)
         {
+            ToastService.ShowInfo("Role change detected, please log back in.");
             await cookie.SetValue("Auth","",-1);
+            roleChange=false;
         }
         
         var token = await cookie.GetValue("Auth");

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using Middleware.Example;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,7 @@ builder.Services.AddRazorComponents()
 // });
 //builder.Services.AddHttpContextAccessor();
 // Add services for authentication and authorization
+
 builder.Services.AddScoped<AuthService>();
 // builder.Services.AddScoped<AuthHeaderHttpClient>();
 builder.Services.AddScoped<AuthHttpClient>();
@@ -154,7 +156,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-
+app.UseMiddleware<TestMiddleware>();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
