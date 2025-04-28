@@ -1,7 +1,11 @@
 @inject IJSRuntime JS
 @using Microsoft.JSInterop
 
-@* data-bs-backdrop="static" prevents closing when the user clicks outside of it
+@* 
+Load Message Modal - Presents a message indicating data is being updated
+when a new user is added. Needed to warn user from navigating away from page
+
+data-bs-backdrop="static" prevents closing when the user clicks outside of it
 data-bs-keyboard="false" prevents closing when the user clicks the escape key
 
 data-bs-backdrop="static" does not work on Firefox.
@@ -15,7 +19,9 @@ data-bs-backdrop="static" does not work on Firefox.
 </Modal>
 
 <script>
-
+// Gets instance of modal. This was put here as part of enabling the functionality of this modal.
+// This does not appear to be in use in the current implementation but as of (4/28/2025) deadline is
+// tomorrow (4/29/2025) so I'm leaving this in just in case. - Andrew Miller
     window.getModalInstance = function (selector) {
         return window.bootstrap.Modal.getOrCreateInstance(document.querySelector(selector));
     };

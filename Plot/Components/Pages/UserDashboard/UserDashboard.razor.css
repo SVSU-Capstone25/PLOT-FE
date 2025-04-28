@@ -10,13 +10,9 @@ and allocate floorsets for Platos Closet.
 
 Author: Josh Rodack (2/10/2025) */
 
-/* For the original button <button></button> component*/
-
 /* Andrew  Miller - (3/22/2025) */
 
 /* User dashboard */
-
-/* Table columns */
 
 .user-dashboard {
     display: flex;
@@ -25,18 +21,21 @@ Author: Josh Rodack (2/10/2025) */
     box-sizing: border-box;
 }
 
+/* Table in user dashboard */
 .table-set {
     flex-grow: 1;
     height: 95%;
     overflow: auto;
 }
 
+/* Container div for Add User button */
 .add-btn-container {
     align-self: flex-end;
     display: flex;
     margin: 0px;
 }
 
+/* Add User button */
 .add-btn {
     align-self: flex-end;
     width: calc(50/16 * 1rem);
