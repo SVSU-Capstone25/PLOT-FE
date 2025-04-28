@@ -1,7 +1,9 @@
-<img class="card-img-top object-fit-cover" src="@Image" alt="Card image cap" @attributes="Attributes" />
+<img class="card-img-top object-fit-cover" src="@Image" alt="@AltText" @attributes="Attributes" />
 
 @code {
     [Parameter] public required string Image { get; set; }
+
+    [Parameter] public string AltText {get; set; } = "Card image cap";
 
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 }

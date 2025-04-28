@@ -88,9 +88,12 @@
                 <p class="circle-name">Add Employee</p>
             </div>
 
-            @foreach (var User in Users.Skip(1).ToList())
-            {
-                if (User != null && User.FIRST_NAME != null && User.LAST_NAME != null)
+            @foreach (var User in Users.ToList())
+            {   // Andrew Miller (4/27/2025): Puts employees on Add or Edit Store Modal.
+                // To exclude the Root user, checks that User.TUID is not 0
+                // Previously Users.Skip(1).ToList() was used. That caused a bug where
+                // the Add Store Modal skipped over the first employee added
+                if (User != null && User.FIRST_NAME != null && User.LAST_NAME != null && User.TUID != 0)
                 {
                     <div class="d-flex flex-column align-items-center">
                         <button type="button" class="btn btn-secondary btn-circle position-relative"
@@ -143,8 +146,9 @@
     /// <summary>
     /// Holds the base64 of an image for the store BP.
     /// The ImageInput component in the modal is set to this string (This displays the image in the modal)
+    /// Optional parameter, passed in from parent component as parameter
     /// </summary>
-    private string ImageSrc = "";
+    [Parameter] public string? ImageSrc { get; set; }
 
     /// <summary>
     /// When the modal is initialized, set the imageinput component to show the
@@ -154,10 +158,12 @@
     /// <returns> void </returns>
     protected override void OnInitialized()
     {
+        /*
         if (AddUpdateStoreModel == null) return;
 
         ImageSrc = AddUpdateStoreModel.BLUEPRINT_IMAGE != null ?
         $"data:image/jpeg;base64,{Convert.ToBase64String(AddUpdateStoreModel.BLUEPRINT_IMAGE)}" : "";
+        */
     }
 
     /// <summary>

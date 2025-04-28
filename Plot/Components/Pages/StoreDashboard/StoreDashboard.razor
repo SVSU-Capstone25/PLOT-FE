@@ -39,12 +39,11 @@ Author: Andrew Fulton (3/12/2025)
     @foreach (var Store in Stores)
     {
         var ImageSrc = Store.BLUEPRINT_IMAGE != null ?
-        $"data:image/jpeg;base64,{Convert.ToBase64String(Store.BLUEPRINT_IMAGE)}" :
-        "https://placecats.com/300/200";
+        $"data:image/jpeg;base64,{Convert.ToBase64String(Store.BLUEPRINT_IMAGE)}" : "";
 
         <Card>
             <a href="@($"/floorsets/{Store.TUID}")" class="w-100 ratio ratio-4x3">
-                <CardImage Image="@ImageSrc" />
+                <CardImage Image="@ImageSrc" AltText="@Store.NAME" />
             </a>
             <CardBody>
                 <CardTitle class="flex-grow-1">
