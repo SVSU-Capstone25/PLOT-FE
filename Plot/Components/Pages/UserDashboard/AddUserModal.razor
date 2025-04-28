@@ -1,3 +1,13 @@
+@*
+File Purpose:
+Add User Modal for adding users.
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+*@
+
 @inject AuthHttpClient AuthHttpClient
 @inject StoresHttpClient StoresHttpClient
 @inject UsersHttpClient UsersHttpClient
@@ -29,7 +39,9 @@
 </Modal>
 
 <script>
-
+// Gets instance of modal. This was put here as part of enabling the functionality of the Load Message modal.
+// This does not appear to be in use in the current implementation but as of (4/28/2025) deadline is
+// tomorrow (4/29/2025) so I'm leaving this in just in case. - Andrew Miller
     window.getModalInstance = function (selector) {
         return window.bootstrap.Modal.getOrCreateInstance(document.querySelector(selector));
     };
@@ -37,35 +49,76 @@
 
 @code {
 
+    /// <summary>
+    /// Attributes dictionary parameter
+    /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
+    /// <summary>
+    /// Model used for updating information on user first name, last name, email, and role in the database
+    /// </summary>
     [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? AddUserModel { get; set; }
 
+    /// <summary>
+    /// Model representing the user and data associated with the user
+    /// </summary>
     [Parameter] public required Data.Models.Users.UserDTO? User { get; set; }
 
+    /// <summary>
+    /// Update Users callback for rerendering UserDashboard
+    /// </summary>
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
-    // Show or hide Loading Message Modal
+    /// <summary>
+    /// Callback to show loading modal
+    /// </summary>
     [Parameter] public EventCallback<string> ShowLoadingModal { get; set; }
 
+    /// <summary>
+    /// Callback to hide loading modal
+    /// </summary>
     [Parameter] public EventCallback<string> HideLoadingModal { get; set; }
 
-    private const int NEW_USER = 0; // Indicates new user when initializing stores
+    /// <summary>
+    /// Constant for New user - Indicates new user when initializing stores
+    /// </summary>
+    private const int NEW_USER = 0;
 
-    private bool modalBodyInit = false; // AddUpateUserModalBody initialized flag
+    /// <summary>
+    /// Flags that the AddUpdateUserModalBody has been initialized
+    /// </summary>
+    private bool modalBodyInit = false;
 
-    private bool IsSubmitDisabled = false; // Disable submit button
+    /// <summary>
+    /// Determines if submit button is disabled
+    /// </summary>
+    private bool IsSubmitDisabled = false;
 
-    public AddUpdateUserModalBody? modalBodyRef; // Ref for AddUpdateUserModalBody
+    /// <summary>
+    /// Reference for AddUpdateUserModalBody component
+    /// </summary>
+    public AddUpdateUserModalBody? modalBodyRef;
 
-    // AddUserStores and NotAddUserStores
+    /// <summary>
+    /// List of stores the user has access to
+    /// </summary>
     public List<Data.Models.Stores.Store> AddUserStores = new();
 
+    /// <summary>
+    /// List of stores the user does not have access to
+    /// </summary>
     public List<Data.Models.Stores.Store> NotAddUserStores = new List<Data.Models.Stores.Store>();
 
-    // Model for getting user from email
+    /// <summary>
+    /// Data Model for getting user from email
+    /// </summary>
     public Data.Models.Users.UserDTO? UserFromEmail { get; set; }
 
+    /// <summary>
+    /// Updates UpdateUserModel on initialization from User's data
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     protected override async Task OnInitializedAsync()
     {
         AddUserModel ??= new() // Iniitalize AddUserModel with Role of "Employee"
@@ -87,6 +140,12 @@
         }
     }
 
+    /// <summary>
+    /// Initializes stores after render if the AddUpdateUserModalBody
+    /// has been initialized and it hasn't already initialized stores
+    /// </summary>
+    /// <param name="firstRender"> Built-in parameter refers to whether render is the first render </param>
+    /// <returns> void </returns>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!modalBodyInit)
@@ -99,6 +158,12 @@
         }
     }
 
+    /// <summary>
+    /// For being called by the child component to signal
+    /// that it has been initialized
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     public void HandleBodyInit()
     {
         // When modal body is initiated, the AddUpdateUserModalBody.razor
@@ -111,6 +176,11 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Runs when new user is submitted via submit button for form in this modal
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private async Task OnAddUserSubmit()
     {
         // When Submit is clicked in this modal:
@@ -168,6 +238,11 @@
         ToastService.ShowSuccess("The user was created.");
     }
 
+    /// <summary>
+    /// Clears the Add User Modal
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     public async Task ClearAddUserModal()
     {
         // Clear add user modal
@@ -182,21 +257,34 @@
         await modalBodyRef!.InitUserStores(NEW_USER);
     }
 
+    /// <summary>
+    /// Handles change in user stores within modal
+    /// </summary>
+    /// <param name="NewUpdateUserStores"> List<Data.Models.Stores.Store> New list of models reflecting stores user has </param>
+    /// <returns> void </returns>
     public void HandleUserStoresChange(List<Data.Models.Stores.Store> NewAddUserStores)
     {
         AddUserStores = NewAddUserStores;
     }
 
+    /// <summary>
+    /// Handles change in not user stores within modal
+    /// </summary>
+    /// <param name="NewNotAddUserStores"> List<Data.Models.Stores.Store> New list of models reflecting stores use does not have </param>
+    /// <returns> void </returns>
     public void HandleNotUserStoresChange(List<Data.Models.Stores.Store> NewNotAddUserStores)
     {
         NotAddUserStores = NewNotAddUserStores;
     }
 
+    /// <summary>
+    /// Disables submit from child component - from AddUpdateUserModalBody.razor.
+    /// Needed for when stores are moved between select boxes
+    /// </summary>
+    /// <param name=isDisabled""> Determines if is submit is disabled.</param>
+    /// <returns> void </returns>
     public void DisableSubmitFromChild(bool isDisabled)
     {
-        // Disable submit button from child
-        // This disables the submit button temporarily
-        // while stores are moved between select boxes
         IsSubmitDisabled = isDisabled;
     }
 }

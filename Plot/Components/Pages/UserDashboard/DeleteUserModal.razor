@@ -1,3 +1,13 @@
+@*
+File Purpose:
+Delete User Modal for deleting users.
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+*@
+
 @inject UsersHttpClient UsersHttpClient
 @inject ToastService ToastService
 
@@ -15,6 +25,8 @@ Backdrop="static" Keyboard="false"
             private string? deleteTextInput;
             private bool isDisabled => deleteTextInput != "DELETE";
         }
+
+        @* Ask if user (using dashboard) wants to delete employee*@
         <ModalBody>
             <h2>Are you SURE you want to delete this user?</h2>
             <input class="form-control w-100" type="text" placeholder="If so, type DELETE below" required
@@ -31,14 +43,29 @@ Backdrop="static" Keyboard="false"
 </Modal>
 
 @code {
+    /// <summary>
+    /// TUID of user this delete user modal pertains to
+    /// </summary>
     [Parameter] public required int userTuid { get; set; }
 
+    /// <summary>
+    /// Update Users callback for rerendering UserDashboard
+    /// </summary>
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
+    /// <summary>
+    /// Attributes dictionary parameter
+    /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
+    /// <summary>
+    /// When submit button is pressed - Delete the user
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private async Task OnDeleteUserSubmit(int userId)
     {
+        // Call backend to signal database to delete user
         var response = await UsersHttpClient.DeleteUserById(userId);
 
         if(response != System.Net.HttpStatusCode.OK) {
@@ -47,6 +74,7 @@ Backdrop="static" Keyboard="false"
             ToastService.ShowSuccess("The user was deleted.");
         }
 
+        // Update User Dashboard
         await UpdateUsers.InvokeAsync();
     }
 }

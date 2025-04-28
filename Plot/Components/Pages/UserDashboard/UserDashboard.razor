@@ -5,25 +5,41 @@ Employee Name, Employee ID, And Role visible on dashboard.
 Editing allows changes to name, role, and stores the user
 can access.
 
-Note:
-Database is not hooked up yet, so a lot of functionality here
-will be replaced with functionality that gets information from
-the database.
-
 Program Purpose:
 The purpose of PLOT is to allow users to easily create, manage, 
 and allocate floorsets for Platos Closet. 
 
-Author (Developed from skeleton): Andrew Miller (3/14/2025)
-Note: A small amount of skeleton code was present before. 
-No author was given.
+Author: Andrew Miller (3/14/2025): Set up the User Dashboard user interface functionality
+Note: A small amount of code was present before but no User Dashboard. No author was given.
 
 Andrew Kenendy (4/17/2025)
 Added a loader popup when a user is added.
 
-Andrew Miller (4/22/2025) - Store access - Loader placed into modal
+Andrew Miller (4/22/2025) - User Dashboard can be used to assign and reassign store access.
+Loader modal replaces loader popup when a user is added since interruption can cause a
+partial update (user information being recorded but without store access).
 
-*/
+Further Note (Andrew Miller 4/28/2025):
+The User Dashboard has this file (UserDashboard.razor) as the parent component, with
+the following child components:
+
+The Add User Modal (AddUserModal.razor) for adding a new user to the database.
+This is launched when clicking "Add User" on the dashboard.
+
+The Update User Modal (UpdateUserModal.razor) for updating a user in the database.
+This is launched when clicking "Edit" in the dropdown in UpdateUserModal.razor.
+
+The Delete User Modal (DeleteUserModal.razor) for "deleting" a user. The user won't
+appear on the User Dashboard, but is actually marked to inactivate the user.
+
+The Load Message Modal (LoadMessageModal.razor) which displays a modal informing
+the user data is being loaded to the database in the case of adding a new user,
+warning the user against navigating away and potentially causing an incomplete update
+to the database.
+
+The AddUpdateUserModalBody.razor file is the shared body as well as shared logic between
+the Add User Modal and the Update User Modal. It contains all of the fields and select
+boxes for adding/updating names, email, role, and store access.
 
 *@
 
@@ -79,8 +95,9 @@ Andrew Miller (4/22/2025) - Store access - Loader placed into modal
                                 @* Role of User*@
                                 <span class="flex-grow-1 align-self-center">@user.ROLE</span>
 
+                                @* Role Options Dropdown menu with id dynamically reflecting the id of the user Provides Edit and Delete options which open Edit User and Delete User Modals *@
                                 <AuthorizeView Policy="Manager">
-                                    @* Role Options Dropdown menu with id dynamically reflecting the id of the user Provides Edit and Delete options which open Edit User and Delete User Modals *@
+                                    @* Managers not allowed to edit owners*@
 
                                     @* Danielle Smith - 4/23/25 DO NOT LET MANAGERS EDIT OWNERS *@
                                     @if (user.ROLE != "Owner")
@@ -94,7 +111,9 @@ Andrew Miller (4/22/2025) - Store access - Loader placed into modal
                                             </DropdownLink>
                                         </Dropdown>
                                     }
+                                    
                                 </AuthorizeView>
+
                             </div>
                         </td>
                     </tr>
@@ -103,6 +122,7 @@ Andrew Miller (4/22/2025) - Store access - Loader placed into modal
         </table>
     </div>
 
+    @* Update and Delete User Modals *@
     @foreach (var user in users.Skip(1).ToList())
     {
         <AuthorizeView Policy="Manager">
@@ -111,8 +131,10 @@ Andrew Miller (4/22/2025) - Store access - Loader placed into modal
         </AuthorizeView>
     }
 
+    @* Load Message Modal for displaying loader when adding new user*@
     <LoadMessageModal id="load-message" @ref="LoadMessageModal" />
 
+    @* Add User Modal *@
     <AuthorizeView Policy="Manager">
         <AddUserModal id="@($"add-user-modal")" UpdateUsers="UpdateUsers" AddingUser="ToggleLoader"
             ShowLoadingModal="ShowLoadingModal" HideLoadingModal="HideLoadingModal" />
@@ -127,10 +149,23 @@ Andrew Miller (4/22/2025) - Store access - Loader placed into modal
 </div>
 
 @code {
+    /// <summary>
+    /// References LoadMessageModal, used for displaying a loading message when submitting from the
+    /// the Add User Modal
+    /// </summary>
     private LoadMessageModal? LoadMessageModal;
 
+    /// <summary>
+    /// List of users, modeled with UserDTO model. Populates the information on the dashboard
+    /// Information is retrieved from all users from the database via the UpdateUsers method
+    /// </summary>
     private List<Data.Models.Users.UserDTO> users = new List<Data.Models.Users.UserDTO>();
 
+    /// <summary>
+    /// Calls on backend to get all users from the database
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     private async Task UpdateUsers()
     {
         var response = await UsersHttpClient.GetAllUsers();
@@ -141,21 +176,41 @@ Andrew Miller (4/22/2025) - Store access - Loader placed into modal
         }
     }
 
+    /// <summary>
+    /// Updates users on initialization
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     protected override async Task OnInitializedAsync()
     {
         await UpdateUsers();
     }
 
+    /// <summary>
+    /// Formats and properly displays the TUID
+    /// </summary>
+    /// <param name="Id"> Id of user </param>
+    /// <returns> string </returns>
     public string DisplayTUID(int Id)
     {
         return '#' + Id.ToString().PadLeft(10, '0');
     }
 
+    /// <summary>
+    /// Shows the modal defined in LoadMessageModal.razor
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     public async Task ShowLoadingModal()
     {
         await LoadMessageModal!.ShowModal();
     }
 
+    /// <summary>
+    /// Hides the modal defined in LoadMessageModal.razor
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     public async Task HideLoadingModal()
     {
         await LoadMessageModal!.HideModal();
