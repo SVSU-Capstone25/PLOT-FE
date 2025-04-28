@@ -69,10 +69,10 @@ class Fixture {
     );
     Fixture.p5.strokeWeight(0.5);
     Fixture.p5.fill("black");
-    Fixture.p5.textSize(8);
+    Fixture.p5.textSize(14);
     Fixture.p5.text(
-      this.HANGER_STACK,
-      this.X_POS * gridSize + this.WIDTH * gridSize - 8,
+      this.TUID,
+      this.X_POS * gridSize + this.WIDTH * gridSize - 20,
       this.Y_POS * gridSize + 4,
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
