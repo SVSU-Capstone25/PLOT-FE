@@ -1,4 +1,5 @@
-// Orignally done by Andrew Kennedy 
+// Author: Andrew Kennedy 
+// This file contains the old drag/drop functionality before reworks were implemented.
 window.dragDrop = function(className, sidebarSelector, gridSelector, gridSize = 50) {
     let selectedElement = null;
 
@@ -78,14 +79,14 @@ window.dragDrop = function(className, sidebarSelector, gridSelector, gridSize = 
                     }
                 }
 
-                // **🟢 Get Grid Position for Snapping**
+                // Get grid position for snapping
                 const gridRect = grid.getBoundingClientRect();
 
                 // Convert absolute position to grid-relative position
                 let relativeX = parseFloat(target.style.left) - gridRect.left;
                 let relativeY = parseFloat(target.style.top) - gridRect.top;
 
-                // **Snap to the nearest grid square**
+                // Snap to the nearest grid square
                 let snappedX = Math.round(relativeX / gridSize) * gridSize;
                 let snappedY = Math.round(relativeY / gridSize) * gridSize;
 
@@ -105,7 +106,7 @@ window.dragDrop = function(className, sidebarSelector, gridSelector, gridSize = 
             }
         }
     });
-
+    
     document.addEventListener("keydown", function(event) {
         if (event.key === "Delete" && selectedElement) {
             selectedElement.remove();
