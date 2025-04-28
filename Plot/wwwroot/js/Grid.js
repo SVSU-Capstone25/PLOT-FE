@@ -172,7 +172,7 @@ class Grid {
     };
   }
 
-  draw(mouseFixture) {
+  draw(mouseFixture, isBeingPrinted = false, saveCallback = () => {}) {
     Grid.p5.push();
     Grid.p5.fill(255, 255, 255);
     Grid.p5.stroke(0, 100);
@@ -196,11 +196,13 @@ class Grid {
       employeeArea.draw(this.size);
     }
 
-    this.fixtures.forEach((rack) => rack.draw(this.size));
+    this.fixtures.forEach((rack) => rack.draw(this.size, isBeingPrinted));
 
     mouseFixture?.draw(this.size);
 
     Grid.p5.pop();
+
+    saveCallback();
   }
 
   print(floorsetName) {
@@ -218,20 +220,18 @@ class Grid {
     this.resize();
 
     Grid.p5.pixelDensity(8);
-    this.draw();
-    setTimeout(() => {
+    this.draw(null, true, () => {
       Grid.p5.saveCanvas(`${floorsetName} - Floorset Image`, "jpg");
       Grid.p5.pixelDensity(1);
-    }, 100);
+    });
   }
 
   async getImageThumbnail() {
-    //fit the whole grid
     const gridPixelWidth = this.width * this.size;
     const gridPixelHeight = this.height * this.size;
 
-    const scaleX = 448 / gridPixelWidth;
-    const scaleY = 320 / gridPixelHeight;
+    const scaleX = Grid.p5.width / gridPixelWidth;
+    const scaleY = Grid.p5.height / gridPixelHeight;
 
     this.scale = Math.min(scaleX, scaleY);
 
@@ -239,25 +239,18 @@ class Grid {
     this.yOffset = 0;
     this.resize();
 
-    const originalWidth = Grid.p5.width;
-    const originalHeight = Grid.p5.height;
-    const originalPixelDensity = Grid.p5._pixelDensity;
-    //make image smaller for thumbnail
-    Grid.p5.resizeCanvas(448, 320);
-    Grid.p5.pixelDensity(1);
-    this.draw();
+    Grid.p5.pixelDensity(0.25);
 
-    
+    this.draw(null, true);
+
     return new Promise((resolve) => {
       requestAnimationFrame(() => {
         const imageBase64 = Grid.p5.canvas.toDataURL("image/png");
-  
-        // Restore everything AFTER capturing
-        Grid.p5.resizeCanvas(originalWidth, originalHeight);
-        Grid.p5.pixelDensity(originalPixelDensity);
+
         this.resize();
         this.draw();
-  
+        Grid.p5.pixelDensity(1);
+
         resolve(imageBase64);
       });
     });

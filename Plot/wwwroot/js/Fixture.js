@@ -56,7 +56,7 @@ class Fixture {
     this.FIXTURE_IDENTIFIER = FIXTURE_IDENTIFIER;
   }
 
-  draw(gridSize) {
+  draw(gridSize, isPrinted = false) {
     Fixture.p5.push();
     Fixture.p5.fill(this.COLOR);
     Fixture.p5.stroke(0);
@@ -69,10 +69,22 @@ class Fixture {
     );
     Fixture.p5.strokeWeight(0.5);
     Fixture.p5.fill("black");
-    Fixture.p5.textSize(14);
+    Fixture.p5.textSize(8);
+    if (isPrinted) {
+      Fixture.p5.textSize(4);
+      Fixture.p5.textAlign(Fixture.p5.LEFT, Fixture.p5.TOP);
+      Fixture.p5.text(
+        this.TUID,
+        this.X_POS * gridSize + 4,
+        this.Y_POS * gridSize + 4,
+        this.WIDTH * gridSize,
+        this.LENGTH * gridSize
+      );
+    }
+    Fixture.p5.textAlign(Fixture.p5.RIGHT, Fixture.p5.TOP);
     Fixture.p5.text(
-      this.TUID,
-      this.X_POS * gridSize + this.WIDTH * gridSize - 20,
+      this.HANGER_STACK,
+      this.X_POS * gridSize - 4,
       this.Y_POS * gridSize + 4,
       this.WIDTH * gridSize,
       this.LENGTH * gridSize
