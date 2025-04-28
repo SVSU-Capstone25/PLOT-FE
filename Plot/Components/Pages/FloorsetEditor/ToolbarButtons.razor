@@ -48,8 +48,9 @@
         @* allocationsOpen = false; *@
     }
 
-    //The paintCategory button toggles the paint mode of the floorset editor.
-    //It passes that information to the javascript.
+    @* Function TogglePaintClicked
+    Toggles the state of paintMode locally, then calls the necessary functions in the floorset grid JS. 
+    Sets paintMode to None or Paint. *@
     private async Task TogglePaintClicked()
     {
         switch (paintMode)
@@ -67,6 +68,9 @@
         }
     }
 
+    @* Function OnEraseClicked
+    Toggles the state of paintMode locally, then calls the necessary functions in the floorset grid JS. 
+    Sets paintMode to None or Erase. *@
     private async Task OnEraseClicked()
     {
         switch (paintMode)
