@@ -70,6 +70,7 @@
 
     /// <summary>
     /// Holds comma-delimited string of ids for users that are part of the store at initialization
+    /// or when restarting the modal
     /// Used to revert changes when clicking cancel
     /// </summary>
     private string? EmployeesAtStart;
@@ -241,8 +242,9 @@
             return;
         }
 
-
         string joinedEmployees = string.Join(",", Users.Keys.ToList());
+
+        EmployeesAtStart = joinedEmployees;
 
         EditStoreModel!.USER_TUIDS = joinedEmployees;
 
@@ -250,15 +252,13 @@
 
         if (response != System.Net.HttpStatusCode.OK)
         {
-
             ToastService.ShowError("There was an error editing the store!");
-            await InvokeAsync(ResetEditStoreModel);
         }
         else
         {
             ToastService.ShowSuccess("Your edits have been saved!");
             await UpdateStores.InvokeAsync();
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
         await ClearEditStoreModel();
 
