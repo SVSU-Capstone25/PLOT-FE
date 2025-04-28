@@ -166,7 +166,7 @@
     private async Task SaveCanvas()
     {
         // Get the image as a base64 string from the browser
-        string base64Image = await JSRuntime.InvokeAsync<string>("captureFloorsetThumbnail");
+        string base64Image = await JSRuntime.InvokeAsync<string>("window.gridInstance.getImageThumbnail");
 
 
         if (!string.IsNullOrEmpty(base64Image))
