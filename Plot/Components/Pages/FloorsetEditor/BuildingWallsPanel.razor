@@ -108,12 +108,16 @@
         }
     }
 
+    @* Function OnEmployeeAreaPaint
+    Called by clicking the employee paint button. Sends signal to the floorset grid JS to turn on employee area painting. *@
     private async Task OnEmployeeAreaPaint()
     {
         await JSRuntime.InvokeVoidAsync("window.setEmployeeAreaPaint");
         ToastService.ShowInfo("Employee area painting has been toggled.");
     }
 
+    @* Function OnEmployeeAreaErase
+    Called by clicking the employee erase button. Sends signal to floorset grid JS to turn on employee area erasing. *@
     private async Task OnEmployeeAreaErase()
     {
         await JSRuntime.InvokeVoidAsync("window.setEmployeeAreaErase");

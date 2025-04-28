@@ -107,6 +107,8 @@ Author: Tristan Calay (3/15/2025)-->
     Dictionary<string, List<Data.Models.Allocations.AllocationFulfillments>>();
     private float totalSales = 0;
 
+    @* Function UpdateAllocationFulfillments
+    Gets allocations from DB by floorset ID. Populates the allocationFufillmentList and tallies totalSales. *@
     private async Task UpdateAllocationFulfillments()
     {
         var response = await SalesHttpClient.GetAllocationFulfillments(FloorsetId);
@@ -136,6 +138,7 @@ allocationFulfillment
         }
     }
 
+    @* OnInitialized and OnInitializedAsync are called when the component is initialized, but before render. *@
     protected override void OnInitialized()
     {
         FloorsetEditorService.OnUpdate += async () =>
@@ -150,12 +153,17 @@ allocationFulfillment
         await UpdateAllocationFulfillments();
     }
 
+    @* Called when the search bar text is changed. 
+    Takes the change as a string and sets CategorySearch string for filtering. *@
     private void OnSearchChange(ChangeEventArgs e)
     {
 
         CategorySearch = e.Value as String ?? "";
     }
 
+    @* Function OnCategoryClick
+    When an allocation category on the sidebar is clicked, send the clicked allocation to
+    the floorset grid JS function for painting that category on fixtures. *@
     private async void OnCategoryClick(Data.Models.Allocations.AllocationFulfillments AllocationFulfillment)
     {
         SelectedFufillment = AllocationFulfillment;
@@ -163,6 +171,8 @@ allocationFulfillment
         AllocationFulfillment.TUID, AllocationFulfillment.SUBCATEGORY);
     }
 
+    @* Function OnSortAscendingClick
+    Called by the sort ascending button next to the search bar. Sorts the values in allocationFulfillmentLists alphabetically. *@
     private void OnSortAscendingClick()
     {
         foreach (var allocationFufillmentList in allocationFulfillmentLists)
@@ -178,6 +188,8 @@ allocationFulfillment
         }
     }
 
+    @* Function OnSortDescendingClick
+    Called by the sort descending button next to the search bar. Sorts the values in allocationFulfillmentLists in reverse alphabetical order. *@
     private void OnSortDescendingClick()
     {
         foreach (var allocationFufillmentList in allocationFulfillmentLists)
