@@ -114,22 +114,6 @@ boxes for adding/updating names, email, role, and store access.
                                     
                                 </AuthorizeView>
 
-                                <AuthorizeView Policy="Owner">
-                                @* For Role Options Dropdown menu: Included to allow users of role owner to edit owner *@
-
-                                @if (user.ROLE == "Owner")
-                                {
-                                    <Dropdown id="@($"Dropdown-{user.TUID}")" LabelText="Role">
-                                        <DropdownLink Icon="fa-solid fa-pen-to-square" data-bs-toggle="modal"
-                                            data-bs-target="@($"#update-user-modal-{user.TUID}")">Edit</DropdownLink>
-                                        <DropdownLink Icon="fa-regular fa-trash-can" data-bs-toggle="modal"
-                                            data-bs-target="@($"#delete-user-modal-{user.TUID}")">
-                                            Delete
-                                        </DropdownLink>
-                                    </Dropdown>
-                                }
-                                    
-                                </AuthorizeView>
                             </div>
                         </td>
                     </tr>
