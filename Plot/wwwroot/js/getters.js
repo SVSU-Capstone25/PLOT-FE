@@ -2,9 +2,11 @@ import EmployeeArea from "./EmployeeArea.js";
 import Fixture from "./Fixture.js";
 
 /**
+ * Gets all fixture instances for a floorset.
  * @argument {string} floorsetId
- * @author Clayton Cook <work@claytonleonardcook.com>
  * @returns {Promise<Fixture[]>}
+ *
+ * @author Clayton Cook <work@claytonleonardcook.com>
  */
 export async function getFixtureInstances(floorsetId) {
   return fetch(
@@ -21,9 +23,11 @@ export async function getFixtureInstances(floorsetId) {
 }
 
 /**
+ * Gets all employee areas for a floorset.
  * @argument {string} floorsetId
- * @author Clayton Cook <work@claytonleonardcook.com>
  * @returns {Promise<EmployeeArea[]>}
+ *
+ * @author Clayton Cook <work@claytonleonardcook.com>
  */
 export async function getEmployeeAreas(floorsetId) {
   return fetch(
