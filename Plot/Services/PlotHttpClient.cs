@@ -65,7 +65,7 @@ public class PlotHttpClient : HttpClient
 
     }
 
-    //Test to get excel shit sent over.
+    
     private async Task<HttpResponseMessage> SendAsync(string endpoint, HttpMethod method, MultipartFormDataContent content)
     {
         HttpRequestMessage httpRequestMessage = new HttpRequestMessage(method, $"{BaseAddress}{controller}{endpoint}");
@@ -146,42 +146,4 @@ public class PlotHttpClient : HttpClient
         return response.StatusCode;
     }
 
-
-    // public async Task<T?> SendPostAsync<T>(string endpoint, JsonContent body)
-    // {
-    //     var response = await SendAsync(endpoint, HttpMethod.Post, body);
-
-    //     Console.WriteLine(response);
-
-    //     if (response.IsSuccessStatusCode)
-    //     {
-    //         response.Content.Headers.TryGetValues("Content-Type", out var headers);
-    //         var contentType = headers?.FirstOrDefault();
-
-    //         switch (contentType)
-    //         {
-    //             case "application/json; charset=utf-8":
-    //                 return await response.Content.ReadFromJsonAsync<T>();
-    //             default:
-    //                 return default;
-    //         }
-    //     }
-
-
-    //     if (response.StatusCode == HttpStatusCode.BadRequest)
-    //     {
-    //         response.Content.Headers.TryGetValues("Content-Type", out var headers);
-    //         var contentType = headers?.FirstOrDefault();
-
-    //         switch (contentType)
-    //         {
-    //             case "application/json; charset=utf-8":
-    //                 return await response.Content.ReadFromJsonAsync<T>();
-    //             default:
-    //                 return default;
-    //         }
-    //     }
-
-    //     return default;
-    // }
 }
