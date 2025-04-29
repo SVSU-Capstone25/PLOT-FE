@@ -1,7 +1,5 @@
-@inject IJSRuntime JS
-@using Microsoft.JSInterop
-
 @* 
+Author: Andrew Miller
 Load Message Modal - Presents a message indicating data is being updated
 when a new user is added. Needed to warn user from navigating away from page
 
@@ -10,6 +8,9 @@ data-bs-keyboard="false" prevents closing when the user clicks the escape key
 
 data-bs-backdrop="static" does not work on Firefox.
 *@
+
+@inject IJSRuntime JS
+@using Microsoft.JSInterop
 
 <Modal SizeClass="modal-sm modal-dialog-centered" Backdrop="static" Keyboard="false" @attributes="Attributes">
     <Loader Class="d-flex justify-content-center w-100" />
@@ -28,10 +29,21 @@ data-bs-backdrop="static" does not work on Firefox.
 </script>
 
 @code {
+    /// <summary>
+    /// IJSOBjectReference for this modal
+    /// </summary>
     public IJSObjectReference? LoadModalRef;
 
+    /// <summary>
+    /// Attributes dictionary parameter
+    /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
+    /// <summary>
+    /// Shows Load Message Modal
+    /// </summary>
+    /// <param name=""> no parameters </param>
+    /// <returns> void </returns>
     public async Task ShowModal()
     {
         if (LoadModalRef == null)
@@ -42,6 +54,11 @@ data-bs-backdrop="static" does not work on Firefox.
         await LoadModalRef.InvokeVoidAsync("show");
     }
 
+    /// <summary>
+    /// Hides Load Message Modal
+    /// </summary>
+    /// <param name=""> no parameters </param>
+    /// <returns> void </returns>
     public async Task HideModal()
     {
         if (LoadModalRef == null)
