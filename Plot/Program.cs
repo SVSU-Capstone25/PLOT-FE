@@ -37,8 +37,7 @@ builder.Services.AddRazorComponents()
 //     };
 // });
 
-// Add services for authentication and authorization
-builder.Services.AddScoped<AuthService>();
+
 // builder.Services.AddScoped<AuthHeaderHttpClient>();
 builder.Services.AddScoped<AuthHttpClient>();
 builder.Services.AddScoped<FixturesHttpClient>();
