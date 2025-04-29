@@ -1,3 +1,14 @@
+@*
+File Purpose:
+Update User Modal for editing users. May edit first name,
+last name, email, role, and store access.
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+*@
+
 @inject StoresHttpClient StoresHttpClient
 @inject UsersHttpClient UsersHttpClient
 @inject IJSRuntime JS
@@ -30,37 +41,74 @@
 
 @code {
 
-    // Parameters
+    /// <summary>
+    /// Attributes dictionary parameter
+    /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
 
-    // Model used for updating information on user first name, last name, email, and role in the database
+    /// <summary>
+    /// Model used for updating information on user first name, last name, email, and role in the database
+    /// </summary>
     [SupplyParameterFromForm] private Data.Models.Users.UpdatePublicInfoUser? UpdateUserModel { get; set; }
 
-    // Model representing the user
+    /// <summary>
+    /// Model representing the user and data associated with the user
+    /// </summary>
     [Parameter] public required Data.Models.Users.UserDTO? User { get; set; }
 
-    // Update Users callback for rerendering UserDashboard in UserDashboard.razor file
+    /// <summary>
+    /// Update Users callback for rerendering UserDashboard
+    /// </summary>
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
-    public AddUpdateUserModalBody? modalBodyRef; // Ref for AddUpdateUserModalBody
+    /// <summary>
+    /// Reference for AddUpdateUserModalBody component
+    /// </summary>
+    public AddUpdateUserModalBody? modalBodyRef;
 
-    private bool modalBodyInit = false; // AddUpateUserModalBody initialized flag
+    /// <summary>
+    /// Flags that the AddUpdateUserModalBody has been initialized
+    /// </summary>
+    private bool modalBodyInit = false;
 
-    private bool IsSubmitDisabled = false; // Disable submit button
+    /// <summary>
+    /// Determines if submit button is disabled
+    /// </summary>
+    private bool IsSubmitDisabled = false;
 
-    // Modal for updating First Name, Last Name, Email, Role of User
+    /// <summary>
+    /// Model for updating First Name, Last Name, Email, Role of User
+    /// Used for sending data to database
+    /// </summary>
     public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel = new();
 
-    // Stores lists for updating access
-
+    /// <summary>
+    /// List of stores the user has access to
+    /// </summary>
     public List<Data.Models.Stores.Store> UpdateUserStores = new();
 
+    /// <summary>
+    /// List of stores the user does not have access to
+    /// </summary>
     public List<Data.Models.Stores.Store> NotUpdateUserStores = new();
 
+    /// <summary>
+    /// List of TUIDs the user selected in the select box for stores
+    /// the user does not have
+    /// </summary>
     public List<int> selectedNotUserStoreTUIDs = new();
 
+    /// <summary>
+    /// List of TUIDs the user selected in the select box for stores
+    /// the user does have
+    /// </summary>
     public List<int> selectedUserStoreTUIDs = new();
 
+    /// <summary>
+    /// Updates UpdateUserModel on initialization from User's data
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     protected override void OnInitialized()
     {
 
@@ -74,6 +122,12 @@
 
     }
 
+    /// <summary>
+    /// Initializes stores after render if the AddUpdateUserModalBody
+    /// has been initialized and it hasn't already initialized stores
+    /// </summary>
+    /// <param name="firstRender"> Built-in parameter refers to whether render is the first render </param>
+    /// <returns> void </returns>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!modalBodyInit)
@@ -86,6 +140,12 @@
         }
     }
 
+    /// <summary>
+    /// For being called by the child component to signal
+    /// that it has been initialized
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     public void HandleBodyInit()
     {
 
@@ -97,6 +157,11 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Runs when submitting form in modal
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     public async Task OnUpdateUserSubmit()
     {
         if (UpdateUserModel == null)
@@ -105,6 +170,7 @@
             return;
         }
 
+        // Update the user's info: first name, last name, email, role
         var response = await UsersHttpClient.UpdateUserPublicInfo(User!.TUID, UpdateUserModel);
 
         if (response != System.Net.HttpStatusCode.OK)
@@ -115,6 +181,7 @@
         {
             ToastService.ShowSuccess("The user was edited.");
 
+            // Update store access for user
             await UsersHttpClient.UpdateAccessList(new Data.Models.Users.UpdateAccessListRequest
             {
                 USER_TUID = User!.TUID,
@@ -122,11 +189,18 @@
             });
         }
 
+        // Update User Dashboard
         await UpdateUsers.InvokeAsync();
 
+        // Clear Update User Model and Modal
         ClearUpdateUserModel();
     }
 
+    /// <summary>
+    /// Gives state change in the Update User Modal and the modal body
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     public void ClearUpdateUserModel()
     {
         if (modalBodyRef != null)
@@ -135,19 +209,34 @@
         }
 
         StateHasChanged();
-
     }
 
+    /// <summary>
+    /// Handles change in user stores within modal
+    /// </summary>
+    /// <param name="NewUpdateUserStores"> List<Data.Models.Stores.Store> New list of models reflecting stores user has </param>
+    /// <returns> void </returns>
     public void HandleUserStoresChange(List<Data.Models.Stores.Store> NewUpdateUserStores)
     {
         UpdateUserStores = NewUpdateUserStores;
     }
 
+    /// <summary>
+    /// Handles change in not user stores within modal
+    /// </summary>
+    /// <param name="NewNotUpdateUserStores"> List<Data.Models.Stores.Store> New list of models reflecting stores use does not have </param>
+    /// <returns> void </returns>
     public void HandleNotUserStoresChange(List<Data.Models.Stores.Store> NewNotUpdateUserStores)
     {
         NotUpdateUserStores = NewNotUpdateUserStores;
     }
 
+    /// <summary>
+    /// Disables submit from child component - from AddUpdateUserModalBody.razor.
+    /// Needed for when stores are moved between select boxes
+    /// </summary>
+    /// <param name=isDisabled""> Determines if is submit is disabled.</param>
+    /// <returns> void </returns>
     public void DisableSubmitFromChild(bool isDisabled)
     {
         IsSubmitDisabled = isDisabled;

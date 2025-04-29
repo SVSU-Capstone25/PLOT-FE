@@ -1,23 +1,21 @@
+@*
+File Purpose:
+Add Update User Modal Body
+
+Program Purpose:
+The purpose of PLOT is to allow users to easily create, manage, 
+and allocate floorsets for Platos Closet. 
+
+*@
+
 @inject UsersHttpClient UsersHttpClient
 @inject StoresHttpClient StoresHttpClient
 @inject IJSRuntime JS
 @using Data.Models.Users
 @using Microsoft.AspNetCore.Components.Authorization;
 
-@*
-Select-first-after-moving-task (commented out code used towards this)
-
-This code is meant to select the first item in the select boxes, to avoid having it gray-highlight
-a store in the select boxes and then not move it when the user clicks the button
-But as is right now it doens't work.
-Current solution is the paragraph says to use Ctrl-Click before pressing buttons.
-And this will need to be included in training
-
-Referenced in other comments in this file as: Select-first-after-moving-task
-
-*@
-
 <ModalBody>
+    @* First Name field *@
     <label class="w-100 d-flex mt-2">
         <span class="mt-2 fw-bold">First Name</span>
         <InputText class="w-85 form-control ms-auto" type="Text" @bind-value="AddUpdateUserModel!.FIRST_NAME" />
@@ -25,6 +23,7 @@ Referenced in other comments in this file as: Select-first-after-moving-task
             <ValidationMessage For=@(() => AddUpdateUserModel.FIRST_NAME) />
         </div>
     </label>
+    @* Last Name field *@
     <label class="w-100 d-flex my-2">
         <span class="mt-2 fw-bold">Last Name</span>
         <InputText class="w-85 form-control ms-auto" type="Text" @bind-value="AddUpdateUserModel!.LAST_NAME" />
@@ -33,6 +32,7 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         </div>
     </label>
 
+    @* Email field *@
     <label class="w-100 d-flex my-2">
         <span class="mt-2 fw-bold">Email</span>
         <InputText class="w-85 form-control ms-auto" type="Text" @bind-value="AddUpdateUserModel!.EMAIL" />
@@ -41,6 +41,7 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         </div>
     </label>
 
+    @* Role select box *@
     <label class="w-100 d-flex my-2">
         <span class="mt-2 fw-bold">Role</span>
         <InputSelect class="w-85 form-select ms-auto" @bind-value="AddUpdateUserModel!.ROLE_NAME">
@@ -55,11 +56,14 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         </div>
     </label>
 
+    @* Store Access *@
     <p id="StoreSelectHeader" class="fw-bold">Store Selection</p>
 
     <p>To select stores and move them use Ctrl-click to highlight stores before pressing the buttons</p>
 
     <div class="w-100 d-flex justify-content-around">
+
+        @* Stores the user does not have access to *@
         <label class="w-25">
             Available Stores
             <select class="form-select mb-4 h-50 w-100" id="unassigned-stores" size="3" multiple
@@ -78,6 +82,7 @@ Referenced in other comments in this file as: Select-first-after-moving-task
 
         </label>
 
+        @* Stores the user has access to *@
         <label class="w-25">
             Selected Stores
             <select class="form-select mb-4 h-50 w-100" id="assigned-stores" size="3" multiple
@@ -97,86 +102,118 @@ Referenced in other comments in this file as: Select-first-after-moving-task
 
 </ModalBody>
 
-@* Select-first-after-moving-task *@
-@*
-<script>
-    function selectFirstItem(selectElementId) {
-        // Select the first item
-        var selectElement = document.getElementById(selectElementId);
-        for (var i = 0; i < selectElement.options.length; i++) {
-            selectElement.options[i].selected = false;
-        }
-        if (selectElement && selectElement.options.length > 0) {
-            selectElement.options[0].selected = true;
-        }
-
-        // Trigger the onchange event
-        var event = new Event('change', { bubbles: true });
-        selectElement.dispatchEvent(event);
-    }
-</script>
-*@
-
 @code {
 
-    // Parameters
+    /// <summary>
+    /// Event callback for use when this component initializes to signal parent components
+    /// that it is initialized. Needed to consistently render stores
+    /// </summary>
     [Parameter] public EventCallback OnInit { get; set; }
 
+    /// <summary>
+    /// Model used for updating information on user first name, last name, email, and role in the database
+    /// Parameter supplied from parent component
+    /// </summary>
     [Parameter] public Data.Models.Users.UpdatePublicInfoUser? AddUpdateUserModel { get; set; }
 
+    /// <summary>
+    /// Model used for adding and updating store access
+    /// </summary>
     [Parameter] public List<Data.Models.Users.AddUserToStoreRequest>? AddUpdateUserStoreRequestModels { get; set; }
 
-    // Stores Assigned or unassigned - Used for tracking assignment/unassignment in the modal before submit
-    // and for submitting the data when submit is clicked
+    /// <summary>
+    /// List of stores the user has access to
+    /// </summary>
     [Parameter] public List<Data.Models.Stores.Store>? AssignedStores { get; set; }
 
+    /// <summary>
+    /// List of stores the user does not have access to
+    /// </summary>
     [Parameter] public List<Data.Models.Stores.Store>? UnassignedStores { get; set; }
 
+    /// <summary>
+    /// Update Users callback for rerendering UserDashboard
+    /// </summary>
     [Parameter] public required EventCallback UpdateUsers { get; set; }
 
+    /// <summary>
+    /// Event callback to signal parent component that assigned stores have changed within modal
+    /// </summary>
     [Parameter] public EventCallback<List<Data.Models.Stores.Store>?> SignalParentAssignedStoresChanged { get; set; }
 
+    /// <summary>
+    /// Event callback to signal parent component that unassigned stores have changed within modal
+    /// </summary>
     [Parameter] public EventCallback<List<Data.Models.Stores.Store>?> SignalParentUnassignedStoresChanged { get; set; }
 
-    // Parameter to disable submit button in parent modal
-    // Needed briefly in case of moving stores between select boxes,
-    // pressing submit too quickly after selecting stores can cause stores not to update
+    /// <summary>
+    /// Parameter to disable submit button in parent modal
+    /// Needed briefly in case of moving stores between select boxes,
+    /// pressing submit too quickly after selecting stores can cause stores not to update
+    /// </summary>
     [Parameter] public EventCallback<bool> DisableSubmitInParent { get; set; }
 
-    private const int NEW_USER = 0; // Indicates new user when initializing stores
+    /// <summary>
+    /// New User flag, used when initializing stores. 0 is chosen since no user to be displayed in the User Dashboard
+    /// has a TUID of 0. It is specifically excluded due to being Root's TUID, and we never update Root, so it's
+    /// safe to use as a flag for when a new user is being added
+    /// </summary>
+    private const int NEW_USER = 0;
 
-    private bool IsSelectButtonsDisabled = false; // For disabling select buttons --- Needed to ensure related
-                                                  //data is updated
+    /// <summary>
+    /// Flag for disabling select buttons. This is needed briefly (imperceptibly in tests) to prevent submit from
+    /// being pressed before the models to update access have updated.
+    /// </summary>
+    private bool IsSelectButtonsDisabled = false;
 
-    // Prevents error where clicking the button does nothing due to it not having updated
-
-    // Lists of store tuids representing stores currently selected in either "Available Stores"
-    // or in "Selected Stores"
+    /// <summary>
+    /// List of TUIDs the user selected in the select box for stores
+    /// the user does not have
+    /// </summary>
     public List<int> selectedUnassignedTUIDs { get; set; } = new();
 
+    /// <summary>
+    /// List of TUIDs the user selected in the select box for stores
+    /// the user has
+    /// </summary>
     public List<int> selectedAssignedTUIDs { get; set; } = new();
 
+    /// <summary>
+    /// Calls state has changed from parent to tell child component
+    /// to change state. Added while resolving 
+    /// inconsistent data display issues related to Blazor's
+    /// rendering cycles
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     public void StateHasChangedFromParent()
     {
         // Signal StateHasChanged from parent
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Stores selected in select box from "Available Stores" moved to "Selected Stores"
+    /// Stores selected from UnassignedStores are moved to AssignedStores
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     public async Task SelectStoresForUser()
     {
-        // Stores selected in select box from "Available Stores" moved to "Selected Stores"
-        // Stores selected from UnassignedStores are moved to AssignedStores
-
         // Disable submit button in parent component while stores are
         // moved between select boxes
-
         await DisableSubmitInParent.InvokeAsync(true);
 
-        await Task.Delay(10); // Give onchange event for selection time to work
+        // Give the onchange event time to work when selecting users
+        await Task.Delay(10);
 
+        // Stores being moved (assigned)
         var storesToMove = UnassignedStores?.Where(store => selectedUnassignedTUIDs.Contains(store.TUID)).ToList();
         if (storesToMove == null) { return; }
 
+        // Add stores to assgined stores
+        // Remove stores from unassigned stores
+        // Clear selected Unassigned TUIDs
         foreach (var store in storesToMove)
         {
             AssignedStores?.Add(store);
@@ -184,8 +221,6 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         }
         selectedUnassignedTUIDs.Clear();
 
-        // TODO: See: Select-first-after-moving-task
-        //await JS.InvokeVoidAsync("selectFirstItem", "unassigned-stores");
         StateHasChanged();
 
         // Signal parent component to update stores lists
@@ -198,26 +233,32 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Stores selected in select box from "Selected Stores" moved to "Available Stores"
+    /// Stores selected from AssignedStores are moved to UnassignedStores
+    /// </summary>
+    /// <param name=""> no parameters taken </param>
+    /// <returns> void </returns>
     public async Task RemoveStoresFromUser()
     {
-        Console.WriteLine("Remove store from user");
         // Disable submit button while stores are
         // moved between select boxes
         await DisableSubmitInParent.InvokeAsync(true);
 
+        // Stores being moved (assigned)
         var storesToMove = AssignedStores?.Where(store => selectedAssignedTUIDs.Contains(store.TUID)).ToList();
         if (storesToMove == null) return;
 
+        // Add stores to assgined stores
+        // Remove stores from unassigned stores
+        // Clear selected Unassigned TUIDs
         foreach (var store in storesToMove)
         {
             UnassignedStores?.Add(store);
             AssignedStores?.Remove(store);
         }
-
         selectedAssignedTUIDs.Clear();
 
-        //TODO: See: Select-first-after-moving-task
-        //await JS.InvokeVoidAsync("selectFirstItem", "assigned-stores");
         StateHasChanged();
 
         // Signal parent component to update stores lists
@@ -230,7 +271,11 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         StateHasChanged();
     }
 
-    // Methods handle selection of store TUIDs in select boxes
+    /// <summary>
+    /// Handle selection of assigned stores (stores in "Selected Stores select box")
+    /// </summary>
+    /// <param name="e"> Change Event Argument passed when new stores are selected </param>
+    /// <returns> void </returns>
     public void AssignedStoresSelection(ChangeEventArgs e)
     { // Selected from list of assigned stores for potential removal
       // and placement in list of unassigned stores
@@ -240,6 +285,11 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Handle selection of unassgined stores (stores in "Available Stores select box")
+    /// </summary>
+    /// <param name="e"> Change Event Argument passed when new stores are selected </param>
+    /// <returns> void </returns>
     public void UnassignedStoresSelection(ChangeEventArgs e)
     {
         // Selected from list of unassigned stores for potential
@@ -250,6 +300,11 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Handle selection of unassgined stores (stores in "Available Stores select box")
+    /// </summary>
+    /// <param name="e"> Change Event Argument passed when new stores are selected </param>
+    /// <returns> List<int> </returns>
     private List<int> ExtractSelectedIds(ChangeEventArgs e)
     {
         // Put selected options into list of store ids
@@ -265,10 +320,14 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         return selected;
     }
 
+    /// <summary>
+    /// Updates User of given userTUID for information including first name,
+    /// last name, email, and role via call through backend to database
+    /// </summary>
+    /// <param name="userTUID"> TUID of user being updated </param>
+    /// <returns> void </returns>
     public async Task UpdateUser(int userTUID)
     {
-        // Updates information for user including first name, last name, email, and role
-
         if (AddUpdateUserModel != null)
         {
             var response = await UsersHttpClient.UpdateUserPublicInfo(userTUID, AddUpdateUserModel!);
@@ -277,9 +336,15 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Initializes assigned stores and unassigned for user of given userTUID
+    /// </summary>
+    /// <param name="userTUID"> TUID of user being updated.
+    /// NEW_USER=0 is used as a flag in case it is a new user </param>
+    /// <returns> void </returns>
     public async Task InitUserStores(int userTUID)
     {
-        // Initializes stores for user of TUID, userTUID
+        // Initializes assigned and unassigned stores for user of TUID, userTUID
 
         await InitAssignedStores(userTUID);
         await InitUnassignedStores(userTUID);
@@ -291,6 +356,12 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         await OnInit.InvokeAsync();
     }
 
+    /// <summary>
+    /// Initializes assigned stores for user of given userTUID
+    /// </summary>
+    /// <param name="userTUID"> TUID of user being updated.
+    /// NEW_USER=0 is used as a flag in case it is a new user </param>
+    /// <returns> void </returns>
     private async Task InitAssignedStores(int userTUID)
     {
         // Initialize assigned stores for select box in add user or update user modal
@@ -310,15 +381,21 @@ Referenced in other comments in this file as: Select-first-after-moving-task
         }
     }
 
+    /// <summary>
+    /// Initializes unassigned stores for user of given userTUID
+    /// </summary>
+    /// <param name="userTUID"> TUID of user being updated.
+    /// NEW_USER=0 is used as a flag in case it is a new user </param>
+    /// <returns> void </returns>
     private async Task InitUnassignedStores(int userId)
     {
         // Initialize unassigned stores for select box in add user or update user modal
 
-        UnassignedStores!.Clear(); // Clear unassigned stores list
+        // Clear unassigned stores list
+        UnassignedStores!.Clear();
         if (userId == NEW_USER)
         {
-            // New user - Fill available stores list
-
+            // New user - all stores are unassigned - get full list of stores
             var response = await StoresHttpClient.GetListOfStores();
             if (response != null)
             {
@@ -334,7 +411,8 @@ Referenced in other comments in this file as: Select-first-after-moving-task
 
             if (response != null)
             {
-                UnassignedStores.AddRange(response); // Add stores to unassigned stores
+                // Add stores to unassigned stores
+                UnassignedStores.AddRange(response);
             }
         }
     }
