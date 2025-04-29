@@ -49,7 +49,7 @@ builder.Services.AddScoped<SalesHttpClient>();
 builder.Services.AddScoped<ICookie, Cookie>();
 builder.Services.AddScoped<ClaimParserService>();
 builder.Services.AddScoped<JwtService>();
-builder.Services.AddSingleton<ToastService>();
+builder.Services.AddScoped<ToastService>();
 builder.Services.AddSingleton<FloorsetEditorService>();
 
 var fontPath = Path.Combine(builder.Environment.WebRootPath, "fonts", "segoeui.ttf");
@@ -134,7 +134,7 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
 .AddHubOptions(options =>
 {
     options.MaximumReceiveMessageSize = 1 * 1024 * 1024;
-});;
+}); ;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
