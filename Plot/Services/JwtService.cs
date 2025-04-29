@@ -43,8 +43,11 @@ public class JwtService
 
     // METHODS -- METHODS -- METHODS -- METHODS -- METHODS ------
 
-    //Constructor, local vars are set using env during
+    /// <summary>
+    // Constructor, local vars are set using env during
     // injection.
+    /// </summary>
+    /// <param name="envSettings">Service to get vars from env</param>
     public JwtService(EnvironmentSettings envSettings)
     {
         _envSettings = envSettings;
@@ -54,68 +57,36 @@ public class JwtService
         _passwordResetSecretKey = _envSettings.password_reset_secret_key;
     }
 
+
+    /// <summary>
+    /// Method to validate a jwt auth token
+    /// </summary>
+    /// <param name="token">Auth jwt token as string</param>
+    /// <returns>Validated claims principal</returns>
     public ClaimsPrincipal? ValidateAuthToken(string token)
     {
        return ValidateToken(token, _authSecretKey);
     }
 
 
+    /// <summary>
+    /// Method to validate a jwt password reset token
+    /// </summary>
+    /// <param name="token">Password reset token jwt token as string</param>
+    /// <returns>Validated claims principal</returns>
     public ClaimsPrincipal? ValidatePasswordResetToken(string token)
     {
        return ValidateToken(token, _passwordResetSecretKey);
     }
 
+    
     /// <summary>
-    /// This method validates a JWT token and returns the user's claims if
-    /// valid. 
+    /// This method validates a JWT token and returns the user's Claims principal if
+    /// valid.
     /// </summary>
     /// <param name="token">Jwt token to validate</param>
-    /// <returns>Users claims</returns>
-    // public ClaimsPrincipal? GetValidClaims(string token)
-    // {
-    //     // Token handler to validate the token.
-    //     var tokenHandler = new JwtSecurityTokenHandler();
-
-    //     // Convert applications secret key into a byte array
-    //     // to create a new symmetric security key to match
-    //     // against the incoming token.
-    //     var key = new SymmetricSecurityKey(
-    //         Encoding.UTF8.GetBytes(_authSecretKey));
-
-    //     // Create validation parameters to match the
-    //     // incoming token.
-    //     var validationParameters = new TokenValidationParameters
-    //     {
-    //         // Ensure the incoming tokens signing key is valid.
-    //         ValidateIssuerSigningKey = true,
-    //         // Match the incoming tokens signing key to the applications
-    //         // secret key.
-    //         IssuerSigningKey = key,
-    //         // Check the tokens issuer and audience.
-    //         ValidateIssuer = true,
-    //         ValidIssuer = _issuer,
-    //         ValidateAudience = true,
-    //         ValidAudience = _audience,
-    //         // Make sure the token is not expired.
-    //         ValidateLifetime = true
-    //     };
-
-    //     try
-    //     {
-    //         // Validate the token based on the validation parameters. out_ 
-    //         // is used to ignore the security token as it is not needed.
-    //         var principal = tokenHandler.ValidateToken(
-    //             token, validationParameters, out _);
-
-    //         return principal;
-    //     }
-    //     catch
-    //     {
-    //         // Return null if the token is invalid.
-    //         return null;
-    //     }
-    // }
-
+    /// <param name="secretKey">Key for validation</param>
+    /// <returns>Claims principal or null if validation fails</returns>
     private ClaimsPrincipal? ValidateToken(string token, string secretKey)
     {
         // Token handler to validate the token.
@@ -152,8 +123,6 @@ public class JwtService
             // is used to ignore the security token as it is not needed.
             var principal = tokenHandler.ValidateToken(
                 token, validationParameters, out _);
-
-            
 
             return principal;
         }
