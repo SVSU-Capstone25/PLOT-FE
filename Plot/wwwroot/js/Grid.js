@@ -240,7 +240,7 @@ class Grid {
     mouseFixture?.draw(this.size);
 
     Grid.p5.pop();
-    saveCallback();
+    saveCallback?.();
   }
 
   /**
