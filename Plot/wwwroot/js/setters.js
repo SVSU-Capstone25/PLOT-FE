@@ -1,7 +1,9 @@
 /**
+ * Updates a fixture instance.
  * @argument {object} fixture
+ * @returns {Promise<boolean>} Whether the request was successful or not.
+ *
  * @author Clayton Cook <work@claytonleonardcook.com>
- * @returns {Promise<boolean>}
  */
 export async function updateFixtureInstance(fixture) {
   return fetch(
@@ -21,9 +23,11 @@ export async function updateFixtureInstance(fixture) {
 }
 
 /**
+ * Creates a fixture instance.
  * @argument {object} fixture
+ * @returns {Promise<number>} The TUID of the created fixture instance.
+ *
  * @author Clayton Cook <work@claytonleonardcook.com>
- * @returns {Promise<number>} The TUID of the created fixture instance
  */
 export async function createFixtureInstance(fixture) {
   return fetch(
@@ -41,9 +45,11 @@ export async function createFixtureInstance(fixture) {
 }
 
 /**
+ * Creates employee areas within the provided area.
  * @argument {{FLOORSET_TUID: number, X1_POS: number, Y1_POS: number, X2_POS: number, Y2_POS: number}} employeeArea
+ * @returns {Promise<boolean>} Whether the request was successful or not.
+ *
  * @author Clayton Cook <work@claytonleonardcook.com>
- * @returns {Promise<boolean>}
  */
 export async function bulkCreateEmployeeAreas(employeeArea) {
   return fetch(
@@ -63,9 +69,11 @@ export async function bulkCreateEmployeeAreas(employeeArea) {
 }
 
 /**
+ * Deletes employee areas within the provided area.
  * @argument {{FLOORSET_TUID: number, X1_POS: number, Y1_POS: number, X2_POS: number, Y2_POS: number}} employeeArea
+ * @returns {Promise<boolean>} Whether the request was successful or not.
+ *
  * @author Clayton Cook <work@claytonleonardcook.com>
- * @returns {Promise<boolean>}
  */
 export async function bulkDeleteEmployeeAreas(employeeArea) {
   return fetch(

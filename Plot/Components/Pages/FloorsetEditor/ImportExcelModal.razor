@@ -70,6 +70,11 @@
         if (ImportExcelFileModel?.Stream != null)
         {
             // Send the floorset id and excel file to the backend
+                            
+            // Danielle Smith 4/28/2025
+            // Indicate "loading" to user while file processes
+            ToastService.ShowInfo("Loading...");
+
             var response = await SalesHttpClient.UploadSales(FloorsetId, ImportExcelFileModel);
 
             //Handle the response from the backend
@@ -81,7 +86,7 @@
             {
                 await FloorsetEditorService.TriggerExcelUpdateAsync();
                 ToastService.ShowSuccess("The excel file was uploaded successfully.");
-                ToastService.ShowInfo("Navigate to the allocations panel in the sidebar to start allocatiing.", 5000);
+                ToastService.ShowInfo("Navigate to the allocations panel in the sidebar to start allocating.", 5000);
             }
         }
     }

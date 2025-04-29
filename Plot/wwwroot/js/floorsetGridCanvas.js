@@ -17,15 +17,6 @@ import {
 let gridInstance;
 let p5Instance;
 
-window.addFixture = (id, x, y, width, length) => {
-  if (!window.gridInstance) {
-    console.error("Grid not initialized yet!");
-    return;
-  }
-
-  window.gridInstance.addFixtureInstanceToGrid(id, x, y, width, length);
-};
-
 window.updateStoreSize = (width, height) => {
   if (!window.gridInstance) {
     console.error("Grid not initialized yet!");
@@ -77,7 +68,7 @@ window.createDraggable = (event) => {
 // This function toggles a menu on right click
 // positioned at the given coordinates.
 window.showDropdown = (isShowing, x = 0, y = 0) => {
-  // Create bootstrap dropdown element 
+  // Create bootstrap dropdown element
   const dropdown = new bootstrap.Dropdown(
     document.querySelector("#fixtureContextMenu")
   );
@@ -109,6 +100,12 @@ window.showDropdown = (isShowing, x = 0, y = 0) => {
   }
 };
 
+/**
+ * Clears and loads data from databse into floorset editor objects.
+ * @param {number} floorsetId
+ *
+ * @author Clayton Cook <work@claytonleonardcook.com>
+ */
 window.reload = (floorsetId) => {
   gridInstance.employeeAreas = new Map();
   getEmployeeAreas(floorsetId)
@@ -202,8 +199,9 @@ window.captureFloorsetThumbnail = async () => {
 
 /**
  * Parses the cookies from the browser
- * @author Clayton Cook <work@claytonleonardcook.com>
  * @returns {Record<string, string>} Cookies in a indexable object
+ *
+ * @author Clayton Cook <work@claytonleonardcook.com>
  */
 function getCookies() {
   const cookies = document.cookie.split(";");
@@ -219,8 +217,9 @@ function getCookies() {
 /**
  * Gets the cookie from the browser
  * @argument {string} key Name of cookie
- * @author Clayton Cook <work@claytonleonardcook.com>
  * @returns {Promise<string>}
+ *
+ * @author Clayton Cook <work@claytonleonardcook.com>
  */
 async function getCookie(key) {
   const cookies = getCookies();
@@ -231,10 +230,13 @@ async function getCookie(key) {
 }
 
 /**
+ * Aggregator that allows for a debounce time so things can be collected and then, after a certain amount of time, are aggregated into an array for some process.
  * @template T
  * @param {number} wait Wait time
  * @param {(item: T) => Promise<void>} onFlush
  * @returns
+ *
+ * @author Clayton Cook <work@claytonleonardcook.com>
  */
 function createDebouncedAggregator(wait, onFlush) {
   /** @type {Set<T>} */
@@ -252,6 +254,14 @@ function createDebouncedAggregator(wait, onFlush) {
   };
 }
 
+/**
+ * Draw employee areas within area given by top left and bottom right rectangle.
+ * @param {*} p5
+ * @param {*} v1 - P5 vector for one corner of the selection area.
+ * @param {*} v2 - P5 vector for other corner of the selection area.
+ *
+ * @author Clayton Cook <work@claytonleonardcook.com>
+ */
 function drawEmployeeAreaSelector(p5, v1, v2) {
   if (!v1) return;
   if (!v2) return;
@@ -263,6 +273,10 @@ function drawEmployeeAreaSelector(p5, v1, v2) {
   p5.pop();
 }
 
+/**
+ * Pan when pressing arrow keys.
+ * @param {*} p5
+ */
 function onKeyboardKey(p5) {
   if (p5.keyIsDown(p5.LEFT_ARROW)) {
     gridInstance.xOffset += 50 * gridInstance.scale;
@@ -279,6 +293,12 @@ function onKeyboardKey(p5) {
   gridInstance.resize();
 }
 
+/**
+ * Pan when scrolling and zoom when scrolling with shift held.
+ * @param {Event} event
+ *
+ * @author Clayton Cook <work@claytonleonardcook.com>
+ */
 function onZoomScroll(event) {
   if (!gridInstance) return;
 
@@ -315,9 +335,18 @@ function onZoomScroll(event) {
   event.preventDefault();
 }
 
+/**
+ * Main p5 function for creating a sketch.
+ * @param {*} p5
+ *
+ * @author Clayton Cook <work@claytonleonardcook.com>
+ */
 function sketch(p5) {
   let mouseFixture, floorsetId, employeeAreaSelection;
 
+  /**
+   * Paint aggregator for collecting paint updates, updating instances in bulk and then triggering an update in the allocations sidebar.
+   */
   const paintAggregator = createDebouncedAggregator(500, (fixtures) => {
     console.log(fixtures);
     Promise.allSettled(
@@ -329,6 +358,11 @@ function sketch(p5) {
       .catch(console.error);
   });
 
+  /**
+   * Preload data that is required before canvas is rendered.
+   *
+   * @author Clayton Cook <work@claytonleonardcook.com>
+   */
   p5.preload = () => {
     Grid.p5 = p5;
     EmployeeArea.p5 = p5;
@@ -361,13 +395,11 @@ function sketch(p5) {
     window.reload(floorsetId);
   };
 
-  p5.reload = () => {
-    gridInstance.employeeAreas = new Map();
-    gridInstance.fixtures = [];
-
-    p5.preload();
-  };
-
+  /**
+   * Setup function that's called once before the main draw loop.
+   *
+   * @author Clayton Cook <work@claytonleonardcook.com>
+   */
   p5.setup = () => {
     const canvas = p5.createCanvas(p5.windowWidth, p5.windowHeight);
 
@@ -388,6 +420,11 @@ function sketch(p5) {
     });
   };
 
+  /**
+   * Draw function that's called per frame.
+   *
+   * @author Clayton Cook <work@claytonleonardcook.com>
+   */
   p5.draw = () => {
     p5.background(220);
     onKeyboardKey(p5);
@@ -401,11 +438,22 @@ function sketch(p5) {
     p5.pop();
   };
 
+  /**
+   * Resizes the canvas and grid each time the window size updates.
+   *
+   * @author Clayton Cook <work@claytonleonardcook.com>
+   */
   p5.windowResized = () => {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
     gridInstance.resize();
   };
 
+  /**
+   * Event handler for when a button is pressed on the mouse.
+   * TODO: Break out into individual functions for each possible interaction.
+   *
+   * @author Clayton Cook <work@claytonleonardcook.com>
+   */
   p5.mousePressed = () => {
     const mouse = p5.createVector(p5.mouseX, p5.mouseY);
 
@@ -472,6 +520,12 @@ function sketch(p5) {
     }
   };
 
+  /**
+   * Event handler for when the mouse is dragged.
+   * TODO: Break out into individual functions for each possible interaction.
+   *
+   * @author Clayton Cook <work@claytonleonardcook.com>
+   */
   p5.mouseDragged = async () => {
     const mouse = p5.createVector(p5.mouseX, p5.mouseY);
 
@@ -516,6 +570,12 @@ function sketch(p5) {
     }
   };
 
+  /**
+   * Event handler for when the left click button on the mouse is released. Mainly used for dragging and dropping interactions.
+   * TODO: Break out into individual functions for each possible interaction.
+   *
+   * @author Clayton Cook <work@claytonleonardcook.com>
+   */
   p5.mouseReleased = () => {
     if (window.grid.state === "employee_area_paint") {
       const v1 = gridInstance.toGridCoordinates(employeeAreaSelection.v1),
@@ -622,6 +682,12 @@ function sketch(p5) {
   };
 }
 
+/**
+ * Initializes the canvas and if one already exists, removes it.
+ * @param {string} elementId - Parent ID for where the canvas is housed.
+ *
+ * @author Clayton Cook <work@claytonleonardcook.com>
+ */
 window.initP5 = (elementId) => {
   // Check if p5 is already rendered to prevent
   // ghosting issues when rendering.

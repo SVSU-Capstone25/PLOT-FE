@@ -139,7 +139,7 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
 .AddHubOptions(options =>
 {
     options.MaximumReceiveMessageSize = 1 * 1024 * 1024;
-});;
+}); ;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";

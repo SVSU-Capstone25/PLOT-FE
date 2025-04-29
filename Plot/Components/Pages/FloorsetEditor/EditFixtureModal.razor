@@ -28,17 +28,17 @@
     /// Method passed in from parent (Floorset Editor) to update the current fixture modals.
     /// </summary>
     [Parameter] public EventCallback UpdateFixtureModels { get; set; }
-    
+
     /// <summary>
     /// Captures and stores any additional attributes that are not explicitly defined on the component.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)] public required Dictionary<string, object> Attributes { get; set; }
-    
+
     /// <summary>
     /// Stores the fixture ID of the current fixture.
     /// </summary>
     [Parameter] public required int FixtureId { get; set; }
-    
+
     /// <summary>
     /// Stores the current store ID.
     /// </summary>
@@ -50,7 +50,7 @@
     [SupplyParameterFromForm] private Data.Models.Fixtures.CreateFixtureModel? EditFixtureModel { get; set; } = new();
 
     /// <summary>
-    /// Creates a new EditFixtureModel with the data from 
+    /// Creates a new EditFixtureModel with the data from
     /// the current fixture.
     /// </summary>
     /// <param name=""> No parameters taken </param>
@@ -59,7 +59,6 @@
     {
         //if (Fixture != null)
         //{
-        Console.WriteLine("Reached");
         EditFixtureModel = new Data.Models.Fixtures.CreateFixtureModel
         {
 
