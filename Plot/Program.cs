@@ -1,3 +1,14 @@
+/*
+    Filename: Program.cs
+    Part of Project: PLOT/PLOT-FE/Plot
+
+    Project Purpose: This project is the frontend for Plato's Closet
+    PLOT floorset allocation software. It defines the main entry point for the application,
+    sets up the services, authentication, and middleware for the Blazor application.
+
+    Written by: SVSU 2025 Capstone Team
+*/
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Plot.Data.Models.Env;
 using System.Text;
@@ -11,35 +22,20 @@ using PdfSharp.Fonts;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Get environment settings
+// Add the environment settings from the .env file as a scoped service
+// into the program service container.
 EnvironmentSettings envSettings = new();
-
-// Add service to the container to get env settings in the app.
 builder.Services.AddScoped<EnvironmentSettings>();
 
-builder.WebHost.UseUrls("http://0.0.0.0:8080");
+builder.WebHost.UseUrls(envSettings.audience);
 
-// Add services to the container.
+// Add Interactive server components to the service container
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Add HttpClient for server-side Blazor
-// builder.Services.AddScoped(sp =>
-// {
-//     var handler = new HttpClientHandler
-//     {   //Allows manipulating cookies in the request
-//         UseCookies = false,
-//         AllowAutoRedirect = true
-//     };
-//     return new HttpClient(handler)
-//     {
-//         BaseAddress = new Uri(builder.Configuration["BACKEND_URL"] ?? "http://backend:8085/api")
-//     };
-// });
 
-// Add services for authentication and authorization
-builder.Services.AddScoped<AuthService>();
-// builder.Services.AddScoped<AuthHeaderHttpClient>();
+// Add the services and database context classes into the program service container.
+// These will be injected as dependencies throughout the program.
 builder.Services.AddScoped<AuthHttpClient>();
 builder.Services.AddScoped<FixturesHttpClient>();
 builder.Services.AddScoped<FloorsetsHttpClient>();
@@ -49,9 +45,10 @@ builder.Services.AddScoped<SalesHttpClient>();
 builder.Services.AddScoped<ICookie, Cookie>();
 builder.Services.AddScoped<ClaimParserService>();
 builder.Services.AddScoped<JwtService>();
-builder.Services.AddSingleton<ToastService>();
+builder.Services.AddScoped<ToastService>();
 builder.Services.AddSingleton<FloorsetEditorService>();
 
+//Set fonts for the pdf
 var fontPath = Path.Combine(builder.Environment.WebRootPath, "fonts", "segoeui.ttf");
 if (!File.Exists(fontPath))
 {
@@ -63,7 +60,11 @@ var customFontResolver = new CustomFontResolver(fontBytes);
 GlobalFontSettings.FontResolver = customFontResolver;
 builder.Services.AddSingleton<IFontResolver>(customFontResolver);
 
-// Add JWT authentication and authorization 
+
+// Add the authentication middleware service into the program service container,
+// adding Jwt bearer tokens into the program. The Jwt bearer token settings
+// are based on the .env file values and seeing the implementation for the
+// tokens.
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -117,7 +118,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Add authorization policies
+
+// Add the authorization middleware service into the program service container,
+// allowing for policy authorization middleware. These will check the role
+// claim tied to the auth token in the cookie for any Authorization policies 
+// defined in the pages.
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("Employee", policy => policy.RequireClaim("Role", "Owner", "Manager", "Employee"))
     .AddPolicy("Manager", policy => policy.RequireClaim("Role", "Owner", "Manager"))
@@ -130,11 +135,12 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
 {
     options.DetailedErrors = true;
-})
+}) 
 .AddHubOptions(options =>
 {
     options.MaximumReceiveMessageSize = 1 * 1024 * 1024;
 });;
+
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -144,7 +150,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("http://backend:8085", "http://localhost:8085") // Add your actual frontend URL(s)
+                          policy.WithOrigins(envSettings.issuer) 
                                 .AllowAnyHeader()
                                 .AllowAnyMethod()
                                 .AllowCredentials();
@@ -158,7 +164,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -166,6 +171,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
 // Setup authentication and authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
@@ -185,5 +191,6 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+// Middleware to redirect to the status code page
 app.UseStatusCodePagesWithRedirects("/status-code/{0}");
 app.Run();

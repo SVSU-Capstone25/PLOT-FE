@@ -1,12 +1,12 @@
 /*
     Filename: UploadFile.cs
-    Part of Project: PLOT/PLOT-BE/Plot/Data/Models/Allocations
+    Part of Project: PLOT/PLOT-FE/Plot/Data/Models/Allocations
 
     File Purpose:
     This file contains the request input for sending
-    an excel file over.
+    an file over. Its used to upload the razor excel file.
     
-    Written by: Jordan Houlihan
+    Written by: Michael Polhill
 */
 
 using Microsoft.AspNetCore.Components.Forms;
