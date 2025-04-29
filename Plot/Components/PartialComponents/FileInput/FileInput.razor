@@ -43,7 +43,7 @@
             <i class="fa-regular fa-file-lines fa-lg"></i>
             <p class="file-name">@Text</p>
             <div class="remove-file-btn ms-auto">
-                <Button OnClickFunction="RemoveFile">
+                <Button type="button" @onclick="RemoveFile">
                     <i class="fa-solid fa-xmark"></i>
                 </Button>
             </div>
@@ -135,7 +135,7 @@
 
             if (allowedTypes.Contains(loadedFile.ContentType))
             {
-                
+
                 Text = loadedFile.Name;
                 //var response = await SalesHttpClient.UploadSales(1, loadedFile);
 

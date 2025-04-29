@@ -19,6 +19,8 @@ Author: Tristan Calay (3/15/2025)-->
 @* Tristan Calay 3/27/25
             Added UL / LI with onclick to set the painting color. *@
 
+@* Danielle Smith 4/28/2025 
+moved LF/Goals to headers so they still show in chromium browsers *@
 @rendermode InteractiveServer
 @inject IJSRuntime JSRuntime
 @inject SalesHttpClient SalesHttpClient
@@ -60,11 +62,10 @@ Author: Tristan Calay (3/15/2025)-->
 
                 <li class="list-group-item">
                     <ProgressBar>
-                        <ProgressBarHeader class="fs-5" Icon="fa-solid fa-chevron-down">@allocationFulfillmentList.Key
+                        <ProgressBarHeader class="fs-5" Icon="fa-solid fa-chevron-down">@allocationFulfillmentList.Key (@SuperCategoryCurrent / @SuperCategoryNeeded)
                         </ProgressBarHeader>
                         <ProgressBarBar Color="@SuperCategoryColor" max="@SuperCategoryNeeded" value="@SuperCategoryCurrent"
                             min="0">
-                            @SuperCategoryCurrent / @SuperCategoryNeeded
                         </ProgressBarBar>
                     </ProgressBar>
                 </li>
@@ -82,11 +83,10 @@ Author: Tristan Calay (3/15/2025)-->
                             <ProgressBar class="flex-grow-1">
                                 <ProgressBarHeader class="d-flex">
                                     <span class="badge text-white fs-6"
-                                        style="background-color: @AllocationFulfillment.SUPERCATEGORY_COLOR;">@AllocationFulfillment.SUBCATEGORY</span>
+                                        style="background-color: @AllocationFulfillment.SUPERCATEGORY_COLOR;">@AllocationFulfillment.SUBCATEGORY (@AllocationFulfillment.CURRENT_LF / @NeededLF)</span>
                                 </ProgressBarHeader>
                                 <ProgressBarBar Color="@AllocationFulfillment.SUPERCATEGORY_COLOR"
                                     max="@NeededLF" value="@AllocationFulfillment.CURRENT_LF" min="0">
-                                    @AllocationFulfillment.CURRENT_LF / @NeededLF
                                 </ProgressBarBar>
                             </ProgressBar>
                         </button>
