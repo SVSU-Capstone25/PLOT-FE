@@ -14,6 +14,10 @@ using Plot.Services;
     This class is responsible for handling authentication requests to the backend API.
     It uses JavaScript interop to call the login and logout functions defined in the Blazor app.
 
+    OLD FILE LOGIN HAS BEEN MOVED TO AUTHCLIENT BRANCH NOT MERGED YET
+
+    
+
     Written by: Michael Polhill
 */
 public class AuthService : PlotHttpClient

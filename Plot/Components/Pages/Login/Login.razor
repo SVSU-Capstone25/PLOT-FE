@@ -1,5 +1,14 @@
 @* Front end by Luke Wollenweber *@
-@* Hook up to database by Michael Polhill *@
+@* 
+    Filename: Login.razor
+    Part of Project: PLOT/PLOT-FE/Components/Pages/Login
+
+    File Purpose:
+    This file contains a the login page implementation.
+
+    
+    Hook up to database by Michael Polhill
+*@
 @* Updated by Danielle Smith 4/1/2025 *@
 
 @* @attribute [AllowAnonymous] *@
@@ -69,37 +78,52 @@
 @code
 {
     [SupplyParameterFromForm]
+
+    //Model for login, populates from form
     private Data.Models.Auth.Login.LoginRequest? LoginModel { get; set; }
 
     bool HasLoginFailed = false;
-
+    /// <summary>
+    //Initialize the LoginModel to a new instance 
+    /// </summary>
     protected override void OnInitialized()
     {
         LoginModel ??= new();
     }
 
+    
+    /// <summary>
+    // Check if the user is already logged in and redirect to the store dashboard if they are
+    /// </summary>
+    /// <param name="firstRender">First render of the page </param>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
         var token = await cookie.GetValue("Auth");
 
         if (token != null && token != string.Empty) Navigation.NavigateTo("/store-dashboard", forceLoad: true);
     }
 
+    /// <summary>
+    /// Handles the form submit for logging in the user.
+    /// </summary>
     private async Task OnLoginSubmit()
     {
+        //Check if the model is null
         if (LoginModel != null)
-        {
+        {   //Send credentials to BE to get token
             var token = await AuthService.LoginAsync(LoginModel);
-            Console.WriteLine(token);
+
+            //If token model is not invalid/null
             if (token != null)
             {
+                //Check token in the model
                 if (token.Token == null)
                 {
                     HasLoginFailed = true;
                 }
                 else
                 {
+                    //Set the token in the cookie
                     await cookie.SetValue("Auth", token.Token);
                 }
             }

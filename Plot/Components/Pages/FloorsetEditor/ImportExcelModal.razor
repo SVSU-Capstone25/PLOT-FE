@@ -34,14 +34,24 @@
         ImportExcelFileModel ??= new();
     }
 
+    
+    /// <summary>
+    /// Handles the file upload event from the FileInput component.
+    /// Copies the file stream to a memory stream so it doesnt get
+    /// disposed from the browser.
+    /// </summary>
+    /// <param name="IBrowserFile"> File input from browser</param>
     private async Task OnFileUpload(IBrowserFile e)
     {
+        //Check if file is null
         if (e != null)
         {
+            //Memory Stream to hold the file stream
             MemoryStream ms = new MemoryStream();
             await e.OpenReadStream().CopyToAsync(ms);
             ms.Position = 0;
 
+            //Copy to the excel file model
             if (ImportExcelFileModel != null)
             {
                 ImportExcelFileModel.Stream = ms;
@@ -51,12 +61,18 @@
         }
     }
 
+    /// <summary>
+    /// Handles the form submit for sending the excel file
+    /// to the backend.
+    /// </summary>
     private async Task OnImportExcelFileSubmit()
     {
         if (ImportExcelFileModel?.Stream != null)
         {
+            // Send the floorset id and excel file to the backend
             var response = await SalesHttpClient.UploadSales(FloorsetId, ImportExcelFileModel);
 
+            //Handle the response from the backend
             if (response != System.Net.HttpStatusCode.OK)
             {
                 ToastService.ShowError("There was an error uploading the excel file!");
