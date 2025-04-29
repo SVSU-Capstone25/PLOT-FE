@@ -233,6 +233,11 @@ class Grid {
     const scaleX = 448 / gridPixelWidth;
     const scaleY = 320 / gridPixelHeight;
 
+    const originalXOffset = this.xOffset;
+    const originalYOffset = this.yOffset;
+
+    const orgScale = this.scale;
+
     this.scale = Math.min(scaleX, scaleY);
 
     this.xOffset = 0;
@@ -241,25 +246,29 @@ class Grid {
 
     const originalWidth = Grid.p5.width;
     const originalHeight = Grid.p5.height;
-    const originalPixelDensity = Grid.p5._pixelDensity;
+    //const originalPixelDensity = Grid.p5._pixelDensity;
     //make image smaller for thumbnail
     Grid.p5.resizeCanvas(448, 320);
-    Grid.p5.pixelDensity(1);
+    //Grid.p5.pixelDensity(1);
+    Grid.p5.clear();
     this.draw();
 
     
     return new Promise((resolve) => {
-      requestAnimationFrame(() => {
+      
         const imageBase64 = Grid.p5.canvas.toDataURL("image/png");
   
         // Restore everything AFTER capturing
         Grid.p5.resizeCanvas(originalWidth, originalHeight);
-        Grid.p5.pixelDensity(originalPixelDensity);
+        //Grid.p5.pixelDensity(originalPixelDensity);
+        this.xOffset = originalXOffset;
+        this.yOffset = originalYOffset;
+        this.scale=orgScale;
         this.resize();
         this.draw();
   
         resolve(imageBase64);
-      });
+      
     });
   }
 }

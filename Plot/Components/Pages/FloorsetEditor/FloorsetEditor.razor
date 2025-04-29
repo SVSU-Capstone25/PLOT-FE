@@ -168,6 +168,8 @@
         // Get the image as a base64 string from the browser
         string base64Image = await JSRuntime.InvokeAsync<string>("window.gridInstance.getImageThumbnail");
 
+        Console.WriteLine(base64Image);
+
 
         if (!string.IsNullOrEmpty(base64Image))
         {
@@ -209,6 +211,8 @@
         {
             Console.WriteLine("JSRuntime returned null image.");
         }
+
+        StateHasChanged();
     }
 
     private async Task UpdateFixtureModels()
