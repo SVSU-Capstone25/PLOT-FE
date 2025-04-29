@@ -2,10 +2,11 @@ import Fixture from "./Fixture.js";
 import EmployeeArea from "./EmployeeArea.js";
 
 /**
- * Create a new grid
+ * Represents a grid layout for fixtures and employee areas.
  * @author Clayton Cook <work@claytonleonardcook.com>
  */
 class Grid {
+  /** Static property to hold a reference to the p5.js instance for drawing */
   static p5;
 
   /** @type {Fixture[]} */
@@ -15,11 +16,7 @@ class Grid {
   employeeAreas;
 
   /**
-   * @param {number} size
-   * @param {number} scale
-   * @param {number} width
-   * @param {number} height
-   * @param {p5.Color | string} color
+   * Create a new Grid instance.
    */
   constructor() {
     this.size = 32;
@@ -33,13 +30,17 @@ class Grid {
     this.resize();
   }
 
+  /**
+   * Add a new fixture instance to the grid.
+   * @param {...any} args - Arguments passed to the Fixture constructor.
+   */
   addFixtureInstanceToGrid(...args) {
     this.fixtures.push(new Fixture(...args));
   }
 
   /**
-   * TODO: Write documentation
-   * @param {EmployeeArea[]} employeeAreas
+   * Add multiple employee areas to the grid.
+   * @param {EmployeeArea[]} employeeAreas - The employee areas to add.
    */
   addEmployeeAreas(employeeAreas) {
     employeeAreas.forEach((employeeArea) =>
@@ -51,16 +52,16 @@ class Grid {
   }
 
   /**
-   * TODO: Write documentation
-   * @param {number} floorsetTuid
-   * @param {number} x1
-   * @param {number} y1
-   * @param {number} x2
-   * @param {number} y2
+   * Add a rectangular block of employee areas to the grid.
+   * @param {number} floorsetTuid - The floorset identifier.
+   * @param {number} x1 - Starting x-coordinate.
+   * @param {number} y1 - Starting y-coordinate.
+   * @param {number} x2 - Ending x-coordinate (exclusive).
+   * @param {number} y2 - Ending y-coordinate (exclusive).
    */
   bulkAddEmployeeAreas(floorsetTuid, x1, y1, x2, y2) {
     for (let y = Math.max(0, y1); y < Math.min(this.height, y2); y++) {
-      for (let x = Math.max(0, x1); x < Math.min(this.height, x2); x++) {
+      for (let x = Math.max(0, x1); x < Math.min(this.width, x2); x++) {
         this.employeeAreas.set(
           [x, y].join("-"),
           new EmployeeArea(floorsetTuid, x, y)
@@ -70,8 +71,8 @@ class Grid {
   }
 
   /**
-   * TODO: Write documentation
-   * @param {EmployeeArea[]} employeeAreas
+   * Delete multiple employee areas from the grid.
+   * @param {EmployeeArea[]} employeeAreas - The employee areas to delete.
    */
   deleteEmployeeAreas(employeeAreas) {
     employeeAreas.forEach((employeeArea) =>
@@ -82,21 +83,25 @@ class Grid {
   }
 
   /**
-   * TODO: Write documentation
-   * @param {number} floorsetTuid
-   * @param {number} x1
-   * @param {number} y1
-   * @param {number} x2
-   * @param {number} y2
+   * Delete a rectangular block of employee areas from the grid.
+   * @param {number} x1 - Starting x-coordinate.
+   * @param {number} y1 - Starting y-coordinate.
+   * @param {number} x2 - Ending X coordinate (exclusive).
+   * @param {number} y2 - Ending Y coordinate (exclusive).
    */
   bulkDeleteEmployeeAreas(x1, y1, x2, y2) {
-    for (let y = Math.min(0, y1); y < Math.min(this.height, y2); y++) {
-      for (let x = Math.min(0, x1); x < Math.min(this.height, x2); x++) {
+    for (let y = Math.max(0, y1); y < Math.min(this.height, y2); y++) {
+      for (let x = Math.max(0, x1); x < Math.min(this.width, x2); x++) {
         this.employeeAreas.delete([x, y].join("-"));
       }
     }
   }
 
+  /**
+   * Convert a screen vector to grid coordinates.
+   * @param {p5.Vector} v - The vector to convert.
+   * @returns {p5.Vector} - The corresponding grid coordinates.
+   */
   toGridCoordinates(v) {
     const scaleSize = this.size * this.scale;
     const x = Math.floor((v.x - this.translate.x) / scaleSize);
@@ -104,6 +109,12 @@ class Grid {
     return Grid.p5.createVector(x, y);
   }
 
+  /**
+   * Convert screen space coordinates to grid space.
+   * @param {number} x - The screen x-coordinate.
+   * @param {number} y - The screen y-coordinate.
+   * @returns {{x: number, y: number}} - The corresponding grid space coordinates.
+   */
   screenToGridSpace(x, y) {
     return {
       x: (x - this.translate.x) / (this.size * this.scale),
@@ -111,17 +122,33 @@ class Grid {
     };
   }
 
+  /**
+   * Check if a grid position is within the bounds of the grid.
+   * @param {number} x - The grid x-coordinate.
+   * @param {number} y - The grid y-coordinate.
+   * @returns {boolean} True if the position is on the grid, otherwise false.
+   */
   isOnGrid(x, y) {
-    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
-      return true;
-    }
-    return false;
+    return x >= 0 && x < this.width && y >= 0 && y < this.height;
   }
 
+  /**
+   * Delete a fixture from the grid by its TUID.
+   * @param {number} tuid - The unique identifier of the fixture.
+   */
   deleteFixtureByTuid(tuid) {
     this.fixtures = this.fixtures.filter((fixture) => fixture.TUID != tuid);
   }
 
+  /**
+   * Update the properties of a fixture by its TUID.
+   * @param {number} tuid - The unique identifier of the fixture.
+   * @param {number} hangerStack - The hanger stack value.
+   * @param {string} subcategory - The subcategory name.
+   * @param {number} supercategoryTuid - The supercategory TUID.
+   * @param {p5.Color | string} supercategoryColor - The color for the supercategory.
+   * @param {string} note - Additional notes.
+   */
   updateFixtureByTuid(
     tuid,
     hangerStack,
@@ -138,11 +165,16 @@ class Grid {
         fixture.COLOR = supercategoryColor;
         fixture.NOTE = note;
       }
-
       return fixture;
     });
   }
 
+  /**
+   * Get the fixture located at a specific grid position.
+   * @param {number} gridX - The grid x-coordinate.
+   * @param {number} gridY - The grid y-coordinate.
+   * @returns {Fixture | null} - The fixture at the location, or null if none exists.
+   */
   getFixtureAt(gridX, gridY) {
     for (const fixture of this.fixtures) {
       const x = fixture.X_POS;
@@ -159,6 +191,9 @@ class Grid {
     return null;
   }
 
+  /**
+   * Recalculate the translation values for centering the grid.
+   */
   resize() {
     this.translate = {
       x:
@@ -172,7 +207,13 @@ class Grid {
     };
   }
 
-  draw(mouseFixture, isBeingPrinted = false, saveCallback = () => {}) {
+  /**
+   * Draw the grid, fixtures, and employee areas.
+   * @param {Fixture|null} mouseFixture - The fixture currently being placed (optional).
+   * @param {boolean} [isBeingPrinted=false] - Whether the grid is being printed.
+   * @param {Function | undefined} saveCallback - Callback to run after drawing.
+   */
+  draw(mouseFixture, isBeingPrinted = false, saveCallback = undefined) {
     Grid.p5.push();
     Grid.p5.fill(255, 255, 255);
     Grid.p5.stroke(0, 100);
@@ -191,22 +232,22 @@ class Grid {
     }
 
     const employeeAreas = this.employeeAreas.values();
-
     for (const employeeArea of employeeAreas) {
       employeeArea.draw(this.size);
     }
 
     this.fixtures.forEach((rack) => rack.draw(this.size, isBeingPrinted));
-
     mouseFixture?.draw(this.size);
 
     Grid.p5.pop();
-
     saveCallback();
   }
 
+  /**
+   * Print the grid layout to an image file.
+   * @param {string} floorsetName - The name to use for the saved file.
+   */
   print(floorsetName) {
-    // Calculate the scale to fit the entire grid
     const gridPixelWidth = this.width * this.size;
     const gridPixelHeight = this.height * this.size;
 
@@ -226,6 +267,10 @@ class Grid {
     });
   }
 
+  /**
+   * Generate a thumbnail image of the current grid layout.
+   * @returns {Promise<string>} A promise that resolves with a base64-encoded image string.
+   */
   async getImageThumbnail() {
     const gridPixelWidth = this.width * this.size;
     const gridPixelHeight = this.height * this.size;
